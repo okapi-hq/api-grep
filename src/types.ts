@@ -6,7 +6,7 @@ export type DynamicOrigin = "param" | "call" | "env" | "unknown";
 export type Part =
   | { kind: "static"; text: string; viaConst?: boolean }
   | { kind: "env"; name: string }
-  | { kind: "dynamic"; name: string; origin: DynamicOrigin };
+  | { kind: "dynamic"; name: string; origin: DynamicOrigin; shape?: Shape };
 
 /** Substitution map used for one-hop wrapper expansion. */
 export type Subst = Map<ParameterDeclaration, Expression>;
@@ -16,7 +16,7 @@ export interface EvalCtx {
   envHints?: Record<string, string>;
 }
 
-export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "sdk";
+export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "sdk" | "framework";
 
 export interface InstanceInfo {
   /** "call" for axios.create(cfg) / got.extend(cfg), "new" for new Stripe(key). */
@@ -33,6 +33,8 @@ export interface Callee {
   instance?: InstanceInfo;
   localDecl?: Node;
   viaType?: boolean;
+  /** Chain hangs off `this` and could not be tied to a package or a class member. */
+  thisRoot?: boolean;
 }
 
 export interface RawCall {
@@ -52,6 +54,12 @@ export interface RawCall {
   optionsOpaque?: boolean;
   nodeOpts?: { scheme: string; hostExpr?: Expression; portExpr?: Expression; pathExpr?: Expression };
   sdk?: SdkMatch;
+  /** Framework helper name (n8n, activepieces, ...) when detected through the frameworks registry. */
+  framework?: string;
+  /** Encoding forced by the detector (multipart helpers); wins over bodyKey-based defaults. */
+  encoding?: BodyEncoding;
+  /** Auth scheme declared in a helper's options object (`authentication: { type }`). */
+  authHint?: AuthScheme;
   via?: string;
   /** Parameter substitutions when this call was expanded through a wrapper. */
   subst?: Subst;
@@ -82,6 +90,25 @@ export interface RegistryEntry {
   commands?: Record<string, MethodSpec>;
 }
 
+export interface FrameworkKeys {
+  method?: string;
+  url?: string[];
+  baseUrl?: string[];
+  body?: string[];
+  query?: string[];
+  headers?: string[];
+  auth?: string;
+}
+
+export interface FrameworkEntry {
+  name: string;
+  match: { package?: string; this?: boolean; chain: string[]; packages?: string[] };
+  optionsArg: number;
+  method?: string;
+  keys?: FrameworkKeys;
+  encoding?: BodyEncoding;
+}
+
 export interface SdkMatch {
   package: string;
   provider: string;
@@ -95,7 +122,7 @@ export interface SdkMatch {
 export type Shape =
   | { type: "object"; properties: Record<string, Shape>; required: string[]; dynamicKeys?: boolean; fromType?: string }
   | { type: "array"; items: Shape; fromType?: string }
-  | { type: "string" | "number" | "integer" | "boolean" | "null"; enum?: (string | number | boolean)[]; fromType?: string }
+  | { type: "string" | "number" | "integer" | "boolean" | "null"; enum?: (string | number | boolean)[]; fromType?: string; hint?: string }
   | { type: "union"; anyOf: Shape[]; fromType?: string }
   | { type: "dynamic"; origin: DynamicOrigin; hint?: string }
   | { type: "unknown" };
@@ -106,14 +133,19 @@ export interface DynamicPart {
   where: "path" | "query" | "body" | "method" | "host";
   name: string;
   origin: string;
+  /** Checker-derived shape of the value, when known (path / query / host parts only). */
+  shape?: Shape;
 }
 
 export interface UrlShape {
   hostKind: HostKind;
   host?: string;
   envName?: string;
+  scheme?: string;
   pathTemplate: string;
   query: string[];
+  /** Per-parameter shapes for query keys (literal values become single-value enums). */
+  queryShape: Record<string, Shape>;
   dynamic: DynamicPart[];
   raw: string;
 }

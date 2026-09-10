@@ -1,17 +1,21 @@
 import { Node, type Expression } from "ts-morph";
 import { unwrap } from "../detect/callee.js";
 import { propertyKey, toObjectLiteral } from "../detect/options.js";
+import { looksSecret } from "../report/redact.js";
 import type { AuthScheme, EvalCtx } from "../types.js";
-import { evaluate } from "./evaluate.js";
+import { evaluate, staticText } from "./evaluate.js";
 import { typeToShape } from "./type-shape.js";
 
 export interface HeadersResult {
   names: string[];
+  /** Static literal values for non-credential headers; `null` when the value is dynamic or a credential. */
+  values: Record<string, string | null>;
   authScheme: AuthScheme;
   known: boolean;
 }
 
 const APIKEY_HEADERS = new Set(["x-api-key", "api-key", "apikey", "x-auth-token", "x-token", "api_key", "x-access-token", "x-goog-api-key", "anthropic-api-key"]);
+const CREDENTIAL_RE = /^(authorization|proxy-authorization|cookie|set-cookie)$|token|key|secret|password|credential|session|signature/;
 
 function schemeFromAuthValue(value: Expression | undefined, ctx: EvalCtx): AuthScheme {
   if (!value) return "unknown";
@@ -50,23 +54,31 @@ function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: numbe
   }
 }
 
+function staticValue(lower: string, value: Expression | undefined, ctx: EvalCtx): string | null {
+  if (!value || CREDENTIAL_RE.test(lower)) return null;
+  const text = staticText(evaluate(value, ctx));
+  if (text === undefined || looksSecret(text)) return null;
+  return text;
+}
+
 function pushName(out: HeadersResult, key: string, value: Expression | undefined, ctx: EvalCtx): void {
   const lower = key.toLowerCase();
   if (!out.names.includes(lower)) out.names.push(lower);
+  out.values[lower] = staticValue(lower, value, ctx);
   if (lower === "authorization") {
     const s = schemeFromAuthValue(value, ctx);
     if (out.authScheme === "none" || out.authScheme === "unknown") out.authScheme = s;
   } else if (APIKEY_HEADERS.has(lower)) out.authScheme = "apikey";
 }
 
-/** Header names (lower-cased) and auth scheme from a headers expression. Values are never kept. */
+/** Header names (lower-cased), non-credential literal values and the auth scheme from a headers expression. */
 export function resolveHeaders(expr: Expression | undefined, ctx: EvalCtx = {}): HeadersResult {
-  const out: HeadersResult = { names: [], authScheme: "none", known: true };
+  const out: HeadersResult = { names: [], values: {}, authScheme: "none", known: true };
   if (!expr) return out;
   let u = unwrap(expr);
   if (Node.isNewExpression(u) && u.getExpression().getText() === "Headers") {
     const arg = u.getArguments()[0] as Expression | undefined;
-    if (!arg) return { names: [], authScheme: "unknown", known: false };
+    if (!arg) return { names: [], values: {}, authScheme: "unknown", known: false };
     u = arg;
   }
   collect(u, ctx, out, 0);

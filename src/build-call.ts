@@ -2,16 +2,16 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 import type { Expression } from "ts-morph";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
-import { toObjectLiteral, propertyKey, getProp } from "./detect/options.js";
+import { getProp } from "./detect/options.js";
 import { inferProvider } from "./normalize/provider.js";
 import type { Call } from "./report/schema.js";
-import { resolveBody } from "./resolve/body.js";
+import { resolveBody, type BodyResult } from "./resolve/body.js";
 import { evaluate, staticText } from "./resolve/evaluate.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { resolveMethod } from "./resolve/method.js";
-import { typeToShape } from "./resolve/type-shape.js";
+import { resolveQuery } from "./resolve/query.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
-import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, UrlShape } from "./types.js";
+import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
 export interface BuildCtx extends EvalCtx {
   rootDir: string;
@@ -71,15 +71,21 @@ function nodeHttpUrl(raw: RawCall, ctx: EvalCtx): UrlShape {
   return partsToUrlShape(parts, ctx);
 }
 
-function queryNames(expr: Expression | undefined, ctx: EvalCtx): string[] {
-  if (!expr) return [];
-  const lit = toObjectLiteral(expr, ctx);
-  if (lit) return lit.getProperties().map((m) => propertyKey(m)).filter((k): k is string => !!k);
-  const t = typeToShape(expr.getType(), expr).shape;
-  return t.type === "object" ? Object.keys(t.properties) : [];
+function queryShapeOf(url: UrlShape, raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { query: string[]; queryShape?: Shape } {
+  const q = resolveQuery(raw.queryExpr, ctx);
+  dynamic.push(...q.dynamic);
+  const properties = { ...url.queryShape, ...q.shape };
+  const query = [...new Set([...url.query, ...q.names])];
+  if (query.length === 0) return { query };
+  const required = query.filter((k) => {
+    const s = properties[k];
+    return !(s && s.type === "union" && s.anyOf.some((x) => x.type === "null"));
+  });
+  return { query, queryShape: { type: "object", properties, required } };
 }
 
 function defaultEncoding(raw: RawCall, method: string): BodyEncoding {
+  if (raw.encoding) return raw.encoding;
   if (raw.sdk?.spec.encoding) return raw.sdk.spec.encoding;
   if (raw.bodyKey === "form") return "form";
   if (!raw.bodyExpr && (method === "GET" || method === "HEAD")) return "none";
@@ -100,13 +106,27 @@ function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { ur
   return { url, method: m.method };
 }
 
-function resolveAuth(raw: RawCall, ctx: EvalCtx): { headers: string[]; authScheme: Call["authScheme"] } {
-  if (raw.sdk) return { headers: [], authScheme: raw.sdk.auth ?? "unknown" };
+function resolveAuth(raw: RawCall, ctx: EvalCtx): { headers: string[]; headerValues: Record<string, string | null>; authScheme: Call["authScheme"] } {
+  if (raw.sdk) return { headers: [], headerValues: {}, authScheme: raw.sdk.auth ?? "unknown" };
   const call = resolveHeaders(raw.headersExpr, ctx);
   const inst = resolveHeaders(raw.instanceHeadersExpr, ctx);
   const definite = (s: Call["authScheme"]): boolean => s !== "none" && s !== "unknown";
-  const authScheme = definite(call.authScheme) ? call.authScheme : inst.authScheme !== "none" ? inst.authScheme : call.authScheme;
-  return { headers: [...new Set([...call.names, ...inst.names])], authScheme };
+  const fromHeaders = definite(call.authScheme) ? call.authScheme : inst.authScheme !== "none" ? inst.authScheme : call.authScheme;
+  const authScheme = definite(fromHeaders) || !raw.authHint ? fromHeaders : raw.authHint;
+  return { headers: [...new Set([...call.names, ...inst.names])], headerValues: { ...inst.values, ...call.values }, authScheme };
+}
+
+function evidenceOf(raw: RawCall, url: UrlShape, body: BodyResult): Evidence {
+  return {
+    sdkHit: !!raw.sdk,
+    hostKind: url.hostKind,
+    envHinted: url.hostKind === "env" && !!url.host,
+    pathDynamicNamed: !url.dynamic.some((d) => d.where === "path" && d.name === "expr"),
+    bodySource: bodySourceOf(body.shape, body.fromType, body.fromLiteral),
+    viaWrapper: !!raw.via,
+    specMatched: false,
+    optionsOpaque: !!raw.optionsOpaque,
+  };
 }
 
 /** Resolves a RawCall into the report's Call record. */
@@ -119,33 +139,30 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const body = resolveBody(raw.bodyExpr, ctx, defaultEncoding(raw, method));
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });
-  const { headers, authScheme } = resolveAuth(raw, ctx);
+  const { headers, headerValues, authScheme } = resolveAuth(raw, ctx);
+  const q = queryShapeOf(url, raw, ctx, dynamic);
   const provider = inferProvider({ hostKind: url.hostKind, host: url.host, envName: url.envName, sdkProvider: raw.sdk?.provider });
-  const evidence: Evidence = {
-    sdkHit: !!raw.sdk,
-    hostKind: url.hostKind,
-    envHinted: url.hostKind === "env" && !!url.host,
-    pathDynamicNamed: !url.dynamic.some((d) => d.where === "path" && d.name === "expr"),
-    bodySource: bodySourceOf(body.shape, body.fromType, body.fromLiteral),
-    viaWrapper: !!raw.via,
-    specMatched: false,
-    optionsOpaque: !!raw.optionsOpaque,
-  };
+  const evidence = evidenceOf(raw, url, body);
   const id = createHash("sha1").update(`${loc.file}:${loc.line}:${loc.col}`).digest("hex").slice(0, 12);
   return {
     id,
     location: loc,
     client: raw.client,
     sdk: raw.sdk ? { package: raw.sdk.package, version: base.sdkVersion(raw.node.getSourceFile().getFilePath(), raw.sdk.package), chain: raw.sdk.chain } : undefined,
+    framework: raw.framework,
     provider,
     host: url.host,
     hostKind: url.hostKind,
     envName: url.envName,
+    scheme: url.scheme,
     method,
     pathTemplate: url.pathTemplate,
+    urlTemplate: url.raw,
     operationId: raw.sdk?.spec.operationId,
-    query: [...new Set([...url.query, ...queryNames(raw.queryExpr, ctx)])],
+    query: q.query,
+    queryShape: q.queryShape,
     headers,
+    headerValues,
     authScheme,
     body: body.shape,
     bodyFromType: body.fromType,
@@ -154,5 +171,6 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
     via: raw.via,
     confidence: score(evidence),
     findings: [],
+    examples: [],
   };
 }

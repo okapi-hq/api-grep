@@ -5,7 +5,7 @@ import { exprOf } from "../helpers.js";
 describe("resolveHeaders", () => {
   it("keeps names only and detects bearer auth from a literal head", () => {
     const r = resolveHeaders(exprOf("const t = 'x'; const h = { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' };", "h"));
-    expect(r).toEqual({ names: ["authorization", "content-type"], authScheme: "bearer", known: true });
+    expect(r).toEqual({ names: ["authorization", "content-type"], values: { authorization: null, "content-type": "application/json" }, authScheme: "bearer", known: true });
   });
 
   it("detects api keys and basic auth", () => {

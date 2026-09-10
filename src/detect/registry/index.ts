@@ -1,4 +1,5 @@
-import type { RegistryEntry } from "../../types.js";
+import type { FrameworkEntry, RegistryEntry } from "../../types.js";
+import frameworks from "./frameworks.json" with { type: "json" };
 import awsS3 from "./aws-sdk-v3-s3.json" with { type: "json" };
 import awsV2 from "./aws-sdk-v2.json" with { type: "json" };
 import octokit from "./octokit.json" with { type: "json" };
@@ -9,9 +10,11 @@ import twilio from "./twilio.json" with { type: "json" };
 
 export class Registry {
   private byPkg = new Map<string, RegistryEntry>();
+  readonly frameworks: FrameworkEntry[];
 
-  constructor(entries: RegistryEntry[]) {
+  constructor(entries: RegistryEntry[], frameworkEntries: FrameworkEntry[] = []) {
     for (const e of entries) this.add(e);
+    this.frameworks = frameworkEntries;
   }
 
   add(e: RegistryEntry): void {
@@ -29,5 +32,5 @@ export class Registry {
 }
 
 export function defaultRegistry(): Registry {
-  return new Registry([stripe, openai, octokit, slack, twilio, awsS3, awsV2] as RegistryEntry[]);
+  return new Registry([stripe, openai, octokit, slack, twilio, awsS3, awsV2] as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

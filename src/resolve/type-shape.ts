@@ -73,12 +73,12 @@ export function dedupe(shapes: Shape[]): Shape[] {
   });
 }
 
+const BINARY_RE = /^(Buffer|Blob|File|ReadableStream|Readable|ArrayBuffer|SharedArrayBuffer|DataView|ArrayBufferView|(?:Uint|Int)(?:8|16|32)(?:Clamped)?Array|Float(?:32|64)Array|Big(?:U)?Int64Array)$/;
+
 function isBuiltinObject(t: Type): Shape | undefined {
   const name = t.getSymbol()?.getName();
   if (name === "Date") return { type: "string" };
-  if (name === "Buffer" || name === "Blob" || name === "File" || name === "ReadableStream" || name === "Readable" || name === "Uint8Array") {
-    return { type: "dynamic", origin: "unknown", hint: name };
-  }
+  if (name && BINARY_RE.test(name)) return { type: "dynamic", origin: "unknown", hint: name };
   if (name === "Map" || name === "Set" || name === "Promise" || name === "FormData" || name === "URLSearchParams") return { type: "unknown" };
   return undefined;
 }
@@ -94,7 +94,9 @@ function objectShape(t: Type, node: Node, depth: number, visited: Set<string>): 
   const required: string[] = [];
   const props = t.getProperties();
   for (const prop of props.slice(0, MAX_PROPS)) {
+    if (prop.getName().startsWith("__@")) continue;
     const pt = prop.getTypeAtLocation(node);
+    if (pt.getCallSignatures().length > 0) continue;
     const sub = typeToShape(pt, node, depth + 1, visited);
     const optional = sub.optional || prop.hasFlags(ts.SymbolFlags.Optional);
     properties[prop.getName()] = sub.shape;
