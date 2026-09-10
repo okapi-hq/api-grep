@@ -49,6 +49,22 @@ export function paramSubstitution(decl: Node, ctx: EvalCtx): Substitution {
   return { isParam: false };
 }
 
+/**
+ * `const { body } = options` → the `body` property of what `options` resolves to (param substitution included).
+ * A rest element (`...rest`) stands for the source object itself (sibling keys are not subtracted).
+ */
+export function bindingElementValue(decl: Node, ctx: EvalCtx = {}, depth = 0): Expression | undefined {
+  if (!Node.isBindingElement(decl) || depth > MAX_DEPTH) return undefined;
+  const pattern = decl.getParent();
+  const owner = pattern.getParent();
+  if (!Node.isObjectBindingPattern(pattern) || !Node.isVariableDeclaration(owner)) return undefined;
+  const init = owner.getInitializer();
+  if (!init) return undefined;
+  if (decl.getDotDotDotToken()) return init;
+  const name = decl.getPropertyNameNode()?.getText() ?? decl.getName();
+  return getProp(init, name, ctx, depth + 1) ?? decl.getInitializer();
+}
+
 /** Resolves an expression to an object literal through const identifiers and parameter substitution (one hop each). */
 export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {}, depth = 0): ObjectLiteralExpression | undefined {
   if (!expr || depth > MAX_DEPTH) return undefined;
@@ -59,7 +75,7 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
       const sub = paramSubstitution(decl, ctx);
       if (sub.isParam) return sub.expr ? toObjectLiteral(sub.expr, ctx, depth + 1) : undefined;
       if (Node.isVariableDeclaration(decl)) return toObjectLiteral(decl.getInitializer(), ctx, depth + 1);
-      if (Node.isBindingElement(decl) && decl.getInitializer()) return toObjectLiteral(decl.getInitializer(), ctx, depth + 1);
+      if (Node.isBindingElement(decl)) return toObjectLiteral(bindingElementValue(decl, ctx, depth + 1), ctx, depth + 1);
     }
   }
   return undefined;

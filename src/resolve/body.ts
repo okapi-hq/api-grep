@@ -1,8 +1,8 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
 import { unwrap } from "../detect/callee.js";
-import { declarationsOf, paramSubstitution, propertyKey } from "../detect/options.js";
-import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
-import { evaluate, staticText } from "./evaluate.js";
+import { bindingElementValue, declarationsOf, paramSubstitution, propertyKey } from "../detect/options.js";
+import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Part, Shape } from "../types.js";
+import { evaluate, partsToTemplate, staticText } from "./evaluate.js";
 import { collectAppendedKeys } from "./appended.js";
 import { dedupe, mergeLiterals, typeToShape } from "./type-shape.js";
 
@@ -102,10 +102,19 @@ function originOf(s: Shape): string {
   return s.type === "dynamic" ? s.origin : s.type === "unknown" ? "unknown" : "type";
 }
 
+const GENERIC_HINT = /^(input|data|value|body|params|opts|options|args|payload|req|res|result|item|obj|e|x|v)$/;
+
+/** Scalars keep the source identifier as a hint (`{ username: email }` is an email) unless the name is generic. */
+function withHint(shape: Shape, hint: string | undefined): Shape {
+  if (shape.type !== "string" && shape.type !== "number" && shape.type !== "integer" && shape.type !== "boolean") return shape;
+  if (!hint || !/^[A-Za-z_$][\w$]*$/.test(hint) || GENERIC_HINT.test(hint)) return shape;
+  return { ...shape, hint };
+}
+
 function fromChecker(u: Expression, origin: "param" | "call" | "unknown", hint?: string): ShapeResult {
   const t = typeToShape(u.getType(), u);
   if (t.shape.type === "unknown") return { shape: { type: "dynamic", origin, hint }, fromLiteral: false, origin };
-  return { shape: t.shape, fromLiteral: false, origin };
+  return { shape: withHint(t.shape, hint), fromLiteral: false, origin };
 }
 
 function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
@@ -113,6 +122,8 @@ function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: Dy
     const sub = paramSubstitution(decl, ctx);
     if (sub.isParam) return sub.expr ? shapeOf(sub.expr, ctx, depth + 1, dynamic) : fromChecker(u, "param", u.getText());
     if (Node.isVariableDeclaration(decl) && decl.getInitializer()) return shapeOf(decl.getInitializer()!, ctx, depth + 1, dynamic);
+    const bound = bindingElementValue(decl, ctx);
+    if (bound) return shapeOf(bound, ctx, depth + 1, dynamic);
   }
   return fromChecker(u, "unknown", u.getText());
 }
@@ -146,10 +157,29 @@ function keysToShape(keys: string[]): Shape {
   return { type: "object", properties, required: keys, ...(keys.length === 0 ? { dynamicKeys: true } : {}) };
 }
 
-function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?: Expression; encoding: BodyEncoding; keys?: string[] } {
+const FORM_STRINGIFY_RE = /^(qs|querystring|queryString)\.stringify$|^stringify$/;
+
+/** `body ? JSON.stringify(body) : undefined` → the defined branch; `x.toString()` → x. */
+function stripBodyWrappers(expr: Expression): Expression {
   const u = unwrap(expr);
-  if (Node.isCallExpression(u) && u.getExpression().getText().replace(/\s/g, "") === "JSON.stringify") {
-    return { inner: u.getArguments()[0] as Expression | undefined, encoding: "json" };
+  if (Node.isConditionalExpression(u)) {
+    const [a, b] = [unwrap(u.getWhenTrue()), unwrap(u.getWhenFalse())];
+    if (isUndefinedExpr(b) || b.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(a);
+    if (isUndefinedExpr(a) || a.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(b);
+  }
+  if (Node.isCallExpression(u) && u.getArguments().length === 0) {
+    const callee = u.getExpression();
+    if (Node.isPropertyAccessExpression(callee) && callee.getName() === "toString") return stripBodyWrappers(callee.getExpression());
+  }
+  return u;
+}
+
+function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?: Expression; encoding: BodyEncoding; keys?: string[] } {
+  const u = stripBodyWrappers(expr);
+  if (Node.isCallExpression(u)) {
+    const callee = u.getExpression().getText().replace(/\s/g, "");
+    if (callee === "JSON.stringify") return { inner: u.getArguments()[0] as Expression | undefined, encoding: "json" };
+    if (FORM_STRINGIFY_RE.test(callee)) return { inner: u.getArguments()[0] as Expression | undefined, encoding: "form" };
   }
   if (Node.isNewExpression(u)) {
     const name = u.getExpression().getText();
@@ -158,14 +188,34 @@ function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?
     if (name === "FormData") return { inner: undefined, encoding: "multipart", keys: appendedKeys(expr) };
   }
   if (Node.isIdentifier(u) && depth < 3) {
-    const decl = u.getSymbol()?.getDeclarations()[0];
-    const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
+    const decl = declarationsOf(u)[0];
+    const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : decl ? bindingElementValue(decl, ctx) : undefined;
     if (init) {
       const inner = unwrapEncoding(init, ctx, depth + 1);
-      if (inner.encoding !== "json" || inner.inner !== init) return { ...inner, keys: [...(inner.keys ?? []), ...appendedKeys(u)] };
+      if (inner.encoding !== "json" || inner.inner !== unwrap(init)) return { ...inner, keys: [...(inner.keys ?? []), ...appendedKeys(u)] };
     }
   }
-  return { inner: expr, encoding: "json" };
+  return { inner: u, encoding: "json" };
+}
+
+const FORM_PAIR_RE = /^[\w.\-[\]]+=/;
+
+/** `\`a=${x}&b=1\`` style string bodies become form shapes: keys are static, values keep their part's shape. */
+function formStringShape(parts: Part[]): Shape | undefined {
+  const template = partsToTemplate(parts);
+  if (!FORM_PAIR_RE.test(template) || /\s/.test(template.split("&")[0]!.split("=")[0]!)) return undefined;
+  const properties: Record<string, Shape> = {};
+  const names = new Map(parts.filter((p): p is Extract<Part, { kind: "dynamic" }> => p.kind === "dynamic").map((p) => [p.name, p.shape]));
+  for (const pair of template.split("&")) {
+    const eq = pair.indexOf("=");
+    if (eq <= 0 || pair.slice(0, eq).includes("{")) return undefined;
+    const key = pair.slice(0, eq);
+    const value = pair.slice(eq + 1);
+    const m = /^\{([^}]+)\}$/.exec(value);
+    const dynShape = m ? names.get(m[1]!) : undefined;
+    properties[key] = value.includes("{") ? (dynShape && dynShape.type !== "object" ? dynShape : { type: "string", hint: m?.[1] }) : { type: "string", enum: [value] };
+  }
+  return { type: "object", properties, required: Object.keys(properties) };
 }
 
 function parseJsonString(u: Expression, ctx: EvalCtx): Shape | undefined {
@@ -199,6 +249,8 @@ export function resolveBody(expr: Expression | undefined, ctx: EvalCtx = {}, def
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u) || Node.isTemplateExpression(u)) {
     const parsed = parseJsonString(u, ctx);
     if (parsed) return { shape: parsed, encoding: "json", dynamic: [], fromLiteral: true };
+    const form = formStringShape(evaluate(u, ctx));
+    if (form) return { shape: form, encoding: "form", dynamic: [], fromLiteral: true };
     return { shape: { type: "string" }, encoding: "raw", dynamic: [], fromLiteral: true };
   }
   const dynamic: DynamicPart[] = [];

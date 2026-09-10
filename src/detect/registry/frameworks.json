@@ -1,0 +1,22 @@
+{
+  "$comment": "Framework HTTP helpers that take one options object. `this` entries match `this.<chain>(...)` (also `.call(this, ...)`, which shifts optionsArg by one) and, when types resolve, the same chain minus its first segment on `packages`.",
+  "frameworks": [
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "httpRequest"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 0 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "request"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 0 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "httpRequestWithAuthentication"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 1 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "requestWithAuthentication"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 1 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "requestWithAuthenticationPaginated"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 1 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "requestOAuth2"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 1 },
+    { "name": "n8n", "match": { "this": true, "chain": ["helpers", "requestOAuth1"], "packages": ["n8n-workflow", "n8n-core"] }, "optionsArg": 1 },
+    {
+      "name": "activepieces",
+      "match": { "package": "@activepieces/pieces-common", "chain": ["httpClient", "sendRequest"] },
+      "optionsArg": 0,
+      "keys": { "method": "method", "url": ["url"], "body": ["body"], "query": ["queryParams"], "headers": ["headers"], "auth": "authentication" }
+    },
+    { "name": "ai-sdk", "match": { "package": "@ai-sdk/provider-utils", "chain": ["postJsonToApi"] }, "optionsArg": 0, "method": "POST", "keys": { "url": ["url"], "body": ["body"], "headers": ["headers"] } },
+    { "name": "ai-sdk", "match": { "package": "@ai-sdk/provider-utils", "chain": ["postToApi"] }, "optionsArg": 0, "method": "POST", "keys": { "url": ["url"], "headers": ["headers"] } },
+    { "name": "ai-sdk", "match": { "package": "@ai-sdk/provider-utils", "chain": ["postFormDataToApi"] }, "optionsArg": 0, "method": "POST", "keys": { "url": ["url"], "body": ["formData"], "headers": ["headers"] }, "encoding": "multipart" },
+    { "name": "ai-sdk", "match": { "package": "@ai-sdk/provider-utils", "chain": ["getFromApi"] }, "optionsArg": 0, "method": "GET", "keys": { "url": ["url"], "headers": ["headers"] } }
+  ]
+}

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { buildCall, type BuildCtx } from "./build-call.js";
 import { detectFile } from "./detect/index.js";
+import { buildExamples } from "./examples/build.js";
 import { defaultRegistry, type Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit, selectChanged } from "./git.js";
 import { loadProject } from "./project.js";
@@ -22,6 +23,8 @@ export interface ScanOptions {
   registry?: Registry;
   repo?: string;
   wrappers?: boolean;
+  /** Maximum example requests per call (default 3, 0 disables). */
+  examples?: number;
 }
 
 function sdkVersionLookup(rootDir: string): BuildCtx["sdkVersion"] {
@@ -95,6 +98,8 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) };
   const calls = sortCalls(raws.map((r) => buildCall(r, ctx)));
   if (opts.specs) await applySpecs(calls, { specsDir: opts.specs, validate: !!opts.validate });
+  const maxExamples = opts.examples ?? 3;
+  if (maxExamples > 0) for (const c of calls) c.examples = buildExamples(c, maxExamples);
   return {
     tool: "apicalls",
     version: pkg.version,

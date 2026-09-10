@@ -7,12 +7,15 @@ path template, the *shape* of the payload (names and types, never values), and a
 
 ```
 pnpm dev scan ../some-repo                  # table
-pnpm dev scan ../some-repo --json           # Report JSON on stdout
+pnpm dev scan ../some-repo --curl           # one curl command per example request
+pnpm dev scan ../some-repo --json           # Report JSON on stdout (examples included)
 pnpm dev scan ../some-repo --out report.json --changed-since origin/main
 pnpm dev scan ../some-repo --specs ./specs --validate
+pnpm dev scan ../some-repo --examples 1     # at most one example per call (0 disables)
 ```
 
-Or after `pnpm build`: `node dist/cli.js scan <dir>`.
+Or after `pnpm build`: `node dist/cli.js scan <dir>`. Big monorepos need several GB of heap; the CLI
+re-runs itself with `--max-old-space-size=8192` (override with `APICALLS_HEAP_MB`, `0` opts out).
 
 ## What it detects
 
@@ -23,12 +26,46 @@ Or after `pnpm build`: `node dist/cli.js scan <dir>`.
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
 | sdk | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2 |
+| framework | options-object helpers from `src/detect/registry/frameworks.json`: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
 Callees are identified by declaration through the type checker, never by name, so a
 shadowed `fetch` is ignored and `import http from "axios"` is still axios. SDK instances
 are followed through `const stripe = new Stripe()`, exported instances in other files,
 class properties (`this.stripe`), and typed parameters (`stripe: Stripe`) when the
 package's types are installed.
+
+## Example requests
+
+Every call carries `examples`: concrete requests synthesized from what was resolved, so the
+report reads like the traffic the code would actually send. `--curl` prints them as commands.
+
+```
+# lib/api/domains/claim-dot-link-domain.ts:143  vercel PATCH /v3/domains/{domain}  (confidence 0.50)
+# minimal
+curl -X PATCH 'https://api.vercel.com/v3/domains/yonder.example.org?teamId=dgsko5l3' \
+  -H 'authorization: Bearer <token>' \
+  -H 'content-type: application/json' \
+  --data '{"op":"update","zone":true}'
+```
+
+- **Values are typed, then named.** Path segments, query parameters and body properties get the
+  checker's shape (`{id}` as `number`, `status` as `"open" | "closed"`), and the synthesizer fills
+  it with deterministic pseudo-random content chosen by name: `email` → an address, `createdAt` →
+  an ISO date, `per_page` → a small integer, `userId` → an id, `iban`, `currency`, `zip`, and so on.
+  Anything else becomes random words or integers. The identifier that flowed into a property is
+  used as a hint (`{ username: email }` is an email).
+- **Credentials are never invented.** Keys and headers that look like secrets (`token`, `api_key`,
+  `password`, `authorization`, `cookie`) become `<name>` placeholders; the auth scheme picks
+  `Bearer <token>`, `Basic <base64(user:password)>` or `<api-key>`.
+- **Variants.** `minimal` sends required properties with the first enum / union branch; `full`
+  adds optional properties (when the type has some); `alt` switches enum values, union branches and
+  booleans. Identical requests are deduplicated; `--examples <n>` caps the count.
+- **What stays visible.** A host that could not be resolved is left as `https://{baseUrl}/…` or
+  `https://{env:API_URL}/…`; a `DYNAMIC` method is rendered as `POST` when a body exists, `GET`
+  otherwise. Values are seeded by the call id, so they are stable across runs and diffs.
+- **Query parameters** come from the URL template (`?state=open&per_page=${n}`), `params` /
+  `searchParams` objects, and `url.searchParams.set("k", v)` calls; header values are kept when
+  they are literals (`x-api-version: 2024-06-01`) and never when they look like credentials.
 
 ## How resolution works
 
@@ -45,6 +82,11 @@ package's types are installed.
 - **Wrappers** (one hop) — a local function or class method whose body performs an HTTP call
   *and* whose parameters flow into it is treated as an HTTP client; calls to it are reported
   at the call site with `via: "wrapper:<name>"` and the caller's arguments substituted.
+  `fn.call(this, …)` invocations are followed (n8n's `GenericFunctions` style), a TypeScript
+  `this` parameter is skipped, and `const { body, ...rest } = options` inside the wrapper is
+  resolved back to the caller's object.
+- **String bodies** — `` `a=${x}&b=1` `` with a form content type becomes a form shape; `body ?
+  JSON.stringify(body) : undefined`, `.toString()` and `qs.stringify(obj)` are unwrapped.
 - **Specs** — with `--specs <dir>` (a directory of `<provider>.{json,yaml}` or a checkout of
   [APIs-guru/openapi-directory](https://github.com/APIs-guru/openapi-directory)) the path
   template is matched to an operation. `--validate` adds deterministic findings: unknown

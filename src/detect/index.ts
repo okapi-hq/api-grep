@@ -3,6 +3,7 @@ import type { Callee, EvalCtx, RawCall } from "../types.js";
 import { detectAxios } from "./axios.js";
 import { describeCallee } from "./callee.js";
 import { detectFetch } from "./fetch.js";
+import { detectFramework } from "./framework.js";
 import { detectGotKy } from "./got-ky.js";
 import { detectNodeHttp } from "./node-http.js";
 import type { Registry } from "./registry/index.js";
@@ -29,7 +30,8 @@ export function detectNode(node: CallExpression | NewExpression, registry: Regis
     detectFetch(node, callee, ctx) ??
     detectAxios(node, callee, ctx) ??
     detectGotKy(node, callee, ctx) ??
-    detectNodeHttp(node, callee, ctx);
+    detectNodeHttp(node, callee, ctx) ??
+    detectFramework(node, callee, registry.frameworks, ctx);
   return { raw, callee };
 }
 

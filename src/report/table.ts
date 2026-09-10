@@ -28,7 +28,7 @@ export function toTable(report: Report, minConfidence: number): string {
   });
   for (const c of rows) {
     const loc = `${c.location.file}:${c.location.line}`;
-    const provider = c.client === "sdk" ? `${c.provider} ${pc.dim("sdk")}` : c.provider;
+    const provider = c.client === "sdk" ? `${c.provider} ${pc.dim("sdk")}` : c.framework ? `${c.provider} ${pc.dim(c.framework)}` : c.provider;
     table.push([conf(c.confidence), provider, c.method, c.pathTemplate + (c.via ? pc.dim(` (${c.via})`) : ""), shortShape(c), String(c.dynamic.length), pc.dim(loc)]);
   }
   const s = report.stats;

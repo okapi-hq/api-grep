@@ -3,7 +3,7 @@ import { detectFile, detectNode, type WrapperCandidate } from "../detect/index.j
 import { declarationsOf } from "../detect/options.js";
 import type { Registry } from "../detect/registry/index.js";
 import type { RawCall, Subst } from "../types.js";
-import { wrapperFunction, type FunctionLike } from "./function.js";
+import { callShift, wrapperFunction, type FunctionLike } from "./function.js";
 
 const MAX_INNER = 3;
 
@@ -38,10 +38,12 @@ function referencesParam(e: Node, params: Set<Node>, depth: number): boolean {
   return false;
 }
 
-function substitutionFor(fn: FunctionLike, call: CallExpression): Subst {
+/** Maps the wrapper's parameters to the caller's arguments; a TypeScript `this` parameter is not a real argument. */
+function substitutionFor(fn: FunctionLike, call: CallExpression, shift: number): Subst {
   const subst: Subst = new Map();
-  const args = call.getArguments() as Expression[];
-  fn.getParameters().forEach((p, i) => {
+  const args = (call.getArguments() as Expression[]).slice(shift);
+  const params = fn.getParameters().filter((p) => p.getName() !== "this");
+  params.forEach((p, i) => {
     const arg = args[i] ?? p.getInitializer();
     if (arg && !p.isRestParameter()) subst.set(p, arg);
   });
@@ -64,7 +66,7 @@ export function expandWrappers(candidates: WrapperCandidate[], registry: Registr
       cache.set(fn, inner);
     }
     if (inner.length === 0) continue;
-    const subst = substitutionFor(fn, cand.node);
+    const subst = substitutionFor(fn, cand.node, callShift(cand.callee));
     const via = `wrapper:${wrapperName(fn)}`;
     for (const raw of inner) {
       const redetected = detectNode(raw.node, registry, { subst }).raw ?? raw;

@@ -1,7 +1,9 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
 import { classPropertyInitializer, unwrap } from "../detect/callee.js";
-import { declarationsOf, getProp, paramSubstitution } from "../detect/options.js";
-import type { DynamicOrigin, EvalCtx, Part } from "../types.js";
+import { identifierOrigin } from "../detect/origin.js";
+import { bindingElementValue, declarationsOf, getProp, paramSubstitution } from "../detect/options.js";
+import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
+import { typeToShape } from "./type-shape.js";
 
 const MAX_DEPTH = 5;
 const PASSTHROUGH_CALLS = new Set(["encodeURIComponent", "encodeURI", "String", "toString", "trim", "toLowerCase", "toUpperCase"]);
@@ -27,8 +29,27 @@ function dynamicName(e: Expression): string {
   return "expr";
 }
 
+const SHALLOW = 4;
+
+/**
+ * Checker shape of a dynamic expression; omitted when the checker knows nothing useful.
+ * Only identifiers and member accesses are typed (call signatures are costly to resolve) and only shallowly:
+ * path / query values are scalars, and deep object types would pin large checker caches on big repos.
+ */
+export function exprShape(e: Expression): Shape | undefined {
+  const u = unwrap(e);
+  if (!Node.isIdentifier(u) && !Node.isPropertyAccessExpression(u) && !Node.isElementAccessExpression(u)) return undefined;
+  try {
+    const s = typeToShape(u.getType(), u, SHALLOW).shape;
+    return s.type === "unknown" ? undefined : s;
+  } catch {
+    return undefined;
+  }
+}
+
 function dyn(e: Expression, origin: DynamicOrigin): Part[] {
-  return [{ kind: "dynamic", name: dynamicName(e), origin }];
+  const shape = exprShape(e);
+  return [{ kind: "dynamic", name: dynamicName(e), origin, ...(shape ? { shape } : {}) }];
 }
 
 function envName(u: Expression): string | undefined {
@@ -49,6 +70,13 @@ function envName(u: Expression): string | undefined {
   return undefined;
 }
 
+/** `const owner = getParam("owner")` reads better as `{owner}` than `{getParam}`: a lone call-named part takes the variable's name. */
+function renameSingleDynamic(parts: Part[], ident: Expression): Part[] {
+  const only = parts.length === 1 ? parts[0] : undefined;
+  if (!only || only.kind !== "dynamic" || (only.origin !== "call" && only.name !== "expr")) return parts;
+  return [{ ...only, name: ident.getText(), shape: only.shape ?? exprShape(ident) }];
+}
+
 function markConst(parts: Part[]): Part[] {
   return parts.map((p) => (p.kind === "static" ? { ...p, viaConst: true } : p));
 }
@@ -59,13 +87,15 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     if (sub.isParam) return sub.expr ? evaluate(sub.expr, ctx, depth + 1) : dyn(u, "param");
     if (Node.isVariableDeclaration(decl)) {
       const init = decl.getInitializer();
-      if (init) return markConst(evaluate(init, ctx, depth + 1));
+      if (init) return renameSingleDynamic(markConst(evaluate(init, ctx, depth + 1)), u);
       return dyn(u, "unknown");
     }
     if (Node.isEnumMember(decl)) {
       const v = decl.getValue();
       if (typeof v === "string" || typeof v === "number") return [{ kind: "static", text: String(v), viaConst: true }];
     }
+    const bound = bindingElementValue(decl, ctx);
+    if (bound) return markConst(evaluate(bound, ctx, depth + 1));
   }
   return typeLiteral(u) ?? dyn(u, "unknown");
 }
@@ -80,9 +110,22 @@ function typeLiteral(u: Expression): Part[] | undefined {
   return undefined;
 }
 
+/** `HttpMethod.POST` from a package whose types are not installed: an ALL_CAPS member of an imported enum reads as its own name. */
+function packageEnumMember(u: Expression): Part[] | undefined {
+  if (!Node.isPropertyAccessExpression(u)) return undefined;
+  const obj = unwrap(u.getExpression());
+  const name = u.getName();
+  if (!Node.isIdentifier(obj) || !/^[A-Z][A-Z0-9_]*$/.test(name) || !/^[A-Z]/.test(obj.getText())) return undefined;
+  const origin = identifierOrigin(obj);
+  if (origin.kind !== "package") return undefined;
+  return [{ kind: "static", text: name, viaConst: true }];
+}
+
 function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   const env = envName(u);
   if (env) return [{ kind: "env", name: env }];
+  const member = typeLiteral(u) ?? packageEnumMember(u);
+  if (member) return member;
   if (Node.isPropertyAccessExpression(u) && (u.getName() === "href" || u.getName() === "toString")) {
     return evaluate(u.getExpression(), ctx, depth + 1);
   }

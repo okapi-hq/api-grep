@@ -142,7 +142,7 @@ function thisCallee(mc: Chain, depth: number): Callee {
   const { root, chain } = mc;
   const cls = root.getFirstAncestorByKind(SyntaxKind.ClassDeclaration) ?? root.getFirstAncestorByKind(SyntaxKind.ClassExpression);
   const propName = chain[0];
-  if (!cls || !propName) return typeFallback(mc, 1);
+  if (!cls || !propName) return { ...typeFallback(mc, 1), thisRoot: true };
   const prop = cls.getProperty(propName);
   const method = cls.getMethod(propName);
   if (method) return { localDecl: method, chain: chain.slice(1) };
@@ -153,7 +153,7 @@ function thisCallee(mc: Chain, depth: number): Callee {
     const u = unwrap(assigned);
     if (Node.isCallExpression(u) || Node.isNewExpression(u)) return instanceCallee(u, rest.chain, depth + 1);
   }
-  return typeFallback(mc, 1);
+  return { ...typeFallback(mc, 1), thisRoot: true };
 }
 
 /** Initializer of `this.<prop>`: property initializer or `this.prop = ...` in the constructor. */

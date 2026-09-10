@@ -30,7 +30,7 @@
     "lint": "eslint src tests eval scripts --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
-    "eval": "tsx eval/run.ts",
+    "eval": "node --max-old-space-size=8192 --import tsx eval/run.ts",
     "eval:score": "tsx eval/score.ts",
     "gen:registry": "tsx scripts/gen-registry.ts",
     "prepare": "husky"
