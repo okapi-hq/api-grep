@@ -1,0 +1,22 @@
+[
+  { "name": "dub", "url": "https://github.com/dubinc/dub.git", "subdir": "apps/web" },
+  { "name": "cal.com", "url": "https://github.com/calcom/cal.com.git", "subdir": "packages/app-store" },
+  { "name": "n8n", "url": "https://github.com/n8n-io/n8n.git", "subdir": "packages/nodes-base" },
+  { "name": "twenty", "url": "https://github.com/twentyhq/twenty.git", "subdir": "packages/twenty-server" },
+  { "name": "supabase", "url": "https://github.com/supabase/supabase.git", "subdir": "apps/studio" },
+  { "name": "formbricks", "url": "https://github.com/formbricks/formbricks.git", "subdir": "apps/web" },
+  { "name": "documenso", "url": "https://github.com/documenso/documenso.git", "subdir": "packages/lib" },
+  { "name": "trigger.dev", "url": "https://github.com/triggerdotdev/trigger.dev.git", "subdir": "apps/webapp" },
+  { "name": "teable", "url": "https://github.com/teableio/teable.git", "subdir": "apps/nestjs-backend" },
+  { "name": "medusa", "url": "https://github.com/medusajs/medusa.git", "subdir": "packages/modules/providers" },
+  { "name": "vercel-ai", "url": "https://github.com/vercel/ai.git", "subdir": "packages" },
+  { "name": "novu", "url": "https://github.com/novuhq/novu.git", "subdir": "packages/providers" },
+  { "name": "outline", "url": "https://github.com/outline/outline.git", "subdir": "plugins" },
+  { "name": "hoppscotch", "url": "https://github.com/hoppscotch/hoppscotch.git", "subdir": "packages/hoppscotch-backend" },
+  { "name": "immich", "url": "https://github.com/immich-app/immich.git", "subdir": "server" },
+  { "name": "nocodb", "url": "https://github.com/nocodb/nocodb.git", "subdir": "packages/nocodb" },
+  { "name": "infisical", "url": "https://github.com/Infisical/infisical.git", "subdir": "backend" },
+  { "name": "activepieces", "url": "https://github.com/activepieces/activepieces.git", "subdir": "packages/pieces/community" },
+  { "name": "openstatus", "url": "https://github.com/openstatusHQ/openstatus.git", "subdir": "apps/web" },
+  { "name": "directus", "url": "https://github.com/directus/directus.git", "subdir": "api" }
+]

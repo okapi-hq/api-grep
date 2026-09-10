@@ -1,0 +1,37 @@
+{
+  "package": "@aws-sdk/client-s3",
+  "provider": "aws",
+  "host": "s3.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "instance": { "names": ["S3Client", "S3"] },
+  "commands": {
+    "PutObjectCommand": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw" },
+    "GetObjectCommand": { "method": "GET", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "GetObject" },
+    "HeadObjectCommand": { "method": "HEAD", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "HeadObject" },
+    "DeleteObjectCommand": { "method": "DELETE", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "DeleteObject" },
+    "DeleteObjectsCommand": { "method": "POST", "path": "/{Bucket}?delete", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteObjects" },
+    "CopyObjectCommand": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CopyObject" },
+    "ListObjectsV2Command": { "method": "GET", "path": "/{Bucket}?list-type=2", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjectsV2" },
+    "ListObjectsCommand": { "method": "GET", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjects" },
+    "ListBucketsCommand": { "method": "GET", "path": "/", "bodyArg": 0, "operationId": "ListBuckets" },
+    "CreateBucketCommand": { "method": "PUT", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "CreateBucket" },
+    "DeleteBucketCommand": { "method": "DELETE", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteBucket" },
+    "HeadBucketCommand": { "method": "HEAD", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "HeadBucket" },
+    "GetBucketLocationCommand": { "method": "GET", "path": "/{Bucket}?location", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "GetBucketLocation" },
+    "PutBucketCorsCommand": { "method": "PUT", "path": "/{Bucket}?cors", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "PutBucketCors" },
+    "PutObjectAclCommand": { "method": "PUT", "path": "/{Bucket}/{Key}?acl", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObjectAcl" },
+    "CreateMultipartUploadCommand": { "method": "POST", "path": "/{Bucket}/{Key}?uploads", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CreateMultipartUpload" },
+    "UploadPartCommand": { "method": "PUT", "path": "/{Bucket}/{Key}?partNumber={PartNumber}&uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "UploadPart", "encoding": "raw" },
+    "CompleteMultipartUploadCommand": { "method": "POST", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CompleteMultipartUpload" },
+    "AbortMultipartUploadCommand": { "method": "DELETE", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "AbortMultipartUpload" }
+  },
+  "methods": {
+    "S3.putObject": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw" },
+    "S3.getObject": { "method": "GET", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "GetObject" },
+    "S3.deleteObject": { "method": "DELETE", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "DeleteObject" },
+    "S3.listObjectsV2": { "method": "GET", "path": "/{Bucket}?list-type=2", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjectsV2" },
+    "S3.headObject": { "method": "HEAD", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "HeadObject" },
+    "S3.copyObject": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CopyObject" }
+  }
+}

@@ -1,0 +1,15 @@
+export { scan, computeStats, type ScanOptions } from "./scan.js";
+export { toJson } from "./report/json.js";
+export { toTable } from "./report/table.js";
+export { ReportSchema, CallSchema, ShapeSchema, type Report, type Call, type Stats } from "./report/schema.js";
+export { Registry, defaultRegistry } from "./detect/registry/index.js";
+export { evaluate, partsToTemplate } from "./resolve/evaluate.js";
+export { resolveUrl, partsToUrlShape } from "./resolve/url.js";
+export { resolveBody, shapeOf } from "./resolve/body.js";
+export { resolveHeaders } from "./resolve/headers.js";
+export { score, type Evidence } from "./confidence.js";
+export { redact, looksSecret } from "./report/redact.js";
+export { checkShape } from "./validate/check.js";
+export { matchOperation } from "./validate/match.js";
+export { SpecStore } from "./validate/spec-loader.js";
+export type * from "./types.js";

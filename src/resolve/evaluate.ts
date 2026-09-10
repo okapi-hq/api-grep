@@ -1,0 +1,189 @@
+import { Node, SyntaxKind, type Expression } from "ts-morph";
+import { classPropertyInitializer, unwrap } from "../detect/callee.js";
+import { declarationsOf, getProp, paramSubstitution } from "../detect/options.js";
+import type { DynamicOrigin, EvalCtx, Part } from "../types.js";
+
+const MAX_DEPTH = 5;
+const PASSTHROUGH_CALLS = new Set(["encodeURIComponent", "encodeURI", "String", "toString", "trim", "toLowerCase", "toUpperCase"]);
+
+export function staticText(parts: Part[]): string | undefined {
+  if (parts.every((p) => p.kind === "static")) return parts.map((p) => (p as { text: string }).text).join("");
+  return undefined;
+}
+
+export function partsToTemplate(parts: Part[]): string {
+  return parts
+    .map((p) => (p.kind === "static" ? p.text : p.kind === "env" ? `{env:${p.name}}` : `{${p.name}}`))
+    .join("");
+}
+
+function dynamicName(e: Expression): string {
+  const u = unwrap(e);
+  if (Node.isIdentifier(u)) return u.getText();
+  if (Node.isPropertyAccessExpression(u)) return u.getName();
+  if (Node.isElementAccessExpression(u)) return dynamicName(u.getExpression());
+  if (Node.isCallExpression(u)) return dynamicName(u.getExpression() as Expression);
+  if (Node.isConditionalExpression(u)) return dynamicName(u.getWhenTrue());
+  return "expr";
+}
+
+function dyn(e: Expression, origin: DynamicOrigin): Part[] {
+  return [{ kind: "dynamic", name: dynamicName(e), origin }];
+}
+
+function envName(u: Expression): string | undefined {
+  // process.env.X / process.env["X"] / import.meta.env.X
+  const isEnvObj = (o: Expression): boolean => {
+    const t = o.getText().replace(/\s/g, "");
+    return t === "process.env" || t === "import.meta.env" || t === "Deno.env" || t === "globalThis.process.env";
+  };
+  if (Node.isPropertyAccessExpression(u) && isEnvObj(u.getExpression())) return u.getName();
+  if (Node.isElementAccessExpression(u) && isEnvObj(u.getExpression())) {
+    const a = u.getArgumentExpression();
+    if (a && Node.isStringLiteral(a)) return a.getLiteralValue();
+  }
+  if (Node.isCallExpression(u) && u.getExpression().getText() === "Deno.env.get") {
+    const a = u.getArguments()[0];
+    if (a && Node.isStringLiteral(a)) return a.getLiteralValue();
+  }
+  return undefined;
+}
+
+function markConst(parts: Part[]): Part[] {
+  return parts.map((p) => (p.kind === "static" ? { ...p, viaConst: true } : p));
+}
+
+function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  for (const decl of declarationsOf(u)) {
+    const sub = paramSubstitution(decl, ctx);
+    if (sub.isParam) return sub.expr ? evaluate(sub.expr, ctx, depth + 1) : dyn(u, "param");
+    if (Node.isVariableDeclaration(decl)) {
+      const init = decl.getInitializer();
+      if (init) return markConst(evaluate(init, ctx, depth + 1));
+      return dyn(u, "unknown");
+    }
+    if (Node.isEnumMember(decl)) {
+      const v = decl.getValue();
+      if (typeof v === "string" || typeof v === "number") return [{ kind: "static", text: String(v), viaConst: true }];
+    }
+  }
+  return typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+function typeLiteral(u: Expression): Part[] | undefined {
+  try {
+    const t = u.getType();
+    if (t.isStringLiteral() || t.isNumberLiteral()) return [{ kind: "static", text: String(t.getLiteralValue()), viaConst: true }];
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
+function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  const env = envName(u);
+  if (env) return [{ kind: "env", name: env }];
+  if (Node.isPropertyAccessExpression(u) && (u.getName() === "href" || u.getName() === "toString")) {
+    return evaluate(u.getExpression(), ctx, depth + 1);
+  }
+  if (Node.isPropertyAccessExpression(u) && Node.isThisExpression(u.getExpression())) {
+    const init = classPropertyInitializer(u, u.getName());
+    if (init) return markConst(evaluate(init, ctx, depth + 1));
+    return typeLiteral(u) ?? dyn(u, "unknown");
+  }
+  if (Node.isPropertyAccessExpression(u)) {
+    const inner = getProp(u.getExpression(), u.getName(), ctx, depth + 1);
+    if (inner) return markConst(evaluate(inner, ctx, depth + 1));
+    const objDecl = Node.isIdentifier(u.getExpression()) ? u.getExpression().getSymbol()?.getDeclarations()[0] : undefined;
+    if (objDecl && Node.isParameterDeclaration(objDecl)) return typeLiteral(u) ?? dyn(u, "param");
+  }
+  return typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  const env = envName(u);
+  if (env) return [{ kind: "env", name: env }];
+  if (!Node.isCallExpression(u)) return dyn(u, "call");
+  const callee = u.getExpression();
+  const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : callee.getText();
+  if (PASSTHROUGH_CALLS.has(name)) {
+    const target = Node.isPropertyAccessExpression(callee) && name !== "String" ? callee.getExpression() : u.getArguments()[0];
+    if (target && Node.isExpression(target)) return evaluate(target as Expression, ctx, depth + 1);
+  }
+  if (name === "join" && Node.isPropertyAccessExpression(callee)) {
+    const arr = unwrap(callee.getExpression());
+    const sep = u.getArguments()[0];
+    if (Node.isArrayLiteralExpression(arr) && sep && Node.isStringLiteral(sep)) {
+      const s = sep.getLiteralValue();
+      return arr.getElements().flatMap((el, i) => [...(i ? [{ kind: "static", text: s } as Part] : []), ...evaluate(el, ctx, depth + 1)]);
+    }
+  }
+  return typeLiteral(u) ?? dyn(u, "call");
+}
+
+function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  if (!Node.isTemplateExpression(u)) return [];
+  const parts: Part[] = [{ kind: "static", text: u.getHead().getLiteralText() }];
+  for (const span of u.getTemplateSpans()) {
+    parts.push(...evaluate(span.getExpression(), ctx, depth + 1));
+    parts.push({ kind: "static", text: span.getLiteral().getLiteralText() });
+  }
+  return parts;
+}
+
+/** Evaluates a string-ish expression into static / env / dynamic parts. */
+export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[] {
+  const u = unwrap(expr);
+  if (depth > MAX_DEPTH) return dyn(u, "unknown");
+  if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u)) return [{ kind: "static", text: u.getLiteralValue() }];
+  if (Node.isNumericLiteral(u)) return [{ kind: "static", text: u.getText() }];
+  if (Node.isTemplateExpression(u)) return evalTemplate(u, ctx, depth);
+  if (Node.isBinaryExpression(u)) {
+    const op = u.getOperatorToken().getKind();
+    if (op === SyntaxKind.PlusToken) return [...evaluate(u.getLeft(), ctx, depth + 1), ...evaluate(u.getRight(), ctx, depth + 1)];
+    if (op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken) {
+      const left = evaluate(u.getLeft(), ctx, depth + 1);
+      return left.some((p) => p.kind === "env") ? left : evaluate(u.getRight(), ctx, depth + 1);
+    }
+    return dyn(u, "unknown");
+  }
+  if (Node.isIdentifier(u)) return evalIdentifier(u, ctx, depth);
+  if (Node.isPropertyAccessExpression(u) || Node.isElementAccessExpression(u)) return evalPropertyAccess(u, ctx, depth);
+  if (Node.isCallExpression(u)) return evalCall(u, ctx, depth);
+  if (Node.isNewExpression(u) && u.getExpression().getText() === "URL") return evalNewUrl(u, ctx, depth);
+  if (Node.isConditionalExpression(u)) {
+    const a = evaluate(u.getWhenTrue(), ctx, depth + 1);
+    const b = evaluate(u.getWhenFalse(), ctx, depth + 1);
+    return staticText(a) !== undefined && staticText(b) !== undefined ? markConst(a) : dyn(u, "unknown");
+  }
+  return dyn(u, "unknown");
+}
+
+/** `new URL(path, base)`: absolute path wins; a leading-slash path replaces the base path. */
+export function evalNewUrl(u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  if (!Node.isNewExpression(u)) return dyn(u, "unknown");
+  const [a, b] = u.getArguments() as Expression[];
+  if (!a) return dyn(u, "unknown");
+  const pathParts = evaluate(a, ctx, depth + 1);
+  const pathText = partsToTemplate(pathParts);
+  if (!b || /^[a-z][a-z0-9+.-]*:\/\//i.test(pathText)) return pathParts;
+  const baseParts = evaluate(b, ctx, depth + 1);
+  if (pathText.startsWith("/")) return [...originOnly(baseParts), ...pathParts];
+  const baseText = partsToTemplate(baseParts);
+  const sep: Part[] = baseText.endsWith("/") || pathText.startsWith("?") ? [] : [{ kind: "static", text: "/" }];
+  return [...baseParts, ...sep, ...pathParts];
+}
+
+function originOnly(parts: Part[]): Part[] {
+  const text = partsToTemplate(parts);
+  const m = /^([a-z][a-z0-9+.-]*:\/\/[^/?#]+)/i.exec(text);
+  if (m && staticText(parts) !== undefined) return [{ kind: "static", text: m[1]!, viaConst: parts.some((p) => p.kind === "static" && p.viaConst) }];
+  if (parts[0] && parts[0].kind !== "static") return [parts[0]];
+  return parts;
+}
+
+/** Convenience: parts joined with static text and `{name}` placeholders, plus the dynamic names. */
+export function evaluateToTemplate(expr: Expression, ctx: EvalCtx = {}): { template: string; parts: Part[] } {
+  const parts = evaluate(expr, ctx);
+  return { template: partsToTemplate(parts), parts };
+}
