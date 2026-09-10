@@ -1,0 +1,20 @@
+{
+  "package": "twilio",
+  "provider": "twilio",
+  "host": "api.twilio.com",
+  "auth": "basic",
+  "generatedFrom": "manual",
+  "instance": { "names": ["default", "Twilio"] },
+  "methods": {
+    "messages.create": { "method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyArg": 0, "encoding": "form", "operationId": "CreateMessage" },
+    "messages.list": { "method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryArg": 0, "operationId": "ListMessage" },
+    "messages.fetch": { "method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "operationId": "FetchMessage" },
+    "calls.create": { "method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyArg": 0, "encoding": "form", "operationId": "CreateCall" },
+    "calls.list": { "method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "queryArg": 0, "operationId": "ListCall" },
+    "lookups.v2.phoneNumbers.fetch": { "method": "GET", "path": "/v2/PhoneNumbers/{PhoneNumber}", "queryArg": 0, "operationId": "FetchPhoneNumber" },
+    "verify.v2.services.verifications.create": { "method": "POST", "path": "/v2/Services/{ServiceSid}/Verifications", "bodyArg": 0, "encoding": "form", "operationId": "CreateVerification" },
+    "verify.v2.services.verificationChecks.create": { "method": "POST", "path": "/v2/Services/{ServiceSid}/VerificationCheck", "bodyArg": 0, "encoding": "form", "operationId": "CreateVerificationCheck" },
+    "incomingPhoneNumbers.create": { "method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json", "bodyArg": 0, "encoding": "form", "operationId": "CreateIncomingPhoneNumber" },
+    "availablePhoneNumbers.local.list": { "method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/AvailablePhoneNumbers/{CountryCode}/Local.json", "queryArg": 0, "operationId": "ListAvailablePhoneNumberLocal" }
+  }
+}

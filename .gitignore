@@ -1,0 +1,7 @@
+node_modules/
+dist/
+eval/repos/
+eval/out/
+eval/specs/
+*.log
+.DS_Store

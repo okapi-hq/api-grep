@@ -1,0 +1,20 @@
+{
+  "package": "aws-sdk",
+  "provider": "aws",
+  "host": "{service}.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "instance": { "names": ["default", "*"] },
+  "methods": {
+    "S3.putObject": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw" },
+    "S3.getObject": { "method": "GET", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "GetObject" },
+    "S3.deleteObject": { "method": "DELETE", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "DeleteObject" },
+    "S3.listObjectsV2": { "method": "GET", "path": "/{Bucket}?list-type=2", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjectsV2" },
+    "S3.headObject": { "method": "HEAD", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "HeadObject" },
+    "S3.upload": { "method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw" },
+    "SES.sendEmail": { "method": "POST", "path": "/?Action=SendEmail", "bodyArg": 0, "operationId": "SendEmail", "encoding": "form" },
+    "SNS.publish": { "method": "POST", "path": "/?Action=Publish", "bodyArg": 0, "operationId": "Publish", "encoding": "form" },
+    "SQS.sendMessage": { "method": "POST", "path": "/?Action=SendMessage", "bodyArg": 0, "operationId": "SendMessage", "encoding": "form" },
+    "Lambda.invoke": { "method": "POST", "path": "/2015-03-31/functions/{FunctionName}/invocations", "bodyArg": 0, "pathFromBody": ["FunctionName"], "operationId": "Invoke" }
+  }
+}
