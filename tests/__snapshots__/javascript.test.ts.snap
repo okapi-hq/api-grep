@@ -1,0 +1,1257 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`html > reads inline scripts at their position in the page, forms and CDN scripts 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "_subject": {
+            "enum": [
+              "New contact",
+            ],
+            "type": "string",
+          },
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "message": {
+            "hint": "message",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "_subject",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "html-form",
+      "confidence": 0.6,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "_subject": "New contact",
+            "email": "pablo.galli@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://formspree.io/f/xyzabcd",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "_subject": "New contact",
+            "email": "iris.dumont@example.com",
+            "message": "Kestrel ultra cedar amber canyon quartz.",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://formspree.io/f/xyzabcd",
+          "variant": "full",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "formspree.io",
+      "hostKind": "literal",
+      "id": "f1676f3db6b4",
+      "location": {
+        "col": 3,
+        "file": "index.html",
+        "language": "html",
+        "line": 9,
+      },
+      "method": "POST",
+      "pathTemplate": "/f/xyzabcd",
+      "provider": "formspree",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://formspree.io/f/xyzabcd",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "html-form",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "q": "echo",
+          },
+          "url": "https://www.google.com/search?q=echo",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "www.google.com",
+      "hostKind": "literal",
+      "id": "7883cde79ec2",
+      "location": {
+        "col": 3,
+        "file": "index.html",
+        "language": "html",
+        "line": 16,
+      },
+      "method": "GET",
+      "pathTemplate": "/search",
+      "provider": "www.google.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "q",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://www.google.com/search",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "avatar": {
+            "hint": "avatar",
+            "type": "string",
+          },
+        },
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "client": "html-form",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "avatar": "cedar meadow",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "/api/upload",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "relative",
+      "id": "b8d2ff707bd7",
+      "location": {
+        "col": 3,
+        "file": "index.html",
+        "language": "html",
+        "line": 20,
+      },
+      "method": "POST",
+      "pathTemplate": "/api/upload",
+      "provider": "internal",
+      "query": [],
+      "urlTemplate": "/api/upload",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://xyzcompany.supabase.co/rest/v1/todos",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "xyzcompany.supabase.co",
+      "hostKind": "literal",
+      "id": "3d0769c548bd",
+      "location": {
+        "col": 30,
+        "file": "index.html",
+        "language": "html",
+        "line": 33,
+      },
+      "method": "GET",
+      "pathTemplate": "/rest/v1/todos",
+      "provider": "supabase",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "from.select",
+        "package": "@supabase/supabase-js",
+      },
+      "urlTemplate": "https://xyzcompany.supabase.co/rest/v1/todos",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "axios",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "user",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/users/meadow/repos",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "48ed1907d4d4",
+      "location": {
+        "col": 14,
+        "file": "index.html",
+        "language": "html",
+        "line": 38,
+      },
+      "method": "GET",
+      "pathTemplate": "/users/{user}/repos",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/users/{user}/repos",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "fetch",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "48.8",
+            "longitude": "2.3",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=48.8&longitude=2.3",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "23fb0badf129",
+      "location": {
+        "col": 5,
+        "file": "index.html",
+        "language": "html",
+        "line": 43,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "providerSource": "host",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "enum": [
+              "48.8",
+            ],
+            "type": "string",
+          },
+          "longitude": {
+            "enum": [
+              "2.3",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast?latitude=48.8&longitude=2.3",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "npm",
+        "importSites": 1,
+        "imported": true,
+        "package": "@supabase/supabase-js",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "html": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.3.0",
+  "stats": {
+    "byClient": {
+      "axios": 1,
+      "fetch": 1,
+      "html-form": 3,
+      "sdk": 1,
+    },
+    "byHostKind": {
+      "literal": 5,
+      "relative": 1,
+    },
+    "byLanguage": {
+      "html": 6,
+    },
+    "byProvider": {
+      "formspree": 1,
+      "github": 1,
+      "internal": 1,
+      "open-meteo": 1,
+      "supabase": 1,
+      "www.google.com": 1,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 1,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`javascript: Node > reads CommonJS requires, module.exports and ES modules through the type checker 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "line_items": {
+            "hint": "req.body.items",
+            "origin": "unknown",
+            "type": "dynamic",
+          },
+          "mode": {
+            "enum": [
+              "payment",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "mode",
+          "line_items",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "line_items",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "line_items": "Horizon amber marble quartz nectar velvet.",
+            "mode": "payment",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/checkout/sessions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "347311a7cac8",
+      "location": {
+        "col": 25,
+        "file": "server.js",
+        "language": "javascript",
+        "line": 10,
+      },
+      "method": "POST",
+      "operationId": "PostCheckoutSessions",
+      "pathTemplate": "/v1/checkout/sessions",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "checkout.sessions.create",
+        "package": "stripe",
+        "version": "^14.0.0",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/checkout/sessions",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "client": "axios",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "token <token>",
+          },
+          "method": "GET",
+          "query": {
+            "per_page": "30",
+          },
+          "url": "https://api.github.com/users/timber/repos?per_page=30",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "57a1ddb00af1",
+      "location": {
+        "col": 26,
+        "file": "server.js",
+        "language": "javascript",
+        "line": 15,
+      },
+      "method": "GET",
+      "pathTemplate": "/users/{owner}/repos",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [
+        "per_page",
+      ],
+      "queryShape": {
+        "properties": {
+          "per_page": {
+            "enum": [
+              30,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "per_page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/users/{owner}/repos",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "text": {
+            "hint": "text",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "fetch",
+      "confidence": 0.35,
+      "dynamic": [
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "envName": "SLACK_WEBHOOK_URL",
+      "examples": [
+        {
+          "body": {
+            "text": "Lantern maple verdant glacier haven fable.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{env:SLACK_WEBHOOK_URL}/",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "hostKind": "env",
+      "id": "a1f695c8d623",
+      "location": {
+        "col": 10,
+        "file": "server.js",
+        "language": "javascript",
+        "line": 20,
+      },
+      "method": "POST",
+      "pathTemplate": "/",
+      "provider": "slack",
+      "providerSource": "env-name",
+      "query": [],
+      "urlTemplate": "{env:SLACK_WEBHOOK_URL}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Orbit raven marble lantern linen jetty.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "7d0e0d138165",
+      "location": {
+        "col": 10,
+        "file": "worker.mjs",
+        "language": "javascript",
+        "line": 6,
+      },
+      "method": "POST",
+      "operationId": "createChatCompletion",
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "^4.40.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "fetch",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "latitude",
+          "origin": "param",
+          "where": "query",
+        },
+        {
+          "name": "longitude",
+          "origin": "param",
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "0.16844",
+            "longitude": "-122.40243",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=0.16844&longitude=-122.40243",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "b72939374988",
+      "location": {
+        "col": 38,
+        "file": "worker.mjs",
+        "language": "javascript",
+        "line": 9,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "providerSource": "host",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "type": "string",
+          },
+          "longitude": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "npm",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "npm",
+        "importSites": 1,
+        "imported": true,
+        "package": "stripe",
+        "provider": "stripe",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 4,
+    "filesSeen": 4,
+    "languages": {
+      "javascript": {
+        "filesScanned": 4,
+        "filesSeen": 4,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.3.0",
+  "stats": {
+    "byClient": {
+      "axios": 1,
+      "fetch": 2,
+      "sdk": 2,
+    },
+    "byHostKind": {
+      "const": 1,
+      "env": 1,
+      "literal": 3,
+    },
+    "byLanguage": {
+      "javascript": 5,
+    },
+    "byProvider": {
+      "github": 1,
+      "open-meteo": 1,
+      "openai": 1,
+      "slack": 1,
+      "stripe": 1,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 4,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a script tag and JSX 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "jquery",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "5",
+            "term": "cat",
+          },
+          "url": "https://icanhazdadjoke.com/search?term=cat&limit=5",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "icanhazdadjoke.com",
+      "hostKind": "literal",
+      "id": "a353fb30d77a",
+      "location": {
+        "col": 3,
+        "file": "app.js",
+        "language": "javascript",
+        "line": 4,
+      },
+      "method": "GET",
+      "pathTemplate": "/search",
+      "provider": "icanhazdadjoke.com",
+      "query": [
+        "term",
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              5,
+            ],
+            "type": "integer",
+          },
+          "term": {
+            "enum": [
+              "cat",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "term",
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://icanhazdadjoke.com/search",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "email",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "jquery",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "pablo.hoshi@example.com",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.convertkit.com/v3/forms/123/subscribe",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.convertkit.com",
+      "hostKind": "literal",
+      "id": "80064376fdca",
+      "location": {
+        "col": 10,
+        "file": "app.js",
+        "language": "javascript",
+        "line": 10,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/forms/123/subscribe",
+      "provider": "convertkit",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.convertkit.com/v3/forms/123/subscribe",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "payload",
+        "origin": "param",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "form",
+      "client": "jquery",
+      "confidence": 0,
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Echo compass sable jasper verdant jetty.",
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "/api/items/479uaxc5",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "relative",
+      "id": "b7fd52f14b29",
+      "location": {
+        "col": 10,
+        "file": "app.js",
+        "language": "javascript",
+        "line": 19,
+      },
+      "method": "POST",
+      "pathTemplate": "/api/items/{id}",
+      "provider": "internal",
+      "query": [],
+      "urlTemplate": "/api/items/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "file": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "file",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "client": "xhr",
+      "confidence": 0.6,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "file": "valley/atlas.pdf",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+            "x-requested-with": "XMLHttpRequest",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "x-requested-with": "XMLHttpRequest",
+      },
+      "headers": [
+        "x-requested-with",
+      ],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "02258487e34d",
+      "location": {
+        "col": 3,
+        "file": "app.js",
+        "language": "javascript",
+        "line": 28,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "axios",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "shape": {
+            "hint": "query",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "where": "query",
+        },
+        {
+          "name": "api_key",
+          "origin": "unknown",
+          "shape": {
+            "hint": "window.TMDB_KEY",
+            "origin": "unknown",
+            "type": "dynamic",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "api_key": "<api_key>",
+            "query": "jasper",
+          },
+          "url": "https://api.themoviedb.org/3/search/movie?query=jasper&api_key=%3Capi_key%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.themoviedb.org",
+      "hostKind": "literal",
+      "id": "695dea1d4339",
+      "location": {
+        "col": 10,
+        "file": "app.js",
+        "language": "javascript",
+        "line": 32,
+      },
+      "method": "GET",
+      "pathTemplate": "/3/search/movie",
+      "provider": "tmdb",
+      "providerSource": "host",
+      "query": [
+        "query",
+        "api_key",
+      ],
+      "queryShape": {
+        "properties": {
+          "api_key": {
+            "hint": "window.TMDB_KEY",
+            "origin": "unknown",
+            "type": "dynamic",
+          },
+          "query": {
+            "hint": "query",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "query",
+          "api_key",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.themoviedb.org/3/search/movie",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "fetch",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "repo",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/repos/wander",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "24527752ac7b",
+      "location": {
+        "col": 5,
+        "file": "widget.jsx",
+        "language": "javascript",
+        "line": 6,
+      },
+      "method": "GET",
+      "pathTemplate": "/repos/{repo}",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{repo}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "javascript": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.3.0",
+  "stats": {
+    "byClient": {
+      "axios": 1,
+      "fetch": 1,
+      "jquery": 3,
+      "xhr": 1,
+    },
+    "byHostKind": {
+      "literal": 5,
+      "relative": 1,
+    },
+    "byLanguage": {
+      "javascript": 6,
+    },
+    "byProvider": {
+      "cloudinary": 1,
+      "convertkit": 1,
+      "github": 1,
+      "icanhazdadjoke.com": 1,
+      "internal": 1,
+      "tmdb": 1,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;

@@ -9,6 +9,8 @@ const BY_EXTENSION: Record<string, Language> = {
   ".jsx": "javascript",
   ".mjs": "javascript",
   ".cjs": "javascript",
+  ".html": "html",
+  ".htm": "html",
   ".py": "python",
   ".php": "php",
 };

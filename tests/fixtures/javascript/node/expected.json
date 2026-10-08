@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "server.js", "line": 10, "provider": "stripe"},
+    {"file": "server.js", "line": 15, "provider": "github"},
+    {"file": "server.js", "line": 20, "provider": "slack"},
+    {"file": "worker.mjs", "line": 6, "provider": "openai"},
+    {"file": "worker.mjs", "line": 9, "provider": "open-meteo"}
+  ]
+}

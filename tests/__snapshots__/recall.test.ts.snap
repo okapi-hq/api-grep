@@ -1,5 +1,39 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`regression fixtures > html/negatives 1`] = `[]`;
+
+exports[`regression fixtures > html/site 1`] = `
+[
+  "index.html:9 formspree POST /f/xyzabcd",
+  "index.html:16 www.google.com GET /search",
+  "index.html:20 internal POST /api/upload",
+  "index.html:33 supabase GET /rest/v1/todos",
+  "index.html:38 github GET /users/{user}/repos",
+  "index.html:43 open-meteo GET /v1/forecast",
+]
+`;
+
+exports[`regression fixtures > javascript/browser 1`] = `
+[
+  "app.js:4 icanhazdadjoke.com GET /search",
+  "app.js:10 convertkit POST /v3/forms/123/subscribe",
+  "app.js:19 internal POST /api/items/{id}",
+  "app.js:28 cloudinary POST /v1_1/demo/image/upload",
+  "app.js:32 tmdb GET /3/search/movie",
+  "widget.jsx:6 github GET /repos/{repo}",
+]
+`;
+
+exports[`regression fixtures > javascript/node 1`] = `
+[
+  "server.js:10 stripe POST /v1/checkout/sessions",
+  "server.js:15 github GET /users/{owner}/repos",
+  "server.js:20 slack POST /",
+  "worker.mjs:6 openai POST /v1/chat/completions",
+  "worker.mjs:9 open-meteo GET /v1/forecast",
+]
+`;
+
 exports[`regression fixtures > multi-provider-site 1`] = `
 [
   "models.ts:11 unknown GET /models",

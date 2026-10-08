@@ -142,15 +142,11 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   const calls = buildAll(raws, ctx, diag);
   const selectedFiles = new Set(selected.map((m) => m.file));
   const changedFiles = input.changed ? files.filter((f) => input.changed!.has(f) || selectedFiles.has(f)).length : 0;
-  return {
-    calls,
-    filesSeen: input.changed ? changedFiles : files.length + leftOut.length,
-    filesScanned: scanned.length,
-    coverage: input.changed ? [] : coverage(lang, rootDir, files, scanned, calls),
-  };
+  const counts = { filesSeen: input.changed ? changedFiles : files.length + leftOut.length, filesScanned: scanned.length };
+  return { calls, files: { [lang.id]: counts }, coverage: input.changed ? [] : coverage(lang, rootDir, files, scanned, calls) };
 }
 
 /** A tree-sitter language as a scanner front end. */
 export function irLanguage(lang: IrLanguage): LanguageFrontEnd {
-  return { id: lang.id, ecosystem: lang.ecosystem, extensions: lang.extensions, scan: (input) => scanIr(lang, input) };
+  return { ids: [lang.id], ecosystem: lang.ecosystem, scan: (input) => scanIr(lang, input) };
 }

@@ -82,14 +82,16 @@ interface Scanned {
 /** Runs each language front end in turn and merges what they found. */
 async function scanLanguages(rootDir: string, opts: ScanOptions, diag: DiagnosticsCollector, changed?: Set<string>): Promise<Scanned> {
   const out: Scanned = { calls: [], filesSeen: 0, filesScanned: 0, coverage: [], languages: {} };
-  for (const lang of selectLanguages(opts.languages)) {
-    const r: LanguageScanResult | undefined = await lang.scan({ rootDir, opts, diag, changed });
+  for (const { frontEnd, languages } of selectLanguages(opts.languages)) {
+    const r: LanguageScanResult | undefined = await frontEnd.scan({ rootDir, opts, diag, changed, languages });
     if (!r) continue;
     out.calls.push(...r.calls);
-    out.filesSeen += r.filesSeen;
-    out.filesScanned += r.filesScanned;
     out.coverage.push(...r.coverage);
-    out.languages[lang.id] = { filesSeen: r.filesSeen, filesScanned: r.filesScanned };
+    for (const [id, counts] of Object.entries(r.files)) {
+      out.filesSeen += counts.filesSeen;
+      out.filesScanned += counts.filesScanned;
+      out.languages[id] = counts;
+    }
   }
   return out;
 }

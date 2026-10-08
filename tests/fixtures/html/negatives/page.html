@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.example.com/style.css">
+  <script src="https://www.googletagmanager.com/gtag/js?id=G-XXXX"></script>
+  <script type="text/template" id="row">
+    <a href="https://api.github.com/{{id}}">{{name}}</a>
+  </script>
+</head>
+<body>
+  <img src="https://images.example.com/logo.png" alt="">
+  <a href="https://api.stripe.com/docs">Docs</a>
+  <form><input name="q"></form>
+  <form action="javascript:void(0)"></form>
+  <script>
+    const docs = "https://api.stripe.com/docs";
+    document.querySelector("a").href = docs;
+    const img = new Image();
+    img.src = "https://images.example.com/pixel.gif";
+  </script>
+</body>
+</html>

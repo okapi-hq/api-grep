@@ -6,10 +6,12 @@ import { describeCallee } from "./callee.js";
 import { detectFetch } from "./fetch.js";
 import { detectFramework } from "./framework.js";
 import { detectGotKy } from "./got-ky.js";
+import { detectJquery } from "./jquery.js";
 import { detectNodeHttp } from "./node-http.js";
 import type { Registry } from "./registry/index.js";
 import { detectSdk } from "./sdk.js";
 import { unfollowedFetch, type Unfollowed } from "./unfollowed.js";
+import { detectXhr } from "./xhr.js";
 import { wrapperFunction } from "../wrappers/function.js";
 
 const MOCK_PKGS = new Set(["vitest", "jest", "@jest/globals", "msw", "nock", "sinon"]);
@@ -34,6 +36,8 @@ export function detectNode(node: CallExpression | NewExpression, registry: Regis
     detectAiSdk(node, callee) ??
     detectFetch(node, callee, ctx) ??
     detectAxios(node, callee, ctx) ??
+    detectJquery(node, callee, ctx) ??
+    detectXhr(node, callee, ctx) ??
     detectGotKy(node, callee, ctx) ??
     detectNodeHttp(node, callee, ctx) ??
     detectFramework(node, callee, registry.frameworks, ctx);

@@ -9,12 +9,24 @@ export type IdentOrigin =
 const NODE_BUILTINS = new Set(["http", "https", "http2", "fs", "path", "url", "crypto", "os", "child_process", "stream", "buffer", "events"]);
 
 /** Bare module specifier -> package root name; relative / alias paths -> null. */
+const CDN_RE =
+  /^https?:\/\/(?:cdn\.jsdelivr\.net\/npm\/|unpkg\.com\/|esm\.sh\/(?:v\d+\/)?|cdn\.skypack\.dev\/|esm\.run\/|ga\.jspm\.io\/npm:|cdnjs\.cloudflare\.com\/ajax\/libs\/)(@[^/@]+\/[^/@?#]+|[^/@?#]+)/i;
+
+/** The npm package a CDN URL serves (`https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2`, `https://esm.sh/stripe@14`). */
+export function packageFromCdnUrl(url: string): string | undefined {
+  return CDN_RE.exec(url.trim())?.[1]?.toLowerCase();
+}
+
+/** Bare module specifier -> package root name (also `npm:stripe@14` and CDN URLs); relative / alias paths -> null. */
 export function packageFromSpecifier(spec: string): string | null {
-  if (spec.startsWith(".") || spec.startsWith("/") || spec.startsWith("~") || spec.startsWith("@/")) return null;
-  const s = spec.startsWith("node:") ? spec.slice(5) : spec;
+  if (/^https?:\/\//i.test(spec)) return packageFromCdnUrl(spec) ?? null;
+  if (spec.startsWith(".") || spec.startsWith("/") || spec.startsWith("~") || spec.startsWith("@/") || spec.startsWith("jsr:")) return null;
+  const s = spec.startsWith("node:") ? spec.slice(5) : spec.startsWith("npm:") ? spec.slice(4) : spec;
   const segs = s.split("/");
-  if (s.startsWith("@")) return segs.length >= 2 ? `${segs[0]}/${segs[1]}` : s;
-  const root = segs[0] ?? s;
+  // `npm:stripe@14` / `npm:@supabase/supabase-js@2`: the version is not part of the name
+  const unversioned = (name: string): string => name.replace(/(.)@.*$/, "$1");
+  if (s.startsWith("@")) return segs.length >= 2 ? `${segs[0]}/${unversioned(segs[1]!)}` : s;
+  const root = unversioned(segs[0] ?? s);
   if (NODE_BUILTINS.has(root)) return root;
   return root;
 }
@@ -75,7 +87,7 @@ function fromImport(sym: MorphSymbol, decl: Node): IdentOrigin | undefined {
   return { kind: "unknown" };
 }
 
-function fromRequire(decl: Node): IdentOrigin | undefined {
+function fromRequire(sym: MorphSymbol, decl: Node): IdentOrigin | undefined {
   if (!Node.isVariableDeclaration(decl) && !Node.isBindingElement(decl)) return undefined;
   const varDecl = Node.isVariableDeclaration(decl) ? decl : decl.getFirstAncestor(Node.isVariableDeclaration);
   const init = varDecl?.getInitializer();
@@ -84,7 +96,11 @@ function fromRequire(decl: Node): IdentOrigin | undefined {
   const arg = init.getArguments()[0];
   if (!arg || !Node.isStringLiteral(arg)) return undefined;
   const pkg = packageFromSpecifier(arg.getLiteralValue());
-  if (!pkg) return undefined;
+  if (!pkg) {
+    // `const { github } = require("./client")`: the checker links the name to its definition in the project
+    const target = sym.isAlias() ? sym.getAliasedSymbol()?.getDeclarations()[0] : undefined;
+    return target && isProjectDecl(target) ? { kind: "local", decl: target } : undefined;
+  }
   const importedName = Node.isBindingElement(decl) ? (decl.getPropertyNameNode()?.getText() ?? decl.getName()) : "default";
   return { kind: "package", package: pkg, importedName };
 }
@@ -97,7 +113,7 @@ export function identifierOrigin(ident: Identifier): IdentOrigin {
   for (const decl of sym.getDeclarations()) {
     const imp = fromImport(sym, decl);
     if (imp) return imp;
-    const req = fromRequire(decl);
+    const req = fromRequire(sym, decl);
     if (req) return req;
     if (isProjectDecl(decl)) return { kind: "local", decl };
     const sf = decl.getSourceFile();

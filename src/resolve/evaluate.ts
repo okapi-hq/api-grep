@@ -86,7 +86,30 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     const bound = bindingElementValue(decl, ctx);
     if (bound) return markConst(evaluate(bound, ctx, depth + 1));
   }
-  return typeLiteral(u) ?? dyn(u, "unknown");
+  const exported = commonJsExport(u, ctx, depth);
+  return exported ?? typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+/** `config` in `config.base` is a module: `const config = require("./config")`. */
+function fromRequiredModule(obj: Expression): boolean {
+  const decl = Node.isIdentifier(obj) ? obj.getSymbol()?.getDeclarations()[0] : undefined;
+  const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
+  return !!init && Node.isCallExpression(init) && init.getExpression().getText() === "require";
+}
+
+/**
+ * A CommonJS export the checker links to its definition: `const { BASE } = require("./config")` or `config.base` with
+ * `module.exports = { BASE: "https://..." }` in a project file.
+ */
+function commonJsExport(u: Expression, ctx: EvalCtx, depth: number): Part[] | undefined {
+  const sym = u.getSymbol();
+  const target = sym?.isAlias() ? sym.getAliasedSymbol() : sym;
+  for (const decl of target?.getDeclarations() ?? []) {
+    if (decl.getSourceFile().isFromExternalLibrary() || decl.getSourceFile().isDeclarationFile()) continue;
+    const init = Node.isPropertyAssignment(decl) || Node.isVariableDeclaration(decl) ? decl.getInitializer() : Node.isShorthandPropertyAssignment(decl) ? decl.getNameNode() : undefined;
+    if (init && init !== u) return markConst(evaluate(init, ctx, depth + 1));
+  }
+  return undefined;
 }
 
 /** A parameter nobody substituted: its literal default (`baseUrl = "https://api.gladia.io"`) is the best static guess. */
@@ -135,6 +158,8 @@ function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] 
     if (inner) return markConst(evaluate(inner, ctx, depth + 1));
     const objDecl = Node.isIdentifier(u.getExpression()) ? u.getExpression().getSymbol()?.getDeclarations()[0] : undefined;
     if (objDecl && Node.isParameterDeclaration(objDecl)) return typeLiteral(u) ?? dyn(u, "param");
+    const exported = fromRequiredModule(u.getExpression()) ? commonJsExport(u, ctx, depth) : undefined;
+    if (exported) return exported;
   }
   return typeLiteral(u) ?? dyn(u, "unknown");
 }

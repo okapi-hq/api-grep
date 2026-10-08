@@ -1,6 +1,6 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee } from "../types.js";
-import { identifierOrigin, packageFromFilePath } from "./origin.js";
+import { identifierOrigin, packageFromFilePath, packageFromSpecifier } from "./origin.js";
 import { annotatedPackage } from "./type-annotation.js";
 
 const MAX_DEPTH = 6;
@@ -55,6 +55,28 @@ export function describeCallee(call: CallExpression | NewExpression, depth = 0):
   return calleeFromChain(mc, depth);
 }
 
+/**
+ * Libraries a page loads with a `<script>` tag and uses as globals, without a declaration the checker can see:
+ * `axios.get(...)` after `<script src=".../axios.min.js">` is the axios package.
+ */
+const SCRIPT_TAG_GLOBALS: Record<string, string> = { axios: "axios", $: "jquery", jQuery: "jquery", supabase: "@supabase/supabase-js", Sentry: "@sentry/browser", posthog: "posthog-js", ky: "ky" };
+/** Platform globals a project without the DOM / Node types does not declare. */
+const PLATFORM_GLOBALS = new Set(["fetch", "XMLHttpRequest"]);
+
+function undeclared(root: Expression, chain: string[]): Callee | undefined {
+  const name = root.getText();
+  const pkg = Object.hasOwn(SCRIPT_TAG_GLOBALS, name) ? SCRIPT_TAG_GLOBALS[name] : undefined;
+  if (pkg) return { package: pkg, importedName: "*", chain };
+  return PLATFORM_GLOBALS.has(name) ? { global: name, chain } : undefined;
+}
+
+/** `require("stripe")` used in place: `require("stripe")(key)`, `require("axios").get(url)`. */
+function requiredPackage(root: Expression): string | undefined {
+  if (!Node.isCallExpression(root) || root.getExpression().getText() !== "require") return undefined;
+  const arg = root.getArguments()[0];
+  return arg && Node.isStringLiteral(arg) ? (packageFromSpecifier(arg.getLiteralValue()) ?? undefined) : undefined;
+}
+
 function calleeFromChain(mc: Chain, depth: number): Callee {
   if (depth > MAX_DEPTH) return { chain: mc.chain };
   const { root, chain } = mc;
@@ -63,9 +85,11 @@ function calleeFromChain(mc: Chain, depth: number): Callee {
     if (o.kind === "package") return { package: o.package, importedName: o.importedName, chain };
     if (o.kind === "global") return { global: o.name, chain };
     if (o.kind === "local") return localCallee(o.decl, mc, depth);
-    return typeFallback(mc, 0);
+    return (!root.getSymbol() ? undeclared(root, chain) : undefined) ?? typeFallback(mc, 0);
   }
   if (Node.isThisExpression(root)) return thisCallee(mc, depth);
+  const required = requiredPackage(root);
+  if (required) return { package: required, importedName: "default", chain };
   if (Node.isCallExpression(root) || Node.isNewExpression(root)) return instanceCallee(root, chain, depth);
   return typeFallback(mc, 0);
 }
@@ -153,12 +177,25 @@ function thisCallee(mc: Chain, depth: number): Callee {
   if (prop?.getInitializer()) return localCallee(prop, rest, depth + 1);
   const paramProp = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.isParameterProperty());
   if (paramProp?.getInitializer()) return localCallee(paramProp, rest, depth + 1);
-  const assigned = constructorAssignment(cls, propName);
-  if (assigned) {
-    const u = unwrap(assigned);
-    if (Node.isCallExpression(u) || Node.isNewExpression(u)) return instanceCallee(u, rest.chain, depth + 1);
-  }
+  // `this._stripe = null` in the constructor, `this._stripe = new Stripe(key)` in `configure()`: the one that builds
+  const built = fieldAssignments(cls, propName)
+    .map(unwrap)
+    .find((u) => Node.isCallExpression(u) || Node.isNewExpression(u));
+  if (built && (Node.isCallExpression(built) || Node.isNewExpression(built))) return instanceCallee(built, rest.chain, depth + 1);
   return { ...typeFallback(mc, 1), thisRoot: true };
+}
+
+/** Values assigned to `this.<propName>`: in the constructor first, then in the other methods. */
+function fieldAssignments(cls: Node, propName: string): Expression[] {
+  if (!Node.isClassDeclaration(cls) && !Node.isClassExpression(cls)) return [];
+  const bodies = [...cls.getConstructors(), ...cls.getMethods(), ...cls.getSetAccessors()];
+  return bodies.flatMap((b) =>
+    b.getDescendantsOfKind(SyntaxKind.BinaryExpression).flatMap((bin) => {
+      const left = bin.getLeft();
+      const isField = bin.getOperatorToken().getKind() === SyntaxKind.EqualsToken && Node.isPropertyAccessExpression(left) && Node.isThisExpression(left.getExpression()) && left.getName() === propName;
+      return isField ? [bin.getRight()] : [];
+    }),
+  );
 }
 
 /** Initializer of `this.<prop>`: property initializer or `this.prop = ...` in the constructor. */

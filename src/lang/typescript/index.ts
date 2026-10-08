@@ -5,12 +5,14 @@ import { buildCall, type BuildCtx } from "../../build-call.js";
 import { detectFile } from "../../detect/index.js";
 import { defaultRegistry, type Registry } from "../../detect/registry/index.js";
 import { selectChanged } from "../../git.js";
-import { loadProject, TS_EXTENSIONS, tsFiles, unreadable } from "../../project.js";
+import { languageOf } from "../../language.js";
+import { loadProject, tsFiles, unreadable, type CheckerLanguage, type Loaded } from "../../project.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call } from "../../report/schema.js";
 import type { RawCall } from "../../types.js";
 import { expandWrappers } from "../../wrappers/detect.js";
 import { errorText, relPath } from "../files.js";
+import { formCall } from "../html/forms.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { sdkCoverage } from "./coverage.js";
 
@@ -89,21 +91,50 @@ function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): C
   return calls;
 }
 
-async function scanTypeScript(input: LanguageScanInput): Promise<LanguageScanResult | undefined> {
-  const { rootDir, opts, diag } = input;
-  // a directory without TypeScript (a Python repository) never pays for a ts-morph Project
-  if (tsFiles(rootDir, undefined).length === 0) return undefined;
-  const registry = opts.registry ?? defaultRegistry();
-  const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude });
-  let files = loaded.files;
-  if (input.changed) files = selectChanged(files, input.changed);
-  else for (const l of loaded.leftOut) diag.skip(l);
-  const { raws, scanned } = detectAll(files, registry, input);
-  const calls = buildAll(raws, { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) }, diag);
-  const filesSeen = input.changed ? files.length : files.length + loaded.leftOut.length;
-  // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-  const coverage = input.changed ? [] : sdkCoverage(rootDir, scanned, calls, registry).sdks;
-  return { calls, filesSeen, filesScanned: scanned.length, coverage };
+const CHECKER_LANGUAGES: CheckerLanguage[] = ["typescript", "javascript", "html"];
+
+/** Form submissions of the HTML pages in scope whose inline scripts could be read (a skipped page sends nothing). */
+function formCalls(loaded: Loaded, pages: string[], scanned: Set<string>, rootDir: string): Call[] {
+  return pages.flatMap((p) => {
+    const doc = loaded.html.get(p)!;
+    return doc.script && !scanned.has(p) ? [] : doc.forms.map((f) => formCall(f, relPath(rootDir, p), loaded.envHints));
+  });
 }
 
-export const typescript: LanguageFrontEnd = { id: "typescript", ecosystem: "npm", extensions: TS_EXTENSIONS, scan: scanTypeScript };
+/** Files seen and scanned per language (an HTML page without inline script is scanned for its forms). */
+function fileCounts(seen: string[], scanned: string[]): LanguageScanResult["files"] {
+  const out: LanguageScanResult["files"] = {};
+  for (const [list, key] of [[seen, "filesSeen"], [scanned, "filesScanned"]] as const) {
+    for (const f of list) {
+      const counts = (out[languageOf(f)] ??= { filesSeen: 0, filesScanned: 0 });
+      counts[key]++;
+    }
+  }
+  return out;
+}
+
+async function scanTypeScript(input: LanguageScanInput): Promise<LanguageScanResult | undefined> {
+  const { rootDir, opts, diag } = input;
+  const languages = CHECKER_LANGUAGES.filter((l) => input.languages.includes(l));
+  // a directory without TypeScript, JavaScript or HTML (a Python repository) never pays for a ts-morph Project
+  if (tsFiles(rootDir, undefined, [], languages).length === 0) return undefined;
+  const registry = opts.registry ?? defaultRegistry();
+  const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude, languages });
+  let files = loaded.files;
+  let pages = [...loaded.html.keys()];
+  if (input.changed) {
+    files = selectChanged(files, input.changed);
+    pages = pages.filter((p) => input.changed!.has(p) || files.some((sf) => sf.getFilePath() === p));
+  } else for (const l of loaded.leftOut) diag.skip(l);
+  const { raws, scanned } = detectAll(files, registry, input);
+  const scannedPaths = new Set(scanned.map((sf) => sf.getFilePath() as string));
+  const calls = [...buildAll(raws, { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) }, diag), ...formCalls(loaded, pages, scannedPaths, rootDir)];
+  const plainPages = pages.filter((p) => !loaded.html.get(p)!.script);
+  const seen = [...files.map((sf) => sf.getFilePath() as string), ...plainPages, ...(input.changed ? [] : loaded.leftOut.map((l) => path.join(rootDir, l.file)))];
+  const pageImports = pages.filter((p) => scannedPaths.has(p) || plainPages.includes(p)).map((p) => ({ file: p, packages: loaded.html.get(p)!.cdnPackages }));
+  // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
+  const coverage = input.changed ? [] : sdkCoverage(rootDir, scanned, calls, registry, pageImports).sdks;
+  return { calls, files: fileCounts(seen, [...scannedPaths, ...plainPages]), coverage };
+}
+
+export const typescript: LanguageFrontEnd = { ids: CHECKER_LANGUAGES, ecosystem: "npm", scan: scanTypeScript };

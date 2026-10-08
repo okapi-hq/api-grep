@@ -7,8 +7,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 ## What this is
 
 `apicalls` (repository `api-grep`) statically lists the outbound HTTP and SDK calls of a repository: provider, method,
-path template, body / query / header shapes, auth scheme, confidence. Supported languages: TypeScript, Python and PHP
-(`docs/languages.md`). It must stay static: no network, no code execution, no AI.
+path template, body / query / header shapes, auth scheme, confidence. Supported languages: TypeScript, JavaScript, HTML
+(inline scripts and forms), Python and PHP (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -33,7 +33,9 @@ Run lint, typecheck, test and build before declaring work done; CI runs the same
 - A language (`src/lang/types.ts`) returns report `Call`s. Everything after that is shared: specs, examples, schema
   check, redaction, stats, diagnostics, coverage. `src/assemble.ts` builds the `Call` (provider, confidence, id) for
   every language.
-- TypeScript: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`, `src/wrappers`.
+- TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
+  `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
+  see `src/lang/html/`).
 - Tree-sitter languages (Python, PHP): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`.
@@ -44,8 +46,9 @@ Run lint, typecheck, test and build before declaring work done; CI runs the same
 
 ## Conventions
 
-- Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, Python under
-  `tests/fixtures/python/`, PHP under `tests/fixtures/php/`). Patterns from real repositories go in a directory with an `expected.json` so the recall
+- Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
+  `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
+  `tests/fixtures/php/`). Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
 - A per-file failure is a diagnostic (`diagnostics.skipped` / `droppedCalls`), never a crash.

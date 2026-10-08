@@ -1,9 +1,11 @@
 {
   "name": "apicalls",
   "version": "0.1.0",
-  "description": "Outbound HTTP/SDK call extractor for TypeScript, Python and PHP repositories",
+  "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP and HTML repositories",
   "keywords": [
     "typescript",
+    "html",
+    "javascript",
     "python",
     "php",
     "static-analysis",

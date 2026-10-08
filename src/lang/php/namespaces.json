@@ -51,6 +51,7 @@
     "lemonsqueezy/laravel": ["LemonSqueezy.Laravel"],
     "longman/telegram-bot": ["Longman.TelegramBot"],
     "lucianotonet/groq-php": ["LucianoTonet.GroqPHP"],
+    "mailchimp/marketing": ["MailchimpMarketing"],
     "mailgun/mailgun-php": ["Mailgun"],
     "mercadopago/dx-php": ["MercadoPago"],
     "microsoft/microsoft-graph": ["Microsoft.Graph"],

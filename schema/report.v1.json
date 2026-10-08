@@ -286,17 +286,18 @@
       ]
     },
     "Language": {
-      "description": "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python, the PHP one php.",
+      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python and php.",
       "type": "string",
       "enum": [
         "typescript",
         "javascript",
+        "html",
         "python",
         "php"
       ]
     },
     "Client": {
-      "description": "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper).",
+      "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper).",
       "type": "string",
       "enum": [
         "fetch",
@@ -304,6 +305,9 @@
         "got",
         "ky",
         "node-http",
+        "jquery",
+        "xhr",
+        "html-form",
         "requests",
         "httpx",
         "aiohttp",
