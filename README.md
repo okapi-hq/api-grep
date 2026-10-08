@@ -1,21 +1,111 @@
 # apicalls
 
-Static extractor of outbound HTTP and SDK calls in TypeScript repositories.
-Point it at a repo and it prints every outbound call it can find: provider, method,
-path template, the *shape* of the payload (names and types, never values), and a
-`dynamic` list of what could not be known statically. No AI, no network, no runtime.
+[![CI](https://github.com/okapi-hq/api-grep/actions/workflows/ci.yml/badge.svg)](https://github.com/okapi-hq/api-grep/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
+
+**Find every outbound HTTP and SDK call in a TypeScript codebase, without running it.**
+
+Point `apicalls` at a repository and it lists every call the code makes to an external API:
+provider, method, path template, the *shape* of the payload (names and types, never values),
+headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads the
+code through the TypeScript type checker. No AI, no network, no runtime.
+
+Use it to:
+
+- inventory the third-party APIs a codebase depends on;
+- review the outbound calls a pull request adds (`--changed-since origin/main`);
+- check request payloads against OpenAPI specs (`--specs`, `--validate`);
+- get a runnable `curl` command for every call (`--curl`).
+
+## Quick start
+
+Requires Node.js 20+ and [pnpm](https://pnpm.io).
+
+```sh
+git clone https://github.com/okapi-hq/api-grep.git
+cd api-grep
+pnpm install
+pnpm build
+node dist/cli.js scan path/to/your-repo
+```
+
+`pnpm dev scan <dir>` runs the CLI from source without building.
+
+## Example
+
+Given this code:
+
+```ts
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+export async function createCustomer(email: string, userId: string) {
+  return stripe.customers.create({ email, name: "Ada", metadata: { userId } });
+}
+
+export const getIntent = (id: string) => stripe.paymentIntents.retrieve(id);
+```
+
+`apicalls scan` prints:
 
 ```
-pnpm dev scan ../some-repo                  # table
-pnpm dev scan ../some-repo --curl           # one curl command per example request
-pnpm dev scan ../some-repo --json           # Report JSON on stdout (examples included)
-pnpm dev scan ../some-repo --out report.json --changed-since origin/main
-pnpm dev scan ../some-repo --specs ./specs --validate
-pnpm dev scan ../some-repo --examples 1     # at most one example per call (0 disables)
+┌──────┬──────────────┬────────┬────────────────────────────────────────┬────────────────────────────────────┬─────┬────────────────────────────────────────┐
+│ conf │ provider     │ method │ path                                   │ body                               │ dyn │ location                               │
+├──────┼──────────────┼────────┼────────────────────────────────────────┼────────────────────────────────────┼─────┼────────────────────────────────────────┤
+│ 1.00 │ stripe sdk   │ POST   │ /v1/customers                          │ {email, name, metadata}            │ 2   │ stripe-literal.ts:6                    │
+├──────┼──────────────┼────────┼────────────────────────────────────────┼────────────────────────────────────┼─────┼────────────────────────────────────────┤
+│ 1.00 │ stripe sdk   │ GET    │ /v1/payment_intents/{intent}           │ -                                  │ 1   │ stripe-literal.ts:9                    │
+└──────┴──────────────┴────────┴────────────────────────────────────────┴────────────────────────────────────┴─────┴────────────────────────────────────────┘
 ```
 
-Or after `pnpm build`: `node dist/cli.js scan <dir>`. Big monorepos need several GB of heap; the CLI
-re-runs itself with `--max-old-space-size=8192` (override with `APICALLS_HEAP_MB`, `0` opts out).
+With `--curl`, each call becomes concrete example requests. Credentials are never invented:
+
+```sh
+# literal.ts:4  stripe POST /v1/customers  (confidence 0.60)
+# minimal
+curl -X POST 'https://api.stripe.com/v1/customers' \
+  -H 'authorization: Bearer <token>' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  --data-urlencode 'email=greta.moreau@example.com' \
+  --data-urlencode 'name=Ada Lovelace' \
+  --data-urlencode 'metadata[plan]=pro'
+```
+
+With `--json`, you get the full report: one object per call with its location, provider, host,
+method, URL template, query keys, headers, auth scheme, body shape, dynamic parts, confidence,
+spec findings and examples. The schema is in [`src/report/schema.ts`](src/report/schema.ts).
+
+## Usage
+
+```sh
+apicalls scan <dir>                                   # table
+apicalls scan <dir> --curl                            # one curl command per example request
+apicalls scan <dir> --json                            # JSON report on stdout
+apicalls scan <dir> --out report.json --changed-since origin/main
+apicalls scan <dir> --specs ./specs --validate
+```
+
+| option | description |
+|---|---|
+| `--json` | print the JSON report on stdout instead of the table |
+| `--curl` | print example requests as curl commands |
+| `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
+| `--out <file>` | write the JSON report to a file |
+| `--tsconfig <path>` | tsconfig.json to load (default: nearest) |
+| `--changed-since <ref>` | only scan files changed since a git ref, plus their direct importers |
+| `--specs <dir>` | directory of `<provider>.{json,yaml}` OpenAPI specs, or an [APIs-guru](https://github.com/APIs-guru/openapi-directory) checkout |
+| `--validate` | check request shapes against the specs (requires `--specs`) |
+| `--min-confidence <n>` | hide calls below this confidence in the table (default 0.3; JSON keeps everything) |
+| `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable) |
+| `--no-wrappers` | disable one-hop wrapper expansion |
+
+Large monorepos need several GB of heap. The CLI re-runs itself with
+`--max-old-space-size=8192`; set `APICALLS_HEAP_MB` to change it, or to `0` to opt out.
+
+The package also exports the scanner as a library (`scan`, `toJson`, `ReportSchema`, …) from
+[`src/index.ts`](src/index.ts).
 
 ## What it detects
 
@@ -25,118 +115,89 @@ re-runs itself with `--max-old-space-size=8192` (override with `APICALLS_HEAP_MB
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| sdk | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2 |
-| framework | options-object helpers from `src/detect/registry/frameworks.json`: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
+| SDKs | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2 |
+| frameworks | options-object helpers: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
-Callees are identified by declaration through the type checker, never by name, so a
-shadowed `fetch` is ignored and `import http from "axios"` is still axios. SDK instances
-are followed through `const stripe = new Stripe()`, exported instances in other files,
-class properties (`this.stripe`), and typed parameters (`stripe: Stripe`) when the
-package's types are installed.
+Callees are identified by declaration through the type checker, never by name: a shadowed
+`fetch` is ignored and `import http from "axios"` is still axios. SDK instances are followed
+through `new Stripe()`, exported instances in other files, class properties (`this.stripe`)
+and typed parameters (`stripe: Stripe`) when the package's types are installed.
 
-## Example requests
+## How it works
 
-Every call carries `examples`: concrete requests synthesized from what was resolved, so the
-report reads like the traffic the code would actually send. `--curl` prints them as commands.
+The pipeline is `detect → resolve → normalize → validate → score → emit`.
 
-```
-# lib/api/domains/claim-dot-link-domain.ts:143  vercel PATCH /v3/domains/{domain}  (confidence 0.50)
-# minimal
-curl -X PATCH 'https://api.vercel.com/v3/domains/yonder.example.org?teamId=dgsko5l3' \
-  -H 'authorization: Bearer <token>' \
-  -H 'content-type: application/json' \
-  --data '{"op":"update","zone":true}'
-```
+- **URL**: string and template literals, `+` concatenation, `new URL(path, base)`, same-file
+  and imported constants, `as const` config objects, enums and `process.env.X` (with hints
+  from `.env.example`). Unresolvable segments become `{name}` placeholders and are listed under
+  `dynamic` with their origin (`param`, `call`, `env`, `unknown`).
+- **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
+  flagged; anything else goes through the checker's declared type. `JSON.stringify`,
+  `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
+  unwrapped. `any` degrades to `dynamic`.
+- **Headers**: names only. Literal values are kept unless they look like credentials, and the
+  auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
+- **Wrappers** (one hop): a local function or method whose body performs an HTTP call *and*
+  whose parameters flow into it is treated as a client. Calls to it are reported at the call
+  site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
+  `fn.call(this, …)` and destructured `options`.
+- **Specs**: with `--specs`, path templates are matched to OpenAPI operations. `--validate`
+  adds deterministic findings: unknown property, missing required, type mismatch, enum
+  mismatch, deprecated.
 
-- **Values are typed, then named.** Path segments, query parameters and body properties get the
-  checker's shape (`{id}` as `number`, `status` as `"open" | "closed"`), and the synthesizer fills
-  it with deterministic pseudo-random content chosen by name: `email` → an address, `createdAt` →
-  an ISO date, `per_page` → a small integer, `userId` → an id, `iban`, `currency`, `zip`, and so on.
-  Anything else becomes random words or integers. The identifier that flowed into a property is
-  used as a hint (`{ username: email }` is an email).
-- **Credentials are never invented.** Keys and headers that look like secrets (`token`, `api_key`,
-  `password`, `authorization`, `cookie`) become `<name>` placeholders; the auth scheme picks
-  `Bearer <token>`, `Basic <base64(user:password)>` or `<api-key>`.
-- **Variants.** `minimal` sends required properties with the first enum / union branch; `full`
-  adds optional properties (when the type has some); `alt` switches enum values, union branches and
-  booleans. Identical requests are deduplicated; `--examples <n>` caps the count.
-- **What stays visible.** A host that could not be resolved is left as `https://{baseUrl}/…` or
-  `https://{env:API_URL}/…`; a `DYNAMIC` method is rendered as `POST` when a body exists, `GET`
-  otherwise. Values are seeded by the call id, so they are stable across runs and diffs.
-- **Query parameters** come from the URL template (`?state=open&per_page=${n}`), `params` /
-  `searchParams` objects, and `url.searchParams.set("k", v)` calls; header values are kept when
-  they are literals (`x-api-version: 2024-06-01`) and never when they look like credentials.
+### Example requests
 
-## How resolution works
+Every call carries `examples`, concrete requests synthesized from what was resolved. Values
+follow the checker's types and are chosen by name (`email` gets an address, `createdAt` an ISO
+date, `per_page` a small integer), seeded by the call id so they are stable across runs.
+`minimal` sends required properties, `full` adds optional ones, `alt` switches enum values,
+union branches and booleans. Secret-looking keys and headers (`token`, `api_key`, `password`,
+`authorization`, `cookie`) become `<name>` placeholders. Unresolved hosts stay visible as
+`https://{baseUrl}/…` or `https://{env:API_URL}/…`.
 
-- **URL** — string literals, template literals, `+` concatenation, `new URL(path, base)`,
-  same-file and imported constants, `as const` config objects, enums, `process.env.X`
-  (with hints from `.env.example`). Unresolvable segments become `{name}` placeholders and
-  are listed under `dynamic` with their origin (`param`, `call`, `env`, `unknown`).
-- **Body** — object literals first (literal values give `enum`), spreads merged, computed
-  keys flagged; anything else goes through the checker's declared type (`fromType` names it).
-  `JSON.stringify`, `URLSearchParams`, `FormData` and `.append()` calls are unwrapped.
-  `any` degrades to `dynamic` honestly.
-- **Headers** — names only, values are dropped. `authScheme` is inferred from the key and the
-  literal prefix of the value (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (one hop) — a local function or class method whose body performs an HTTP call
-  *and* whose parameters flow into it is treated as an HTTP client; calls to it are reported
-  at the call site with `via: "wrapper:<name>"` and the caller's arguments substituted.
-  `fn.call(this, …)` invocations are followed (n8n's `GenericFunctions` style), a TypeScript
-  `this` parameter is skipped, and `const { body, ...rest } = options` inside the wrapper is
-  resolved back to the caller's object.
-- **String bodies** — `` `a=${x}&b=1` `` with a form content type becomes a form shape; `body ?
-  JSON.stringify(body) : undefined`, `.toString()` and `qs.stringify(obj)` are unwrapped.
-- **Specs** — with `--specs <dir>` (a directory of `<provider>.{json,yaml}` or a checkout of
-  [APIs-guru/openapi-directory](https://github.com/APIs-guru/openapi-directory)) the path
-  template is matched to an operation. `--validate` adds deterministic findings: unknown
-  property, missing required, type mismatch, enum mismatch, deprecated.
-
-## Confidence
+### Confidence
 
 Additive rules, clamped to `[0, 1]`: SDK registry hit +0.6, literal or resolved-constant host
 +0.3, env host with `.env.example` hint +0.15, named dynamic path segments +0.1, body from an
 object literal +0.2, from a declared type +0.15, body `any`/unknown −0.2, via wrapper −0.1,
-spec match +0.1. Unknown or relative hosts are capped at 0.4. The table hides `< 0.3`
-by default (`--min-confidence`); JSON keeps everything.
+spec match +0.1. Unknown or relative hosts are capped at 0.4.
 
-## Output
+### Privacy
 
-The report is validated by the zod schema in `src/report/schema.ts` (the contract for the
-next stage). A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
-JWTs, long hex) with `<redacted>` and counts them in `stats.redacted`.
+Reports describe shapes, not data. Before output, every emitted string is checked against a
+denylist (`sk_live_`, `AKIA`, `ghp_`, JWTs, long hex) and secret-looking values are replaced
+with `<redacted>` and counted in `stats.redacted`.
 
-## Registries
-
-`src/detect/registry/*.json` map SDK member chains to endpoints. They are hand-written for
-v0 (`generatedFrom: "manual"`). `pnpm gen:registry stripe|openai` regenerates them from the
-vendor OpenAPI specs (network) and merges into the existing file; review the diff.
-
-## Evaluation
-
-```
-pnpm eval                     # clones eval/repos.json shallowly, scans, writes eval/out/<repo>.json + summary
-pnpm eval dub                 # one repo
-pnpm eval:score sample dub 100  # stratified sample -> eval/label/dub.csv to fill by hand
-pnpm eval:score               # precision per field / bucket, recall when <repo>.missed.txt exists
-```
-
-Labeling protocol is in `eval/label/README.md`.
-
-## Known approximations
+## Limitations
 
 - A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.
 - Wrapper expansion stops at one hop; the definition-site call is still reported.
-- Twilio and Octokit path parameters that come from the client instance stay as placeholders
-  with origin `sdk`.
+- SDK detection only covers the packages in [`src/detect/registry`](src/detect/registry).
+- Twilio and Octokit path parameters that come from the client instance stay as placeholders.
 - Spec matching treats id-looking literal segments as parameters.
 
-## Development
+## Evaluation
 
+The scanner is measured on 20 open-source TypeScript repositories listed in
+[`eval/repos.json`](eval/repos.json). Results are in [`eval/results.md`](eval/results.md).
+
+```sh
+pnpm eval                       # shallow-clone, scan, write eval/out/<repo>.json and a summary
+pnpm eval dub                   # a single repository
+pnpm eval:score sample dub 100  # stratified sample to label by hand
+pnpm eval:score                 # precision per field and confidence bucket, recall when available
 ```
-pnpm install
-pnpm test          # vitest (fixtures snapshot + unit)
-pnpm lint          # eslint, max 300 lines/file, 50 lines/function
-pnpm typecheck
-pnpm build         # tsup -> dist/
-```
+
+The labeling protocol is in [`eval/label/README.md`](eval/label/README.md).
+
+## Contributing
+
+Contributions are welcome, especially new SDK registries. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the development setup and guidelines. This project follows the
+[Contributor Covenant](CODE_OF_CONDUCT.md).
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE)
