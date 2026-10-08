@@ -1,0 +1,19 @@
+{
+  "$comment": "@google/generative-ai (legacy SDK): `genAI.getGenerativeModel({ model }).generateContent(...)`.",
+  "package": "@google/generative-ai",
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual",
+  "instance": {"names": ["GoogleGenerativeAI"]},
+  "inlinePathLiterals": true,
+  "methods": {
+    "getGenerativeModel.generateContent": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.generateContentStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.countTokens": {"method": "POST", "path": "/v1beta/models/{model}:countTokens", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.embedContent": {"method": "POST", "path": "/v1beta/models/{model}:embedContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.batchEmbedContents": {"method": "POST", "path": "/v1beta/models/{model}:batchEmbedContents", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "startChat.sendMessage": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "bodyArg": 0},
+    "startChat.sendMessageStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "bodyArg": 0}
+  }
+}

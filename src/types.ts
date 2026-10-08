@@ -85,7 +85,8 @@ export interface MethodSpec {
   bodyProp?: string;
   /**
    * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
-   * method is called on, `from(table)`) or `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`).
+   * method is called on, `from(table)`), `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`) or
+   * `fn:N` (a Convex function reference: `api.tasks.get` gives `tasks/get`). `arg:N.model` reads a property of it.
    */
   params?: Record<string, string>;
 }
@@ -97,8 +98,15 @@ export interface RegistryEntry {
   host: string;
   auth?: AuthScheme;
   generatedFrom: string;
-  /** Constructor / factory names; `urlArg` gives the argument holding the base URL (`createClient(url, key)`). */
-  instance?: { names: string[]; urlArg?: Record<string, number> };
+  /**
+   * Constructor / factory names; `urlArg` gives where the base URL is: an argument index (`createClient(url, key)`: 0)
+   * or a property of one (`new OpenAI({ baseURL })`: "0.baseURL").
+   */
+  instance?: { names: string[]; urlArg?: Record<string, number | string> };
+  /** Path prefix the default base URL already carries (`/v1` for OpenAI), dropped when the code gives its own base URL. */
+  basePath?: string;
+  /** Base URL from the one `new <name>(url)` of the same file (MCP: the client's transport). */
+  urlFromFile?: { new: string[]; arg: number };
   /** Literal path values are written into the path (`/rest/v1/todos`, not `/rest/v1/{table}`). */
   inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;
@@ -135,6 +143,7 @@ export interface SdkMatch {
   /** Arguments of the builder the method was called on (`from(table)`), for `instance:N` path params. */
   instanceArgs?: Expression[];
   inlinePath?: boolean;
+  basePath?: string;
 }
 
 export type Shape =

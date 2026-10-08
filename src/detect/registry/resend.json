@@ -1,0 +1,29 @@
+{
+  "package": "resend",
+  "provider": "resend",
+  "host": "api.resend.com",
+  "auth": "bearer",
+  "generatedFrom": "manual",
+  "instance": {"names": ["default", "Resend"]},
+  "methods": {
+    "emails.send": {"method": "POST", "path": "/emails", "bodyArg": 0},
+    "emails.create": {"method": "POST", "path": "/emails", "bodyArg": 0},
+    "emails.get": {"method": "GET", "path": "/emails/{email_id}", "pathArgs": [0]},
+    "emails.update": {"method": "PATCH", "path": "/emails/{id}", "bodyArg": 0, "pathFromBody": ["id"]},
+    "emails.cancel": {"method": "POST", "path": "/emails/{email_id}/cancel", "pathArgs": [0]},
+    "batch.send": {"method": "POST", "path": "/emails/batch", "bodyArg": 0},
+    "batch.create": {"method": "POST", "path": "/emails/batch", "bodyArg": 0},
+    "contacts.create": {"method": "POST", "path": "/audiences/{audienceId}/contacts", "bodyArg": 0, "pathFromBody": ["audienceId"]},
+    "contacts.list": {"method": "GET", "path": "/audiences/{audienceId}/contacts", "bodyArg": 0, "pathFromBody": ["audienceId"]},
+    "contacts.get": {"method": "GET", "path": "/audiences/{audienceId}/contacts/{id}", "bodyArg": 0, "pathFromBody": ["audienceId", "id"]},
+    "contacts.update": {"method": "PATCH", "path": "/audiences/{audienceId}/contacts/{id}", "bodyArg": 0, "pathFromBody": ["audienceId", "id"]},
+    "contacts.remove": {"method": "DELETE", "path": "/audiences/{audienceId}/contacts/{id}", "bodyArg": 0, "pathFromBody": ["audienceId", "id"]},
+    "audiences.create": {"method": "POST", "path": "/audiences", "bodyArg": 0},
+    "audiences.list": {"method": "GET", "path": "/audiences"},
+    "domains.create": {"method": "POST", "path": "/domains", "bodyArg": 0},
+    "domains.list": {"method": "GET", "path": "/domains"},
+    "domains.verify": {"method": "POST", "path": "/domains/{domain_id}/verify", "pathArgs": [0]},
+    "broadcasts.create": {"method": "POST", "path": "/broadcasts", "bodyArg": 0},
+    "broadcasts.send": {"method": "POST", "path": "/broadcasts/{broadcast_id}/send", "pathArgs": [0], "bodyArg": 1}
+  }
+}

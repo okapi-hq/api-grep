@@ -70,6 +70,8 @@ export interface ResolvedProvider {
  */
 export function resolveProvider(input: ProviderInput): ResolvedProvider {
   if (input.sdkProvider) return { provider: input.sdkProvider, source: "sdk" };
+  const local = localService(input.host);
+  if (local) return { provider: local, source: "host" };
   if (input.hostKind === "relative" || isLocalhost(input.host)) return { provider: "internal" };
   const known = providerForHost(input.host);
   if (known) return { provider: known, source: "host" };
@@ -80,6 +82,14 @@ export function resolveProvider(input: ProviderInput): ResolvedProvider {
   if (plainHost) return { provider: plainHost };
   if (envName) return { provider: `env:${envName}` };
   return { provider: "unknown" };
+}
+
+/** Self-hosted model servers on their default port: `localhost:11434` is Ollama, `:8188` ComfyUI. */
+const LOCAL_PORTS: Record<string, string> = { "11434": "ollama", "8188": "comfyui" };
+
+function localService(host: string | undefined): string | undefined {
+  const port = host && isLocalhost(host) ? /:(\d+)$/.exec(host)?.[1] : undefined;
+  return port ? LOCAL_PORTS[port] : undefined;
 }
 
 /** `localhost`, `127.0.0.1:3000`, `localhost:{port}`, `api.local`. */

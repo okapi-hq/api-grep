@@ -51,3 +51,11 @@ describe("scan robustness", () => {
     expect(out.diagnostics).toMatchObject({ droppedCalls: [{ file: "client.ts", line: 4, reason: "schema-invalid" }], complete: false });
   });
 });
+
+describe("scan paths", () => {
+  it("scans a directory whose name has glob characters", async () => {
+    const r = await scanFixture("robustness/app [beta] (v2)");
+    expect(r.diagnostics).toMatchObject({ filesScanned: 1, complete: true });
+    expect(at(r, "status.ts", 2)).toMatchObject({ provider: "github", pathTemplate: "/status" });
+  });
+});

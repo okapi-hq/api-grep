@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
-import { resolveProvider } from "./normalize/provider.js";
+import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, type BodyResult } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
@@ -86,6 +86,16 @@ function evidenceOf(raw: RawCall, url: UrlShape, body: BodyResult): Evidence {
   };
 }
 
+/**
+ * The SDK's provider, unless the code points the client at another known service: `new OpenAI({ baseURL:
+ * "https://openrouter.ai/api/v1" })` talks to OpenRouter, a local `:11434` to Ollama.
+ */
+function providerOf(raw: RawCall, url: UrlShape): ResolvedProvider {
+  const fromUrl = resolveProvider({ hostKind: url.hostKind, host: url.host, envName: url.envName });
+  if (raw.sdk && raw.baseUrlExpr && fromUrl.source && fromUrl.provider !== raw.sdk.provider) return fromUrl;
+  return raw.sdk ? { provider: raw.sdk.provider, source: "sdk" } : fromUrl;
+}
+
 /** Resolves a RawCall into the report's Call record. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -98,7 +108,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const { headers, headerValues, authScheme } = resolveAuth(raw, ctx);
   const q = queryShapeOf(url, raw, ctx, dynamic);
-  const { provider, source: providerSource } = resolveProvider({ hostKind: url.hostKind, host: url.host, envName: url.envName, sdkProvider: raw.sdk?.provider });
+  const { provider, source: providerSource } = providerOf(raw, url);
   const evidence = evidenceOf(raw, url, body);
   const id = createHash("sha1").update(`${loc.file}:${loc.line}:${loc.col}`).digest("hex").slice(0, 12);
   return {

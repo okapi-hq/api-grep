@@ -1,0 +1,19 @@
+{
+  "package": "posthog-node",
+  "provider": "posthog",
+  "host": "us.i.posthog.com",
+  "auth": "none",
+  "generatedFrom": "manual",
+  "instance": {"names": ["PostHog"], "urlArg": {"PostHog": "1.host"}},
+  "methods": {
+    "capture": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "captureImmediate": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "identify": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "alias": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "groupIdentify": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "getFeatureFlag": {"method": "POST", "path": "/flags/?v=2"},
+    "getFeatureFlagPayload": {"method": "POST", "path": "/flags/?v=2"},
+    "isFeatureEnabled": {"method": "POST", "path": "/flags/?v=2"},
+    "getAllFlags": {"method": "POST", "path": "/flags/?v=2"}
+  }
+}

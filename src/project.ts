@@ -102,6 +102,11 @@ function selectFiles(project: Project, dir: string, opts: LoadOptions, exclude: 
   });
 }
 
+/** One by one: `addSourceFilesAtPaths` reads paths as globs, so a directory named `app [beta]` matched nothing. */
+function addFiles(project: Project, files: string[]): void {
+  for (const f of files) project.addSourceFileAtPath(f);
+}
+
 export function loadProject(opts: LoadOptions): Loaded {
   const dir = path.resolve(opts.dir);
   const exclude = [...DEFAULT_EXCLUDES, ...(opts.exclude ?? [])];
@@ -113,13 +118,13 @@ export function loadProject(opts: LoadOptions): Loaded {
       skipAddingFilesFromTsConfig: true,
       compilerOptions: { skipLibCheck: true, noEmit: true },
     });
-    project.addSourceFilesAtPaths(globFiles(dir, opts.include, exclude));
+    addFiles(project, globFiles(dir, opts.include, exclude));
     project.resolveSourceFileDependencies();
   } else {
     project = new Project({
       compilerOptions: { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true },
     });
-    project.addSourceFilesAtPaths(globFiles(dir, opts.include, exclude));
+    addFiles(project, globFiles(dir, opts.include, exclude));
   }
   const files = selectFiles(project, dir, opts, exclude);
   return { project, files, envHints: readEnvHints(dir), leftOut: leftOutFiles(dir, opts, files) };

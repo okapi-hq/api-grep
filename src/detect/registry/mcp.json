@@ -1,0 +1,19 @@
+{
+  "$comment": "MCP clients send JSON-RPC to the server their transport points at; the URL comes from the one HTTP transport built in the same file.",
+  "package": "@modelcontextprotocol/sdk",
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "instance": {"names": ["Client"]},
+  "urlFromFile": {"new": ["StreamableHTTPClientTransport", "SSEClientTransport"], "arg": 0},
+  "methods": {
+    "callTool": {"method": "POST", "path": "", "bodyArg": 0},
+    "listTools": {"method": "POST", "path": ""},
+    "listResources": {"method": "POST", "path": ""},
+    "readResource": {"method": "POST", "path": "", "bodyArg": 0},
+    "listPrompts": {"method": "POST", "path": ""},
+    "getPrompt": {"method": "POST", "path": "", "bodyArg": 0},
+    "complete": {"method": "POST", "path": "", "bodyArg": 0}
+  }
+}

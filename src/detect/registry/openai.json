@@ -4,7 +4,8 @@
   "host": "api.openai.com",
   "auth": "bearer",
   "generatedFrom": "manual",
-  "instance": { "names": ["default", "OpenAI", "AzureOpenAI"] },
+  "instance": { "names": ["default", "OpenAI", "AzureOpenAI"], "urlArg": { "default": "0.baseURL", "OpenAI": "0.baseURL" } },
+  "basePath": "/v1",
   "methods": {
     "chat.completions.create": { "method": "POST", "path": "/v1/chat/completions", "bodyArg": 0, "operationId": "createChatCompletion" },
     "completions.create": { "method": "POST", "path": "/v1/completions", "bodyArg": 0, "operationId": "createCompletion" },
