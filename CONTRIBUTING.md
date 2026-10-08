@@ -72,8 +72,14 @@ A Husky pre-commit hook runs lint-staged, the type checker and the tests.
 
    Each key in `methods` is the member chain after the client instance. `bodyArg`, `queryArg`
    and `pathArgs` give the argument positions; `pathFromBody` takes path parameters from body
-   properties; `encoding` sets the body encoding (`form`, `multipart` or `raw`; JSON otherwise). See `MethodSpec` and
-   `RegistryEntry` in [`src/types.ts`](src/types.ts) for every field.
+   properties; `encoding` sets the body encoding (`form`, `multipart` or `raw`; JSON otherwise). A
+   method can also set its own `host` and `auth`, read its body from a property of an argument
+   (`bodyProp`), and name where each path placeholder comes from in `params`: `arg:N`,
+   `instance:N` (the builder it is called on, `from(table)`) or `ref:N` (a Firebase reference).
+   With `inlinePathLiterals`, literal values are written into the path; `instance.urlArg` names
+   the constructor argument that holds the base URL. An alias ending in `/*` covers a whole
+   scope (`@sentry/*`). See `MethodSpec` and `RegistryEntry` in [`src/types.ts`](src/types.ts)
+   for every field.
 2. Register it in `defaultRegistry()` in [`src/detect/registry/index.ts`](src/detect/registry/index.ts).
 3. Add a fixture in `tests/fixtures/sdk/`. If detection relies on the package's types, add the
    SDK as a dev dependency.

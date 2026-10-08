@@ -179,7 +179,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   const u = unwrap(expr);
   if (depth > MAX_DEPTH) return dyn(u, "unknown");
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u)) return [{ kind: "static", text: u.getLiteralValue() }];
-  if (Node.isNumericLiteral(u)) return [{ kind: "static", text: u.getText() }];
+  if (Node.isNumericLiteral(u)) return [{ kind: "static", text: String(u.getLiteralValue()) }];
   if (Node.isTemplateExpression(u)) return evalTemplate(u, ctx, depth);
   if (Node.isBinaryExpression(u)) {
     const op = u.getOperatorToken().getKind();

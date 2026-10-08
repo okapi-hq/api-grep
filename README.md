@@ -115,13 +115,20 @@ The package also exports the scanner as a library (`scan`, `toJson`, `ReportSche
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2 |
+| SDKs | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
 | frameworks | options-object helpers: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
 Callees are identified by declaration through the type checker, never by name: a shadowed
 `fetch` is ignored and `import http from "axios"` is still axios. SDK instances are followed
-through `new Stripe()`, exported instances in other files, class properties (`this.stripe`)
-and typed parameters (`stripe: Stripe`) when the package's types are installed.
+through `new Stripe()`, exported instances in other files, class properties (`this.stripe`),
+local factories and typed parameters (`stripe: Stripe`, `ctx.db` with `db: SupabaseClient`);
+without the package's types installed, the written annotation is traced to its import.
+
+Builder SDKs report one call per request: `supabase.from("tasks").select().eq("id", id).single()`
+is a `GET /rest/v1/tasks` at the start of the chain (filters and `.single()` are not extra calls),
+with the host taken from the URL given to `createClient`. Firebase paths are read from the
+reference (`getDoc(doc(db, "users", uid))` is `.../documents/users/{uid}`); `signOut` and
+`Sentry.init` send nothing and are not reported.
 
 ## How it works
 
@@ -167,6 +174,13 @@ spec match +0.1. Unknown or relative hosts are capped at 0.4.
 Reports describe shapes, not data. Before output, every emitted string is checked against a
 denylist (`sk_live_`, `AKIA`, `ghp_`, JWTs, long hex) and secret-looking values are replaced
 with `<redacted>` and counted in `stats.redacted`.
+
+### Robustness
+
+The report is validated one call at a time: a call that does not fit the schema is dropped with
+a warning on stderr and the rest of the report is still written. A file that cannot be read (a
+syntax error, an import whose module specifier is not a string literal) or that makes a
+detector throw is skipped with a warning. One file or one call never stops the scan.
 
 ## Limitations
 

@@ -1,0 +1,15 @@
+{
+  "$comment": "Sentry SDKs send events to the DSN's ingest host. Only the capture* functions are calls: `Sentry.init` configures the client and sends nothing by itself.",
+  "package": "@sentry/react",
+  "aliases": ["@sentry/*"],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "methods": {
+    "captureException": { "method": "POST", "path": "/api/{projectId}/envelope/" },
+    "captureMessage": { "method": "POST", "path": "/api/{projectId}/envelope/" },
+    "captureEvent": { "method": "POST", "path": "/api/{projectId}/envelope/" },
+    "captureFeedback": { "method": "POST", "path": "/api/{projectId}/envelope/" }
+  }
+}

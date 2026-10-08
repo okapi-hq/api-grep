@@ -28,7 +28,9 @@ function literalToShape(u: Expression, ctx: EvalCtx, depth: number): Shape | und
     return text !== undefined ? { type: "string", enum: [text] } : { type: "string" };
   }
   if (Node.isNumericLiteral(u)) {
-    const n = Number(u.getText());
+    // getLiteralValue() reads `30_000` and `0x10`; Number(getText()) gives NaN for separators, which breaks the schema.
+    const n = u.getLiteralValue();
+    if (!Number.isFinite(n)) return { type: "number" };
     return { type: Number.isInteger(n) ? "integer" : "number", enum: [n] };
   }
   if (Node.isPrefixUnaryExpression(u) && Node.isNumericLiteral(u.getOperand())) return { type: "number" };
