@@ -1,0 +1,5 @@
+{
+  "$comment": "Last recorded recall over tests/fixtures/**/expected.json. tests/recall.test.ts fails below it; raise it when recall improves.",
+  "recall": 1,
+  "falseCalls": 0
+}

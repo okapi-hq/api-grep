@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "invoke.ts", "line": 6, "provider": "aws-bedrock"},
+    {"file": "invoke.ts", "line": 10, "provider": "aws-bedrock"}
+  ]
+}

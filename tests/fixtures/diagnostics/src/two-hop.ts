@@ -3,8 +3,13 @@ async function doFetch(url: string, init?: RequestInit) {
   return res.json();
 }
 
-export function tlsFetch(url: string) {
+function tlsFetch(url: string) {
   return doFetch(url, { headers: { "x-client": "probe" } });
 }
 
-export const latest = () => tlsFetch("https://api.example.com/v1/releases/latest");
+// three hops from fetch: beyond what wrappers expand, so listed as not followed
+export function probe(url: string) {
+  return tlsFetch(url);
+}
+
+export const latest = () => probe("https://api.example.com/v1/releases/latest");

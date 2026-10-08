@@ -1,0 +1,223 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`regression fixtures > multi-provider-site 1`] = `
+[
+  "models.ts:11 unknown GET /models",
+]
+`;
+
+exports[`regression fixtures > negatives/data-uri 1`] = `[]`;
+
+exports[`regression fixtures > negatives/fetch-override 1`] = `[]`;
+
+exports[`regression fixtures > negatives/img-src 1`] = `[]`;
+
+exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
+
+exports[`regression fixtures > resolve/class-base-url 1`] = `
+[
+  "gladia.ts:9 gladia POST /v2/upload",
+  "gladia.ts:17 elevenlabs POST /v1/text-to-speech/{voiceId}",
+  "gladia.ts:22 elevenlabs GET /v1/voices",
+]
+`;
+
+exports[`regression fixtures > resolve/env-default 1`] = `
+[
+  "llm.ts:4 langdock POST /openai/eu/v1/chat/completions",
+  "llm.ts:7 elevenlabs GET /v1/voices",
+]
+`;
+
+exports[`regression fixtures > resolve/env-name 1`] = `
+[
+  "clients.ts:1 openrouter GET /models",
+  "clients.ts:3 supabase POST /functions/v1/{name}",
+  "clients.ts:5 slack POST /",
+  "clients.ts:8 env:VITE_API_URL GET /me",
+  "clients.ts:9 env:GITHUB_CALLBACK_URL GET /",
+]
+`;
+
+exports[`regression fixtures > resolve/helper-url 1`] = `
+[
+  "telegram.ts:6 telegram POST /bot{BOT_TOKEN}/sendMessage",
+  "telegram.ts:13 api.invoices.example.com GET /v2/invoices",
+]
+`;
+
+exports[`regression fixtures > resolve/placeholders 1`] = `
+[
+  "hosts.ts:1 unknown GET /status",
+  "hosts.ts:2 internal GET /health",
+  "hosts.ts:3 internal GET /api/items",
+  "hosts.ts:4 env:REPLIT_CONNECTORS_HOSTNAME GET /api/v2/connection",
+  "hosts.ts:5 unknown GET /api/v1/events",
+]
+`;
+
+exports[`regression fixtures > robustness/bad-specifier 1`] = `
+[
+  "ok.ts:5 github GET /rate_limit",
+]
+`;
+
+exports[`regression fixtures > robustness/odd-body 1`] = `
+[
+  "client.ts:4 api.example.com PUT /v1/monitors/{monitorId}",
+]
+`;
+
+exports[`regression fixtures > sdk/ai-sdk 1`] = `
+[
+  "generate.ts:11 openai POST /v1/responses",
+  "generate.ts:12 anthropic POST /v1/messages",
+  "generate.ts:13 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "generate.ts:14 openai POST /v1/embeddings",
+  "generate.ts:15 together POST /v1/responses",
+  "generate.ts:16 vercel-ai-gateway POST /v1/ai/language-model",
+  "generate.ts:17 openrouter POST /api/v1/chat/completions",
+  "generate.ts:20 google-vertex POST /v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-flash:generateContent",
+  "generate.ts:21 unknown POST /",
+]
+`;
+
+exports[`regression fixtures > sdk/anthropic 1`] = `
+[
+  "claude.ts:6 anthropic POST /v1/messages",
+  "claude.ts:10 anthropic POST /v1/messages",
+  "claude.ts:12 anthropic POST /v1/messages/count_tokens",
+  "claude.ts:14 anthropic GET /v1/models",
+]
+`;
+
+exports[`regression fixtures > sdk/bedrock 1`] = `
+[
+  "invoke.ts:6 aws-bedrock POST /model/{modelId}/converse",
+  "invoke.ts:10 aws-bedrock POST /model/{modelId}/invoke",
+]
+`;
+
+exports[`regression fixtures > sdk/convex 1`] = `
+[
+  "app.tsx:8 convex POST /api/run/tasks/list",
+  "app.tsx:9 convex POST /api/run/tasks/create",
+  "app.tsx:13 convex POST /api/run/reports/weekly/summary",
+]
+`;
+
+exports[`regression fixtures > sdk/firebase-modular 1`] = `
+[
+  "session.ts:4 firebase POST /v1/accounts:signInWithIdp",
+  "session.ts:6 firebase POST /v1/accounts:signUp",
+  "session.ts:8 firebase POST /v1/accounts:signInWithPassword",
+  "store.ts:4 firebase GET /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "store.ts:8 firebase GET /v1/projects/{projectId}/databases/(default)/documents/orders",
+  "store.ts:12 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "store.ts:17 firebase POST /v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}/comments",
+  "store.ts:20 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/{ref}",
+  "store.ts:22 firebase DELETE /v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}",
+  "store.ts:24 firebase GET /v1/projects/{projectId}/databases/(default)/documents/orders",
+]
+`;
+
+exports[`regression fixtures > sdk/gemini 1`] = `
+[
+  "genai.ts:6 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "genai.ts:12 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+  "legacy.ts:7 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/lemonsqueezy 1`] = `
+[
+  "billing.ts:5 lemonsqueezy POST /v1/checkouts",
+  "billing.ts:7 lemonsqueezy GET /v1/subscriptions/{id}",
+  "billing.ts:9 lemonsqueezy DELETE /v1/subscriptions/{id}",
+]
+`;
+
+exports[`regression fixtures > sdk/mcp 1`] = `
+[
+  "tools.ts:9 mcp POST /mcp",
+  "tools.ts:10 mcp POST /mcp",
+]
+`;
+
+exports[`regression fixtures > sdk/openai-compatible 1`] = `
+[
+  "clients.ts:8 openrouter POST /api/v1/chat/completions",
+  "clients.ts:9 groq POST /chat/completions",
+  "clients.ts:10 ollama POST /v1/chat/completions",
+  "clients.ts:11 openai POST /v1/embeddings",
+]
+`;
+
+exports[`regression fixtures > sdk/posthog 1`] = `
+[
+  "server.ts:5 posthog POST /batch",
+  "server.ts:7 posthog POST /flags",
+  "web.ts:5 posthog POST /e",
+  "web.ts:7 posthog POST /e",
+]
+`;
+
+exports[`regression fixtures > sdk/resend 1`] = `
+[
+  "mail.ts:5 resend POST /emails",
+  "mail.ts:7 resend POST /audiences/{audienceId}/contacts",
+]
+`;
+
+exports[`regression fixtures > sdk/revenuecat 1`] = `
+[
+  "paywall.ts:4 revenuecat GET /v1/subscribers/{app_user_id}/offerings",
+  "paywall.ts:8 revenuecat POST /v1/receipts",
+  "paywall.ts:10 revenuecat GET /v1/subscribers/{app_user_id}",
+]
+`;
+
+exports[`regression fixtures > sdk/sentry 1`] = `
+[
+  "checkout.ts:8 sentry POST /api/{projectId}/envelope",
+  "checkout.ts:14 sentry POST /api/{projectId}/envelope (wrapper:reportError)",
+  "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
+  "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > sdk/supabase 1`] = `
+[
+  "context.ts:9 supabase GET /rest/v1/projects",
+  "context.ts:16 supabase PATCH /rest/v1/projects",
+  "ssr.ts:9 supabase GET /rest/v1/invoices",
+  "ssr.ts:12 supabase GET /rest/v1/invoices",
+  "tasks.ts:4 supabase GET /rest/v1/tasks",
+  "tasks.ts:9 supabase POST /rest/v1/tasks",
+  "tasks.ts:12 supabase POST /rest/v1/tasks",
+  "tasks.ts:14 supabase PATCH /rest/v1/tasks",
+  "tasks.ts:16 supabase DELETE /rest/v1/tasks",
+  "tasks.ts:19 supabase GET /rest/v1/tasks",
+  "tasks.ts:19 supabase GET /rest/v1/projects",
+  "tasks.ts:23 supabase POST /rest/v1/rpc/project_stats",
+  "tasks.ts:26 supabase GET /auth/v1/user",
+  "tasks.ts:30 supabase POST /auth/v1/token",
+  "tasks.ts:33 supabase POST /storage/v1/object/avatars/{userId}/avatar.png",
+  "tasks.ts:36 supabase POST /functions/v1/notify-assignee",
+]
+`;
+
+exports[`regression fixtures > wrappers/injected-fetch 1`] = `
+[
+  "pricing.ts:7 api.example-rates.com GET /v2/prices/latest",
+]
+`;
+
+exports[`regression fixtures > wrappers/two-hop 1`] = `
+[
+  "client.ts:2 unknown GET /",
+  "client.ts:8 unknown GET / (wrapper:doFetch)",
+  "client.ts:11 api.example-billing.com GET /v1/invoices (wrapper:tlsFetch>doFetch)",
+  "client.ts:13 api.example-billing.com POST /v1/invoices/{id}/pay (wrapper:tlsFetch>doFetch)",
+]
+`;

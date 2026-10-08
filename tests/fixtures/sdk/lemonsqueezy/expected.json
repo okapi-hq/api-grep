@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "billing.ts", "line": 5, "provider": "lemonsqueezy"},
+    {"file": "billing.ts", "line": 7, "provider": "lemonsqueezy"},
+    {"file": "billing.ts", "line": 9, "provider": "lemonsqueezy"}
+  ]
+}

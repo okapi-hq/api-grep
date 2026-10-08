@@ -102,9 +102,11 @@ curl -X PATCH 'https://api.vercel.com/v3/domains/yonder.example.org?teamId=dgsko
   `apicalls providers` prints the table as JSON for the review and the evaluation to share names.
 - **Headers** — names only, values are dropped. `authScheme` is inferred from the key and the
   literal prefix of the value (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (one hop) — a local function or class method whose body performs an HTTP call
+- **Wrappers** (two hops) — a local function or class method whose body performs an HTTP call
   *and* whose parameters flow into it is treated as an HTTP client; calls to it are reported
-  at the call site with `via: "wrapper:<name>"` and the caller's arguments substituted.
+  at the call site with `via: "wrapper:<name>"` and the caller's arguments substituted. A
+  function that passes its parameters to such a wrapper is one too (`latest()` -> `tlsFetch(url)`
+  -> `doFetch(url)` -> `fetch`, reported at `latest()` with `via: "wrapper:tlsFetch>doFetch"`).
   `fn.call(this, …)` invocations are followed (n8n's `GenericFunctions` style), a TypeScript
   `this` parameter is skipped, and `const { body, ...rest } = options` inside the wrapper is
   resolved back to the caller's object.
@@ -142,7 +144,7 @@ is still written. The scan never stops because of one file or one call.
   "droppedCalls": [{ "file": "lib/a.ts", "line": 120, "reason": "schema-invalid", "detail": "body.properties.config: Invalid input" }],
   "unfollowed": [
     { "file": "executors/x.ts", "line": 90, "reason": "injected-fetch", "expr": "this.fetchFn" },
-    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "doFetch" }
+    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "tlsFetch" }
   ],
   "complete": false
 }
@@ -156,8 +158,8 @@ is still written. The scan never stops because of one file or one call.
 - `droppedCalls`: calls that failed the report schema (`schema-invalid`, with the zod path) or
   made the resolver throw (`internal-error`).
 - `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
-  and calls to a wrapper of a wrapper (the inner wrapper's call site is reported, the outer one is
-  not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
+  and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
+  reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
   `--exclude` / `--include`), a dropped call or a call not followed. Calls below `--min-confidence`
@@ -199,6 +201,17 @@ written into the path; `instance.urlArg` names the constructor argument that hol
 An alias ending in `/*` covers a whole scope (`@sentry/*`). `pnpm gen:registry stripe|openai` regenerates them from the
 vendor OpenAPI specs (network) and merges into the existing file; review the diff.
 
+## Regression fixtures and recall
+
+Every directory under `tests/fixtures/` with an `expected.json` is a regression fixture: synthetic
+code (invented names, public provider hosts only, never customer code) with the calls a scan must
+find (`file`, `line`, `provider`). An empty `calls` list marks a negative fixture (`data:` URLs,
+fetch overrides, `<img src>`, stub providers); `orUnfollowed` accepts a `diagnostics.unfollowed`
+entry instead of a call; `todo` (an issue URL) parks a fixture whose feature is not built yet.
+`tests/recall.test.ts` scans them all, snapshots their calls and prints `recall 1.00, false calls 0`
+(also to the GitHub step summary). It fails when recall drops below `tests/recall-baseline.json`
+or a negative fixture gives a call; raise the baseline when recall improves.
+
 ## Evaluation
 
 ```
@@ -213,8 +226,12 @@ Labeling protocol is in `eval/label/README.md`.
 ## Known approximations
 
 - A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.
-- Wrapper expansion stops at one hop; the definition-site call is still reported and the outer
+- Wrapper expansion stops at two hops; the definition-site call is still reported and deeper
   call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
+- One call site that picks its host from a table (``fetch(`${PRESETS[name].baseUrl}/models`)``)
+  is one call with an unknown host: the candidate hosts are not listed.
+- `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
+  a `window.fetch = ...` override are not requests and are not reported.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders
   with origin `sdk`.
 - Spec matching treats id-looking literal segments as parameters.

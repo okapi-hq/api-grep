@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "models.ts", "line": 11, "provider": "unknown"}
+  ]
+}

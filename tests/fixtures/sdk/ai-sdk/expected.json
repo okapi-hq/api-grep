@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "generate.ts", "line": 11, "provider": "openai"},
+    {"file": "generate.ts", "line": 12, "provider": "anthropic"},
+    {"file": "generate.ts", "line": 13, "provider": "google-ai"},
+    {"file": "generate.ts", "line": 14, "provider": "openai"},
+    {"file": "generate.ts", "line": 15, "provider": "together"},
+    {"file": "generate.ts", "line": 16, "provider": "vercel-ai-gateway"},
+    {"file": "generate.ts", "line": 17, "provider": "openrouter"},
+    {"file": "generate.ts", "line": 20, "provider": "google-vertex"},
+    {"file": "generate.ts", "line": 21, "provider": "unknown"}
+  ]
+}

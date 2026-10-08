@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "clients.ts", "line": 8, "provider": "openrouter"},
+    {"file": "clients.ts", "line": 9, "provider": "groq"},
+    {"file": "clients.ts", "line": 10, "provider": "ollama"},
+    {"file": "clients.ts", "line": 11, "provider": "openai"}
+  ]
+}

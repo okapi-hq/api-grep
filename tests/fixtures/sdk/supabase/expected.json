@@ -1,0 +1,21 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "context.ts", "line": 9, "provider": "supabase"},
+    {"file": "context.ts", "line": 16, "provider": "supabase"},
+    {"file": "ssr.ts", "line": 9, "provider": "supabase"},
+    {"file": "ssr.ts", "line": 12, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 4, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 9, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 12, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 14, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 16, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 19, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 19, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 23, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 26, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 30, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 33, "provider": "supabase"},
+    {"file": "tasks.ts", "line": 36, "provider": "supabase"}
+  ]
+}

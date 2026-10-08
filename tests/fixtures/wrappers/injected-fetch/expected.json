@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/4",
+  "calls": [
+    {"file": "pricing.ts", "line": 7, "provider": "api.example-rates.com"},
+    {"file": "pricing.ts", "line": 16, "provider": "unknown", "orUnfollowed": true}
+  ]
+}

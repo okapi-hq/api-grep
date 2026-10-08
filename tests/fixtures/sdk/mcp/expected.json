@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "tools.ts", "line": 9, "provider": "mcp"},
+    {"file": "tools.ts", "line": 10, "provider": "mcp"}
+  ]
+}

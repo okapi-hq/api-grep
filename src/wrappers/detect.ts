@@ -1,5 +1,5 @@
 import { Node, type CallExpression, type Expression } from "ts-morph";
-import { detectFile, detectNode, type WrapperCandidate } from "../detect/index.js";
+import { detectFile, detectNode, type DetectResult, type WrapperCandidate } from "../detect/index.js";
 import { declarationsOf } from "../detect/options.js";
 import type { Registry } from "../detect/registry/index.js";
 import type { Unfollowed } from "../detect/unfollowed.js";
@@ -52,61 +52,97 @@ function substitutionFor(fn: FunctionLike, call: CallExpression, shift: number):
 }
 
 interface Caches {
-  inner: Map<Node, RawCall[]>;
-  nested: Map<Node, string | null>;
+  bodies: Map<Node, DetectResult>;
+  direct: Map<Node, RawCall[]>;
+  nested: Map<Node, Expansion[]>;
+}
+
+/** An HTTP call reached through wrappers: the substitutions of the inner wrappers it went through, and their names. */
+interface Expansion {
+  raw: RawCall;
+  subst: Subst;
+  via: string[];
+}
+
+function bodyOf(fn: FunctionLike, registry: Registry, caches: Caches): DetectResult {
+  let found = caches.bodies.get(fn);
+  if (!found) {
+    found = detectFile(fn.getSourceFile(), registry, fn.getBody?.() ?? fn);
+    caches.bodies.set(fn, found);
+  }
+  return found;
 }
 
 /** HTTP calls in the wrapper's body that its parameters flow into. */
-function innerCalls(fn: FunctionLike, registry: Registry, caches: Caches): RawCall[] {
-  let inner = caches.inner.get(fn);
-  if (!inner) {
-    const body = fn.getBody?.() ?? fn;
-    inner = detectFile(fn.getSourceFile(), registry, body)
+function directCalls(fn: FunctionLike, registry: Registry, caches: Caches): RawCall[] {
+  let direct = caches.direct.get(fn);
+  if (!direct) {
+    direct = bodyOf(fn, registry, caches)
       .calls.filter((c) => !c.via && paramsFlowInto(fn, c))
       .slice(0, MAX_INNER);
-    caches.inner.set(fn, inner);
+    caches.direct.set(fn, direct);
   }
-  return inner;
+  return direct;
 }
 
-/** Name of a wrapper that `fn` calls with its own parameters, when `fn` has no HTTP call of its own (`tlsFetch` -> `doFetch`). */
-function nestedWrapper(fn: FunctionLike, registry: Registry, caches: Caches): string | undefined {
-  const hit = caches.nested.get(fn);
-  if (hit !== undefined) return hit ?? undefined;
-  caches.nested.set(fn, null);
+/** Wrappers that `fn` calls with its own parameters (`tlsFetch(url)` -> `doFetch(url, init)`), each with the call. */
+function innerWrappers(fn: FunctionLike, registry: Registry, caches: Caches): { call: CallExpression; g: FunctionLike; shift: number }[] {
   const params = new Set<Node>(fn.getParameters());
-  for (const c of detectFile(fn.getSourceFile(), registry, fn.getBody?.() ?? fn).candidates) {
+  return bodyOf(fn, registry, caches).candidates.flatMap((c) => {
     const g = wrapperFunction(c.callee);
-    if (!g || g === fn || !c.node.getArguments().some((a) => referencesParam(a, params, 0))) continue;
-    if (innerCalls(g, registry, caches).length === 0) continue;
-    caches.nested.set(fn, wrapperName(g));
-    return wrapperName(g);
+    const flows = c.node.getArguments().some((a) => referencesParam(a, params, 0));
+    return g && g !== fn && flows ? [{ call: c.node, g, shift: callShift(c.callee) }] : [];
+  });
+}
+
+/** Second hop: when `fn` has no HTTP call of its own, the calls of the wrappers it calls, substituted at that inner call. */
+function nestedCalls(fn: FunctionLike, registry: Registry, caches: Caches): Expansion[] {
+  let nested = caches.nested.get(fn);
+  if (!nested) {
+    caches.nested.set(fn, []);
+    nested = innerWrappers(fn, registry, caches)
+      .flatMap(({ call, g, shift }) => directCalls(g, registry, caches).map((raw) => ({ raw, subst: substitutionFor(g, call, shift), via: [wrapperName(g)] })))
+      .slice(0, MAX_INNER);
+    caches.nested.set(fn, nested);
   }
-  return undefined;
+  return nested;
+}
+
+function expansionsOf(fn: FunctionLike, registry: Registry, caches: Caches): Expansion[] {
+  const direct = directCalls(fn, registry, caches);
+  if (direct.length > 0) return direct.map((raw) => ({ raw, subst: new Map(), via: [] }));
+  return nestedCalls(fn, registry, caches);
+}
+
+/** A wrapper three or more hops away from its HTTP call: named so the call site can be listed as not followed. */
+function deeperWrapper(fn: FunctionLike, registry: Registry, caches: Caches): string | undefined {
+  const hit = innerWrappers(fn, registry, caches).find(({ g }) => directCalls(g, registry, caches).length === 0 && nestedCalls(g, registry, caches).length > 0);
+  return hit ? wrapperName(hit.g) : undefined;
 }
 
 /**
- * Expands one-hop wrappers: calls to local functions whose body contains a detected HTTP call. A call to a wrapper
- * of a wrapper is not expanded (the inner wrapper's call site is) and comes back as `wrapper-depth`.
+ * Expands wrappers at their call sites, up to two hops (`latest()` -> `tlsFetch(url)` -> `doFetch(url)` -> `fetch`):
+ * calls to local functions whose body makes an HTTP call, or calls a wrapper that does, with their parameters. Deeper
+ * chains come back as `wrapper-depth`.
  */
 export function expandWrappers(candidates: WrapperCandidate[], registry: Registry): { calls: RawCall[]; unfollowed: Unfollowed[] } {
-  const caches: Caches = { inner: new Map(), nested: new Map() };
+  const caches: Caches = { bodies: new Map(), direct: new Map(), nested: new Map() };
   const out: RawCall[] = [];
   const unfollowed: Unfollowed[] = [];
   for (const cand of candidates) {
     const fn = wrapperFunction(cand.callee);
     if (!fn) continue;
-    const inner = innerCalls(fn, registry, caches);
-    if (inner.length === 0) {
-      const via = nestedWrapper(fn, registry, caches);
+    const expansions = expansionsOf(fn, registry, caches);
+    if (expansions.length === 0) {
+      const via = deeperWrapper(fn, registry, caches);
       if (via) unfollowed.push({ node: cand.node, reason: "wrapper-depth", via });
       continue;
     }
-    const subst = substitutionFor(fn, cand.node, callShift(cand.callee));
-    const via = `wrapper:${wrapperName(fn)}`;
-    for (const raw of inner) {
-      const redetected = detectNode(raw.node, registry, { subst }).raw ?? raw;
-      out.push({ ...redetected, node: cand.node, via, subst });
+    const outer = substitutionFor(fn, cand.node, callShift(cand.callee));
+    for (const e of expansions) {
+      const subst: Subst = new Map([...e.subst, ...outer]);
+      const redetected = detectNode(e.raw.node, registry, { subst }).raw ?? e.raw;
+      out.push({ ...redetected, node: cand.node, via: `wrapper:${[wrapperName(fn), ...e.via].join(">")}`, subst });
     }
   }
   return { calls: out, unfollowed };
