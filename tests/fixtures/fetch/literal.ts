@@ -8,3 +8,5 @@ export async function createCustomer(email: string) {
   });
   return res.json();
 }
+
+export const viaGlobal = () => globalThis.fetch("https://api.github.com/meta");

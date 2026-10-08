@@ -1,13 +1,18 @@
-import { CallSchema, type Call } from "./schema.js";
+import { CallSchema, type Call, type DroppedCall } from "./schema.js";
 
-/** Validates each call on its own: one bad call is dropped (with a warning) instead of failing the whole report. */
-export function validCalls(calls: Call[], onWarning?: (message: string) => void): Call[] {
-  return calls.filter((c) => {
+/** Validates each call on its own: a call that does not fit the schema is set aside instead of failing the whole report. */
+export function splitValid(calls: Call[]): { valid: Call[]; dropped: DroppedCall[] } {
+  const valid: Call[] = [];
+  const dropped: DroppedCall[] = [];
+  for (const c of calls) {
     const r = CallSchema.safeParse(c);
-    if (!r.success) {
-      const issue = r.error.issues[0];
-      onWarning?.(`dropped call at ${c.location?.file}:${c.location?.line}: invalid ${issue?.path.join(".") || "call"} (${issue?.message ?? "schema"})`);
+    if (r.success) {
+      valid.push(c);
+      continue;
     }
-    return r.success;
-  });
+    const issue = r.error.issues[0];
+    const detail = `${issue?.path.join(".") || "call"}: ${issue?.message ?? "invalid"}`;
+    dropped.push({ file: c.location?.file ?? "?", line: c.location?.line ?? 0, reason: "schema-invalid", detail });
+  }
+  return { valid, dropped };
 }

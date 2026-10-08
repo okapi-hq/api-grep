@@ -8,6 +8,7 @@ describe("fetch", () => {
     const r = await scanFixture("fetch");
     expect(r).toMatchSnapshot();
     expect(at(r, "literal.ts", 4)).toMatchObject({ provider: "stripe", method: "POST", pathTemplate: "/v1/customers", bodyEncoding: "form", authScheme: "bearer", headers: ["authorization", "content-type"] });
+    expect(at(r, "literal.ts", 12)).toMatchObject({ client: "fetch", provider: "github", pathTemplate: "/meta" });
     expect(at(r, "template.ts", 3)).toMatchObject({ provider: "github", pathTemplate: "/repos/{owner}/{repo}/issues", query: ["state", "per_page"] });
     expect(at(r, "env.ts", 2)).toMatchObject({ hostKind: "env", envName: "API_URL", host: "api.example.com", method: "PUT", pathTemplate: "/v1/things/{id}" });
     expect(at(r, "typed-body.ts", 10)).toMatchObject({ bodyFromType: "CreateUser" });

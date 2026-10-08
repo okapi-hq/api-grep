@@ -9,6 +9,12 @@ describe("scan robustness", () => {
     const r = await scanFixture("robustness/bad-specifier", { onWarning: (m) => warnings.push(m) });
     expect(warnings).toEqual(["skipped broken.ts: Expected the module specifier to be a string literal."]);
     expect(at(r, "ok.ts", 5)).toMatchObject({ provider: "github", pathTemplate: "/rate_limit" });
+    expect(r.diagnostics).toMatchObject({
+      filesSeen: 2,
+      filesScanned: 1,
+      skipped: [{ file: "broken.ts", reason: "parse-error", detail: "Expected the module specifier to be a string literal." }],
+      complete: false,
+    });
   });
 
   it("keeps odd body values inside the report schema", async () => {
@@ -41,6 +47,7 @@ describe("scan robustness", () => {
     expect(out.calls.map((c) => c.id)).toEqual([good.id]);
     expect(out.stats.callsFound).toBe(1);
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toMatch(/^dropped call at client\.ts:4: invalid body/);
+    expect(warnings[0]).toMatch(/^dropped call at client\.ts:4: body: /);
+    expect(out.diagnostics).toMatchObject({ droppedCalls: [{ file: "client.ts", line: 4, reason: "schema-invalid" }], complete: false });
   });
 });

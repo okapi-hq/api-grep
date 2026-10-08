@@ -612,6 +612,15 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "urlTemplate": "https://firestore.googleapis.com/v1/projects/{projectId}/databases/(default)/documents/orders",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -816,6 +825,15 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "urlTemplate": "https://{org}.ingest.sentry.io/api/{projectId}/envelope/",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "sdk": 4,
@@ -1708,6 +1726,15 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "urlTemplate": "{env:SUPABASE_URL}/functions/v1/notify-assignee",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 4,
+    "filesSeen": 4,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "sdk": 16,

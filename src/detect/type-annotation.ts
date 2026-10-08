@@ -48,3 +48,12 @@ export function annotatedPackage(node: Node): string | undefined {
   }
   return undefined;
 }
+
+/** Written type of the parameter / property / variable behind `node` (`fetchFn: typeof fetch` gives `typeof fetch`), or "". */
+export function writtenType(node: Node): string {
+  for (const decl of node.getSymbol()?.getDeclarations() ?? []) {
+    const t = typeNodeOf(decl)?.getText();
+    if (t) return t;
+  }
+  return "";
+}

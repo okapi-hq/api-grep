@@ -2,6 +2,7 @@ import { Node, type CallExpression, type Expression, type NewExpression } from "
 import type { Callee, EvalCtx, RawCall } from "../types.js";
 import { exportedChain, unwrap } from "./callee.js";
 import { getProp, toObjectLiteral } from "./options.js";
+import { writtenType } from "./type-annotation.js";
 
 const FETCH_PKGS = new Set(["node-fetch", "cross-fetch", "isomorphic-fetch", "isomorphic-unfetch", "unfetch", "whatwg-fetch", "undici", "@whatwg-node/fetch", "ofetch"]);
 const GLOBAL_OBJECTS = new Set(["globalThis", "window", "self"]);
@@ -40,7 +41,15 @@ export function fromFetchArgs(node: CallExpression, args: Expression[], ctx: Eva
   return raw;
 }
 
+const TYPEOF_FETCH = /^typeof\s+(?:globalThis\.|window\.|self\.)?fetch$/;
+
+/** `fetchImpl: typeof fetch` received from outside: whatever it is, it takes fetch's arguments. */
+function declaredAsFetch(node: CallExpression): boolean {
+  const expr = unwrap(node.getExpression() as Expression);
+  return (Node.isIdentifier(expr) || Node.isPropertyAccessExpression(expr)) && TYPEOF_FETCH.test(writtenType(expr).trim());
+}
+
 export function detectFetch(node: CallExpression | NewExpression, callee: Callee, ctx: EvalCtx = {}): RawCall | null {
-  if (!Node.isCallExpression(node) || !isFetchCallee(callee)) return null;
+  if (!Node.isCallExpression(node) || !(isFetchCallee(callee) || declaredAsFetch(node))) return null;
   return fromFetchArgs(node, node.getArguments() as Expression[], ctx);
 }
