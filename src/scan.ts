@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { ts, type Node, type SourceFile } from "ts-morph";
 import { buildCall, type BuildCtx } from "./build-call.js";
@@ -7,7 +7,9 @@ import { detectFile } from "./detect/index.js";
 import { buildExamples } from "./examples/build.js";
 import { defaultRegistry, type Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit, selectChanged } from "./git.js";
-import { loadProject } from "./project.js";
+import { PackageJsonReader } from "./package-json.js";
+import { relativePosix } from "./files.js";
+import { loadProject, type Loaded, type Unreadable } from "./project.js";
 import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Report, type Stats } from "./report/schema.js";
 import { DiagnosticsCollector } from "./report/diagnostics.js";
 import { splitValid } from "./report/valid.js";
@@ -33,40 +35,11 @@ export interface ScanOptions {
   onWarning?: (message: string) => void;
 }
 
-function sdkVersionLookup(rootDir: string): BuildCtx["sdkVersion"] {
-  const cache = new Map<string, Record<string, string>>();
-  const depsOf = (dir: string): Record<string, string> => {
-    const hit = cache.get(dir);
-    if (hit) return hit;
-    let deps: Record<string, string> = {};
-    const file = path.join(dir, "package.json");
-    if (existsSync(file)) {
-      try {
-        const json = JSON.parse(readFileSync(file, "utf8")) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
-        deps = { ...(json.devDependencies ?? {}), ...(json.dependencies ?? {}) };
-      } catch {
-        deps = {};
-      }
-    }
-    cache.set(dir, deps);
-    return deps;
-  };
-  return (file, pkgName) => {
-    let dir = path.dirname(file);
-    for (let i = 0; i < 8; i++) {
-      const v = depsOf(dir)[pkgName];
-      if (v) return v;
-      if (dir === rootDir || path.dirname(dir) === dir) break;
-      dir = path.dirname(dir);
-    }
-    return depsOf(rootDir)[pkgName];
-  };
-}
-
+/** Occurrences per key, most frequent first. A Map: keys come from the scanned code (`constructor` is a provider name). */
 function count<T>(items: T[], key: (t: T) => string): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const it of items) out[key(it)] = (out[key(it)] ?? 0) + 1;
-  return Object.fromEntries(Object.entries(out).sort((a, b) => b[1] - a[1]));
+  const out = new Map<string, number>();
+  for (const it of items) out.set(key(it), (out.get(key(it)) ?? 0) + 1);
+  return Object.fromEntries([...out].sort((a, b) => b[1] - a[1]));
 }
 
 export function computeStats(calls: Call[], filesScanned: number, durationMs: number): Stats {
@@ -77,7 +50,7 @@ export function computeStats(calls: Call[], filesScanned: number, durationMs: nu
     byClient: count(calls, (c) => c.client),
     byProvider: count(calls, (c) => c.provider),
     byHostKind: count(calls, (c) => c.hostKind),
-    withBodyShape: calls.filter((c) => c.body && (c.body as { type: string }).type !== "dynamic" && (c.body as { type: string }).type !== "unknown").length,
+    withBodyShape: calls.filter((c) => c.body && c.body.type !== "dynamic" && c.body.type !== "unknown").length,
     withDynamic: calls.filter((c) => c.dynamic.length > 0).length,
     withFindings: calls.filter((c) => c.findings.length > 0).length,
     redacted: 0,
@@ -87,10 +60,6 @@ export function computeStats(calls: Call[], filesScanned: number, durationMs: nu
 
 function sortCalls(calls: Call[]): Call[] {
   return calls.sort((a, b) => a.location.file.localeCompare(b.location.file) || a.location.line - b.location.line || a.location.col - b.location.col);
-}
-
-function relPath(rootDir: string, file: string): string {
-  return path.relative(rootDir, file).split(path.sep).join("/");
 }
 
 function errorText(err: unknown): string {
@@ -120,7 +89,7 @@ function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, r
   const raws: RawCall[] = [];
   const scanned: SourceFile[] = [];
   for (const sf of files) {
-    const file = relPath(rootDir, sf.getFilePath());
+    const file = relativePosix(rootDir, sf.getFilePath());
     try {
       const problem = unreadable(sf);
       if (problem) {
@@ -145,7 +114,7 @@ function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): C
     try {
       calls.push(buildCall(raw, ctx));
     } catch (err) {
-      diag.drop({ file: relPath(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
+      diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
     }
   }
   return sortCalls(calls);
@@ -163,6 +132,21 @@ function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {
   return calls;
 }
 
+/** The files this scan covers; what it leaves out (unreadable, or removed by the options) goes to diagnostics. */
+async function filesInScope(loaded: Loaded, opts: ScanOptions, rootDir: string, diag: DiagnosticsCollector): Promise<{ files: SourceFile[]; seen: number }> {
+  const parseError = (u: Unreadable): void => diag.skip({ file: u.file, reason: "parse-error", detail: u.detail });
+  if (opts.changedSince) {
+    const changed = await changedFiles(rootDir, opts.changedSince);
+    const unreadable = loaded.unreadable.filter((u) => changed.has(u.path));
+    unreadable.forEach(parseError);
+    const files = selectChanged(loaded.files, changed);
+    return { files, seen: files.length + unreadable.length };
+  }
+  loaded.unreadable.forEach(parseError);
+  for (const l of loaded.leftOut) diag.skip(l);
+  return { files: loaded.files, seen: loaded.files.length + loaded.leftOut.length + loaded.unreadable.length };
+}
+
 export async function scan(opts: ScanOptions): Promise<Report> {
   const started = Date.now();
   const rootDir = path.resolve(opts.dir);
@@ -170,16 +154,14 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const registry = opts.registry ?? defaultRegistry();
   const diag = new DiagnosticsCollector(opts.onWarning);
   const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude });
-  let files = loaded.files;
-  if (opts.changedSince) files = selectChanged(files, await changedFiles(rootDir, opts.changedSince));
-  else for (const l of loaded.leftOut) diag.skip(l);
+  const { files, seen } = await filesInScope(loaded, opts, rootDir, diag);
   const { raws, scanned } = detectAll(files, registry, opts, rootDir, diag);
-  const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) };
+  const packages = new PackageJsonReader(rootDir);
+  const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: (file, name) => packages.versionOf(file, name) };
   const built = buildAll(raws, ctx, diag);
-  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate });
+  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate, onWarning: opts.onWarning });
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
-  const filesSeen = opts.changedSince ? files.length : files.length + loaded.leftOut.length;
   return {
     $schema: SCHEMA_URL,
     schemaVersion: SCHEMA_VERSION,
@@ -189,8 +171,8 @@ export async function scan(opts: ScanOptions): Promise<Report> {
     commit: await headCommit(rootDir),
     calls,
     stats: computeStats(calls, scanned.length, Date.now() - started),
-    diagnostics: diag.finish(filesSeen, scanned.length),
+    diagnostics: diag.finish(seen, scanned.length),
     // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-    coverage: opts.changedSince ? undefined : sdkCoverage(rootDir, scanned, calls, registry),
+    coverage: opts.changedSince ? undefined : sdkCoverage(rootDir, scanned, calls, registry, packages),
   };
 }

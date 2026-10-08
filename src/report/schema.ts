@@ -1,4 +1,5 @@
-import { z } from "zod/v4";
+import { z } from "zod";
+import type { Shape } from "../types.js";
 import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
 
 /**
@@ -13,7 +14,7 @@ export const LanguageSchema = z
   .enum(["typescript", "javascript", "python", "php"])
   .meta({ id: "Language", description: "Source language of a file, from its extension. The TypeScript scanner emits typescript and javascript." });
 
-export const ShapeSchema: z.ZodType<unknown> = z
+export const ShapeSchema: z.ZodType<Shape> = z
   .lazy(() =>
     z.union([
       z.object({

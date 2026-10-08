@@ -1,10 +1,11 @@
 import { Node, type CallExpression, type Expression } from "ts-morph";
+import { type FunctionLike } from "../ast/function.js";
+import { declarationsOf } from "../ast/object.js";
+import { callShift, wrapperFunction } from "../detect/callee.js";
 import { detectFile, detectNode, type DetectResult, type WrapperCandidate } from "../detect/index.js";
-import { declarationsOf } from "../detect/options.js";
 import type { Registry } from "../detect/registry/index.js";
 import type { Unfollowed } from "../detect/unfollowed.js";
 import type { RawCall, Subst } from "../types.js";
-import { callShift, wrapperFunction, type FunctionLike } from "./function.js";
 
 const MAX_INNER = 3;
 
@@ -30,7 +31,7 @@ function referencesParam(e: Node, params: Set<Node>, depth: number): boolean {
   const idents = [e, ...e.getDescendants()].filter(Node.isIdentifier);
   for (const id of idents) {
     for (const decl of declarationsOf(id)) {
-      const param = Node.isParameterDeclaration(decl) ? decl : Node.isBindingElement(decl) ? decl.getFirstAncestor(Node.isParameterDeclaration) : undefined;
+      const param = Node.isParameterDeclaration(decl) ? decl : Node.isBindingElement(decl) ? decl.getFirstAncestor((a) => Node.isParameterDeclaration(a)) : undefined;
       if (param && params.has(param)) return true;
       const init = Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
       if (init && depth < 1 && referencesParam(init, params, depth + 1)) return true;

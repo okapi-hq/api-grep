@@ -1,12 +1,11 @@
 import type { Expression } from "ts-morph";
-import { memberChain } from "../detect/callee.js";
-import { getProp } from "../detect/options.js";
+import { memberChain } from "../ast/expr.js";
+import { getProp } from "../ast/object.js";
+import { PLACEHOLDER_RE, placeholderNames } from "../normalize/path.js";
 import type { EvalCtx, Part, RawCall, UrlShape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { refParts } from "./ref-path.js";
 import { partsToUrlShape, resolveUrl, urlParts } from "./url.js";
-
-const PLACEHOLDER_RE = /\{([^}]+)\}/g;
 
 function originOfExpr(e: Expression | undefined, ctx: EvalCtx): string | undefined {
   if (!e) return undefined;
@@ -34,7 +33,7 @@ function staticHostUrl(raw: RawCall, pathT: string, ctx: EvalCtx): UrlShape {
   const url = partsToUrlShape(parts, ctx);
   url.hostKind = "literal";
   url.host = sdk.host;
-  const names = [...pathT.matchAll(PLACEHOLDER_RE)].map((m) => m[1]!);
+  const names = placeholderNames(pathT);
   url.dynamic = names.map((name, i) => ({ where: "path" as const, name, origin: sdkPathOrigin(raw, name, i, ctx) })).filter((d) => d.origin !== "static");
   return url;
 }

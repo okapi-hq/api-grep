@@ -37,9 +37,13 @@ export class DiagnosticsCollector {
   }
 }
 
+/** `1 call`, `3 calls`. */
+export function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
 /** `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 call dropped` (or `..., complete`). */
 export function diagnosticsLine(d: Diagnostics): string {
-  const plural = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
   const parts = [`scanned ${d.filesScanned}/${d.filesSeen} files`];
   const skipped = Object.values(d.skippedCounts).reduce((a, b) => a + b, 0);
   if (skipped > 0) parts.push(`${skipped} skipped`);
@@ -53,7 +57,7 @@ export function diagnosticsLine(d: Diagnostics): string {
 export function coverageWarnings(coverage: Coverage): string[] {
   const out: string[] = [];
   for (const s of coverage.sdks) {
-    const where = `imported in ${s.importSites} ${s.importSites === 1 ? "file" : "files"}`;
+    const where = `imported in ${plural(s.importSites, "file", "files")}`;
     if (s.status === "unsupported") out.push(`${s.package} ${where}, no registry: its calls are not listed`);
     if (s.status === "imported-no-calls") out.push(`${s.package} ${where}, but no call was found (used through a wrapper?)`);
   }

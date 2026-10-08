@@ -1,17 +1,14 @@
 import { Node, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { propertyKey, toObjectLiteral } from "../detect/options.js";
+import { isUndefinedLiteral } from "../ast/expr.js";
+import { propertyKey, propertyValue, toObjectLiteral } from "../ast/object.js";
 import type { DynamicPart, EvalCtx, Shape } from "../types.js";
 import { shapeOf } from "./body.js";
+import { isNullable } from "./type-shape.js";
 
 export interface QueryResult {
   names: string[];
   shape: Record<string, Shape>;
   dynamic: DynamicPart[];
-}
-
-function isNullable(s: Shape): boolean {
-  return s.type === "union" && s.anyOf.some((x) => x.type === "null");
 }
 
 function addProps(out: QueryResult, s: Shape, origin: string): void {
@@ -33,8 +30,8 @@ function fromLiteral(lit: Expression, ctx: EvalCtx, out: QueryResult): void {
     }
     const key = propertyKey(member);
     if (key === undefined) continue;
-    const value = Node.isPropertyAssignment(member) ? member.getInitializer() : Node.isShorthandPropertyAssignment(member) ? member.getNameNode() : undefined;
-    if (!value || (Node.isIdentifier(unwrap(value)) && unwrap(value).getText() === "undefined")) continue;
+    const value = propertyValue(member);
+    if (!value || isUndefinedLiteral(value)) continue;
     const r = shapeOf(value, ctx, 1);
     if (!out.names.includes(key)) out.names.push(key);
     out.shape[key] = r.shape;

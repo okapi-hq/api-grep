@@ -1,6 +1,6 @@
 import { Node, type CallExpression, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { declarationsOf, paramSubstitution } from "../detect/options.js";
+import { unwrap } from "../ast/expr.js";
+import { declarationsOf, paramSubstitution } from "../ast/object.js";
 import type { EvalCtx, Part } from "../types.js";
 import { evaluate } from "./evaluate.js";
 
@@ -9,7 +9,7 @@ const MAX_DEPTH = 6;
 const BUILDERS = new Set(["doc", "collection", "collectionGroup", "ref", "child"]);
 
 function builderName(call: CallExpression): string | undefined {
-  const callee = unwrap(call.getExpression() as Expression);
+  const callee = unwrap(call.getExpression());
   if (Node.isIdentifier(callee)) return callee.getText();
   if (Node.isPropertyAccessExpression(callee)) return callee.getName();
   return undefined;
@@ -26,7 +26,7 @@ function follow(u: Expression, ctx: EvalCtx): { expr?: Expression; param: boolea
 }
 
 function joinSegments(segments: Part[][]): Part[] {
-  return segments.flatMap((s, i) => (i === 0 ? s : [{ kind: "static", text: "/" } as Part, ...s]));
+  return segments.flatMap((s, i) => (i === 0 ? s : [{ kind: "static", text: "/" }, ...s]));
 }
 
 /** A builder call, or an identifier that holds one; anything else (the db / storage instance) is not a reference. */

@@ -1,7 +1,7 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
+import { getProp } from "../ast/object.js";
 import { exportedChain } from "./callee.js";
-import { getProp } from "./options.js";
 import type { Registry } from "./registry/index.js";
 
 function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {

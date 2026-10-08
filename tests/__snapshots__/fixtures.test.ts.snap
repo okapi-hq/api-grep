@@ -4013,9 +4013,9 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
           "headers": {},
           "method": "GET",
           "query": {
-            "apiKey": "x",
+            "apiKey": "<apiKey>",
           },
-          "url": "https://api.cal.com/v1/bookings?apiKey=x",
+          "url": "https://api.cal.com/v1/bookings?apiKey=%3CapiKey%3E",
           "variant": "minimal",
         },
       ],
@@ -4041,9 +4041,6 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "queryShape": {
         "properties": {
           "apiKey": {
-            "enum": [
-              "x",
-            ],
             "type": "string",
           },
         },

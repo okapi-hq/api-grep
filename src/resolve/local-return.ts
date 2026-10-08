@@ -1,12 +1,13 @@
 import { Node, SyntaxKind, type CallExpression, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { declarationsOf } from "../detect/options.js";
+import { enclosingClass } from "../ast/class.js";
+import { unwrap } from "../ast/expr.js";
+import { isFunctionLike, type FunctionLike } from "../ast/function.js";
+import { declarationsOf } from "../ast/object.js";
 import type { EvalCtx, Subst } from "../types.js";
-import { isFunctionLike, type FunctionLike } from "../wrappers/function.js";
 
 /** The project function a call runs: `apiUrl(m)` (declaration or arrow constant) or `this.url(p)` (a method). */
 function calledFunction(call: CallExpression): FunctionLike | undefined {
-  const callee = unwrap(call.getExpression() as Expression);
+  const callee = unwrap(call.getExpression());
   if (Node.isIdentifier(callee)) {
     for (const decl of declarationsOf(callee)) {
       if (isFunctionLike(decl)) return decl;
@@ -17,8 +18,7 @@ function calledFunction(call: CallExpression): FunctionLike | undefined {
     return undefined;
   }
   if (Node.isPropertyAccessExpression(callee) && Node.isThisExpression(callee.getExpression())) {
-    const cls = callee.getFirstAncestorByKind(SyntaxKind.ClassDeclaration) ?? callee.getFirstAncestorByKind(SyntaxKind.ClassExpression);
-    const method = cls?.getMethod(callee.getName());
+    const method = enclosingClass(callee)?.getMethod(callee.getName());
     return isFunctionLike(method) ? method : undefined;
   }
   return undefined;

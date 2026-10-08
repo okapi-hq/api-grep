@@ -1,7 +1,7 @@
 import { Node, type CallExpression, type Expression } from "ts-morph";
 import type { Callee } from "../types.js";
-import { isFunctionLike } from "../wrappers/function.js";
-import { unwrap } from "./callee.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { isFunctionLike } from "../ast/function.js";
 
 /** A call the scanner saw but could not follow to an HTTP client. */
 export interface Unfollowed {
@@ -23,7 +23,7 @@ function urlLike(arg: Node | undefined): boolean {
     const head = u.getHead().getLiteralText();
     return head ? URL_TEXT.test(head) : urlLike(u.getTemplateSpans()[0]?.getExpression());
   }
-  if (Node.isNewExpression(u)) return /^(?:URL|Request)$/.test(u.getExpression().getText());
+  if (Node.isNewExpression(u)) return /^(?:URL|Request)$/.test(constructedName(u) ?? "");
   if (Node.isBinaryExpression(u)) return urlLike(u.getLeft());
   if (Node.isIdentifier(u)) return URL_NAME.test(u.getText());
   if (Node.isPropertyAccessExpression(u)) return URL_NAME.test(u.getName());
@@ -48,7 +48,7 @@ export function unfollowedFetch(node: CallExpression, callee: Callee): Unfollowe
   const runtimePackage = callee.package && !callee.package.startsWith("@types/") && callee.package !== "undici-types";
   if (runtimePackage || callee.global || isFunctionLike(callee.localDecl)) return undefined;
   if (callee.localDecl && (Node.isClassDeclaration(callee.localDecl) || Node.isClassExpression(callee.localDecl))) return undefined;
-  const expr = unwrap(node.getExpression() as Expression);
+  const expr = unwrap(node.getExpression());
   const name = Node.isIdentifier(expr) ? expr.getText() : Node.isPropertyAccessExpression(expr) ? expr.getName() : undefined;
   if (!name) return undefined;
   // a `Response` return type alone is not enough: route guards return one too (`assertEntitlement(): Promise<Response | null>`)

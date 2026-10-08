@@ -1,7 +1,8 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { AuthScheme, Callee, RawCall } from "../types.js";
-import { describeCallee, exportedChain, unwrap } from "./callee.js";
-import { declarationsOf, getProp } from "./options.js";
+import { unwrap } from "../ast/expr.js";
+import { declarationsOf, getProp } from "../ast/object.js";
+import { describeCallee, exportedChain } from "./callee.js";
 import data from "./registry/ai-sdk.json" with { type: "json" };
 
 export interface AiSdkProvider {
