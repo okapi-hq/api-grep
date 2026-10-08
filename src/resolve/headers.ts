@@ -1,31 +1,12 @@
 import { Node, type Expression } from "ts-morph";
 import { unwrap } from "../detect/callee.js";
 import { propertyKey, toObjectLiteral } from "../detect/options.js";
-import { looksSecret } from "../report/redact.js";
-import type { AuthScheme, EvalCtx } from "../types.js";
-import { evaluate, staticText } from "./evaluate.js";
+import type { EvalCtx } from "../types.js";
+import { evaluate } from "./evaluate.js";
+import { addHeader, type HeadersResult } from "./header-names.js";
 import { typeToShape } from "./type-shape.js";
 
-export interface HeadersResult {
-  names: string[];
-  /** Static literal values for non-credential headers; `null` when the value is dynamic or a credential. */
-  values: Record<string, string | null>;
-  authScheme: AuthScheme;
-  known: boolean;
-}
-
-const APIKEY_HEADERS = new Set(["x-api-key", "api-key", "apikey", "x-auth-token", "x-token", "api_key", "x-access-token", "x-goog-api-key", "anthropic-api-key"]);
-const CREDENTIAL_RE = /^(authorization|proxy-authorization|cookie|set-cookie)$|token|key|secret|password|credential|session|signature/;
-
-function schemeFromAuthValue(value: Expression | undefined, ctx: EvalCtx): AuthScheme {
-  if (!value) return "unknown";
-  const first = evaluate(value, ctx)[0];
-  const head = first?.kind === "static" ? first.text.trim().toLowerCase() : "";
-  if (head.startsWith("bearer")) return "bearer";
-  if (head.startsWith("basic")) return "basic";
-  if (head.startsWith("token")) return "apikey";
-  return "unknown";
-}
+export type { HeadersResult } from "./header-names.js";
 
 function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: number): void {
   const lit = toObjectLiteral(obj, ctx, depth);
@@ -54,21 +35,8 @@ function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: numbe
   }
 }
 
-function staticValue(lower: string, value: Expression | undefined, ctx: EvalCtx): string | null {
-  if (!value || CREDENTIAL_RE.test(lower)) return null;
-  const text = staticText(evaluate(value, ctx));
-  if (text === undefined || looksSecret(text)) return null;
-  return text;
-}
-
 function pushName(out: HeadersResult, key: string, value: Expression | undefined, ctx: EvalCtx): void {
-  const lower = key.toLowerCase();
-  if (!out.names.includes(lower)) out.names.push(lower);
-  out.values[lower] = staticValue(lower, value, ctx);
-  if (lower === "authorization") {
-    const s = schemeFromAuthValue(value, ctx);
-    if (out.authScheme === "none" || out.authScheme === "unknown") out.authScheme = s;
-  } else if (APIKEY_HEADERS.has(lower)) out.authScheme = "apikey";
+  addHeader(out, key, value ? evaluate(value, ctx) : undefined);
 }
 
 /** Header names (lower-cased), non-credential literal values and the auth scheme from a headers expression. */

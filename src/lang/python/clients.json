@@ -1,0 +1,64 @@
+{
+  "$comment": "Python HTTP clients. `functions` are both module functions (`requests.get`) and methods of the client objects built by `instances` (`requests.Session().get`, `httpx.AsyncClient(base_url=...).post`). `keys` maps keyword arguments to what they carry.",
+  "clients": [
+    {
+      "client": "requests",
+      "imports": ["requests"],
+      "instances": { "names": ["Session", "session"] },
+      "functions": {
+        "get": { "method": "GET", "queryArg": 1 },
+        "head": { "method": "HEAD" },
+        "options": { "method": "OPTIONS" },
+        "delete": { "method": "DELETE" },
+        "post": { "method": "POST", "bodyArg": 1, "bodyRole": "body:form" },
+        "put": { "method": "PUT", "bodyArg": 1, "bodyRole": "body:form" },
+        "patch": { "method": "PATCH", "bodyArg": 1, "bodyRole": "body:form" },
+        "request": { "methodArg": 0, "urlArg": 1 }
+      },
+      "keys": { "url": "url", "method": "method", "params": "query", "json": "body:json", "data": "body:form", "files": "body:multipart", "headers": "headers", "auth": "auth" }
+    },
+    {
+      "client": "httpx",
+      "imports": ["httpx"],
+      "instances": { "names": ["Client", "AsyncClient"] },
+      "functions": {
+        "get": { "method": "GET" },
+        "head": { "method": "HEAD" },
+        "options": { "method": "OPTIONS" },
+        "delete": { "method": "DELETE" },
+        "post": { "method": "POST" },
+        "put": { "method": "PUT" },
+        "patch": { "method": "PATCH" },
+        "request": { "methodArg": 0, "urlArg": 1 },
+        "stream": { "methodArg": 0, "urlArg": 1 }
+      },
+      "keys": { "url": "url", "method": "method", "base_url": "baseUrl", "params": "query", "json": "body:json", "data": "body:form", "files": "body:multipart", "content": "body:raw", "headers": "headers", "auth": "auth" }
+    },
+    {
+      "client": "aiohttp",
+      "imports": ["aiohttp"],
+      "instances": { "names": ["ClientSession"], "baseUrlArg": 0 },
+      "functions": {
+        "get": { "method": "GET" },
+        "head": { "method": "HEAD" },
+        "options": { "method": "OPTIONS" },
+        "delete": { "method": "DELETE" },
+        "post": { "method": "POST", "bodyArg": 1, "bodyRole": "body:form" },
+        "put": { "method": "PUT", "bodyArg": 1, "bodyRole": "body:form" },
+        "patch": { "method": "PATCH", "bodyArg": 1, "bodyRole": "body:form" },
+        "request": { "methodArg": 0, "urlArg": 1 }
+      },
+      "keys": { "url": "url", "method": "method", "base_url": "baseUrl", "params": "query", "json": "body:json", "data": "body:form", "headers": "headers", "auth": "auth" }
+    },
+    {
+      "client": "urllib3",
+      "imports": ["urllib3"],
+      "instances": { "names": ["PoolManager", "ProxyManager"] },
+      "functions": {
+        "request": { "methodArg": 0, "urlArg": 1 },
+        "urlopen": { "methodArg": 0, "urlArg": 1 }
+      },
+      "keys": { "url": "url", "method": "method", "fields": "body:form", "body": "body:raw", "json": "body:json", "headers": "headers" }
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "$comment": "PyPI distributions whose import name is not the distribution name with `-` read as `_`: distribution -> import modules (dotted).",
+  "modules": {
+    "airtable-python-wrapper": [
+      "airtable"
+    ],
+    "analytics-python": [
+      "analytics",
+      "segment.analytics"
+    ],
+    "azure-identity": [
+      "azure.identity"
+    ],
+    "brevo-python": [
+      "brevo"
+    ],
+    "cerebras-cloud-sdk": [
+      "cerebras.cloud.sdk"
+    ],
+    "discord.py": [
+      "discord"
+    ],
+    "fireworks-ai": [
+      "fireworks"
+    ],
+    "github3.py": [
+      "github3"
+    ],
+    "google-ai-generativelanguage": [
+      "google.ai.generativelanguage",
+      "google.ai.generativelanguage_v1beta"
+    ],
+    "google-api-python-client": [
+      "googleapiclient",
+      "apiclient"
+    ],
+    "google-auth": [
+      "google.auth",
+      "google.oauth2"
+    ],
+    "google-cloud-aiplatform": [
+      "google.cloud.aiplatform",
+      "vertexai"
+    ],
+    "google-cloud-bigquery": [
+      "google.cloud.bigquery"
+    ],
+    "google-cloud-firestore": [
+      "google.cloud.firestore",
+      "google.cloud.firestore_v1"
+    ],
+    "google-cloud-pubsub": [
+      "google.cloud.pubsub",
+      "google.cloud.pubsub_v1"
+    ],
+    "google-cloud-secret-manager": [
+      "google.cloud.secretmanager",
+      "google.cloud.secretmanager_v1"
+    ],
+    "google-cloud-speech": [
+      "google.cloud.speech",
+      "google.cloud.speech_v1",
+      "google.cloud.speech_v2"
+    ],
+    "google-cloud-storage": [
+      "google.cloud.storage"
+    ],
+    "google-cloud-tasks": [
+      "google.cloud.tasks",
+      "google.cloud.tasks_v2"
+    ],
+    "google-cloud-texttospeech": [
+      "google.cloud.texttospeech",
+      "google.cloud.texttospeech_v1"
+    ],
+    "google-cloud-translate": [
+      "google.cloud.translate",
+      "google.cloud.translate_v2",
+      "google.cloud.translate_v3"
+    ],
+    "google-cloud-vision": [
+      "google.cloud.vision",
+      "google.cloud.vision_v1"
+    ],
+    "google-genai": [
+      "google.genai"
+    ],
+    "google-generativeai": [
+      "google.generativeai"
+    ],
+    "google-maps-places": [
+      "google.maps.places",
+      "google.maps.places_v1"
+    ],
+    "google-maps-routing": [
+      "google.maps.routing",
+      "google.maps.routing_v2"
+    ],
+    "hubspot-api-client": [
+      "hubspot"
+    ],
+    "llama-index-llms-anthropic": [
+      "llama_index.llms.anthropic"
+    ],
+    "llama-index-llms-openai": [
+      "llama_index.llms.openai"
+    ],
+    "msgraph-sdk": [
+      "msgraph"
+    ],
+    "ngrok-api": [
+      "ngrok"
+    ],
+    "openai-agents": [
+      "agents"
+    ],
+    "paddle-python-sdk": [
+      "paddle_billing"
+    ],
+    "perplexityai": [
+      "perplexity"
+    ],
+    "py-cord": [
+      "discord"
+    ],
+    "PyGithub": [
+      "github"
+    ],
+    "pyrebase4": [
+      "pyrebase"
+    ],
+    "pyTelegramBotAPI": [
+      "telebot"
+    ],
+    "python-intercom": [
+      "intercom"
+    ],
+    "python-telegram-bot": [
+      "telegram"
+    ],
+    "segment-analytics-python": [
+      "segment.analytics"
+    ],
+    "slack-sdk": [
+      "slack_sdk",
+      "slack"
+    ],
+    "slackclient": [
+      "slack"
+    ],
+    "vt-py": [
+      "vt"
+    ],
+    "zai-sdk": [
+      "zai"
+    ]
+  }
+}

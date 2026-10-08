@@ -1,0 +1,32 @@
+{
+  "$comment": "anthropic-python's AnthropicBedrock client: messages go to Bedrock Runtime `/model/{model}/invoke` (`invoke-with-response-stream` when streaming); batches and count_tokens raise in the SDK.",
+  "package": "anthropic",
+  "imports": [
+    "anthropic"
+  ],
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against anthropic-python 1.12.1 lib/bedrock/_client.py)",
+  "instance": {
+    "names": [
+      "AnthropicBedrock",
+      "AsyncAnthropicBedrock"
+    ],
+    "urlArg": {
+      "AnthropicBedrock": "kw:base_url",
+      "AsyncAnthropicBedrock": "kw:base_url"
+    }
+  },
+  "builders": [
+    "with_raw_response",
+    "with_streaming_response"
+  ],
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/model/{model}/invoke", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "messages.stream": {"method": "POST", "path": "/model/{model}/invoke-with-response-stream", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "beta.messages.create": {"method": "POST", "path": "/model/{model}/invoke", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "beta.messages.stream": {"method": "POST", "path": "/model/{model}/invoke-with-response-stream", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "completions.create": {"method": "POST", "path": "/model/{model}/invoke", "params": {"model": "kw:model"}, "bodyKwargs": true}
+  }
+}

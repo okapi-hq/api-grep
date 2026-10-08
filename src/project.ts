@@ -1,12 +1,14 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
-import fg from "fast-glob";
-import { Project, type SourceFile } from "ts-morph";
+import { Project, ts, type SourceFile } from "ts-morph";
+import { languageFiles, leftOutFiles, matchesAny, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
+
+export { globToRegExp, readEnvHints, type LeftOut } from "./lang/files.js";
+
+export const TS_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
 
 export const DEFAULT_EXCLUDES = [
-  "**/node_modules/**",
-  "**/dist/**",
-  "**/build/**",
+  ...SHARED_EXCLUDES,
   "**/.next/**",
   "**/*.test.ts",
   "**/*.test.tsx",
@@ -22,11 +24,6 @@ export interface LoadOptions {
   tsconfig?: string;
   include?: string[];
   exclude?: string[];
-}
-
-export interface LeftOut {
-  file: string;
-  reason: "excluded" | "not-included";
 }
 
 export interface Loaded {
@@ -49,45 +46,9 @@ function findTsconfig(dir: string): string | undefined {
   return undefined;
 }
 
-function globFiles(dir: string, include: string[] | undefined, exclude: string[]): string[] {
-  const patterns = include && include.length > 0 ? include : ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"];
-  return fg.sync(patterns, { cwd: dir, absolute: true, ignore: exclude, followSymbolicLinks: false });
-}
-
-function matchesAny(file: string, dir: string, globs: string[]): boolean {
-  if (globs.length === 0) return false;
-  const rel = path.relative(dir, file).split(path.sep).join("/");
-  return globs.some((g) => globToRegExp(g).test(rel));
-}
-
-export function globToRegExp(glob: string): RegExp {
-  let re = "";
-  for (let i = 0; i < glob.length; i++) {
-    const c = glob[i]!;
-    if (c === "*") {
-      if (glob[i + 1] === "*") {
-        re += glob[i + 2] === "/" ? "(?:.*/)?" : ".*";
-        i += glob[i + 2] === "/" ? 2 : 1;
-      } else re += "[^/]*";
-    } else if (c === "?") re += "[^/]";
-    else if (".+^${}()|[]\\".includes(c)) re += `\\${c}`;
-    else re += c;
-  }
-  return new RegExp(`^${re}$`);
-}
-
-/** Reads .env.example / .env.sample for host hints (values are only used if they look like URLs). */
-export function readEnvHints(dir: string): Record<string, string> {
-  const hints: Record<string, string> = {};
-  for (const name of [".env.example", ".env.sample", ".env.template"]) {
-    const file = path.join(dir, name);
-    if (!existsSync(file)) continue;
-    for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
-      const m = /^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*["']?([^"'#\s]*)/.exec(line);
-      if (m && m[2] && /^https?:\/\//.test(m[2])) hints[m[1]!] = m[2];
-    }
-  }
-  return hints;
+/** TypeScript files in scope (an `--include` glob only ever selects TypeScript files here). */
+export function tsFiles(dir: string, include: string[] | undefined, exclude: string[] = []): string[] {
+  return languageFiles(dir, TS_EXTENSIONS, include, [...DEFAULT_EXCLUDES, ...exclude]);
 }
 
 function selectFiles(project: Project, dir: string, opts: LoadOptions, exclude: string[]): SourceFile[] {
@@ -118,23 +79,25 @@ export function loadProject(opts: LoadOptions): Loaded {
       skipAddingFilesFromTsConfig: true,
       compilerOptions: { skipLibCheck: true, noEmit: true },
     });
-    addFiles(project, globFiles(dir, opts.include, exclude));
+    addFiles(project, tsFiles(dir, opts.include, opts.exclude));
     project.resolveSourceFileDependencies();
   } else {
     project = new Project({
       compilerOptions: { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true },
     });
-    addFiles(project, globFiles(dir, opts.include, exclude));
+    addFiles(project, tsFiles(dir, opts.include, opts.exclude));
   }
   const files = selectFiles(project, dir, opts, exclude);
-  return { project, files, envHints: readEnvHints(dir), leftOut: leftOutFiles(dir, opts, files) };
+  const kept = new Set(files.map((sf) => sf.getFilePath() as string));
+  const leftOut = leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, TS_EXTENSIONS, DEFAULT_EXCLUDES, kept);
+  return { project, files, envHints: readEnvHints(dir), leftOut };
 }
 
-/** Files the default file set would scan but --exclude / --include removed; test files and build output are out of scope. */
-function leftOutFiles(dir: string, opts: LoadOptions, selected: SourceFile[]): LeftOut[] {
-  if (!opts.include?.length && !opts.exclude?.length) return [];
-  const kept = new Set(selected.map((sf) => sf.getFilePath() as string));
-  return globFiles(dir, undefined, DEFAULT_EXCLUDES)
-    .filter((f) => !kept.has(f))
-    .map((f) => ({ file: path.relative(dir, f).split(path.sep).join("/"), reason: matchesAny(f, dir, opts.exclude ?? []) ? "excluded" : "not-included" }));
+/** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
+export function unreadable(sf: SourceFile): string | undefined {
+  const syntax = sf.getProject().getProgram().compilerObject.getSyntacticDiagnostics(sf.compilerNode)[0];
+  if (syntax) return ts.flattenDiagnosticMessageText(syntax.messageText, " ");
+  const decls = [...sf.getImportDeclarations(), ...sf.getExportDeclarations()];
+  const bad = decls.some((d) => d.compilerNode.moduleSpecifier !== undefined && !ts.isStringLiteral(d.compilerNode.moduleSpecifier));
+  return bad ? "Expected the module specifier to be a string literal." : undefined;
 }

@@ -1,0 +1,67 @@
+{
+  "$comment": "mistralai >= 1.0: `client = Mistral(api_key=...)` (`from mistralai import Mistral`, or `from mistralai.client import Mistral` in 3.x); every argument is a keyword, the non-path ones are the JSON body; `*_async` twins live on the same objects. The bare `chat` / `embeddings` / `list_models` keys are the 0.x MistralClient API.",
+  "package": "mistralai",
+  "imports": [
+    "mistralai"
+  ],
+  "provider": "mistral",
+  "host": "api.mistral.ai",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against mistralai 3.1.0 source; 0.x keys against mistralai 0.4.2)",
+  "instance": {
+    "names": [
+      "Mistral",
+      "client.Mistral",
+      "client.MistralClient",
+      "async_client.MistralAsyncClient"
+    ],
+    "urlArg": {
+      "Mistral": "kw:server_url",
+      "client.Mistral": "kw:server_url",
+      "client.MistralClient": "kw:endpoint",
+      "async_client.MistralAsyncClient": "kw:endpoint"
+    }
+  },
+  "methods": {
+    "chat.complete": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat.complete_async": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat.stream": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat.stream_async": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat.parse": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat.parse_async": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "fim.complete": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "fim.complete_async": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "fim.stream": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "fim.stream_async": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "agents.complete": {"method": "POST", "path": "/v1/agents/completions", "bodyKwargs": true},
+    "agents.complete_async": {"method": "POST", "path": "/v1/agents/completions", "bodyKwargs": true},
+    "agents.stream": {"method": "POST", "path": "/v1/agents/completions", "bodyKwargs": true},
+    "agents.stream_async": {"method": "POST", "path": "/v1/agents/completions", "bodyKwargs": true},
+    "embeddings.create": {"method": "POST", "path": "/v1/embeddings", "bodyKwargs": true},
+    "embeddings.create_async": {"method": "POST", "path": "/v1/embeddings", "bodyKwargs": true},
+    "classifiers.moderate": {"method": "POST", "path": "/v1/moderations", "bodyKwargs": true},
+    "classifiers.moderate_async": {"method": "POST", "path": "/v1/moderations", "bodyKwargs": true},
+    "classifiers.moderate_chat": {"method": "POST", "path": "/v1/chat/moderations", "bodyKwargs": true},
+    "classifiers.moderate_chat_async": {"method": "POST", "path": "/v1/chat/moderations", "bodyKwargs": true},
+    "ocr.process": {"method": "POST", "path": "/v1/ocr", "bodyKwargs": true},
+    "ocr.process_async": {"method": "POST", "path": "/v1/ocr", "bodyKwargs": true},
+    "files.upload": {"method": "POST", "path": "/v1/files", "bodyKwargs": true, "encoding": "multipart"},
+    "files.upload_async": {"method": "POST", "path": "/v1/files", "bodyKwargs": true, "encoding": "multipart"},
+    "files.list": {"method": "GET", "path": "/v1/files", "queryKwargs": true},
+    "files.retrieve": {"method": "GET", "path": "/v1/files/{file_id}", "params": {"file_id": "kw:file_id"}},
+    "files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "params": {"file_id": "kw:file_id"}},
+    "files.download": {"method": "GET", "path": "/v1/files/{file_id}/content", "params": {"file_id": "kw:file_id"}},
+    "files.get_signed_url": {"method": "GET", "path": "/v1/files/{file_id}/url", "params": {"file_id": "kw:file_id"}},
+    "models.list": {"method": "GET", "path": "/v1/models"},
+    "models.list_async": {"method": "GET", "path": "/v1/models"},
+    "models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "params": {"model_id": "kw:model_id"}},
+    "models.delete": {"method": "DELETE", "path": "/v1/models/{model_id}", "params": {"model_id": "kw:model_id"}},
+    "chat": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "chat_stream": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true},
+    "completion": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "completion_stream": {"method": "POST", "path": "/v1/fim/completions", "bodyKwargs": true},
+    "embeddings": {"method": "POST", "path": "/v1/embeddings", "bodyKwargs": true},
+    "list_models": {"method": "GET", "path": "/v1/models"},
+    "delete_model": {"method": "DELETE", "path": "/v1/models/{model_id}", "params": {"model_id": "arg:0"}}
+  }
+}

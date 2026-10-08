@@ -1,0 +1,30 @@
+{
+  "$comment": "convex (Python client): `client = ConvexClient(deployment_url)`; `client.query(\"tasks:get\", {...})`. `{name}` is the function path string; the TS registry writes it as `tasks/get`. ConvexClient talks over the sync WebSocket and ConvexHttpClient POSTs /api/query|mutation|action; both are reported like the TS registry (/api/run/{function}).",
+  "package": "convex",
+  "imports": [
+    "convex"
+  ],
+  "provider": "convex",
+  "host": "{deployment}.convex.cloud",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against convex 0.8.1 python client)",
+  "instance": {
+    "names": [
+      "ConvexClient",
+      "http_client.ConvexHttpClient",
+      "ConvexHttpClient"
+    ],
+    "urlArg": {
+      "ConvexClient": "0",
+      "http_client.ConvexHttpClient": "0",
+      "ConvexHttpClient": "0"
+    }
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "query": {"method": "POST", "path": "/api/run/{name}", "params": {"name": "arg:0"}, "bodyArg": 1},
+    "mutation": {"method": "POST", "path": "/api/run/{name}", "params": {"name": "arg:0"}, "bodyArg": 1},
+    "action": {"method": "POST", "path": "/api/run/{name}", "params": {"name": "arg:0"}, "bodyArg": 1},
+    "subscribe": {"method": "POST", "path": "/api/run/{name}", "params": {"name": "arg:0"}, "bodyArg": 1}
+  }
+}

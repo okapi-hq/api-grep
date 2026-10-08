@@ -1,0 +1,7 @@
+# runtime
+stripe==9.1.0
+supabase>=2.0,<3
+notion-client
+sentry-sdk[flask]~=2.0 ; python_version >= "3.9"
+requests
+-r extra.txt

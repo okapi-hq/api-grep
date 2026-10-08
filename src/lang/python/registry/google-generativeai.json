@@ -1,0 +1,33 @@
+{
+  "$comment": "google-generativeai (legacy SDK, deprecated): `genai.configure(api_key=...)`, then `model = genai.GenerativeModel(\"gemini-1.5-flash\")`; the instance IS the model, so `{model_name}` is the constructor's first argument (the SDK prefixes `models/` when the name has no slash). Module functions (`genai.embed_content(model=\"models/text-embedding-004\", ...)`) take the full resource name. Default transport is gRPC; paths are the REST equivalents.",
+  "package": "google-generativeai",
+  "imports": [
+    "google.generativeai"
+  ],
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against google-generativeai 0.8.6 source)",
+  "instance": {
+    "names": [
+      "GenerativeModel"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "generate_content": {"method": "POST", "path": "/v1beta/models/{model_name}:generateContent", "params": {"model_name": "instance:0"}, "bodyArg": 0},
+    "generate_content_async": {"method": "POST", "path": "/v1beta/models/{model_name}:generateContent", "params": {"model_name": "instance:0"}, "bodyArg": 0},
+    "count_tokens": {"method": "POST", "path": "/v1beta/models/{model_name}:countTokens", "params": {"model_name": "instance:0"}, "bodyArg": 0},
+    "count_tokens_async": {"method": "POST", "path": "/v1beta/models/{model_name}:countTokens", "params": {"model_name": "instance:0"}, "bodyArg": 0},
+    "start_chat.send_message": {"method": "POST", "path": "/v1beta/models/{model_name}:generateContent", "bodyArg": 0},
+    "start_chat.send_message_async": {"method": "POST", "path": "/v1beta/models/{model_name}:generateContent", "bodyArg": 0},
+    "embed_content": {"method": "POST", "path": "/v1beta/{model}:embedContent", "params": {"model": "arg:0"}},
+    "embed_content_async": {"method": "POST", "path": "/v1beta/{model}:embedContent", "params": {"model": "arg:0"}},
+    "list_models": {"method": "GET", "path": "/v1beta/models"},
+    "get_model": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "upload_file": {"method": "POST", "path": "/upload/v1beta/files", "bodyArg": 0, "encoding": "multipart"},
+    "get_file": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "list_files": {"method": "GET", "path": "/v1beta/files"},
+    "delete_file": {"method": "DELETE", "path": "/v1beta/{name}", "params": {"name": "arg:0"}}
+  }
+}

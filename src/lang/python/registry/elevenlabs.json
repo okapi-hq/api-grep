@@ -1,0 +1,43 @@
+{
+  "$comment": "elevenlabs-python >= 1.0: `client = ElevenLabs(api_key=...)`; `client.text_to_speech.convert(voice_id, text=..., model_id=...)`; the voice id is positional, the other keywords are the JSON body.",
+  "package": "elevenlabs",
+  "imports": [
+    "elevenlabs"
+  ],
+  "provider": "elevenlabs",
+  "host": "api.elevenlabs.io",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against elevenlabs-python 2.71.0 source)",
+  "instance": {
+    "names": [
+      "ElevenLabs",
+      "AsyncElevenLabs",
+      "client.ElevenLabs",
+      "client.AsyncElevenLabs"
+    ],
+    "urlArg": {
+      "ElevenLabs": "kw:base_url",
+      "AsyncElevenLabs": "kw:base_url",
+      "client.ElevenLabs": "kw:base_url",
+      "client.AsyncElevenLabs": "kw:base_url"
+    }
+  },
+  "methods": {
+    "text_to_speech.convert": {"method": "POST", "path": "/v1/text-to-speech/{voice_id}", "params": {"voice_id": "arg:0"}, "bodyKwargs": true},
+    "text_to_speech.stream": {"method": "POST", "path": "/v1/text-to-speech/{voice_id}/stream", "params": {"voice_id": "arg:0"}, "bodyKwargs": true},
+    "text_to_speech.convert_as_stream": {"method": "POST", "path": "/v1/text-to-speech/{voice_id}/stream", "params": {"voice_id": "arg:0"}, "bodyKwargs": true},
+    "text_to_speech.convert_with_timestamps": {"method": "POST", "path": "/v1/text-to-speech/{voice_id}/with-timestamps", "params": {"voice_id": "arg:0"}, "bodyKwargs": true},
+    "text_to_speech.stream_with_timestamps": {"method": "POST", "path": "/v1/text-to-speech/{voice_id}/stream/with-timestamps", "params": {"voice_id": "arg:0"}, "bodyKwargs": true},
+    "speech_to_text.convert": {"method": "POST", "path": "/v1/speech-to-text", "bodyKwargs": true, "encoding": "multipart"},
+    "speech_to_speech.convert": {"method": "POST", "path": "/v1/speech-to-speech/{voice_id}", "params": {"voice_id": "arg:0"}, "bodyKwargs": true, "encoding": "multipart"},
+    "speech_to_speech.stream": {"method": "POST", "path": "/v1/speech-to-speech/{voice_id}/stream", "params": {"voice_id": "arg:0"}, "bodyKwargs": true, "encoding": "multipart"},
+    "text_to_sound_effects.convert": {"method": "POST", "path": "/v1/sound-generation", "bodyKwargs": true},
+    "text_to_dialogue.convert": {"method": "POST", "path": "/v1/text-to-dialogue", "bodyKwargs": true},
+    "text_to_dialogue.stream": {"method": "POST", "path": "/v1/text-to-dialogue/stream", "bodyKwargs": true},
+    "voices.get_all": {"method": "GET", "path": "/v1/voices", "queryKwargs": true},
+    "voices.search": {"method": "GET", "path": "/v2/voices", "queryKwargs": true},
+    "voices.get": {"method": "GET", "path": "/v1/voices/{voice_id}", "params": {"voice_id": "arg:0"}},
+    "voices.delete": {"method": "DELETE", "path": "/v1/voices/{voice_id}", "params": {"voice_id": "arg:0"}},
+    "models.list": {"method": "GET", "path": "/v1/models"}
+  }
+}

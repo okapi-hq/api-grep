@@ -1,0 +1,44 @@
+{
+  "$comment": "posthog-python: module-level (`posthog.api_key = ...; posthog.capture(\"event\", distinct_id=...)`) or `Posthog(project_api_key, host=...)`; events are queued and sent in batches to /batch/, flags are evaluated by /flags/ unless local evaluation is on.",
+  "package": "posthog",
+  "imports": [
+    "posthog"
+  ],
+  "provider": "posthog",
+  "host": "us.i.posthog.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against posthog-python 7.66.0; identify/page are pre-6.0 module functions)",
+  "instance": {
+    "names": [
+      "Posthog",
+      "Client",
+      "AsyncPosthog",
+      "AsyncClient"
+    ],
+    "urlArg": {
+      "Posthog": "kw:host",
+      "Client": "kw:host",
+      "AsyncPosthog": "kw:host",
+      "AsyncClient": "kw:host"
+    }
+  },
+  "methods": {
+    "capture": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "set": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "set_once": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "group_identify": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "alias": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "capture_exception": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "identify": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "page": {"method": "POST", "path": "/batch/", "bodyKwargs": true},
+    "feature_enabled": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "get_feature_flag": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "get_feature_flag_payload": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "get_feature_flag_result": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "get_all_flags": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "get_all_flags_and_payloads": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "evaluate_flags": {"method": "POST", "path": "/flags/?v=2", "bodyKwargs": true},
+    "capture_ai": {"method": "POST", "path": "/i/v0/ai/batch/", "bodyKwargs": true},
+    "get_remote_config_payload": {"method": "GET", "path": "/api/projects/@current/feature_flags/{key}/remote_config", "params": {"key": "arg:0"}, "auth": "bearer"}
+  }
+}

@@ -1,10 +1,11 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
 import { unwrap } from "../detect/callee.js";
 import { bindingElementValue, declarationsOf, paramSubstitution, propertyKey } from "../detect/options.js";
-import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Part, Shape } from "../types.js";
-import { evaluate, partsToTemplate, staticText } from "./evaluate.js";
+import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
+import { evaluate, staticText } from "./evaluate.js";
 import { collectAppendedKeys } from "./appended.js";
-import { dedupe, mergeLiterals, typeToShape } from "./type-shape.js";
+import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
+import { typeToShape } from "./type-shape.js";
 
 const MAX_DEPTH = 6;
 
@@ -49,12 +50,6 @@ interface ShapeResult {
   origin?: DynamicOrigin;
 }
 
-function unionOf(shapes: Shape[]): Shape {
-  const items = dedupe(shapes);
-  if (items.length === 0) return { type: "unknown" };
-  if (items.length === 1) return items[0]!;
-  return mergeLiterals(items) ?? { type: "union", anyOf: items };
-}
 
 function mergeSpread(target: { properties: Record<string, Shape>; required: string[]; dynamicKeys: boolean }, spread: Shape): void {
   if (spread.type === "object") {
@@ -200,26 +195,6 @@ function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?
   return { inner: u, encoding: "json" };
 }
 
-const FORM_PAIR_RE = /^[\w.\-[\]]+=/;
-
-/** `\`a=${x}&b=1\`` style string bodies become form shapes: keys are static, values keep their part's shape. */
-function formStringShape(parts: Part[]): Shape | undefined {
-  const template = partsToTemplate(parts);
-  if (!FORM_PAIR_RE.test(template) || /\s/.test(template.split("&")[0]!.split("=")[0]!)) return undefined;
-  const properties: Record<string, Shape> = {};
-  const names = new Map(parts.filter((p): p is Extract<Part, { kind: "dynamic" }> => p.kind === "dynamic").map((p) => [p.name, p.shape]));
-  for (const pair of template.split("&")) {
-    const eq = pair.indexOf("=");
-    if (eq <= 0 || pair.slice(0, eq).includes("{")) return undefined;
-    const key = pair.slice(0, eq);
-    const value = pair.slice(eq + 1);
-    const m = /^\{([^}]+)\}$/.exec(value);
-    const dynShape = m ? names.get(m[1]!) : undefined;
-    properties[key] = value.includes("{") ? (dynShape && dynShape.type !== "object" ? dynShape : { type: "string", hint: m?.[1] }) : { type: "string", enum: [value] };
-  }
-  return { type: "object", properties, required: Object.keys(properties) };
-}
-
 function parseJsonString(u: Expression, ctx: EvalCtx): Shape | undefined {
   const text = staticText(evaluate(u, ctx));
   if (text === undefined) return undefined;
@@ -228,17 +203,6 @@ function parseJsonString(u: Expression, ctx: EvalCtx): Shape | undefined {
   } catch {
     return undefined;
   }
-}
-
-function jsonToShape(v: unknown): Shape {
-  if (v === null) return { type: "null" };
-  if (typeof v === "string") return { type: "string", enum: [v] };
-  if (typeof v === "number") return { type: Number.isInteger(v) ? "integer" : "number", enum: [v] };
-  if (typeof v === "boolean") return { type: "boolean", enum: [v] };
-  if (Array.isArray(v)) return { type: "array", items: unionOf(v.map(jsonToShape)) };
-  const o = v as Record<string, unknown>;
-  const properties = Object.fromEntries(Object.entries(o).map(([k, x]) => [k, jsonToShape(x)]));
-  return { type: "object", properties, required: Object.keys(o) };
 }
 
 /** Resolves a request body expression into shape + encoding + dynamic parts. */

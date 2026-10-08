@@ -1,5 +1,5 @@
 name: Feature request
-description: Support a new SDK, HTTP client, provider host or report feature
+description: Support a new SDK, HTTP client, provider host, language or report feature
 labels: [enhancement]
 body:
   - type: textarea
@@ -13,8 +13,7 @@ body:
     id: example
     attributes:
       label: Example code
-      description: A minimal snippet of the pattern that should be detected, if relevant.
-      render: ts
+      description: A minimal snippet of the pattern that should be detected, if relevant, and its language.
   - type: textarea
     id: proposal
     attributes:

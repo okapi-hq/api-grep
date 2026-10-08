@@ -17,6 +17,7 @@ describe("diagnostics", () => {
         { file: "src/injected.ts", line: 16, reason: "injected-fetch", expr: "deps.fetchUpstream" },
         { file: "src/two-hop.ts", line: 15, reason: "wrapper-depth", via: "tlsFetch" },
       ],
+      languages: { typescript: { filesSeen: 5, filesScanned: 4 } },
       complete: false,
     });
     // outside the tsconfig `include`, still scanned
