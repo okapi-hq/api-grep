@@ -1,0 +1,22 @@
+name: Feature request
+description: Support a new SDK, HTTP client, provider host or report feature
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is missing or hard to do today?
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example code
+      description: A minimal snippet of the pattern that should be detected, if relevant.
+      render: ts
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should apicalls report? Links to the SDK or API docs help.

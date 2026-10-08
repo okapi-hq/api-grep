@@ -1,0 +1,45 @@
+name: Bug report
+description: A call that is missed, wrongly reported, or a crash
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please share a minimal snippet written from scratch. Never paste code, hosts or credentials from a private codebase.
+  - type: textarea
+    id: snippet
+    attributes:
+      label: Minimal TypeScript snippet
+      render: ts
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      placeholder: apicalls scan ./my-repo --json
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What apicalls reported
+      description: Table, JSON excerpt or error message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 / abc1234
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "22.11.0"
