@@ -775,6 +775,9 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.example.com/items/{id}",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -1183,6 +1186,9 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.vercel.com/v9/projects",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -1982,6 +1988,9 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "urlTemplate": "https://api.example.com/v1/items?cursor={cursor}&limit=50",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -2946,6 +2955,9 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.example.com/anything",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -3546,6 +3558,9 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "via": "wrapper:githubApiRequest",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -3959,6 +3974,9 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.cal.com/v1/bookings",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -4089,6 +4107,9 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "urlTemplate": "https://api.example.com/a",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -4202,6 +4223,9 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "urlTemplate": "https://api.example.com/health",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -9296,6 +9320,70 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.twilio.com/v2/Services/{ServiceSid}/Verifications",
     },
   ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 2,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@aws-sdk/client-s3",
+        "provider": "aws",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@octokit/rest",
+        "provider": "github",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@slack/web-api",
+        "provider": "slack",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 7,
+        "declared": false,
+        "importSites": 3,
+        "imported": true,
+        "package": "stripe",
+        "provider": "stripe",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "twilio",
+        "provider": "twilio",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -9827,6 +9915,9 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "via": "wrapper:proxied",
     },
   ],
+  "coverage": {
+    "sdks": [],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],

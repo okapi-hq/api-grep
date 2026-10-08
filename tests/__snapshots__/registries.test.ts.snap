@@ -622,6 +622,20 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "urlTemplate": "https://firestore.googleapis.com/v1/projects/{projectId}/databases/(default)/documents/orders",
     },
   ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 10,
+        "declared": false,
+        "importSites": 3,
+        "imported": true,
+        "package": "firebase",
+        "provider": "firebase",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -698,7 +712,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "scheme": "https",
       "sdk": {
         "chain": "captureException",
-        "package": "@sentry/react",
+        "package": "@sentry/nextjs",
       },
       "urlTemplate": "https://{org}.ingest.sentry.io/api/{projectId}/envelope/",
     },
@@ -839,6 +853,30 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "urlTemplate": "https://{org}.ingest.sentry.io/api/{projectId}/envelope/",
     },
   ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@sentry/nextjs",
+        "provider": "sentry",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 3,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@sentry/react",
+        "provider": "sentry",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
@@ -1011,7 +1049,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "scheme": "https",
       "sdk": {
         "chain": "from.select",
-        "package": "@supabase/supabase-js",
+        "package": "@supabase/ssr",
       },
       "urlTemplate": "https://abcdefgh.supabase.co/rest/v1/invoices",
     },
@@ -1052,7 +1090,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "scheme": "https",
       "sdk": {
         "chain": "from.select",
-        "package": "@supabase/supabase-js",
+        "package": "@supabase/ssr",
       },
       "urlTemplate": "https://abcdefgh.supabase.co/rest/v1/invoices",
     },
@@ -1756,6 +1794,30 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "urlTemplate": "{env:SUPABASE_URL}/functions/v1/notify-assignee",
     },
   ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 2,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@supabase/ssr",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 14,
+        "declared": false,
+        "importSites": 1,
+        "imported": true,
+        "package": "@supabase/supabase-js",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],

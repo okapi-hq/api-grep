@@ -1,0 +1,10 @@
+{
+  "name": "coverage-fixture",
+  "private": true,
+  "dependencies": {
+    "@notionhq/client": "^2.2.0",
+    "openai": "^4.0.0",
+    "stripe": "^17.0.0",
+    "twilio": "^5.0.0"
+  }
+}

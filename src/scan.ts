@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { ts, type Node, type SourceFile } from "ts-morph";
 import { buildCall, type BuildCtx } from "./build-call.js";
+import { sdkCoverage } from "./coverage.js";
 import { detectFile } from "./detect/index.js";
 import { buildExamples } from "./examples/build.js";
 import { defaultRegistry, type Registry } from "./detect/registry/index.js";
@@ -110,13 +111,13 @@ function unreadable(sf: SourceFile): string | undefined {
 
 interface Detected {
   raws: RawCall[];
-  scanned: number;
+  scanned: SourceFile[];
 }
 
 /** Runs every detector on each file; a file that cannot be read or makes a detector throw is skipped, not fatal. */
 function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, rootDir: string, diag: DiagnosticsCollector): Detected {
   const raws: RawCall[] = [];
-  let scanned = 0;
+  const scanned: SourceFile[] = [];
   for (const sf of files) {
     const file = relPath(rootDir, sf.getFilePath());
     try {
@@ -129,7 +130,7 @@ function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, r
       const expanded = opts.wrappers !== false ? expandWrappers(candidates, registry) : { calls: [], unfollowed: [] };
       raws.push(...calls, ...expanded.calls);
       for (const u of [...unfollowed, ...expanded.unfollowed]) diag.unfollow({ file, line: lineOf(u.node), reason: u.reason, expr: u.expr, via: u.via });
-      scanned++;
+      scanned.push(sf);
     } catch (err) {
       diag.skip({ file, reason: "internal-error", detail: errorText(err) });
     }
@@ -184,7 +185,9 @@ export async function scan(opts: ScanOptions): Promise<Report> {
     repo: opts.repo,
     commit: await headCommit(rootDir),
     calls,
-    stats: computeStats(calls, scanned, Date.now() - started),
-    diagnostics: diag.finish(filesSeen, scanned),
+    stats: computeStats(calls, scanned.length, Date.now() - started),
+    diagnostics: diag.finish(filesSeen, scanned.length),
+    // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
+    coverage: opts.changedSince ? undefined : sdkCoverage(rootDir, scanned, calls, registry),
   };
 }

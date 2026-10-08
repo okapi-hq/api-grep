@@ -1,4 +1,4 @@
-import { Node, ts, type Identifier, type ImportDeclaration, type Symbol as MorphSymbol } from "ts-morph";
+import { Node, ts, type ExportDeclaration, type Identifier, type ImportDeclaration, type Symbol as MorphSymbol } from "ts-morph";
 
 export type IdentOrigin =
   | { kind: "package"; package: string; importedName: string }
@@ -37,7 +37,7 @@ function isProjectDecl(decl: Node): boolean {
  * Module specifier text; undefined when it is not a string literal. `import { x } from y` is a grammar error that
  * ts-morph's `getModuleSpecifierValue()` turns into an exception, which used to stop the whole scan.
  */
-function specifierOf(decl: ImportDeclaration | undefined): string | undefined {
+export function specifierOf(decl: ImportDeclaration | ExportDeclaration | undefined): string | undefined {
   const spec = decl?.compilerNode.moduleSpecifier;
   return spec && ts.isStringLiteral(spec) ? spec.text : undefined;
 }

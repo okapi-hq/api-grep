@@ -226,6 +226,23 @@ with `<redacted>` and counted in `stats.redacted`.
 The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed`.
 Skipped files and dropped calls are also printed to stderr as `warning:` lines.
 
+### SDK coverage
+
+`coverage.sdks` compares the API SDKs a repo uses with the calls found, so "0 Supabase calls"
+never reads as "no Supabase". Each known SDK package (the `packages` of `providers.json`) that a
+covered `package.json` declares (`dependencies`, `peerDependencies`) or a scanned file imports
+(type-only imports aside) gets a row:
+
+```json
+{ "package": "@notionhq/client", "provider": "notion", "supported": false, "declared": true,
+  "imported": true, "importSites": 41, "calls": 0, "status": "unsupported" }
+```
+
+`ok` (registry and calls), `unsupported` (imported, no registry: its calls are missed),
+`imported-no-calls` (registry but no call: a wrapper, or a detection bug), `declared-not-imported`
+(probably unused). The table prints one `⚠` line per `unsupported` and `imported-no-calls`
+package. `--changed-since` scans have no coverage section.
+
 ## Limitations
 
 - A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.

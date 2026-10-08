@@ -36,6 +36,7 @@ A Husky pre-commit hook runs lint-staged, the type checker and the tests.
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/validate/` | OpenAPI spec loading, operation matching and shape checks |
 | `src/examples/` | synthesized example requests |
+| `src/coverage.ts` | declared and imported SDKs compared with the calls found |
 | `src/report/` | report schema, JSON, table and curl output, diagnostics, secret redaction |
 | `tests/fixtures/` | small fake projects scanned by `tests/fixtures.test.ts` |
 | `tests/unit/` | unit tests per module |

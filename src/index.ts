@@ -1,8 +1,9 @@
 export { scan, computeStats, type ScanOptions } from "./scan.js";
 export { toJson } from "./report/json.js";
 export { toTable } from "./report/table.js";
-export { ReportSchema, CallSchema, ShapeSchema, DiagnosticsSchema, type Report, type Call, type Stats, type Diagnostics } from "./report/schema.js";
-export { diagnosticsLine } from "./report/diagnostics.js";
+export { ReportSchema, CallSchema, ShapeSchema, DiagnosticsSchema, CoverageSchema, type Report, type Call, type Stats, type Diagnostics, type Coverage } from "./report/schema.js";
+export { coverageWarnings, diagnosticsLine } from "./report/diagnostics.js";
+export { sdkCoverage } from "./coverage.js";
 export { Registry, defaultRegistry } from "./detect/registry/index.js";
 export { evaluate, partsToTemplate } from "./resolve/evaluate.js";
 export { PROVIDERS, providerForHost, providerFromEnvName, resolveProvider, type ProviderInfo, type ProviderSource } from "./normalize/provider.js";

@@ -121,6 +121,26 @@ export const DiagnosticsSchema = z.object({
   complete: z.boolean(),
 });
 
+export const SdkCoverageSchema = z.object({
+  package: z.string(),
+  provider: z.string(),
+  /** An SDK registry exists for the package, so its calls can be listed. */
+  supported: z.boolean(),
+  /** Declared in `dependencies` / `peerDependencies` of a package.json the scan covered. */
+  declared: z.boolean(),
+  imported: z.boolean(),
+  /** Scanned files that import the package (type-only imports aside). */
+  importSites: z.number(),
+  calls: z.number(),
+  /**
+   * ok: supported and calls found; unsupported: imported, no registry (its calls are missed);
+   * imported-no-calls: supported but no call found (a wrapper, or a detection bug); declared-not-imported: likely unused.
+   */
+  status: z.enum(["ok", "unsupported", "imported-no-calls", "declared-not-imported"]),
+});
+
+export const CoverageSchema = z.object({ sdks: z.array(SdkCoverageSchema) });
+
 export const ReportSchema = z.object({
   tool: z.string(),
   version: z.string(),
@@ -129,6 +149,7 @@ export const ReportSchema = z.object({
   calls: z.array(CallSchema),
   stats: StatsSchema,
   diagnostics: DiagnosticsSchema.optional(),
+  coverage: CoverageSchema.optional(),
 });
 
 export type Call = z.infer<typeof CallSchema>;
@@ -136,6 +157,8 @@ export type Example = z.infer<typeof ExampleSchema>;
 export type Stats = z.infer<typeof StatsSchema>;
 export type Report = z.infer<typeof ReportSchema>;
 export type Diagnostics = z.infer<typeof DiagnosticsSchema>;
+export type Coverage = z.infer<typeof CoverageSchema>;
+export type SdkCoverage = z.infer<typeof SdkCoverageSchema>;
 export type SkippedFile = z.infer<typeof SkippedFileSchema>;
 export type DroppedCall = z.infer<typeof DroppedCallSchema>;
 export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;
