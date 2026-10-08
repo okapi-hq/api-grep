@@ -8,7 +8,7 @@ import { buildExamples } from "./examples/build.js";
 import { defaultRegistry, type Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit, selectChanged } from "./git.js";
 import { loadProject } from "./project.js";
-import type { Call, Report, Stats } from "./report/schema.js";
+import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Report, type Stats } from "./report/schema.js";
 import { DiagnosticsCollector } from "./report/diagnostics.js";
 import { splitValid } from "./report/valid.js";
 import type { RawCall } from "./types.js";
@@ -73,6 +73,7 @@ export function computeStats(calls: Call[], filesScanned: number, durationMs: nu
   return {
     filesScanned,
     callsFound: calls.length,
+    byLanguage: count(calls, (c) => c.location.language),
     byClient: count(calls, (c) => c.client),
     byProvider: count(calls, (c) => c.provider),
     byHostKind: count(calls, (c) => c.hostKind),
@@ -180,6 +181,8 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   for (const d of dropped) diag.drop(d);
   const filesSeen = opts.changedSince ? files.length : files.length + loaded.leftOut.length;
   return {
+    $schema: SCHEMA_URL,
+    schemaVersion: SCHEMA_VERSION,
     tool: "apicalls",
     version: pkg.version,
     repo: opts.repo,

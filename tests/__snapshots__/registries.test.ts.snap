@@ -2,6 +2,7 @@
 
 exports[`firebase modular sdk > reads document paths from references and skips signOut 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "apikey",
@@ -36,6 +37,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 29,
         "file": "session.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -96,6 +98,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 28,
         "file": "session.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -156,6 +159,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 59,
         "file": "session.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "POST",
@@ -224,6 +228,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 45,
         "file": "store.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -271,6 +276,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 10,
         "file": "store.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "GET",
@@ -346,6 +352,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 9,
         "file": "store.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "PATCH",
@@ -432,6 +439,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 10,
         "file": "store.ts",
+        "language": "typescript",
         "line": 17,
       },
       "method": "POST",
@@ -505,6 +513,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 65,
         "file": "store.ts",
+        "language": "typescript",
         "line": 20,
       },
       "method": "PATCH",
@@ -560,6 +569,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 49,
         "file": "store.ts",
+        "language": "typescript",
         "line": 22,
       },
       "method": "DELETE",
@@ -607,6 +617,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "location": {
         "col": 48,
         "file": "store.ts",
+        "language": "typescript",
         "line": 24,
       },
       "method": "GET",
@@ -645,12 +656,16 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "sdk": 10,
     },
     "byHostKind": {
       "literal": 10,
+    },
+    "byLanguage": {
+      "typescript": 10,
     },
     "byProvider": {
       "firebase": 10,
@@ -670,6 +685,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
 
 exports[`sentry > reports capture calls from any @sentry package, also through a local wrapper, but not init 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "unknown",
@@ -702,6 +718,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "location": {
         "col": 5,
         "file": "checkout.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "POST",
@@ -747,6 +764,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "location": {
         "col": 3,
         "file": "checkout.ts",
+        "language": "typescript",
         "line": 14,
       },
       "method": "POST",
@@ -793,6 +811,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "location": {
         "col": 3,
         "file": "monitoring.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -838,6 +857,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "location": {
         "col": 42,
         "file": "monitoring.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "POST",
@@ -886,12 +906,16 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "sdk": 4,
     },
     "byHostKind": {
       "literal": 4,
+    },
+    "byLanguage": {
+      "typescript": 4,
     },
     "byProvider": {
       "sentry": 4,
@@ -911,6 +935,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
 
 exports[`supabase-js > reports one call per operation, with the table in the path and the host from createClient 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "bearer",
@@ -939,6 +964,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 10,
         "file": "context.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -998,6 +1024,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 12,
         "file": "context.ts",
+        "language": "typescript",
         "line": 16,
       },
       "method": "PATCH",
@@ -1039,6 +1066,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 10,
         "file": "ssr.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -1080,6 +1108,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 29,
         "file": "ssr.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "GET",
@@ -1122,6 +1151,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 26,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -1205,6 +1235,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 10,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "POST",
@@ -1267,6 +1298,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 66,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "POST",
@@ -1327,6 +1359,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 42,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 14,
       },
       "method": "PATCH",
@@ -1369,6 +1402,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 41,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 16,
       },
       "method": "DELETE",
@@ -1411,6 +1445,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 48,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 19,
       },
       "method": "GET",
@@ -1453,6 +1488,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 84,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 19,
       },
       "method": "GET",
@@ -1517,6 +1553,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 45,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 23,
       },
       "method": "POST",
@@ -1559,6 +1596,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 26,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 26,
       },
       "method": "GET",
@@ -1636,6 +1674,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 59,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 30,
       },
       "method": "POST",
@@ -1715,6 +1754,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 10,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 33,
       },
       "method": "POST",
@@ -1779,6 +1819,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "location": {
         "col": 43,
         "file": "tasks.ts",
+        "language": "typescript",
         "line": 36,
       },
       "method": "POST",
@@ -1827,6 +1868,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -1834,6 +1876,9 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "byHostKind": {
       "env": 12,
       "literal": 4,
+    },
+    "byLanguage": {
+      "typescript": 16,
     },
     "byProvider": {
       "supabase": 16,

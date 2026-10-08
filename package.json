@@ -36,11 +36,13 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./schema.json": "./schema/report.v1.json"
   },
   "files": [
     "dist",
-    "registry"
+    "registry",
+    "schema"
   ],
   "scripts": {
     "build": "tsup",
@@ -52,6 +54,7 @@
     "eval": "node --max-old-space-size=8192 --import tsx eval/run.ts",
     "eval:score": "tsx eval/score.ts",
     "gen:registry": "tsx scripts/gen-registry.ts",
+    "gen:schema": "tsx scripts/gen-schema.ts",
     "prepare": "husky"
   },
   "dependencies": {

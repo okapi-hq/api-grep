@@ -34,7 +34,7 @@ node dist/cli.js scan path/to/your-repo
 
 ## Example
 
-Given this code:
+Given this code in `billing/stripe.ts`:
 
 ```ts
 import Stripe from "stripe";
@@ -48,34 +48,136 @@ export async function createCustomer(email: string, userId: string) {
 export const getIntent = (id: string) => stripe.paymentIntents.retrieve(id);
 ```
 
-`apicalls scan` prints:
+`apicalls scan` prints one section per file, with its language, then one row per call:
 
 ```
-┌──────┬──────────────┬────────┬────────────────────────────────────────┬────────────────────────────────────┬─────┬────────────────────────────────────────┐
-│ conf │ provider     │ method │ path                                   │ body                               │ dyn │ location                               │
-├──────┼──────────────┼────────┼────────────────────────────────────────┼────────────────────────────────────┼─────┼────────────────────────────────────────┤
-│ 1.00 │ stripe sdk   │ POST   │ /v1/customers                          │ {email, name, metadata}            │ 2   │ stripe-literal.ts:6                    │
-├──────┼──────────────┼────────┼────────────────────────────────────────┼────────────────────────────────────┼─────┼────────────────────────────────────────┤
-│ 1.00 │ stripe sdk   │ GET    │ /v1/payment_intents/{intent}           │ -                                  │ 1   │ stripe-literal.ts:9                    │
-└──────┴──────────────┴────────┴────────────────────────────────────────┴────────────────────────────────────┴─────┴────────────────────────────────────────┘
+┌──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┐
+│ line │ method │ provider         │ path                                     │ body                               │ dyn │ conf │
+├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┤
+│ billing/stripe.ts  typescript                                                                                                 │
+├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┤
+│ 6    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │ 1.00 │
+├──────┼────────┼──────────────────┼──────────────────────────────────────────┼────────────────────────────────────┼─────┼──────┤
+│ 9    │ GET    │ stripe sdk       │ /v1/payment_intents/{intent}             │ -                                  │ 1   │ 1.00 │
+└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┘
+2 calls in 1 file (2 shown at confidence >= 0.3); languages: typescript=2; providers: stripe=2
+scanned 1/1 files, complete
 ```
+
+`dyn` counts the parts that could not be known statically; `conf` is the [confidence](#confidence).
 
 With `--curl`, each call becomes concrete example requests. Credentials are never invented:
 
 ```sh
-# literal.ts:4  stripe POST /v1/customers  (confidence 0.60)
+# billing/stripe.ts:6 (typescript)  stripe POST /v1/customers  (confidence 1.00)
 # minimal
 curl -X POST 'https://api.stripe.com/v1/customers' \
   -H 'authorization: Bearer <token>' \
   -H 'content-type: application/x-www-form-urlencoded' \
-  --data-urlencode 'email=greta.moreau@example.com' \
-  --data-urlencode 'name=Ada Lovelace' \
-  --data-urlencode 'metadata[plan]=pro'
+  --data-urlencode 'email=maya.ekwall@example.com' \
+  --data-urlencode 'name=Ada' \
+  --data-urlencode 'metadata={"userId":"dw8ydaub"}'
 ```
 
-With `--json`, you get the full report: one object per call with its location, provider, host,
-method, URL template, query keys, headers, auth scheme, body shape, dynamic parts, confidence,
-spec findings and examples. The schema is in [`src/report/schema.ts`](src/report/schema.ts).
+## Output format
+
+`apicalls scan <dir> --json` (or `--out report.json`) writes one JSON document. For the example
+above, with `--examples 1`, shown as YAML with one comment per field and the second call left out:
+
+```yaml
+$schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
+schemaVersion: 1.0.0            # report format version; readers check the major
+tool: apicalls
+version: 0.1.0                  # tool version
+repo: shop                      # name of the scanned directory
+commit: 9ae2b37…                # HEAD, when the directory is a git repository
+calls:                          # one entry per call, sorted by file, line, column
+  - id: 916d2bd1f6b1            # stable: hash of file, line and column
+    location:
+      file: billing/stripe.ts   # relative to the scanned directory
+      line: 6
+      col: 10
+      language: typescript      # typescript | javascript | python | php
+    client: sdk                 # fetch | axios | got | ky | node-http | sdk | framework
+    sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
+    provider: stripe            # `apicalls providers` id, or internal | env:<NAME> | unknown
+    providerSource: sdk         # sdk | host | env-name
+    host: api.stripe.com        # may hold placeholders: {project}.supabase.co
+    hostKind: literal           # literal | const | env | relative | unknown
+    scheme: https
+    method: POST                # DYNAMIC when not known statically
+    pathTemplate: /v1/customers # {name} marks a dynamic segment
+    urlTemplate: https://api.stripe.com/v1/customers
+    operationId: PostCustomers  # from the SDK registry or a matched OpenAPI spec
+    query: []                   # query parameter names
+    headers: []                 # header names
+    headerValues: {}            # literal values only; null for credentials
+    authScheme: bearer          # bearer | apikey | basic | none | unknown
+    body:                       # shape: names and types, never data
+      type: object
+      properties:
+        email: { type: string, hint: email }
+        name: { type: string, enum: [Ada] }   # literal value from the code
+        metadata: { type: object, properties: { userId: { type: string, hint: userId } }, required: [userId] }
+      required: [email, name, metadata]
+    bodyEncoding: form          # json | form | multipart | raw | none
+    dynamic:                    # what could not be known statically
+      - { where: body, name: email, origin: param }
+      - { where: body, name: userId, origin: param }
+    confidence: 1               # 0 to 1
+    findings: []                # spec mismatches, with --specs --validate
+    examples:                   # concrete requests with invented values
+      - variant: minimal        # minimal | full | alt
+        method: POST
+        url: https://api.stripe.com/v1/customers
+        headers: { authorization: Bearer <token>, content-type: application/x-www-form-urlencoded }
+        query: {}
+        body: { email: maya.ekwall@example.com, name: Ada, metadata: { userId: dw8ydaub } }
+        bodyEncoding: form
+stats:                          # counts over calls
+  filesScanned: 1
+  callsFound: 2
+  byLanguage: { typescript: 2 }
+  byClient: { sdk: 2 }
+  byProvider: { stripe: 2 }
+  byHostKind: { literal: 2 }
+  withBodyShape: 1
+  withDynamic: 2
+  withFindings: 0
+  redacted: 0                   # secret-looking strings replaced with <redacted>
+  durationMs: 1044
+diagnostics:                    # what the scan could not read, see Diagnostics
+  filesSeen: 1
+  filesScanned: 1
+  skipped: []
+  skippedCounts: {}
+  droppedCalls: []
+  unfollowed: []
+  complete: true                # false: partial scan, exit code 2
+coverage:                       # API SDKs the repo uses, see SDK coverage
+  sdks:
+    - { package: stripe, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
+```
+
+### Contract
+
+The format is specified by a JSON Schema (draft-07), [`schema/report.v1.json`](schema/report.v1.json),
+which describes every field. It is generated from [`src/report/schema.ts`](src/report/schema.ts)
+and a test fails when it is out of date, so it always matches what the CLI writes. Get it from
+this repository, from `apicalls schema`, or in Node from `import schema from "apicalls/schema.json"`,
+and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, …).
+
+`schemaVersion` is the version of the format, separate from the tool's `version`:
+
+- **minor** (`1.1.0`): new fields or enum values, such as a new `client` or `language`. Readers
+  ignore fields they do not know and treat unknown enum values as "other". Objects in the schema
+  stay open, so a 1.0 reader still validates a 1.1 report.
+- **major** (`2.0.0`): anything that can break a reader. The schema moves to `report.v2.json` and
+  `report.v1.json` stays.
+
+Each call names its file and language in `location`, and `stats.byLanguage` counts calls per
+language. The TypeScript scanner reports `typescript`; `javascript`, `python` and `php` are
+reserved for the other extractors, so reports from every language share one format.
 
 ## Usage
 
@@ -85,6 +187,8 @@ apicalls scan <dir> --curl                            # one curl command per exa
 apicalls scan <dir> --json                            # JSON report on stdout
 apicalls scan <dir> --out report.json --changed-since origin/main
 apicalls scan <dir> --specs ./specs --validate
+apicalls schema                                       # JSON Schema of the --json report
+apicalls providers                                    # provider ids, names, hosts and packages
 ```
 
 | option | description |
@@ -107,7 +211,7 @@ Large monorepos need several GB of heap. The CLI re-runs itself with
 **Exit codes:** `0` complete scan, `2` partial scan (the report is still written, see
 [diagnostics](#diagnostics)), `1` fatal error (for example the directory does not exist).
 
-The package also exports the scanner as a library (`scan`, `toJson`, `ReportSchema`, …) from
+The package also exports the scanner as a library (`scan`, `toJson`, `ReportSchema`, `reportJsonSchema`, …) from
 [`src/index.ts`](src/index.ts).
 
 ## What it detects
