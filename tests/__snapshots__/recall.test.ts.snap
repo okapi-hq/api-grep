@@ -106,6 +106,13 @@ exports[`regression fixtures > sdk/convex 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/discord 1`] = `
+[
+  "bot.ts:3 discord POST /api/v10/channels/{channelId}/messages",
+  "bot.ts:5 discord POST /",
+]
+`;
+
 exports[`regression fixtures > sdk/firebase-modular 1`] = `
 [
   "session.ts:4 firebase POST /v1/accounts:signInWithIdp",
