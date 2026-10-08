@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { ts, type SourceFile } from "ts-morph";
 import { buildCall, type BuildCtx } from "./build-call.js";
 import { detectFile } from "./detect/index.js";
 import { buildExamples } from "./examples/build.js";
@@ -7,6 +8,7 @@ import { defaultRegistry, type Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit, selectChanged } from "./git.js";
 import { loadProject } from "./project.js";
 import type { Call, Report, Stats } from "./report/schema.js";
+import { validCalls } from "./report/valid.js";
 import type { RawCall } from "./types.js";
 import { applySpecs } from "./validate/index.js";
 import { expandWrappers } from "./wrappers/detect.js";
@@ -25,6 +27,8 @@ export interface ScanOptions {
   wrappers?: boolean;
   /** Maximum example requests per call (default 3, 0 disables). */
   examples?: number;
+  /** Receives one line per file skipped and per call dropped; the scan itself never stops on them. */
+  onWarning?: (message: string) => void;
 }
 
 function sdkVersionLookup(rootDir: string): BuildCtx["sdkVersion"] {
@@ -82,6 +86,72 @@ function sortCalls(calls: Call[]): Call[] {
   return calls.sort((a, b) => a.location.file.localeCompare(b.location.file) || a.location.line - b.location.line || a.location.col - b.location.col);
 }
 
+function relPath(rootDir: string, file: string): string {
+  return path.relative(rootDir, file).split(path.sep).join("/");
+}
+
+function errorText(err: unknown): string {
+  return (err instanceof Error ? err.message : String(err)).split("\n")[0]!;
+}
+
+/** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
+function unreadable(sf: SourceFile): string | undefined {
+  const syntax = sf.getProject().getProgram().compilerObject.getSyntacticDiagnostics(sf.compilerNode)[0];
+  if (syntax) return ts.flattenDiagnosticMessageText(syntax.messageText, " ");
+  const decls = [...sf.getImportDeclarations(), ...sf.getExportDeclarations()];
+  const bad = decls.some((d) => d.compilerNode.moduleSpecifier !== undefined && !ts.isStringLiteral(d.compilerNode.moduleSpecifier));
+  return bad ? "Expected the module specifier to be a string literal." : undefined;
+}
+
+/** Runs every detector on each file; a file that cannot be read or makes a detector throw is skipped, not fatal. */
+function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, rootDir: string): { raws: RawCall[]; scanned: number } {
+  const raws: RawCall[] = [];
+  let scanned = 0;
+  for (const sf of files) {
+    const rel = relPath(rootDir, sf.getFilePath());
+    try {
+      const problem = unreadable(sf);
+      if (problem) throw new Error(problem);
+      const { calls, candidates } = detectFile(sf, registry);
+      const expanded = opts.wrappers !== false ? expandWrappers(candidates, registry) : [];
+      raws.push(...calls, ...expanded);
+      scanned++;
+    } catch (err) {
+      opts.onWarning?.(`skipped ${rel}: ${errorText(err)}`);
+    }
+  }
+  return { raws, scanned };
+}
+
+function rawLocation(raw: RawCall, rootDir: string): string {
+  const sf = raw.node.getSourceFile();
+  return `${relPath(rootDir, sf.getFilePath())}:${sf.getLineAndColumnAtPos(raw.node.getStart()).line}`;
+}
+
+function buildAll(raws: RawCall[], ctx: BuildCtx, opts: ScanOptions): Call[] {
+  const calls: Call[] = [];
+  for (const raw of raws) {
+    try {
+      calls.push(buildCall(raw, ctx));
+    } catch (err) {
+      opts.onWarning?.(`dropped call at ${rawLocation(raw, ctx.rootDir)}: ${errorText(err)}`);
+    }
+  }
+  return sortCalls(calls);
+}
+
+function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {
+  if (max <= 0) return calls;
+  for (const c of calls) {
+    try {
+      c.examples = buildExamples(c, max);
+    } catch (err) {
+      opts.onWarning?.(`no examples for call at ${c.location.file}:${c.location.line}: ${errorText(err)}`);
+    }
+  }
+  return calls;
+}
+
 export async function scan(opts: ScanOptions): Promise<Report> {
   const started = Date.now();
   const rootDir = path.resolve(opts.dir);
@@ -89,23 +159,17 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude });
   let files = loaded.files;
   if (opts.changedSince) files = selectChanged(files, await changedFiles(rootDir, opts.changedSince));
-  const raws: RawCall[] = [];
-  for (const sf of files) {
-    const { calls, candidates } = detectFile(sf, registry);
-    raws.push(...calls);
-    if (opts.wrappers !== false) raws.push(...expandWrappers(candidates, registry));
-  }
+  const { raws, scanned } = detectAll(files, registry, opts, rootDir);
   const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) };
-  const calls = sortCalls(raws.map((r) => buildCall(r, ctx)));
-  if (opts.specs) await applySpecs(calls, { specsDir: opts.specs, validate: !!opts.validate });
-  const maxExamples = opts.examples ?? 3;
-  if (maxExamples > 0) for (const c of calls) c.examples = buildExamples(c, maxExamples);
+  const built = buildAll(raws, ctx, opts);
+  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate });
+  const calls = validCalls(withExamples(built, opts.examples ?? 3, opts), opts.onWarning);
   return {
     tool: "apicalls",
     version: pkg.version,
     repo: opts.repo,
     commit: await headCommit(rootDir),
     calls,
-    stats: computeStats(calls, files.length, Date.now() - started),
+    stats: computeStats(calls, scanned, Date.now() - started),
   };
 }

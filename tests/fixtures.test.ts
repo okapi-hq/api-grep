@@ -1,25 +1,7 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { toJson } from "../src/report/json.js";
 import { scan } from "../src/scan.js";
-import type { Call, Report } from "../src/report/schema.js";
-
-const FIXTURES = path.join(path.dirname(fileURLToPath(import.meta.url)), "fixtures");
-
-async function scanFixture(name: string): Promise<Report> {
-  const report = await scan({ dir: path.join(FIXTURES, name) });
-  const json = JSON.parse(toJson(report)) as Report;
-  json.stats.durationMs = 0;
-  delete json.commit;
-  return json;
-}
-
-const at = (r: Report, file: string, line: number): Call => {
-  const c = r.calls.find((x) => x.location.file === file && x.location.line === line);
-  if (!c) throw new Error(`no call at ${file}:${line}; have ${r.calls.map((x) => `${x.location.file}:${x.location.line}`).join(", ")}`);
-  return c;
-};
+import { at, FIXTURES, scanFixture } from "./fixture-helpers.js";
 
 describe("fetch", () => {
   it("matches snapshot and key expectations", async () => {

@@ -25,14 +25,21 @@ re-runs itself with `--max-old-space-size=8192` (override with `APICALLS_HEAP_MB
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| sdk | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2 |
+| sdk | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
 | framework | options-object helpers from `src/detect/registry/frameworks.json`: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
 Callees are identified by declaration through the type checker, never by name, so a
 shadowed `fetch` is ignored and `import http from "axios"` is still axios. SDK instances
 are followed through `const stripe = new Stripe()`, exported instances in other files,
-class properties (`this.stripe`), and typed parameters (`stripe: Stripe`) when the
-package's types are installed.
+class properties (`this.stripe`), local factories, and typed parameters (`stripe: Stripe`,
+`ctx.db` with `db: SupabaseClient`); without the package's types installed, the written
+annotation is traced to its import.
+
+Builder SDKs report one call per request: `supabase.from("tasks").select().eq("id", id).single()`
+is a `GET /rest/v1/tasks` at the start of the chain (filters and `.single()` are not extra calls),
+with the host taken from the URL given to `createClient`. Firebase paths are read from the
+reference (`getDoc(doc(db, "users", uid))` is `.../documents/users/{uid}`); `signOut` and
+`Sentry.init` send nothing and are not reported.
 
 ## Example requests
 
@@ -103,13 +110,21 @@ by default (`--min-confidence`); JSON keeps everything.
 ## Output
 
 The report is validated by the zod schema in `src/report/schema.ts` (the contract for the
-next stage). A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
+next stage), one call at a time: a call that does not fit is dropped with a warning on stderr
+and the rest of the report is still written. A file that cannot be read (a syntax error, an
+import whose module specifier is not a string literal) or that makes a detector throw is
+skipped with a warning; the scan never stops because of one file or one call. A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
 JWTs, long hex) with `<redacted>` and counts them in `stats.redacted`.
 
 ## Registries
 
 `src/detect/registry/*.json` map SDK member chains to endpoints. They are hand-written for
-v0 (`generatedFrom: "manual"`). `pnpm gen:registry stripe|openai` regenerates them from the
+v0 (`generatedFrom: "manual"`). Besides `pathArgs` / `bodyArg` / `queryArg`, a method can set its
+own `host` and `auth`, read its body from a property of an argument (`bodyProp`), and name where
+each path placeholder comes from in `params`: `arg:N`, `instance:N` (the builder it is called on,
+`from(table)`) or `ref:N` (a Firebase reference). With `inlinePathLiterals`, literal values are
+written into the path; `instance.urlArg` names the constructor argument that holds the base URL.
+An alias ending in `/*` covers a whole scope (`@sentry/*`). `pnpm gen:registry stripe|openai` regenerates them from the
 vendor OpenAPI specs (network) and merges into the existing file; review the diff.
 
 ## Evaluation

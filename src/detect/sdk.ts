@@ -1,6 +1,7 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { exportedChain } from "./callee.js";
+import { getProp } from "./options.js";
 import type { Registry } from "./registry/index.js";
 
 function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
@@ -20,17 +21,41 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
   return [...keys];
 }
 
+/** Base URL passed to the client's constructor (`createClient(url, key)`), also when the call hangs off a builder of it. */
+function clientUrlArg(callee: Callee, reg: RegistryEntry): Expression | undefined {
+  const urlArg = reg.instance?.urlArg;
+  if (!urlArg) return undefined;
+  for (const inst of [callee.rootInstance, callee.instance]) {
+    const ctor = inst?.chain[inst.chain.length - 1];
+    const idx = ctor !== undefined ? urlArg[ctor] : undefined;
+    if (inst && idx !== undefined) return inst.args[idx];
+  }
+  return undefined;
+}
+
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall {
   const args = node.getArguments() as Expression[];
   const raw: RawCall = {
     node,
     client: "sdk",
-    sdk: { package: reg.package, provider: reg.provider, host: reg.host, chain: key, spec, auth: reg.auth, args },
+    sdk: {
+      package: reg.package,
+      provider: reg.provider,
+      host: spec.host ?? reg.host,
+      chain: key,
+      spec,
+      auth: spec.auth ?? reg.auth,
+      args,
+      instanceArgs: callee.instance?.args,
+      inlinePath: reg.inlinePathLiterals,
+    },
     bodyKey: "input",
   };
-  if (spec.bodyArg !== undefined) raw.bodyExpr = args[spec.bodyArg];
+  if (spec.bodyArg !== undefined) raw.bodyExpr = spec.bodyProp ? getProp(args[spec.bodyArg], spec.bodyProp) : args[spec.bodyArg];
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
+  const base = clientUrlArg(callee, reg);
+  if (base) raw.baseUrlExpr = base;
   return raw;
 }
 

@@ -1,6 +1,7 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee } from "../types.js";
 import { identifierOrigin, packageFromFilePath } from "./origin.js";
+import { annotatedPackage } from "./type-annotation.js";
 
 const MAX_DEPTH = 6;
 
@@ -106,6 +107,7 @@ function instanceCallee(init: CallExpression | NewExpression, chain: string[], d
       chain: exportedChain(inner),
       args: init.getArguments() as Expression[],
     },
+    rootInstance: inner.rootInstance ?? inner.instance,
     chain,
   };
 }
@@ -192,7 +194,10 @@ export function packageOfType(t: import("ts-morph").Type): string | undefined {
   return undefined;
 }
 
-/** Walks chain prefixes and returns the first whose static type is declared in a node_modules package. */
+/**
+ * Walks chain prefixes and returns the first whose static type is declared in a node_modules package; when the
+ * package's types are not installed, the written annotation (`db: SupabaseClient`) is traced to its import instead.
+ */
 function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
   const nodes = mc.nodes;
   for (let i = startIndex; i < nodes.length; i++) {
@@ -203,6 +208,10 @@ function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
   if (decl && (Node.isParameterDeclaration(decl) || Node.isPropertyDeclaration(decl) || Node.isVariableDeclaration(decl))) {
     const pkg = packageOfType(decl.getType());
     if (pkg) return { package: pkg, chain: mc.chain, viaType: true };
+  }
+  for (let i = startIndex; i < nodes.length; i++) {
+    const pkg = annotatedPackage(nodes[i]!);
+    if (pkg) return { package: pkg, chain: mc.chain.slice(i), viaType: true };
   }
   return { chain: mc.chain, localDecl: decl && Node.isParameterDeclaration(decl) ? undefined : decl };
 }

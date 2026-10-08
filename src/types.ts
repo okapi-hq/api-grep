@@ -35,6 +35,8 @@ export interface Callee {
   viaType?: boolean;
   /** Chain hangs off `this` and could not be tied to a package or a class member. */
   thisRoot?: boolean;
+  /** First construction when the chain went through several (`createClient(url).from(table)`: `createClient`). */
+  rootInstance?: InstanceInfo;
 }
 
 export interface RawCall {
@@ -76,6 +78,16 @@ export interface MethodSpec {
   routeArg?: number;
   urlFromInstanceArg?: number;
   encoding?: BodyEncoding;
+  /** Host of this method when it differs from the registry's (Firebase: Firestore, Identity Toolkit, Storage). */
+  host?: string;
+  auth?: AuthScheme;
+  /** The body is a property of the body argument (`functions.invoke(name, { body })`). */
+  bodyProp?: string;
+  /**
+   * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
+   * method is called on, `from(table)`) or `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`).
+   */
+  params?: Record<string, string>;
 }
 
 export interface RegistryEntry {
@@ -85,7 +97,10 @@ export interface RegistryEntry {
   host: string;
   auth?: AuthScheme;
   generatedFrom: string;
-  instance?: { names: string[] };
+  /** Constructor / factory names; `urlArg` gives the argument holding the base URL (`createClient(url, key)`). */
+  instance?: { names: string[]; urlArg?: Record<string, number> };
+  /** Literal path values are written into the path (`/rest/v1/todos`, not `/rest/v1/{table}`). */
+  inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;
   commands?: Record<string, MethodSpec>;
 }
@@ -117,6 +132,9 @@ export interface SdkMatch {
   spec: MethodSpec;
   auth?: AuthScheme;
   args: Expression[];
+  /** Arguments of the builder the method was called on (`from(table)`), for `instance:N` path params. */
+  instanceArgs?: Expression[];
+  inlinePath?: boolean;
 }
 
 export type Shape =

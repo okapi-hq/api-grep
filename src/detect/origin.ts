@@ -1,4 +1,4 @@
-import { Node, type Identifier, type Symbol as MorphSymbol } from "ts-morph";
+import { Node, ts, type Identifier, type ImportDeclaration, type Symbol as MorphSymbol } from "ts-morph";
 
 export type IdentOrigin =
   | { kind: "package"; package: string; importedName: string }
@@ -33,26 +33,36 @@ function isProjectDecl(decl: Node): boolean {
   return !sf.isFromExternalLibrary() && !sf.isDeclarationFile() && !sf.getFilePath().includes("/node_modules/");
 }
 
+/**
+ * Module specifier text; undefined when it is not a string literal. `import { x } from y` is a grammar error that
+ * ts-morph's `getModuleSpecifierValue()` turns into an exception, which used to stop the whole scan.
+ */
+function specifierOf(decl: ImportDeclaration | undefined): string | undefined {
+  const spec = decl?.compilerNode.moduleSpecifier;
+  return spec && ts.isStringLiteral(spec) ? spec.text : undefined;
+}
+
 function fromImport(sym: MorphSymbol, decl: Node): IdentOrigin | undefined {
   let spec: string | undefined;
   let importedName: string | undefined;
   if (Node.isImportSpecifier(decl)) {
-    spec = decl.getImportDeclaration().getModuleSpecifierValue();
+    spec = specifierOf(decl.getImportDeclaration());
     importedName = decl.getName();
   } else if (Node.isImportClause(decl)) {
     const parent = decl.getParent();
-    spec = Node.isImportDeclaration(parent) ? parent.getModuleSpecifierValue() : undefined;
+    spec = specifierOf(Node.isImportDeclaration(parent) ? parent : undefined);
     importedName = "default";
   } else if (Node.isNamespaceImport(decl)) {
-    const importDecl = decl.getFirstAncestor(Node.isImportDeclaration);
-    spec = importDecl?.getModuleSpecifierValue();
+    spec = specifierOf(decl.getFirstAncestor(Node.isImportDeclaration));
     importedName = "*";
   } else if (Node.isImportEqualsDeclaration(decl)) {
     const ref = decl.getModuleReference();
-    spec = Node.isExternalModuleReference(ref) ? ref.getExpression()?.getText().slice(1, -1) : undefined;
+    if (!Node.isExternalModuleReference(ref)) return undefined;
+    const expr = ref.getExpression();
+    spec = expr && Node.isStringLiteral(expr) ? expr.getLiteralValue() : undefined;
     importedName = "default";
-  }
-  if (spec === undefined) return undefined;
+  } else return undefined;
+  if (spec === undefined) return { kind: "unknown" };
   // tsconfig `paths` aliases (`@app/lib/x`, `~/utils`) look like packages: trust the resolved target first.
   const target = sym.getAliasedSymbol()?.getDeclarations()[0];
   if (target && isProjectDecl(target)) return { kind: "local", decl: target };

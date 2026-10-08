@@ -1,63 +1,20 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
-import type { Expression } from "ts-morph";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
-import { getProp } from "./detect/options.js";
 import { inferProvider } from "./normalize/provider.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, type BodyResult } from "./resolve/body.js";
-import { evaluate, staticText } from "./resolve/evaluate.js";
+import { evaluate } from "./resolve/evaluate.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
+import { sdkUrl } from "./resolve/sdk-url.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
 export interface BuildCtx extends EvalCtx {
   rootDir: string;
   sdkVersion: (file: string, pkg: string) => string | undefined;
-}
-
-function originOfExpr(e: Expression | undefined, ctx: EvalCtx): string | undefined {
-  if (!e) return undefined;
-  const parts = evaluate(e, ctx);
-  if (staticText(parts) !== undefined) return undefined;
-  const d = parts.find((p) => p.kind !== "static");
-  return d?.kind === "env" ? "env" : d?.kind === "dynamic" ? d.origin : "unknown";
-}
-
-function sdkUrl(raw: RawCall, ctx: EvalCtx): { url: UrlShape; method: string } {
-  const sdk = raw.sdk!;
-  let method = sdk.spec.method;
-  let pathT = sdk.spec.path;
-  if (sdk.spec.routeArg !== undefined) {
-    const route = staticText(evaluate(sdk.args[sdk.spec.routeArg]!, ctx)) ?? "";
-    const m = /^([A-Z]+)\s+(\S+)$/.exec(route.trim());
-    if (m) {
-      method = m[1]!;
-      pathT = m[2]!;
-    } else method = "DYNAMIC";
-  }
-  if (raw.urlExpr) return { url: resolveUrl(raw.urlExpr, ctx), method };
-  const parts: Part[] = [{ kind: "static", text: `https://${sdk.host}` }, { kind: "static", text: pathT }];
-  const url = partsToUrlShape(parts, ctx);
-  url.hostKind = "literal";
-  url.host = sdk.host;
-  url.dynamic = url.dynamic.filter((d) => d.where !== "host");
-  const names = [...pathT.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]!);
-  url.dynamic = names.map((name, i) => ({ where: "path" as const, name, origin: sdkPathOrigin(raw, name, i, ctx) })).filter((d) => d.origin !== "static");
-  return { url, method };
-}
-
-function sdkPathOrigin(raw: RawCall, name: string, index: number, ctx: EvalCtx): string {
-  const spec = raw.sdk!.spec;
-  const argIdx = spec.pathArgs?.[index];
-  if (argIdx !== undefined) return originOfExpr(raw.sdk!.args[argIdx], ctx) ?? (raw.sdk!.args[argIdx] ? "static" : "unknown");
-  if (spec.pathFromBody?.includes(name)) {
-    const e = getProp(raw.bodyExpr, name, ctx);
-    return e ? (originOfExpr(e, ctx) ?? "static") : "unknown";
-  }
-  return "sdk";
 }
 
 function nodeHttpUrl(raw: RawCall, ctx: EvalCtx): UrlShape {

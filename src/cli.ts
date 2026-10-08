@@ -27,6 +27,10 @@ function collect(value: string, prev: string[] = []): string[] {
   return [...prev, value];
 }
 
+function warn(message: string): void {
+  process.stderr.write(`warning: ${message}\n`);
+}
+
 async function runScan(dir: string, flags: ScanFlags): Promise<void> {
   if (flags.validate && !flags.specs) throw new Error("--validate requires --specs <dir>");
   const report = await scan({
@@ -40,8 +44,9 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
     wrappers: flags.wrappers,
     examples: flags.examples !== undefined ? Number(flags.examples) : undefined,
     repo: path.basename(path.resolve(dir)),
+    onWarning: warn,
   });
-  const json = toJson(report);
+  const json = toJson(report, true, warn);
   if (flags.out) writeFileSync(flags.out, json);
   const min = flags.minConfidence !== undefined ? Number(flags.minConfidence) : 0.3;
   if (flags.json) process.stdout.write(`${json}\n`);

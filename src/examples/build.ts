@@ -1,6 +1,6 @@
 import type { Call, Example } from "../report/schema.js";
 import type { Shape } from "../types.js";
-import { byName } from "./names.js";
+import { byName, credentialPlaceholder } from "./names.js";
 import { Rng } from "./random.js";
 import { hasAlternatives, hasOptional, synth, type SynthCtx, type Variant } from "./synth.js";
 
@@ -86,6 +86,7 @@ function authHeader(call: Call): [string, string] | undefined {
     case "basic":
       return ["authorization", "Basic <base64(user:password)>"];
     case "apikey": {
+      if (call.query.some((q) => credentialPlaceholder(q))) return undefined;
       const named = call.headers.find((h) => h !== "authorization" && /key|token/.test(h));
       return named ? [named, "<api-key>"] : ["authorization", "token <token>"];
     }
