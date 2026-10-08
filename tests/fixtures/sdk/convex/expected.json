@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "app.tsx", "line": 8, "provider": "convex"},
+    {"file": "app.tsx", "line": 9, "provider": "convex"},
+    {"file": "app.tsx", "line": 13, "provider": "convex"}
+  ]
+}

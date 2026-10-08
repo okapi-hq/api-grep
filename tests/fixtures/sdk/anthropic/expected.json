@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "claude.ts", "line": 6, "provider": "anthropic"},
+    {"file": "claude.ts", "line": 10, "provider": "anthropic"},
+    {"file": "claude.ts", "line": 12, "provider": "anthropic"},
+    {"file": "claude.ts", "line": 14, "provider": "anthropic"}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "client.ts", "line": 4, "provider": "api.example.com"}
+  ]
+}

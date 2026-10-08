@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "mail.ts", "line": 5, "provider": "resend"},
+    {"file": "mail.ts", "line": 7, "provider": "resend"}
+  ]
+}

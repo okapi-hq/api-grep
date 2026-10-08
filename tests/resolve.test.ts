@@ -26,7 +26,7 @@ describe("provider resolution", () => {
     const r = await scanFixture("resolve/helper-url");
     expect(r).toMatchSnapshot();
     expect(at(r, "telegram.ts", 6)).toMatchObject({ provider: "telegram", host: "api.telegram.org", pathTemplate: "/bot{BOT_TOKEN}/sendMessage" });
-    expect(at(r, "telegram.ts", 13)).toMatchObject({ host: "api.mercury.example.com", pathTemplate: "/v2/invoices" });
+    expect(at(r, "telegram.ts", 13)).toMatchObject({ host: "api.invoices.example.com", pathTemplate: "/v2/invoices" });
   });
 
   it("reads class base URLs from the constructor and parameter defaults", async () => {

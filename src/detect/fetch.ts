@@ -1,6 +1,7 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, EvalCtx, RawCall } from "../types.js";
 import { exportedChain, unwrap } from "./callee.js";
+import { insideFetchOverride, readsLocalData } from "./fetch-filters.js";
 import { getProp, toObjectLiteral } from "./options.js";
 import { writtenType } from "./type-annotation.js";
 
@@ -51,5 +52,7 @@ function declaredAsFetch(node: CallExpression): boolean {
 
 export function detectFetch(node: CallExpression | NewExpression, callee: Callee, ctx: EvalCtx = {}): RawCall | null {
   if (!Node.isCallExpression(node) || !(isFetchCallee(callee) || declaredAsFetch(node))) return null;
-  return fromFetchArgs(node, node.getArguments() as Expression[], ctx);
+  if (insideFetchOverride(node)) return null;
+  const raw = fromFetchArgs(node, node.getArguments() as Expression[], ctx);
+  return readsLocalData(raw.urlExpr, ctx) ? null : raw;
 }

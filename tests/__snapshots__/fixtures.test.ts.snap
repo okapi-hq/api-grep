@@ -4114,9 +4114,28 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 5,
-    "skipped": [],
-    "skippedCounts": {},
+    "filesSeen": 9,
+    "skipped": [
+      {
+        "file": "data-uri/thumbnail.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "fetch-override/instrument.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "img-src/Avatar.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "stub-throws/providers.ts",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 4,
+    },
     "unfollowed": [],
   },
   "stats": {
@@ -9982,9 +10001,20 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 4,
-    "filesSeen": 4,
-    "skipped": [],
-    "skippedCounts": {},
+    "filesSeen": 6,
+    "skipped": [
+      {
+        "file": "injected-fetch/pricing.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "two-hop/client.ts",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 2,
+    },
     "unfollowed": [],
   },
   "stats": {

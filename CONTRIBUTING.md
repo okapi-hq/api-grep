@@ -32,7 +32,7 @@ A Husky pre-commit hook runs lint-staged, the type checker and the tests.
 | `src/detect/` | finds call sites: fetch, axios, got/ky, node http, SDKs, framework helpers |
 | `src/detect/registry/` | JSON registries mapping SDK member chains to endpoints |
 | `src/resolve/` | resolves URLs, methods, query, headers and bodies to templates and shapes |
-| `src/wrappers/` | one-hop expansion of local HTTP wrapper functions |
+| `src/wrappers/` | expansion of local HTTP wrapper functions (two hops) |
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/validate/` | OpenAPI spec loading, operation matching and shape checks |
 | `src/examples/` | synthesized example requests |
@@ -49,6 +49,13 @@ A Husky pre-commit hook runs lint-staged, the type checker and the tests.
   `at(report, "<file>", <line>)`.
 - Negative cases (code that must **not** be reported) go in `tests/fixtures/negatives/`.
 - Fixtures are written from scratch with invented names and only public provider hosts.
+- Regression fixtures: a directory under `tests/fixtures/` with an `expected.json` lists the
+  calls a scan must find (`file`, `line`, `provider`). An empty `calls` list marks a negative
+  fixture; `orUnfollowed` accepts a `diagnostics.unfollowed` entry instead of a call; `todo`
+  (an issue URL) parks a fixture whose feature is not built yet. `tests/recall.test.ts` scans
+  them all, snapshots their calls and prints `recall 1.00, false calls 0`. It fails when recall
+  drops below `tests/recall-baseline.json` or a negative fixture gives a call; raise the
+  baseline when recall improves.
 - Snapshots are part of the review. After an intended change, update them with
   `pnpm vitest run -u` and check the diff.
 

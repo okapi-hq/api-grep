@@ -15,7 +15,7 @@ describe("diagnostics", () => {
       droppedCalls: [],
       unfollowed: [
         { file: "src/injected.ts", line: 16, reason: "injected-fetch", expr: "deps.fetchUpstream" },
-        { file: "src/two-hop.ts", line: 10, reason: "wrapper-depth", via: "doFetch" },
+        { file: "src/two-hop.ts", line: 15, reason: "wrapper-depth", via: "tlsFetch" },
       ],
       complete: false,
     });

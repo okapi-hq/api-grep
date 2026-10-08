@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "skipped": ["broken.ts"],
+  "calls": [
+    {"file": "ok.ts", "line": 5, "provider": "github"}
+  ]
+}

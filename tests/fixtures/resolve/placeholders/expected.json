@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "hosts.ts", "line": 1, "provider": "unknown"},
+    {"file": "hosts.ts", "line": 2, "provider": "internal"},
+    {"file": "hosts.ts", "line": 3, "provider": "internal"},
+    {"file": "hosts.ts", "line": 4, "provider": "env:REPLIT_CONNECTORS_HOSTNAME"},
+    {"file": "hosts.ts", "line": 5, "provider": "unknown"}
+  ]
+}

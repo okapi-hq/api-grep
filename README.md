@@ -99,7 +99,7 @@ apicalls scan <dir> --specs ./specs --validate
 | `--validate` | check request shapes against the specs (requires `--specs`) |
 | `--min-confidence <n>` | hide calls below this confidence in the table (default 0.3; JSON keeps everything) |
 | `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable) |
-| `--no-wrappers` | disable one-hop wrapper expansion |
+| `--no-wrappers` | disable wrapper expansion |
 
 Large monorepos need several GB of heap. The CLI re-runs itself with
 `--max-old-space-size=8192`; set `APICALLS_HEAP_MB` to change it, or to `0` to opt out.
@@ -164,10 +164,12 @@ The pipeline is `detect → resolve → normalize → validate → score → emi
   `apicalls providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (one hop): a local function or method whose body performs an HTTP call *and*
+- **Wrappers** (two hops): a local function or method whose body performs an HTTP call *and*
   whose parameters flow into it is treated as a client. Calls to it are reported at the call
   site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
-  `fn.call(this, …)` and destructured `options`.
+  `fn.call(this, …)` and destructured `options`. A function that passes its parameters to such a
+  wrapper is one too (`latest()` -> `tlsFetch(url)` -> `doFetch(url)` -> `fetch` is reported at
+  `latest()` with `via: "wrapper:tlsFetch>doFetch"`).
 - **Specs**: with `--specs`, path templates are matched to OpenAPI operations. `--validate`
   adds deterministic findings: unknown property, missing required, type mismatch, enum
   mismatch, deprecated.
@@ -208,7 +210,7 @@ with `<redacted>` and counted in `stats.redacted`.
   "droppedCalls": [{ "file": "lib/a.ts", "line": 120, "reason": "schema-invalid", "detail": "body.properties.config: Invalid input" }],
   "unfollowed": [
     { "file": "executors/x.ts", "line": 90, "reason": "injected-fetch", "expr": "this.fetchFn" },
-    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "doFetch" }
+    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "tlsFetch" }
   ],
   "complete": false
 }
@@ -222,8 +224,8 @@ with `<redacted>` and counted in `stats.redacted`.
 - `droppedCalls`: calls that failed the report schema (`schema-invalid`, with the zod path) or
   made the resolver throw (`internal-error`). The rest of the report is still written.
 - `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
-  and calls to a wrapper of a wrapper (the inner wrapper's call site is reported, the outer one is
-  not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
+  and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
+  reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
   `--exclude` / `--include`), a dropped call or a call not followed. Calls below `--min-confidence`
@@ -252,8 +254,12 @@ package. `--changed-since` scans have no coverage section.
 ## Limitations
 
 - A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.
-- Wrapper expansion stops at one hop; the definition-site call is still reported and the outer
+- Wrapper expansion stops at two hops; the definition-site call is still reported and deeper
   call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
+- One call site that picks its host from a table (``fetch(`${PRESETS[name].baseUrl}/models`)``)
+  is one call with an unknown host: the candidate hosts are not listed.
+- `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
+  a `window.fetch = ...` override are not requests and are not reported.
 - SDK detection only covers the packages in [`src/detect/registry`](src/detect/registry).
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
 - Spec matching treats id-looking literal segments as parameters.
@@ -270,7 +276,9 @@ pnpm eval:score sample dub 100  # stratified sample to label by hand
 pnpm eval:score                 # precision per field and confidence bucket, recall when available
 ```
 
-The labeling protocol is in [`eval/label/README.md`](eval/label/README.md).
+The labeling protocol is in [`eval/label/README.md`](eval/label/README.md). Between evaluations,
+`tests/recall.test.ts` checks recall on synthetic regression fixtures in CI (see
+[CONTRIBUTING.md](CONTRIBUTING.md#tests)).
 
 ## Contributing
 

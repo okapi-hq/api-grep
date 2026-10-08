@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "server.ts", "line": 5, "provider": "posthog"},
+    {"file": "server.ts", "line": 7, "provider": "posthog"},
+    {"file": "web.ts", "line": 5, "provider": "posthog"},
+    {"file": "web.ts", "line": 7, "provider": "posthog"}
+  ]
+}

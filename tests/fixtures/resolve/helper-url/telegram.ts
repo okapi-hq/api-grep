@@ -7,7 +7,7 @@ export function notify(chatId: number, text: string) {
 }
 
 function invoiceEndpoint(path: string) {
-  return "https://api.mercury.example.com/v2" + path;
+  return "https://api.invoices.example.com/v2" + path;
 }
 
 export const listInvoices = () => fetch(invoiceEndpoint("/invoices"));

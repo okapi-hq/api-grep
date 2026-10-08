@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "genai.ts", "line": 6, "provider": "google-ai"},
+    {"file": "genai.ts", "line": 12, "provider": "google-ai"},
+    {"file": "legacy.ts", "line": 7, "provider": "google-ai"}
+  ]
+}

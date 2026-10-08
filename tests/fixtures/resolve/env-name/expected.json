@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "clients.ts", "line": 1, "provider": "openrouter"},
+    {"file": "clients.ts", "line": 3, "provider": "supabase"},
+    {"file": "clients.ts", "line": 5, "provider": "slack"},
+    {"file": "clients.ts", "line": 8, "provider": "env:VITE_API_URL"},
+    {"file": "clients.ts", "line": 9, "provider": "env:GITHUB_CALLBACK_URL"}
+  ]
+}
