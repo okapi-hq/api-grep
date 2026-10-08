@@ -23,7 +23,7 @@ export function exampleToCurl(ex: Example): string {
 
 function header(c: Call): string {
   const via = c.via ? ` via ${c.via}` : "";
-  return `# ${c.location.file}:${c.location.line}  ${c.provider} ${c.method} ${c.pathTemplate}${via}  (confidence ${c.confidence.toFixed(2)})`;
+  return `# ${c.location.file}:${c.location.line} (${c.location.language})  ${c.provider} ${c.method} ${c.pathTemplate}${via}  (confidence ${c.confidence.toFixed(2)})`;
 }
 
 /** Renders every example of every call above `minConfidence` as commented curl commands. */

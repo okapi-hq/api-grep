@@ -1,7 +1,23 @@
 export { scan, computeStats, type ScanOptions } from "./scan.js";
 export { toJson } from "./report/json.js";
 export { toTable } from "./report/table.js";
-export { ReportSchema, CallSchema, ShapeSchema, DiagnosticsSchema, CoverageSchema, type Report, type Call, type Stats, type Diagnostics, type Coverage } from "./report/schema.js";
+export {
+  ReportSchema,
+  CallSchema,
+  ShapeSchema,
+  DiagnosticsSchema,
+  CoverageSchema,
+  SCHEMA_URL,
+  SCHEMA_VERSION,
+  type Report,
+  type Call,
+  type Stats,
+  type Diagnostics,
+  type Coverage,
+  type Language,
+} from "./report/schema.js";
+export { reportJsonSchema } from "./report/json-schema.js";
+export { languageOf } from "./language.js";
 export { coverageWarnings, diagnosticsLine } from "./report/diagnostics.js";
 export { sdkCoverage } from "./coverage.js";
 export { Registry, defaultRegistry } from "./detect/registry/index.js";

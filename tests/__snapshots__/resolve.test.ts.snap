@@ -2,6 +2,7 @@
 
 exports[`provider resolution > follows local helpers that build the URL 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -70,6 +71,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
       "location": {
         "col": 10,
         "file": "telegram.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -105,6 +107,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
       "location": {
         "col": 35,
         "file": "telegram.ts",
+        "language": "typescript",
         "line": 13,
       },
       "method": "GET",
@@ -127,12 +130,16 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 2,
     },
     "byHostKind": {
       "literal": 2,
+    },
+    "byLanguage": {
+      "typescript": 2,
     },
     "byProvider": {
       "api.invoices.example.com": 1,
@@ -153,6 +160,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
 
 exports[`provider resolution > never names a provider after a host template 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -188,6 +196,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "location": {
         "col": 42,
         "file": "hosts.ts",
+        "language": "typescript",
         "line": 1,
       },
       "method": "GET",
@@ -223,6 +232,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "location": {
         "col": 28,
         "file": "hosts.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "GET",
@@ -266,6 +276,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "location": {
         "col": 38,
         "file": "hosts.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -301,6 +312,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "location": {
         "col": 32,
         "file": "hosts.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -344,6 +356,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "location": {
         "col": 45,
         "file": "hosts.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "GET",
@@ -366,6 +379,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -374,6 +388,9 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "env": 2,
       "literal": 1,
       "unknown": 2,
+    },
+    "byLanguage": {
+      "typescript": 5,
     },
     "byProvider": {
       "env:REPLIT_CONNECTORS_HOSTNAME": 1,
@@ -395,6 +412,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
 
 exports[`provider resolution > reads class base URLs from the constructor and parameter defaults 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -435,6 +453,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
       "location": {
         "col": 12,
         "file": "gladia.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "POST",
@@ -501,6 +520,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
       "location": {
         "col": 12,
         "file": "gladia.ts",
+        "language": "typescript",
         "line": 17,
       },
       "method": "POST",
@@ -536,6 +556,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
       "location": {
         "col": 10,
         "file": "gladia.ts",
+        "language": "typescript",
         "line": 22,
       },
       "method": "GET",
@@ -559,12 +580,16 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 3,
     },
     "byHostKind": {
       "const": 3,
+    },
+    "byLanguage": {
+      "typescript": 3,
     },
     "byProvider": {
       "elevenlabs": 2,
@@ -585,6 +610,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
 
 exports[`provider resolution > takes the provider from an env var's literal default and keeps the env var 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -660,6 +686,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
       "location": {
         "col": 10,
         "file": "llm.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -696,6 +723,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
       "location": {
         "col": 29,
         "file": "llm.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "GET",
@@ -719,12 +747,16 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 2,
     },
     "byHostKind": {
       "env": 2,
+    },
+    "byLanguage": {
+      "typescript": 2,
     },
     "byProvider": {
       "elevenlabs": 1,
@@ -745,6 +777,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
 
 exports[`provider resolution > takes the provider from the env var's name, with lower confidence 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -771,6 +804,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
       "location": {
         "col": 29,
         "file": "clients.ts",
+        "language": "typescript",
         "line": 1,
       },
       "method": "GET",
@@ -814,6 +848,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
       "location": {
         "col": 41,
         "file": "clients.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "POST",
@@ -871,6 +906,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
       "location": {
         "col": 40,
         "file": "clients.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "POST",
@@ -905,6 +941,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
       "location": {
         "col": 25,
         "file": "clients.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "GET",
@@ -940,6 +977,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
       "location": {
         "col": 31,
         "file": "clients.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -977,12 +1015,16 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 5,
     },
     "byHostKind": {
       "env": 5,
+    },
+    "byLanguage": {
+      "typescript": 5,
     },
     "byProvider": {
       "env:GITHUB_CALLBACK_URL": 1,

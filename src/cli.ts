@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { PROVIDERS } from "./normalize/provider.js";
 import { toCurl } from "./report/curl.js";
 import { toJson } from "./report/json.js";
+import { reportJsonSchema } from "./report/json-schema.js";
 import type { Report } from "./report/schema.js";
 import { toTable } from "./report/table.js";
 import { scan } from "./scan.js";
@@ -77,6 +78,12 @@ export function buildProgram(): Command {
     .option("--exclude <glob>", "exclude glob (repeatable)", collect)
     .option("--no-wrappers", "disable one-hop wrapper expansion")
     .action(runScan);
+  program
+    .command("schema")
+    .description("print the JSON Schema of the --json report")
+    .action(() => {
+      process.stdout.write(`${JSON.stringify(reportJsonSchema(), null, 2)}\n`);
+    });
   program
     .command("providers")
     .description("print the provider table (id, name, hosts, packages) as JSON")

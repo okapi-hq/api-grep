@@ -2,6 +2,7 @@
 
 exports[`axios > matches snapshot and key expectations 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -28,6 +29,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 25,
         "file": "alias.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -70,6 +72,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 32,
         "file": "aliased-consumer.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -136,6 +139,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "config.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -190,6 +194,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "config.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "POST",
@@ -241,6 +246,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "consumer.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -276,6 +282,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 34,
         "file": "factory-var.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "GET",
@@ -317,6 +324,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 28,
         "file": "factory.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -398,6 +406,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "instance.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -455,6 +464,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "require.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -552,6 +562,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "verbs.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -598,6 +609,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 40,
         "file": "verbs.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -669,6 +681,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 71,
         "file": "verbs.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "PUT",
@@ -722,6 +735,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 28,
         "file": "verbs.ts",
+        "language": "typescript",
         "line": 11,
       },
       "method": "PATCH",
@@ -765,6 +779,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 39,
         "file": "verbs.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "DELETE",
@@ -787,6 +802,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -794,6 +810,9 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "byHostKind": {
       "env": 2,
       "literal": 12,
+    },
+    "byLanguage": {
+      "typescript": 14,
     },
     "byProvider": {
       "api.example.com": 4,
@@ -819,6 +838,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
 
 exports[`constants > matches snapshot and key expectations 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -854,6 +874,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 37,
         "file": "concat.ts",
+        "language": "typescript",
         "line": 1,
       },
       "method": "GET",
@@ -897,6 +918,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 38,
         "file": "concat.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "GET",
@@ -931,6 +953,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 28,
         "file": "enum.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "GET",
@@ -999,6 +1022,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "env.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -1034,6 +1058,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "env.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "GET",
@@ -1082,6 +1107,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 44,
         "file": "same-file.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -1140,6 +1166,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 39,
         "file": "use-config.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "POST",
@@ -1175,6 +1202,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 31,
         "file": "use-config.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -1198,6 +1226,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -1206,6 +1235,9 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "const": 4,
       "env": 2,
       "literal": 2,
+    },
+    "byLanguage": {
+      "typescript": 8,
     },
     "byProvider": {
       "api.example.com": 3,
@@ -1230,6 +1262,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
 
 exports[`examples > synthesizes concrete requests from typed parameters, query and body shapes 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -1381,6 +1414,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "body.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "POST",
@@ -1457,6 +1491,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "body.ts",
+        "language": "typescript",
         "line": 13,
       },
       "method": "POST",
@@ -1556,6 +1591,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "body.ts",
+        "language": "typescript",
         "line": 27,
       },
       "method": "POST",
@@ -1619,6 +1655,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "path.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "GET",
@@ -1670,6 +1707,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "path.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "DELETE",
@@ -1726,6 +1764,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "path.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "GET",
@@ -1796,6 +1835,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "query.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "GET",
@@ -1883,6 +1923,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "query.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "GET",
@@ -1957,6 +1998,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "location": {
         "col": 10,
         "file": "query.ts",
+        "language": "typescript",
         "line": 15,
       },
       "method": "GET",
@@ -2000,6 +2042,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -2009,6 +2052,9 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "const": 1,
       "literal": 7,
       "unknown": 1,
+    },
+    "byLanguage": {
+      "typescript": 9,
     },
     "byProvider": {
       "api.example.com": 6,
@@ -2031,6 +2077,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
 
 exports[`fetch > matches snapshot and key expectations 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -2149,6 +2196,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "env.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "PUT",
@@ -2209,6 +2257,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "formdata.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -2290,6 +2339,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 21,
         "file": "literal.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -2325,6 +2375,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 32,
         "file": "literal.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "GET",
@@ -2377,6 +2428,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "newurl.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "GET",
@@ -2436,6 +2488,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "newurl.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "GET",
@@ -2507,6 +2560,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "node-fetch.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -2548,6 +2602,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "opaque-options.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "GET",
@@ -2595,6 +2650,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "opaque-options.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "DYNAMIC",
@@ -2669,6 +2725,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "request-object.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "POST",
@@ -2733,6 +2790,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "template.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -2897,6 +2955,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "typed-body.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "POST",
@@ -2945,6 +3004,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "typed-body.ts",
+        "language": "typescript",
         "line": 14,
       },
       "method": "POST",
@@ -2967,6 +3027,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -2975,6 +3036,9 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "const": 2,
       "env": 1,
       "literal": 10,
+    },
+    "byLanguage": {
+      "typescript": 13,
     },
     "byProvider": {
       "api.example.com": 3,
@@ -3001,6 +3065,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
 
 exports[`frameworks > detects options-object helpers from the frameworks registry 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "bearer",
@@ -3063,6 +3128,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 10,
         "file": "activepieces.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -3118,6 +3184,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 10,
         "file": "activepieces.ts",
+        "language": "typescript",
         "line": 13,
       },
       "method": "GET",
@@ -3266,6 +3333,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 10,
         "file": "ai-sdk.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -3308,6 +3376,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 10,
         "file": "ai-sdk.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "GET",
@@ -3386,6 +3455,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 10,
         "file": "n8n.ts",
+        "language": "typescript",
         "line": 15,
       },
       "method": "DYNAMIC",
@@ -3470,6 +3540,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 12,
         "file": "n8n.ts",
+        "language": "typescript",
         "line": 21,
       },
       "method": "POST",
@@ -3530,6 +3601,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "location": {
         "col": 12,
         "file": "n8n.ts",
+        "language": "typescript",
         "line": 33,
       },
       "method": "GET",
@@ -3570,12 +3642,16 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "framework": 7,
     },
     "byHostKind": {
       "literal": 7,
+    },
+    "byLanguage": {
+      "typescript": 7,
     },
     "byProvider": {
       "github": 2,
@@ -3597,6 +3673,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
 
 exports[`got and ky > matches snapshot and key expectations 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "bearer",
@@ -3701,6 +3778,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "got.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -3739,6 +3817,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "got.ts",
+        "language": "typescript",
         "line": 11,
       },
       "method": "GET",
@@ -3839,6 +3918,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "got.ts",
+        "language": "typescript",
         "line": 17,
       },
       "method": "POST",
@@ -3910,6 +3990,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "ky.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -3947,6 +4028,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 31,
         "file": "ky.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -3986,6 +4068,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -3993,6 +4076,9 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     },
     "byHostKind": {
       "literal": 5,
+    },
+    "byLanguage": {
+      "typescript": 5,
     },
     "byProvider": {
       "api.example.com": 1,
@@ -4016,6 +4102,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
 
 exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports relative calls as internal 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -4064,6 +4151,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "location": {
         "col": 45,
         "file": "relative.ts",
+        "language": "typescript",
         "line": 1,
       },
       "method": "POST",
@@ -4097,6 +4185,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "location": {
         "col": 27,
         "file": "then-chain.ts",
+        "language": "typescript",
         "line": 1,
       },
       "method": "GET",
@@ -4138,6 +4227,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4145,6 +4235,9 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "byHostKind": {
       "literal": 1,
       "relative": 1,
+    },
+    "byLanguage": {
+      "typescript": 2,
     },
     "byProvider": {
       "api.example.com": 1,
@@ -4165,6 +4258,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
 
 exports[`node http > reads options objects and url-first calls 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "apikey",
@@ -4197,6 +4291,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "location": {
         "col": 15,
         "file": "https.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -4232,6 +4327,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "location": {
         "col": 55,
         "file": "https.ts",
+        "language": "typescript",
         "line": 8,
       },
       "method": "GET",
@@ -4254,12 +4350,16 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "node-http": 2,
     },
     "byHostKind": {
       "literal": 2,
+    },
+    "byLanguage": {
+      "typescript": 2,
     },
     "byProvider": {
       "api.example.com": 1,
@@ -4280,6 +4380,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
 
 exports[`sdk > matches snapshot and key expectations 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "unknown",
@@ -4363,6 +4464,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 17,
         "file": "aws.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "PUT",
@@ -4447,6 +4549,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 15,
         "file": "aws.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "GET",
@@ -4527,6 +4630,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 12,
         "file": "class-member.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -4569,6 +4673,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 12,
         "file": "class-member.ts",
+        "language": "typescript",
         "line": 15,
       },
       "method": "GET",
@@ -4686,6 +4791,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "octokit.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -4771,6 +4877,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 57,
         "file": "octokit.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -4867,6 +4974,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 21,
         "file": "openai.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -4943,6 +5051,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 43,
         "file": "openai.ts",
+        "language": "typescript",
         "line": 10,
       },
       "method": "POST",
@@ -5023,6 +5132,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 41,
         "file": "slack.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "POST",
@@ -5116,6 +5226,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "stripe-literal.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -5164,6 +5275,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 42,
         "file": "stripe-literal.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "GET",
@@ -5269,6 +5381,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "stripe-literal.ts",
+        "language": "typescript",
         "line": 12,
       },
       "method": "POST",
@@ -6646,6 +6759,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "stripe-typed.ts",
+        "language": "typescript",
         "line": 9,
       },
       "method": "POST",
@@ -9159,6 +9273,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 10,
         "file": "stripe-typed.ts",
+        "language": "typescript",
         "line": 13,
       },
       "method": "POST",
@@ -9246,6 +9361,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 50,
         "file": "twilio.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -9323,6 +9439,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "location": {
         "col": 39,
         "file": "twilio.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -9511,12 +9628,16 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "sdk": 16,
     },
     "byHostKind": {
       "literal": 16,
+    },
+    "byLanguage": {
+      "typescript": 16,
     },
     "byProvider": {
       "aws": 2,
@@ -9541,6 +9662,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
 
 exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
 {
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
@@ -9589,6 +9711,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 12,
         "file": "class-wrapper.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -9664,6 +9787,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 45,
         "file": "class-wrapper.ts",
+        "language": "typescript",
         "line": 13,
       },
       "method": "POST",
@@ -9714,6 +9838,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 10,
         "file": "destructured.ts",
+        "language": "typescript",
         "line": 2,
       },
       "method": "DYNAMIC",
@@ -9749,6 +9874,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 26,
         "file": "destructured.ts",
+        "language": "typescript",
         "line": 5,
       },
       "method": "POST",
@@ -9812,6 +9938,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 10,
         "file": "function-wrapper.ts",
+        "language": "typescript",
         "line": 4,
       },
       "method": "POST",
@@ -9893,6 +10020,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 49,
         "file": "function-wrapper.ts",
+        "language": "typescript",
         "line": 7,
       },
       "method": "POST",
@@ -9943,6 +10071,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 10,
         "file": "intermediate.ts",
+        "language": "typescript",
         "line": 3,
       },
       "method": "GET",
@@ -9982,6 +10111,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "location": {
         "col": 27,
         "file": "intermediate.ts",
+        "language": "typescript",
         "line": 6,
       },
       "method": "POST",
@@ -10017,6 +10147,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
+  "schemaVersion": "1.0.0",
   "stats": {
     "byClient": {
       "axios": 2,
@@ -10026,6 +10157,9 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "const": 3,
       "literal": 4,
       "unknown": 1,
+    },
+    "byLanguage": {
+      "typescript": 8,
     },
     "byProvider": {
       "hubspot": 2,

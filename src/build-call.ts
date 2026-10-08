@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
+import { languageOf } from "./language.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, type BodyResult } from "./resolve/body.js";
@@ -52,7 +53,7 @@ function defaultEncoding(raw: RawCall, method: string): BodyEncoding {
 function location(raw: RawCall, rootDir: string): Call["location"] {
   const sf = raw.node.getSourceFile();
   const { line, column } = sf.getLineAndColumnAtPos(raw.node.getStart());
-  return { file: path.relative(rootDir, sf.getFilePath()).split(path.sep).join("/"), line, col: column };
+  return { file: path.relative(rootDir, sf.getFilePath()).split(path.sep).join("/"), line, col: column, language: languageOf(sf.getFilePath()) };
 }
 
 function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { url: UrlShape; method: string } {
