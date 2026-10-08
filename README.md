@@ -160,6 +160,24 @@ is still written. The scan never stops because of one file or one call.
 The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed`.
 Skipped files and dropped calls are also printed to stderr as `warning:` lines.
 
+### SDK coverage
+
+`coverage.sdks` compares the API SDKs a repo uses with the calls found, so "0 Supabase calls"
+never reads as "no Supabase". Each known SDK package (the `packages` of `providers.json`) that a
+covered `package.json` declares (`dependencies`, `peerDependencies`) or a scanned file imports
+(type-only imports aside) gets a row:
+
+```json
+{ "package": "@notionhq/client", "provider": "notion", "supported": false, "declared": true,
+  "imported": true, "importSites": 41, "calls": 0, "status": "unsupported" }
+```
+
+`ok` (registry and calls), `unsupported` (imported, no registry: its calls are missed),
+`imported-no-calls` (registry but no call: a wrapper, or a detection bug), `declared-not-imported`
+(probably unused). The table prints one `⚠` line per `unsupported` and `imported-no-calls`
+package. Calls count for the package actually imported (`@supabase/ssr`, `@sentry/nextjs`).
+`--changed-since` scans have no coverage section.
+
 **Exit codes:** `0` complete scan, `2` partial scan (the report is still written), `1` fatal error
 (for example the directory does not exist). A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
 JWTs, long hex) with `<redacted>` and counts them in `stats.redacted`.

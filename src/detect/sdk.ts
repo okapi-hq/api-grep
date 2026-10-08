@@ -39,7 +39,8 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
     node,
     client: "sdk",
     sdk: {
-      package: reg.package,
+      // the package actually imported (`@supabase/ssr`, `@sentry/nextjs`), not the registry's main one
+      package: callee.package ?? reg.package,
       provider: reg.provider,
       host: spec.host ?? reg.host,
       chain: key,

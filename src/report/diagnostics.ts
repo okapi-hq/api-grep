@@ -1,4 +1,4 @@
-import type { Diagnostics, DroppedCall, SkippedFile, UnfollowedCall } from "./schema.js";
+import type { Coverage, Diagnostics, DroppedCall, SkippedFile, UnfollowedCall } from "./schema.js";
 
 /** Files left out by --exclude / --include are listed one by one up to this count, then only counted. */
 const MAX_LISTED_EXCLUSIONS = 200;
@@ -47,4 +47,15 @@ export function diagnosticsLine(d: Diagnostics): string {
   if (d.droppedCalls.length > 0) parts.push(`${plural(d.droppedCalls.length, "call", "calls")} dropped`);
   if (d.complete) parts.push("complete");
   return parts.join(", ");
+}
+
+/** One warning line per SDK whose calls are missing from the report. */
+export function coverageWarnings(coverage: Coverage): string[] {
+  const out: string[] = [];
+  for (const s of coverage.sdks) {
+    const where = `imported in ${s.importSites} ${s.importSites === 1 ? "file" : "files"}`;
+    if (s.status === "unsupported") out.push(`${s.package} ${where}, no registry: its calls are not listed`);
+    if (s.status === "imported-no-calls") out.push(`${s.package} ${where}, but no call was found (used through a wrapper?)`);
+  }
+  return out;
 }

@@ -1,6 +1,6 @@
 import Table from "cli-table3";
 import pc from "picocolors";
-import { diagnosticsLine } from "./diagnostics.js";
+import { coverageWarnings, diagnosticsLine } from "./diagnostics.js";
 import type { Call, Report } from "./schema.js";
 
 function shortShape(c: Call): string {
@@ -40,5 +40,6 @@ export function toTable(report: Report, minConfidence: number): string {
     .join(", ")}`;
   const d = report.diagnostics;
   const coverage = d ? `\n${d.complete ? pc.dim(diagnosticsLine(d)) : pc.yellow(diagnosticsLine(d))}` : "";
-  return `${table.toString()}\n${pc.dim(summary)}${coverage}\n`;
+  const sdkWarnings = report.coverage ? coverageWarnings(report.coverage).map((w) => `\n${pc.yellow(`⚠ ${w}`)}`).join("") : "";
+  return `${table.toString()}\n${pc.dim(summary)}${coverage}${sdkWarnings}\n`;
 }
