@@ -118,7 +118,8 @@ function templatedUrl(raw: RawCall, pathT: string, ctx: EvalCtx): UrlShape {
   let url = onCodeBase(raw, pathT, ctx, names);
   if (!url) {
     url = partsToUrlShape([{ kind: "static", text: `https://${raw.sdk!.host}` }, ...pathParts(raw, pathT, ctx, names)], ctx);
-    url.hostKind = "literal";
+    // `{provider}` / `{mcpServer}`: the registry does not know the host either
+    url.hostKind = /^\{[^}]+\}$/.test(raw.sdk!.host) ? "unknown" : "literal";
     url.host = raw.sdk!.host;
     url.dynamic = url.dynamic.filter((d) => d.where !== "host");
   }

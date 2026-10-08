@@ -58,7 +58,8 @@ export function detectAiSdk(node: CallExpression | NewExpression, callee: Callee
   if (!FUNCTIONS.has(fn)) return null;
   const modelExpr = getProp(node.getArguments()[0] as Expression | undefined, "model");
   const model = modelExpr ? resolveModel(modelExpr) : undefined;
-  const entry = model?.entry ?? { ...GATEWAY, provider: "unknown", host: "{provider}" };
+  // a model the scan cannot trace: still one LLM request, to a provider it cannot name
+  const entry = model?.entry ?? { ...GATEWAY, provider: "unknown", host: "{provider}", paths: { "": "/" } };
   const path = entry.paths[model?.member ?? ""] ?? entry.paths[""]!;
   return {
     node,

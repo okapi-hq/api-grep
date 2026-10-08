@@ -37,13 +37,15 @@ describe("provider inventory: LLM SDKs", () => {
 
   it("vercel ai sdk: the provider comes from the model", async () => {
     expect(await calls("sdk/ai-sdk")).toEqual([
-      "generate.ts:10 openai POST api.openai.com/v1/responses",
-      "generate.ts:11 anthropic POST api.anthropic.com/v1/messages",
-      "generate.ts:12 google-ai POST generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-      "generate.ts:13 openai POST api.openai.com/v1/embeddings",
-      "generate.ts:14 together POST api.together.xyz/v1/responses",
-      "generate.ts:15 vercel-ai-gateway POST ai-gateway.vercel.sh/v1/ai/language-model",
-      "generate.ts:16 openrouter POST openrouter.ai/api/v1/chat/completions",
+      "generate.ts:11 openai POST api.openai.com/v1/responses",
+      "generate.ts:12 anthropic POST api.anthropic.com/v1/messages",
+      "generate.ts:13 google-ai POST generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      "generate.ts:14 openai POST api.openai.com/v1/embeddings",
+      "generate.ts:15 together POST api.together.xyz/v1/responses",
+      "generate.ts:16 vercel-ai-gateway POST ai-gateway.vercel.sh/v1/ai/language-model",
+      "generate.ts:17 openrouter POST openrouter.ai/api/v1/chat/completions",
+      "generate.ts:20 google-vertex POST aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-flash:generateContent",
+      "generate.ts:21 unknown POST {provider}/",
     ]);
   });
 
