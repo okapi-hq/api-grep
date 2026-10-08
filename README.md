@@ -110,10 +110,48 @@ by default (`--min-confidence`); JSON keeps everything.
 ## Output
 
 The report is validated by the zod schema in `src/report/schema.ts` (the contract for the
-next stage), one call at a time: a call that does not fit is dropped with a warning on stderr
-and the rest of the report is still written. A file that cannot be read (a syntax error, an
-import whose module specifier is not a string literal) or that makes a detector throw is
-skipped with a warning; the scan never stops because of one file or one call. A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
+next stage), one call at a time: a call that does not fit is dropped and the rest of the report
+is still written. The scan never stops because of one file or one call.
+
+### Diagnostics
+
+`diagnostics` says what the scan could not read, so a partial report never looks complete:
+
+```json
+"diagnostics": {
+  "filesSeen": 1840,
+  "filesScanned": 1702,
+  "skipped": [{ "file": "src/legacy/x.ts", "reason": "parse-error", "detail": "Expected the module specifier to be a string literal." }],
+  "skippedCounts": { "parse-error": 1, "excluded": 137 },
+  "droppedCalls": [{ "file": "lib/a.ts", "line": 120, "reason": "schema-invalid", "detail": "body.properties.config: Invalid input" }],
+  "unfollowed": [
+    { "file": "executors/x.ts", "line": 90, "reason": "injected-fetch", "expr": "this.fetchFn" },
+    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "doFetch" }
+  ],
+  "complete": false
+}
+```
+
+- `skipped`: `parse-error` (a syntax error, or an import whose module specifier is not a string
+  literal) and `internal-error` (a detector threw) files are not scanned. Files left out by
+  `--exclude` (`excluded`) or `--include` (`not-included`) are listed too, or only counted above 200.
+  Test files, mocks, declarations and build output are out of scope and not counted. Every source
+  file under the directory is scanned, also outside the tsconfig `include`.
+- `droppedCalls`: calls that failed the report schema (`schema-invalid`, with the zod path) or
+  made the resolver throw (`internal-error`).
+- `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
+  and calls to a wrapper of a wrapper (the inner wrapper's call site is reported, the outer one is
+  not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
+  `typeof fetch` is reported as a fetch call instead.
+- `complete` is false when something was lost that was not asked for: a skipped file (other than
+  `--exclude` / `--include`), a dropped call or a call not followed. Calls below `--min-confidence`
+  are only hidden from the table, never dropped from the JSON.
+
+The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed`.
+Skipped files and dropped calls are also printed to stderr as `warning:` lines.
+
+**Exit codes:** `0` complete scan, `2` partial scan (the report is still written), `1` fatal error
+(for example the directory does not exist). A denylist walker replaces any secret-looking string (`sk_live_`, `AKIA`, `ghp_`,
 JWTs, long hex) with `<redacted>` and counts them in `stats.redacted`.
 
 ## Registries
@@ -141,7 +179,8 @@ Labeling protocol is in `eval/label/README.md`.
 ## Known approximations
 
 - A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.
-- Wrapper expansion stops at one hop; the definition-site call is still reported.
+- Wrapper expansion stops at one hop; the definition-site call is still reported and the outer
+  call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders
   with origin `sdk`.
 - Spec matching treats id-looking literal segments as parameters.

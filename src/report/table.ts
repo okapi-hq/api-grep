@@ -1,5 +1,6 @@
 import Table from "cli-table3";
 import pc from "picocolors";
+import { diagnosticsLine } from "./diagnostics.js";
 import type { Call, Report } from "./schema.js";
 
 function shortShape(c: Call): string {
@@ -37,5 +38,7 @@ export function toTable(report: Report, minConfidence: number): string {
     .slice(0, 8)
     .map(([k, v]) => `${k}=${v}`)
     .join(", ")}`;
-  return `${table.toString()}\n${pc.dim(summary)}\n`;
+  const d = report.diagnostics;
+  const coverage = d ? `\n${d.complete ? pc.dim(diagnosticsLine(d)) : pc.yellow(diagnosticsLine(d))}` : "";
+  return `${table.toString()}\n${pc.dim(summary)}${coverage}\n`;
 }

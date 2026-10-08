@@ -112,8 +112,9 @@ function instanceCallee(init: CallExpression | NewExpression, chain: string[], d
   };
 }
 
+/** Initializer of a local; a parameter's default (`fetchImpl = fetch`) counts, since it is what runs unless overridden. */
 function initializerOf(decl: Node): Expression | undefined {
-  if (Node.isVariableDeclaration(decl) || Node.isPropertyDeclaration(decl) || Node.isBindingElement(decl)) {
+  if (Node.isVariableDeclaration(decl) || Node.isPropertyDeclaration(decl) || Node.isBindingElement(decl) || Node.isParameterDeclaration(decl)) {
     return decl.getInitializer();
   }
   if (Node.isPropertyAssignment(decl)) return decl.getInitializer();
@@ -150,6 +151,8 @@ function thisCallee(mc: Chain, depth: number): Callee {
   if (method) return { localDecl: method, chain: chain.slice(1) };
   const rest: Chain = { root: mc.nodes[1] ?? root, nodes: mc.nodes.slice(1), chain: chain.slice(1) };
   if (prop?.getInitializer()) return localCallee(prop, rest, depth + 1);
+  const paramProp = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.isParameterProperty());
+  if (paramProp?.getInitializer()) return localCallee(paramProp, rest, depth + 1);
   const assigned = constructorAssignment(cls, propName);
   if (assigned) {
     const u = unwrap(assigned);

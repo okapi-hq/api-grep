@@ -765,6 +765,15 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.example.com/items/{id}",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 10,
+    "filesSeen": 10,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1160,6 +1169,15 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.vercel.com/v9/projects",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -1950,6 +1968,15 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "urlTemplate": "https://api.example.com/v1/items?cursor={cursor}&limit=50",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "axios": 1,
@@ -2861,6 +2888,15 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.example.com/anything",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 9,
+    "filesSeen": 9,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "fetch": 12,
@@ -3445,6 +3481,15 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "via": "wrapper:githubApiRequest",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "framework": 7,
@@ -3845,6 +3890,15 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.cal.com/v1/bookings",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "got": 3,
@@ -3966,6 +4020,15 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "urlTemplate": "https://api.example.com/a",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 5,
+    "filesSeen": 5,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4069,6 +4132,15 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "urlTemplate": "https://api.example.com/health",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9138,6 +9210,54 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "urlTemplate": "https://api.twilio.com/v2/Services/{ServiceSid}/Verifications",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 8,
+    "filesSeen": 17,
+    "skipped": [
+      {
+        "file": "firebase-modular/firebase.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "firebase-modular/session.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "firebase-modular/store.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "sentry/checkout.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "sentry/monitoring.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "supabase/client.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "supabase/context.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "supabase/ssr.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "supabase/tasks.ts",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 9,
+    },
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -9614,6 +9734,15 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "via": "wrapper:proxied",
     },
   ],
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 4,
+    "filesSeen": 4,
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
   "stats": {
     "byClient": {
       "axios": 2,

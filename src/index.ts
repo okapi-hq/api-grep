@@ -1,7 +1,8 @@
 export { scan, computeStats, type ScanOptions } from "./scan.js";
 export { toJson } from "./report/json.js";
 export { toTable } from "./report/table.js";
-export { ReportSchema, CallSchema, ShapeSchema, type Report, type Call, type Stats } from "./report/schema.js";
+export { ReportSchema, CallSchema, ShapeSchema, DiagnosticsSchema, type Report, type Call, type Stats, type Diagnostics } from "./report/schema.js";
+export { diagnosticsLine } from "./report/diagnostics.js";
 export { Registry, defaultRegistry } from "./detect/registry/index.js";
 export { evaluate, partsToTemplate } from "./resolve/evaluate.js";
 export { resolveUrl, partsToUrlShape } from "./resolve/url.js";

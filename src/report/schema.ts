@@ -83,6 +83,42 @@ export const StatsSchema = z.object({
   durationMs: z.number(),
 });
 
+export const SkippedFileSchema = z.object({
+  file: z.string(),
+  /** parse-error / internal-error: the file could not be read; excluded / not-included: left out by --exclude / --include. */
+  reason: z.enum(["parse-error", "internal-error", "excluded", "not-included"]),
+  detail: z.string().optional(),
+});
+
+export const DroppedCallSchema = z.object({
+  file: z.string(),
+  line: z.number(),
+  reason: z.enum(["schema-invalid", "internal-error"]),
+  detail: z.string().optional(),
+});
+
+export const UnfollowedCallSchema = z.object({
+  file: z.string(),
+  line: z.number(),
+  /** injected-fetch: a fetch function received as a parameter / property; wrapper-depth: a wrapper of a wrapper. */
+  reason: z.enum(["injected-fetch", "wrapper-depth"]),
+  expr: z.string().optional(),
+  via: z.string().optional(),
+});
+
+export const DiagnosticsSchema = z.object({
+  /** Source files in scope (test files, mocks, declarations and build output are out of scope). */
+  filesSeen: z.number(),
+  filesScanned: z.number(),
+  /** Files left out; above 200, files left out by --exclude / --include are only counted in `skippedCounts`. */
+  skipped: z.array(SkippedFileSchema),
+  skippedCounts: z.record(z.number()),
+  droppedCalls: z.array(DroppedCallSchema),
+  unfollowed: z.array(UnfollowedCallSchema),
+  /** False when something was lost that was not asked for: an unreadable file, a dropped call or a call not followed. */
+  complete: z.boolean(),
+});
+
 export const ReportSchema = z.object({
   tool: z.string(),
   version: z.string(),
@@ -90,9 +126,14 @@ export const ReportSchema = z.object({
   commit: z.string().optional(),
   calls: z.array(CallSchema),
   stats: StatsSchema,
+  diagnostics: DiagnosticsSchema.optional(),
 });
 
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
 export type Stats = z.infer<typeof StatsSchema>;
 export type Report = z.infer<typeof ReportSchema>;
+export type Diagnostics = z.infer<typeof DiagnosticsSchema>;
+export type SkippedFile = z.infer<typeof SkippedFileSchema>;
+export type DroppedCall = z.infer<typeof DroppedCallSchema>;
+export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;

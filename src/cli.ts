@@ -4,6 +4,7 @@ import path from "node:path";
 import { Command } from "commander";
 import { toCurl } from "./report/curl.js";
 import { toJson } from "./report/json.js";
+import type { Report } from "./report/schema.js";
 import { toTable } from "./report/table.js";
 import { scan } from "./scan.js";
 import pkg from "../package.json" with { type: "json" };
@@ -49,9 +50,12 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
   const json = toJson(report, true, warn);
   if (flags.out) writeFileSync(flags.out, json);
   const min = flags.minConfidence !== undefined ? Number(flags.minConfidence) : 0.3;
+  const written = JSON.parse(json) as Report;
   if (flags.json) process.stdout.write(`${json}\n`);
-  else if (flags.curl) process.stdout.write(toCurl(JSON.parse(json), min));
-  else process.stdout.write(toTable(JSON.parse(json), min));
+  else if (flags.curl) process.stdout.write(toCurl(written, min));
+  else process.stdout.write(toTable(written, min));
+  // 0: complete scan, 2: partial scan (the report is still written), 1: fatal error (see the catch below)
+  process.exitCode = written.diagnostics?.complete === false ? 2 : 0;
 }
 
 export function buildProgram(): Command {

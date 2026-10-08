@@ -24,10 +24,17 @@ export interface LoadOptions {
   exclude?: string[];
 }
 
+export interface LeftOut {
+  file: string;
+  reason: "excluded" | "not-included";
+}
+
 export interface Loaded {
   project: Project;
   files: SourceFile[];
   envHints: Record<string, string>;
+  /** Source files in scope that --exclude / --include left out (paths relative to the scanned directory). */
+  leftOut: LeftOut[];
 }
 
 function findTsconfig(dir: string): string | undefined {
@@ -114,5 +121,15 @@ export function loadProject(opts: LoadOptions): Loaded {
     });
     project.addSourceFilesAtPaths(globFiles(dir, opts.include, exclude));
   }
-  return { project, files: selectFiles(project, dir, opts, exclude), envHints: readEnvHints(dir) };
+  const files = selectFiles(project, dir, opts, exclude);
+  return { project, files, envHints: readEnvHints(dir), leftOut: leftOutFiles(dir, opts, files) };
+}
+
+/** Files the default file set would scan but --exclude / --include removed; test files and build output are out of scope. */
+function leftOutFiles(dir: string, opts: LoadOptions, selected: SourceFile[]): LeftOut[] {
+  if (!opts.include?.length && !opts.exclude?.length) return [];
+  const kept = new Set(selected.map((sf) => sf.getFilePath() as string));
+  return globFiles(dir, undefined, DEFAULT_EXCLUDES)
+    .filter((f) => !kept.has(f))
+    .map((f) => ({ file: path.relative(dir, f).split(path.sep).join("/"), reason: matchesAny(f, dir, opts.exclude ?? []) ? "excluded" : "not-included" }));
 }

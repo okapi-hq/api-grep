@@ -36,6 +36,8 @@ interface Row {
   dyn: number;
   seconds: number;
   providers: string;
+  /** `complete`, or what made the scan partial (`2 skipped, 5 not followed`). */
+  coverage: string;
   error?: string;
 }
 
@@ -56,20 +58,29 @@ function summarize(repo: RepoSpec, r: Report): Row {
     dyn: s.withDynamic,
     seconds: Math.round(s.durationMs / 100) / 10,
     providers,
+    coverage: coverageOf(r),
   };
+}
+
+function coverageOf(r: Report): string {
+  const d = r.diagnostics;
+  if (!d) return "?";
+  if (d.complete) return "complete";
+  const lost = d.skipped.filter((s) => s.reason === "parse-error" || s.reason === "internal-error").length;
+  return [lost && `${lost} skipped`, d.droppedCalls.length && `${d.droppedCalls.length} dropped`, d.unfollowed.length && `${d.unfollowed.length} not followed`].filter(Boolean).join(", ");
 }
 
 function line(row: Row): string {
   if (row.error) return `${row.repo.padEnd(13)} ERROR ${row.error}`;
-  return `${row.repo.padEnd(13)} files=${String(row.files).padStart(5)} calls=${String(row.calls).padStart(5)} hi=${String(row.hi).padStart(4)} sdk=${String(row.sdk).padStart(4)} body=${String(row.body).padStart(4)} dyn=${String(row.dyn).padStart(4)} ${String(row.seconds).padStart(6)}s | ${row.providers}`;
+  return `${row.repo.padEnd(13)} files=${String(row.files).padStart(5)} calls=${String(row.calls).padStart(5)} hi=${String(row.hi).padStart(4)} sdk=${String(row.sdk).padStart(4)} body=${String(row.body).padStart(4)} dyn=${String(row.dyn).padStart(4)} ${String(row.seconds).padStart(6)}s | ${row.coverage} | ${row.providers}`;
 }
 
 function markdown(rows: Row[], commits: Map<string, string | undefined>): string {
-  const head = "| repo | scanned dir | files | calls | conf ≥ 0.7 | sdk | with body | with dynamic | time | top providers |\n|---|---|---:|---:|---:|---:|---:|---:|---:|---|";
+  const head = "| repo | scanned dir | files | calls | conf ≥ 0.7 | sdk | with body | with dynamic | time | coverage | top providers |\n|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|";
   const body = rows.map((r) =>
     r.error
-      ? `| ${r.repo} | ${r.subdir} | error | | | | | | | ${r.error.replace(/\|/g, "/")} |`
-      : `| ${r.repo} | ${r.subdir} | ${r.files} | ${r.calls} | ${r.hi} | ${r.sdk} | ${r.body} | ${r.dyn} | ${r.seconds}s | ${r.providers.replace(/\|/g, "/")} |`,
+      ? `| ${r.repo} | ${r.subdir} | error | | | | | | | | ${r.error.replace(/\|/g, "/")} |`
+      : `| ${r.repo} | ${r.subdir} | ${r.files} | ${r.calls} | ${r.hi} | ${r.sdk} | ${r.body} | ${r.dyn} | ${r.seconds}s | ${r.coverage} | ${r.providers.replace(/\|/g, "/")} |`,
   );
   const ok = rows.filter((r) => !r.error);
   const total = (k: keyof Row): number => ok.reduce((a, r) => a + Number(r[k]), 0);
@@ -120,7 +131,7 @@ async function runOne(repo: RepoSpec, commits: Map<string, string | undefined>):
     return summarize(repo, report);
   } catch (err) {
     const message = err instanceof Error ? err.message.split("\n")[0]! : String(err);
-    return { repo: repo.name, subdir: repo.subdir ?? ".", files: 0, calls: 0, hi: 0, sdk: 0, body: 0, dyn: 0, seconds: 0, providers: "", error: message };
+    return { repo: repo.name, subdir: repo.subdir ?? ".", files: 0, calls: 0, hi: 0, sdk: 0, body: 0, dyn: 0, seconds: 0, providers: "", coverage: "", error: message };
   }
 }
 
