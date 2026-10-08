@@ -78,12 +78,22 @@ curl -X PATCH 'https://api.vercel.com/v3/domains/yonder.example.org?teamId=dgsko
 
 - **URL** — string literals, template literals, `+` concatenation, `new URL(path, base)`,
   same-file and imported constants, `as const` config objects, enums, `process.env.X`
-  (with hints from `.env.example`). Unresolvable segments become `{name}` placeholders and
+  (with hints from `.env.example`), local helpers that return a URL (`apiUrl("sendMessage")`,
+  one level, arguments substituted), `this.baseUrl` set in the constructor or as a parameter
+  property default, and parameter defaults. Unresolvable segments become `{name}` placeholders and
   are listed under `dynamic` with their origin (`param`, `call`, `env`, `unknown`).
 - **Body** — object literals first (literal values give `enum`), spreads merged, computed
   keys flagged; anything else goes through the checker's declared type (`fromType` names it).
   `JSON.stringify`, `URLSearchParams`, `FormData` and `.append()` calls are unwrapped.
   `any` degrades to `dynamic` honestly.
+- **Provider** — from the SDK registry, else the host through `src/normalize/providers.json`
+  (`id`, `name`, `hosts`, `packages`; an exact host wins over the longest matching suffix). An env
+  URL with a literal default (`process.env.X ?? "https://api.langdock.com/v1"`) keeps `envName` and
+  takes the default's host and base path; with no value at all, the env var's name is used
+  (`OPENROUTER_BASE_URL` -> `openrouter`, `providerSource: "env-name"`, lower confidence). A host
+  that still holds a placeholder never becomes a provider: it is `internal` (localhost), `env:<NAME>`
+  or `unknown`. `internal` (relative URLs, localhost) is the repo's own backend, a resolved answer.
+  `apicalls providers` prints the table as JSON for the review and the evaluation to share names.
 - **Headers** — names only, values are dropped. `authScheme` is inferred from the key and the
   literal prefix of the value (`Bearer `, `Basic `, `x-api-key`).
 - **Wrappers** (one hop) — a local function or class method whose body performs an HTTP call

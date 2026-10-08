@@ -47,6 +47,8 @@ export const CallSchema = z.object({
   sdk: z.object({ package: z.string(), version: z.string().optional(), chain: z.string() }).optional(),
   framework: z.string().optional(),
   provider: z.string(),
+  /** sdk: registry; host: known host (also an env var's default or .env.example value); env-name: the env var's name only. */
+  providerSource: z.enum(["sdk", "host", "env-name"]).optional(),
   host: z.string().optional(),
   hostKind: z.enum(["literal", "const", "env", "relative", "unknown"]),
   envName: z.string().optional(),

@@ -168,8 +168,9 @@ export function classPropertyInitializer(at: Node, propName: string): Expression
   const prop = cls.getProperty(propName);
   const init = prop?.getInitializer();
   if (init) return init;
-  const param = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.getScope() !== undefined && p.isParameterProperty());
-  if (param) return undefined;
+  const param = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.isParameterProperty());
+  // `constructor(private baseUrl = "https://api.gladia.io")`: the default, unless the constructor reassigns it
+  if (param) return constructorAssignment(cls, propName) ?? param.getInitializer();
   return constructorAssignment(cls, propName);
 }
 

@@ -113,12 +113,18 @@ function classifyHost(template: string, parts: Part[], ctx: EvalCtx, dynamic: Dy
   if (scheme) {
     const afterScheme = template.slice(scheme[0].length);
     const end = afterScheme.search(/[/?#]/);
-    const host = (end < 0 ? afterScheme : afterScheme.slice(0, end)).toLowerCase();
+    const rawHost = end < 0 ? afterScheme : afterScheme.slice(0, end);
+    const host = rawHost.replace(/^[^{]*/, (lit) => lit.toLowerCase());
     const rest = end < 0 ? "" : afterScheme.slice(end);
     const env = /\{env:([^}]+)\}/.exec(host);
     if (env) return { hostKind: "env", host: hostFromHint(ctx, env[1]!) ?? host, envName: env[1], rest };
     if (host.includes("{")) {
       const prefix = host.slice(0, host.indexOf("{"));
+      // `localhost:${port}`: the placeholder is the port, the host is all of it
+      if (prefix.endsWith(":")) {
+        collectDynamic(host, "host", origins, dynamic);
+        return { hostKind: viaConst ? "const" : "literal", host, rest };
+      }
       if ((prefix.includes(".") || prefix.startsWith("localhost")) && !prefix.endsWith(".")) {
         return { hostKind: viaConst ? "const" : "literal", host: prefix, rest: `/${host.slice(prefix.length)}${rest}` };
       }
@@ -134,7 +140,9 @@ function classifyHost(template: string, parts: Part[], ctx: EvalCtx, dynamic: Dy
     if (raw.startsWith("env:")) {
       const name = raw.slice(4);
       const hinted = hostFromHint(ctx, name);
-      return { hostKind: "env", host: hinted, envName: name, rest: rest.startsWith("/") || rest === "" ? rest : `/${rest}` };
+      // the env var holds a base URL: its known value's path (`https://api.langdock.com/openai/eu/v1`) comes first
+      const base = pathFromHint(ctx, name);
+      return { hostKind: "env", host: hinted, envName: name, rest: base + (rest.startsWith("/") || rest === "" ? rest : `/${rest}`) };
     }
     const o = lookup(origins, raw);
     dynamic.push({ where: "host", name: raw, origin: o.origin, ...(o.shape ? { shape: o.shape } : {}) });
@@ -153,6 +161,17 @@ function hostFromHint(ctx: EvalCtx, name: string): string | undefined {
   }
 }
 
+function pathFromHint(ctx: EvalCtx, name: string): string {
+  const hint = ctx.envHints?.[name];
+  if (!hint) return "";
+  try {
+    const p = new URL(hint).pathname;
+    return p === "/" ? "" : p.replace(/\/$/, "");
+  } catch {
+    return "";
+  }
+}
+
 function schemeOf(template: string, ctx: EvalCtx, envName?: string): string | undefined {
   const m = SCHEME_RE.exec(template);
   if (m) return m[1]!.toLowerCase();
@@ -161,7 +180,15 @@ function schemeOf(template: string, ctx: EvalCtx, envName?: string): string | un
   return h ? h[1]!.toLowerCase() : undefined;
 }
 
-export function partsToUrlShape(parts: Part[], ctx: EvalCtx = {}): UrlShape {
+/** An env var's literal default (`?? "https://..."`) stands in for a missing .env.example value. */
+function withEnvDefaults(parts: Part[], ctx: EvalCtx): EvalCtx {
+  const defaults: Record<string, string> = {};
+  for (const p of parts) if (p.kind === "env" && p.fallback && /^https?:\/\//i.test(p.fallback)) defaults[p.name] = p.fallback;
+  return Object.keys(defaults).length > 0 ? { ...ctx, envHints: { ...defaults, ...ctx.envHints } } : ctx;
+}
+
+export function partsToUrlShape(parts: Part[], baseCtx: EvalCtx = {}): UrlShape {
+  const ctx = withEnvDefaults(parts, baseCtx);
   const template = partsToTemplate(parts);
   const origins = originMap(parts);
   const dynamic: DynamicPart[] = [];

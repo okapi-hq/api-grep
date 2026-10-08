@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
+import { PROVIDERS } from "./normalize/provider.js";
 import { toCurl } from "./report/curl.js";
 import { toJson } from "./report/json.js";
 import type { Report } from "./report/schema.js";
@@ -76,6 +77,12 @@ export function buildProgram(): Command {
     .option("--exclude <glob>", "exclude glob (repeatable)", collect)
     .option("--no-wrappers", "disable one-hop wrapper expansion")
     .action(runScan);
+  program
+    .command("providers")
+    .description("print the provider table (id, name, hosts, packages) as JSON")
+    .action(() => {
+      process.stdout.write(`${JSON.stringify(PROVIDERS, null, 2)}\n`);
+    });
   return program;
 }
 

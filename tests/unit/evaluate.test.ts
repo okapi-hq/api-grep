@@ -20,7 +20,7 @@ describe("evaluate", () => {
   it("resolves env vars in several syntaxes", () => {
     expect(evaluate(exprOf("const x = process.env.API_URL;", "x"))).toEqual([{ kind: "env", name: "API_URL" }]);
     expect(evaluate(exprOf('const x = process.env["API_URL"];', "x"))).toEqual([{ kind: "env", name: "API_URL" }]);
-    expect(evaluate(exprOf("const x = process.env.API_URL ?? 'https://fallback';", "x"))).toEqual([{ kind: "env", name: "API_URL" }]);
+    expect(evaluate(exprOf("const x = process.env.API_URL ?? 'https://fallback';", "x"))).toEqual([{ kind: "env", name: "API_URL", fallback: "https://fallback" }]);
   });
 
   it("follows same-file constants and as-const objects", () => {

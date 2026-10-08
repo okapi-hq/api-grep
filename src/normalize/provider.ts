@@ -1,76 +1,55 @@
 import type { HostKind } from "../types.js";
+import data from "./providers.json" with { type: "json" };
 
-/** Host suffix (or exact host) -> provider. Suffixes start with a dot. */
-const HOSTS: [string, string][] = [
-  ["api.stripe.com", "stripe"],
-  ["files.stripe.com", "stripe"],
-  ["connect.stripe.com", "stripe"],
-  ["api.openai.com", "openai"],
-  ["api.anthropic.com", "anthropic"],
-  ["generativelanguage.googleapis.com", "google-ai"],
-  [".googleapis.com", "google"],
-  [".amazonaws.com", "aws"],
-  ["api.github.com", "github"],
-  ["github.com", "github"],
-  [".github.com", "github"],
-  ["hooks.slack.com", "slack"],
-  ["slack.com", "slack"],
-  [".slack.com", "slack"],
-  ["api.twilio.com", "twilio"],
-  [".twilio.com", "twilio"],
-  ["api.sendgrid.com", "sendgrid"],
-  ["api.resend.com", "resend"],
-  ["api.mailgun.net", "mailgun"],
-  ["api.postmarkapp.com", "postmark"],
-  ["api.notion.com", "notion"],
-  ["api.linear.app", "linear"],
-  ["api.hubapi.com", "hubspot"],
-  [".salesforce.com", "salesforce"],
-  ["api.vercel.com", "vercel"],
-  ["api.cloudflare.com", "cloudflare"],
-  ["api.zoom.us", "zoom"],
-  ["graph.microsoft.com", "microsoft"],
-  ["login.microsoftonline.com", "microsoft"],
-  ["oauth2.googleapis.com", "google"],
-  ["www.googleapis.com", "google"],
-  ["api.mistral.ai", "mistral"],
-  ["api.groq.com", "groq"],
-  ["openrouter.ai", "openrouter"],
-  ["api.telegram.org", "telegram"],
-  ["discord.com", "discord"],
-  ["api.intercom.io", "intercom"],
-  ["api.segment.io", "segment"],
-  ["api.mixpanel.com", "mixpanel"],
-  ["app.posthog.com", "posthog"],
-  [".posthog.com", "posthog"],
-  ["api.airtable.com", "airtable"],
-  ["api.dub.co", "dub"],
-  ["api.cal.com", "cal"],
-  ["api.paddle.com", "paddle"],
-  ["api.lemonsqueezy.com", "lemonsqueezy"],
-  ["api.supabase.com", "supabase"],
-  [".supabase.co", "supabase"],
-  ["api.clerk.com", "clerk"],
-  ["api.algolia.net", "algolia"],
-  [".algolia.net", "algolia"],
-  ["api.unsplash.com", "unsplash"],
-  ["api.giphy.com", "giphy"],
-  ["api.mapbox.com", "mapbox"],
-  ["maps.googleapis.com", "google-maps"],
-  ["api.pagerduty.com", "pagerduty"],
-  ["sentry.io", "sentry"],
-  ["api.datadoghq.com", "datadog"],
-  ["registry.npmjs.org", "npm"],
-  ["api.exchangerate.host", "exchangerate"],
-];
+export interface ProviderInfo {
+  id: string;
+  name: string;
+  /** Exact hosts; a leading dot matches any subdomain (`.supabase.co`). */
+  hosts: string[];
+  /** npm packages that talk to this provider. */
+  packages?: string[];
+  category?: string;
+}
 
-export function providerForHost(host: string | undefined): string | undefined {
-  if (!host) return undefined;
-  const h = host.toLowerCase().replace(/:\d+$/, "");
-  for (const [pattern, provider] of HOSTS) {
-    if (pattern.startsWith(".") ? h.endsWith(pattern) : h === pattern) return provider;
+/** How `provider` was found: an SDK registry, the host, or (weakest) the name of the env var holding the URL. */
+export type ProviderSource = "sdk" | "host" | "env-name";
+
+export const PROVIDERS: ProviderInfo[] = data.providers;
+
+const EXACT = new Map<string, string>();
+const SUFFIXES: [string, string][] = [];
+for (const p of PROVIDERS) {
+  for (const h of p.hosts) {
+    if (h.startsWith(".")) SUFFIXES.push([h, p.id]);
+    else if (!EXACT.has(h)) EXACT.set(h, p.id);
   }
-  return undefined;
+}
+SUFFIXES.sort((a, b) => b[0].length - a[0].length);
+
+/** Provider of a host: an exact host first, then the longest matching suffix (`maps.googleapis.com` before `.googleapis.com`). */
+export function providerForHost(host: string | undefined): string | undefined {
+  if (!host || host.includes("{")) return undefined;
+  const h = host.toLowerCase().replace(/:\d+$/, "");
+  return EXACT.get(h) ?? SUFFIXES.find(([suffix]) => h.endsWith(suffix))?.[1];
+}
+
+const ENV_PREFIX = /^(?:NEXT_PUBLIC_|NUXT_PUBLIC_|EXPO_PUBLIC_|REACT_APP_|VITE_|PUBLIC_|NG_APP_)/;
+const ENV_SUFFIX = /_(?:API_BASE_URL|BASE_URL|API_URL|ENDPOINT_URL|API_ENDPOINT|ENDPOINT|API_HOST|HOST|HOSTNAME|URL|URI|API_BASE|BASE|DOMAIN)$/;
+/** Words that still name the provider's own service (`SLACK_WEBHOOK_URL`); `GITHUB_CALLBACK_URL` is the app's URL, not GitHub's. */
+const SERVICE_WORDS = /_(?:WEBHOOK|API|PROXY|GATEWAY|REST|GRAPHQL|INFERENCE|INGEST|EVENTS|FUNCTIONS)$/;
+
+const normalize = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+const BY_NAME = new Map<string, string>();
+for (const p of PROVIDERS) for (const key of [p.id, p.name]) if (!BY_NAME.has(normalize(key))) BY_NAME.set(normalize(key), p.id);
+
+/** `OPENROUTER_BASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SLACK_WEBHOOK_URL` -> the provider they name, if it is a known one. */
+export function providerFromEnvName(name: string | undefined): string | undefined {
+  if (!name) return undefined;
+  const core = name.toUpperCase().replace(ENV_PREFIX, "").replace(ENV_SUFFIX, "");
+  const exact = BY_NAME.get(normalize(core));
+  if (exact || !SERVICE_WORDS.test(core)) return exact;
+  // `SLACK_FEEDBACK_WEBHOOK_URL`: a webhook / API of the provider its first word names
+  return BY_NAME.get(normalize(core.replace(SERVICE_WORDS, ""))) ?? BY_NAME.get(normalize(core.split("_")[0]!));
 }
 
 export interface ProviderInput {
@@ -80,18 +59,34 @@ export interface ProviderInput {
   sdkProvider?: string;
 }
 
-export function inferProvider(input: ProviderInput): string {
-  if (input.sdkProvider) return input.sdkProvider;
-  if (input.hostKind === "relative" || isLocalhost(input.host)) return "internal";
-  const known = providerForHost(input.host);
-  if (known) return known;
-  if (input.hostKind === "env") return input.host ?? `env:${input.envName ?? "?"}`;
-  if (input.host) return input.host;
-  return "unknown";
+export interface ResolvedProvider {
+  provider: string;
+  source?: ProviderSource;
 }
 
+/**
+ * Provider of a call. Never a raw template: a host that still holds a placeholder (`{hostname}:443`) gives `internal`
+ * (localhost), the provider named by its env var, `env:<NAME>` or `unknown`.
+ */
+export function resolveProvider(input: ProviderInput): ResolvedProvider {
+  if (input.sdkProvider) return { provider: input.sdkProvider, source: "sdk" };
+  if (input.hostKind === "relative" || isLocalhost(input.host)) return { provider: "internal" };
+  const known = providerForHost(input.host);
+  if (known) return { provider: known, source: "host" };
+  const envName = input.envName ?? /\{env:([^}]+)\}/.exec(input.host ?? "")?.[1];
+  const byName = providerFromEnvName(envName);
+  if (byName) return { provider: byName, source: "env-name" };
+  const plainHost = input.host && !input.host.includes("{") ? input.host : undefined;
+  if (plainHost) return { provider: plainHost };
+  if (envName) return { provider: `env:${envName}` };
+  return { provider: "unknown" };
+}
+
+/** `localhost`, `127.0.0.1:3000`, `localhost:{port}`, `api.local`. */
 export function isLocalhost(host: string | undefined): boolean {
   if (!host) return false;
-  const h = host.replace(/:\d+$/, "");
-  return h === "localhost" || h === "127.0.0.1" || h === "0.0.0.0" || h.endsWith(".local");
+  const lower = host.toLowerCase();
+  const bracketed = /^\[([^\]]+)\]/.exec(lower)?.[1];
+  const h = bracketed ?? (lower.startsWith("::") ? lower : lower.split(":")[0]!);
+  return h === "localhost" || h === "127.0.0.1" || h === "0.0.0.0" || h === "::1" || h.endsWith(".local") || h.endsWith(".localhost");
 }
