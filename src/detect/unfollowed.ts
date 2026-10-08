@@ -2,7 +2,6 @@ import { Node, type CallExpression, type Expression } from "ts-morph";
 import type { Callee } from "../types.js";
 import { isFunctionLike } from "../wrappers/function.js";
 import { unwrap } from "./callee.js";
-import { writtenType } from "./type-annotation.js";
 
 /** A call the scanner saw but could not follow to an HTTP client. */
 export interface Unfollowed {
@@ -41,9 +40,9 @@ function returnsResponse(expr: Expression): boolean {
 }
 
 /**
- * `this.fetchFn(url)`, `deps.fetchUpstream(url)`, `fetchImpl(input, init)`: a fetch function received from outside,
- * so its target is not known statically. Only fetch-named or fetch-typed callees are considered, and they need a
- * URL-like first argument or a `Response` return type, so `store.fetchUsers()` is not reported.
+ * `this.fetchFn(url)`, `deps.fetchUpstream(url)`: a fetch function received from outside, so its target is not known
+ * statically. Only fetch-named callees are considered, and they need a URL-like first argument or a `Response`
+ * return type, so `store.fetchUsers()` is not reported.
  */
 export function unfollowedFetch(node: CallExpression, callee: Callee): Unfollowed | undefined {
   const runtimePackage = callee.package && !callee.package.startsWith("@types/") && callee.package !== "undici-types";
@@ -52,8 +51,8 @@ export function unfollowedFetch(node: CallExpression, callee: Callee): Unfollowe
   const expr = unwrap(node.getExpression() as Expression);
   const name = Node.isIdentifier(expr) ? expr.getText() : Node.isPropertyAccessExpression(expr) ? expr.getName() : undefined;
   if (!name) return undefined;
-  const typed = writtenType(expr);
-  if (!FETCH_NAME.test(name) && !/\bfetch\b|\bResponse\b/.test(typed)) return undefined;
+  // a `Response` return type alone is not enough: route guards return one too (`assertEntitlement(): Promise<Response | null>`)
+  if (!FETCH_NAME.test(name)) return undefined;
   const fetchy = urlLike(node.getArguments()[0]) || returnsResponse(expr);
   return fetchy ? { node, reason: "injected-fetch", expr: expr.getText().replace(/\s+/g, "").slice(0, 80) } : undefined;
 }

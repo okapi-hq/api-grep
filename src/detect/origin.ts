@@ -91,6 +91,8 @@ function fromRequire(decl: Node): IdentOrigin | undefined {
 
 export function identifierOrigin(ident: Identifier): IdentOrigin {
   const sym = ident.getSymbol();
+  // `globalThis` is the one global without a declaration to trace (`window` and `self` are declared in lib.dom)
+  if (ident.getText() === "globalThis" && (sym?.getDeclarations().length ?? 0) === 0) return { kind: "global", name: "globalThis" };
   if (!sym) return { kind: "unknown" };
   for (const decl of sym.getDeclarations()) {
     const imp = fromImport(sym, decl);

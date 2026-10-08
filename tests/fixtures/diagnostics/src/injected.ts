@@ -26,3 +26,8 @@ export function refresh() {
   // fetch-named, but no URL and no Response: not a fetcher
   return store.fetchUsers();
 }
+
+export async function guarded(check: (workspaceId: string) => Promise<Response | null>) {
+  // returns a Response, but it is a route guard, not a fetcher: not listed
+  return check("workspace-1");
+}
