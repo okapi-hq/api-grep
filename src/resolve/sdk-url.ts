@@ -1,4 +1,5 @@
 import type { Expression } from "ts-morph";
+import { memberChain } from "../detect/callee.js";
 import { getProp } from "../detect/options.js";
 import type { EvalCtx, Part, RawCall, UrlShape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
@@ -38,57 +39,93 @@ function staticHostUrl(raw: RawCall, pathT: string, ctx: EvalCtx): UrlShape {
   return url;
 }
 
-/** Expression behind a placeholder: `params` (`arg:N`, `instance:N`, `ref:N`), then `pathArgs` by position, then the body. */
-function paramSource(raw: RawCall, name: string, index: number, ctx: EvalCtx): { expr?: Expression; ref: boolean } {
+type Source = "arg" | "instance" | "ref" | "fn";
+
+/** Expression behind a placeholder: `params` (`arg:N`, `instance:N.prop`, `ref:N`, `fn:N`), then `pathArgs` by position, then the body. */
+function paramSource(raw: RawCall, name: string, index: number, ctx: EvalCtx): { expr?: Expression; kind: Source } {
   const sdk = raw.sdk!;
-  const m = /^(arg|instance|ref):(\d+)$/.exec(sdk.spec.params?.[name] ?? "");
+  const m = /^(arg|instance|ref|fn):(\d+)(?:\.(\w+))?$/.exec(sdk.spec.params?.[name] ?? "");
   if (m) {
     const args = m[1] === "instance" ? (sdk.instanceArgs ?? []) : sdk.args;
-    return { expr: args[Number(m[2])], ref: m[1] === "ref" };
+    const arg = args[Number(m[2])];
+    return { expr: m[3] ? getProp(arg, m[3], ctx) : arg, kind: m[1] as Source };
   }
   const argIdx = sdk.spec.pathArgs?.[index];
-  if (argIdx !== undefined) return { expr: sdk.args[argIdx], ref: false };
-  if (sdk.spec.pathFromBody?.includes(name)) return { expr: getProp(raw.bodyExpr, name, ctx), ref: false };
-  return { ref: false };
+  if (argIdx !== undefined) return { expr: sdk.args[argIdx], kind: "arg" };
+  if (sdk.spec.pathFromBody?.includes(name)) return { expr: getProp(raw.bodyExpr, name, ctx), kind: "arg" };
+  return { kind: "arg" };
 }
 
-/** Literal values are written in; a lone dynamic value keeps the placeholder's name; mixed values keep their parts. */
-function paramParts(raw: RawCall, name: string, index: number, ctx: EvalCtx, sdkNames: Set<string>): Part[] {
-  const { expr, ref } = paramSource(raw, name, index, ctx);
+/** `api.tasks.get` / `internal.billing.invoices.sync` -> `tasks/get` / `billing/invoices/sync` (Convex's `/api/run/` form). */
+function convexFunctionPath(expr: Expression): Part[] {
+  const { chain } = memberChain(expr);
+  if (chain.length < 2) return [{ kind: "dynamic", name: "function", origin: "unknown" }];
+  return [{ kind: "static", text: chain.join("/") }];
+}
+
+interface PathNames {
+  /** Placeholders the code gives no value for (`{projectId}`): origin `sdk`. */
+  sdk: Set<string>;
+  /** Placeholders with a literal value that stay placeholders (registries without `inlinePathLiterals`). */
+  literal: Set<string>;
+}
+
+/** Literal values are written in (or kept as `{name}`); a lone dynamic value keeps the placeholder's name; mixed values keep their parts. */
+function paramParts(raw: RawCall, name: string, index: number, ctx: EvalCtx, names: PathNames): Part[] {
+  const { expr, kind } = paramSource(raw, name, index, ctx);
   if (!expr) {
-    sdkNames.add(name);
+    names.sdk.add(name);
     return [{ kind: "static", text: `{${name}}` }];
   }
-  const parts = ref ? refParts(expr, ctx) : evaluate(expr, ctx);
+  const parts = kind === "ref" ? refParts(expr, ctx) : kind === "fn" ? convexFunctionPath(expr) : evaluate(expr, ctx);
+  if (!raw.sdk!.inlinePath && staticText(parts) !== undefined) {
+    names.literal.add(name);
+    return [{ kind: "static", text: `{${name}}` }];
+  }
   const only = parts.length === 1 ? parts[0]! : undefined;
   if (only?.kind === "dynamic") return [{ ...only, name }];
   if (only?.kind === "env") return [{ kind: "dynamic", name, origin: "env" }];
   return parts;
 }
 
-/**
- * Path template with its values written in (`/rest/v1/{table}` + `from("todos")` -> `/rest/v1/todos`), on the base URL
- * given to the client's constructor when there is one, else on the registry host.
- */
-function templatedUrl(raw: RawCall, pathT: string, ctx: EvalCtx): UrlShape {
-  const sdkNames = new Set<string>();
+function pathParts(raw: RawCall, pathT: string, ctx: EvalCtx, names: PathNames): Part[] {
   const path: Part[] = [];
   let last = 0;
   let index = 0;
   for (const m of pathT.matchAll(PLACEHOLDER_RE)) {
-    path.push({ kind: "static", text: pathT.slice(last, m.index) }, ...paramParts(raw, m[1]!, index++, ctx, sdkNames));
+    path.push({ kind: "static", text: pathT.slice(last, m.index) }, ...paramParts(raw, m[1]!, index++, ctx, names));
     last = m.index + m[0].length;
   }
   path.push({ kind: "static", text: pathT.slice(last) });
-  const base = raw.baseUrlExpr ? partsToUrlShape([...urlParts(raw.baseUrlExpr, ctx), ...path], ctx) : undefined;
-  const url = base && base.hostKind !== "unknown" && base.hostKind !== "relative" ? base : partsToUrlShape([{ kind: "static", text: `https://${raw.sdk!.host}` }, ...path], ctx);
-  if (url !== base) {
+  return path;
+}
+
+/** On the base URL the code gives the client (minus the registry's `basePath`, which that URL replaces). */
+function onCodeBase(raw: RawCall, pathT: string, ctx: EvalCtx, names: PathNames): UrlShape | undefined {
+  if (!raw.baseUrlExpr) return undefined;
+  const basePath = raw.sdk!.basePath;
+  const rel = basePath && pathT.startsWith(basePath) ? pathT.slice(basePath.length) : pathT;
+  const url = partsToUrlShape([...urlParts(raw.baseUrlExpr, ctx), ...pathParts(raw, rel, ctx, names)], ctx);
+  return url.hostKind !== "unknown" && url.hostKind !== "relative" ? url : undefined;
+}
+
+/**
+ * Path template with its values (`/rest/v1/{table}` + `from("todos")` -> `/rest/v1/todos` when the registry inlines
+ * literals), on the base URL given to the client's constructor when there is one, else on the registry host.
+ */
+function templatedUrl(raw: RawCall, pathT: string, ctx: EvalCtx): UrlShape {
+  const names: PathNames = { sdk: new Set(), literal: new Set() };
+  let url = onCodeBase(raw, pathT, ctx, names);
+  if (!url) {
+    url = partsToUrlShape([{ kind: "static", text: `https://${raw.sdk!.host}` }, ...pathParts(raw, pathT, ctx, names)], ctx);
     url.hostKind = "literal";
     url.host = raw.sdk!.host;
     url.dynamic = url.dynamic.filter((d) => d.where !== "host");
   }
-  for (const m of pathT.matchAll(/[?&]([^=&]+)=\{([^}]+)\}/g)) if (sdkNames.has(m[2]!)) sdkNames.add(m[1]!);
-  url.dynamic = url.dynamic.map((d) => (sdkNames.has(d.name) && d.origin === "unknown" ? { ...d, origin: "sdk" } : d));
+  for (const m of pathT.matchAll(/[?&]([^=&]+)=\{([^}]+)\}/g)) if (names.sdk.has(m[2]!)) names.sdk.add(m[1]!);
+  url.dynamic = url.dynamic
+    .filter((d) => !(names.literal.has(d.name) && d.origin === "unknown"))
+    .map((d) => (names.sdk.has(d.name) && d.origin === "unknown" ? { ...d, origin: "sdk" } : d));
   return url;
 }
 
@@ -106,5 +143,5 @@ export function sdkUrl(raw: RawCall, ctx: EvalCtx): { url: UrlShape; method: str
     } else method = "DYNAMIC";
   }
   if (raw.urlExpr) return { url: resolveUrl(raw.urlExpr, ctx), method };
-  return { url: sdk.inlinePath ? templatedUrl(raw, pathT, ctx) : staticHostUrl(raw, pathT, ctx), method };
+  return { url: sdk.inlinePath || raw.baseUrlExpr ? templatedUrl(raw, pathT, ctx) : staticHostUrl(raw, pathT, ctx), method };
 }

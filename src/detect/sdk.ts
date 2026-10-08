@@ -1,4 +1,4 @@
-import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { exportedChain } from "./callee.js";
 import { getProp } from "./options.js";
@@ -21,16 +21,31 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
   return [...keys];
 }
 
-/** Base URL passed to the client's constructor (`createClient(url, key)`), also when the call hangs off a builder of it. */
+/** Base URL passed to the client's constructor (`createClient(url, key)`, `new OpenAI({ baseURL })`), also through builders. */
 function clientUrlArg(callee: Callee, reg: RegistryEntry): Expression | undefined {
   const urlArg = reg.instance?.urlArg;
   if (!urlArg) return undefined;
   for (const inst of [callee.rootInstance, callee.instance]) {
-    const ctor = inst?.chain[inst.chain.length - 1];
-    const idx = ctor !== undefined ? urlArg[ctor] : undefined;
-    if (inst && idx !== undefined) return inst.args[idx];
+    // a default import (`import OpenAI from "openai"; new OpenAI(...)`) has an empty chain
+    const ctor = inst ? (inst.chain[inst.chain.length - 1] ?? "default") : undefined;
+    const where = ctor !== undefined ? urlArg[ctor] : undefined;
+    if (!inst || where === undefined) continue;
+    const [idx, prop] = String(where).split(".");
+    const arg = inst.args[Number(idx)];
+    return prop ? getProp(arg, prop) : arg;
   }
   return undefined;
+}
+
+/** MCP-style clients get their server URL from a transport built next to them: the one `new Transport(url)` of the file. */
+function fileUrlArg(node: Node, reg: RegistryEntry): Expression | undefined {
+  const from = reg.urlFromFile;
+  if (!from) return undefined;
+  const built = node
+    .getSourceFile()
+    .getDescendantsOfKind(SyntaxKind.NewExpression)
+    .filter((n) => from.new.includes(n.getExpression().getText()));
+  return built.length === 1 ? (built[0]!.getArguments()[from.arg] as Expression | undefined) : undefined;
 }
 
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall {
@@ -49,13 +64,14 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
       args,
       instanceArgs: callee.instance?.args,
       inlinePath: reg.inlinePathLiterals,
+      basePath: reg.basePath,
     },
     bodyKey: "input",
   };
   if (spec.bodyArg !== undefined) raw.bodyExpr = spec.bodyProp ? getProp(args[spec.bodyArg], spec.bodyProp) : args[spec.bodyArg];
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
-  const base = clientUrlArg(callee, reg);
+  const base = clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }

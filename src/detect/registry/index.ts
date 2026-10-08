@@ -1,4 +1,15 @@
 import type { FrameworkEntry, RegistryEntry } from "../../types.js";
+import anthropic from "./anthropic.json" with { type: "json" };
+import awsBedrock from "./aws-sdk-v3-bedrock.json" with { type: "json" };
+import convex from "./convex.json" with { type: "json" };
+import googleGenAi from "./google-genai.json" with { type: "json" };
+import googleGenerativeAi from "./google-generative-ai.json" with { type: "json" };
+import lemonsqueezy from "./lemonsqueezy.json" with { type: "json" };
+import mcp from "./mcp.json" with { type: "json" };
+import posthogJs from "./posthog-js.json" with { type: "json" };
+import posthogNode from "./posthog-node.json" with { type: "json" };
+import resend from "./resend.json" with { type: "json" };
+import revenuecat from "./revenuecat.json" with { type: "json" };
 import frameworks from "./frameworks.json" with { type: "json" };
 import awsS3 from "./aws-sdk-v3-s3.json" with { type: "json" };
 import awsV2 from "./aws-sdk-v2.json" with { type: "json" };
@@ -38,5 +49,7 @@ export class Registry {
 }
 
 export function defaultRegistry(): Registry {
-  return new Registry([stripe, openai, octokit, slack, twilio, awsS3, awsV2, supabase, firebase, sentry] as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
+  const entries: unknown[] = [stripe, openai, octokit, slack, twilio, awsS3, awsV2, supabase, firebase, sentry, anthropic, googleGenAi, googleGenerativeAi];
+  entries.push(resend, revenuecat, lemonsqueezy, posthogJs, posthogNode, convex, awsBedrock, mcp);
+  return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

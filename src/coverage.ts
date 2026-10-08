@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Node, SyntaxKind, type SourceFile } from "ts-morph";
+import { AI_SDK_PACKAGES } from "./detect/ai-sdk.js";
 import { packageFromSpecifier, specifierOf } from "./detect/origin.js";
 import type { Registry } from "./detect/registry/index.js";
 import { PROVIDERS } from "./normalize/provider.js";
@@ -77,7 +78,7 @@ export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[],
     const base = {
       package: pkg,
       provider: SDK_PACKAGES.get(pkg)!,
-      supported: !!registry.byPackage(pkg),
+      supported: !!registry.byPackage(pkg) || AI_SDK_PACKAGES.has(pkg),
       declared: declared.has(pkg),
       imported: sites.has(pkg),
       importSites: sites.get(pkg) ?? 0,

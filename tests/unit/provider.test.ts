@@ -79,6 +79,12 @@ describe("resolveProvider", () => {
     expect(resolveProvider({ hostKind: "literal", host: "api.acme.dev" })).toEqual({ provider: "api.acme.dev" });
   });
 
+  it("names self-hosted model servers by their default port", () => {
+    expect(resolveProvider({ hostKind: "literal", host: "localhost:11434" })).toEqual({ provider: "ollama", source: "host" });
+    expect(resolveProvider({ hostKind: "literal", host: "127.0.0.1:8188" })).toEqual({ provider: "comfyui", source: "host" });
+    expect(resolveProvider({ hostKind: "literal", host: "localhost:3000" })).toEqual({ provider: "internal" });
+  });
+
   it("recognizes local hosts with or without a port", () => {
     for (const h of ["localhost", "localhost:3000", "localhost:", "localhost:{port}", "127.0.0.1:{env:PORT}", "[::1]:8080", "api.local", "app.localhost"]) expect(isLocalhost(h), h).toBe(true);
     for (const h of ["api.example.com", "localhost.example.com", undefined]) expect(isLocalhost(h), String(h)).toBe(false);

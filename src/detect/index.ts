@@ -1,5 +1,6 @@
 import { Node, SyntaxKind, type CallExpression, type NewExpression, type SourceFile } from "ts-morph";
 import type { Callee, EvalCtx, RawCall } from "../types.js";
+import { detectAiSdk } from "./ai-sdk.js";
 import { detectAxios } from "./axios.js";
 import { describeCallee } from "./callee.js";
 import { detectFetch } from "./fetch.js";
@@ -30,6 +31,7 @@ export function detectNode(node: CallExpression | NewExpression, registry: Regis
   if (callee.package && MOCK_PKGS.has(callee.package)) return { raw: null, callee };
   const raw =
     detectSdk(node, callee, registry) ??
+    detectAiSdk(node, callee) ??
     detectFetch(node, callee, ctx) ??
     detectAxios(node, callee, ctx) ??
     detectGotKy(node, callee, ctx) ??

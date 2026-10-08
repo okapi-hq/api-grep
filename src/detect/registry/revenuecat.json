@@ -1,0 +1,22 @@
+{
+  "$comment": "RevenueCat purchases SDKs (React Native, web, Capacitor): static `Purchases.*` calls or the configured instance.",
+  "package": "react-native-purchases",
+  "aliases": ["@revenuecat/purchases-js", "@revenuecat/purchases-capacitor", "cordova-plugin-purchases"],
+  "provider": "revenuecat",
+  "host": "api.revenuecat.com",
+  "auth": "bearer",
+  "generatedFrom": "manual",
+  "instance": {"names": ["default", "Purchases", "getSharedInstance", "configure"]},
+  "methods": {
+    "getOfferings": {"method": "GET", "path": "/v1/subscribers/{app_user_id}/offerings"},
+    "getCustomerInfo": {"method": "GET", "path": "/v1/subscribers/{app_user_id}"},
+    "purchasePackage": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseStoreProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchase": {"method": "POST", "path": "/v1/receipts"},
+    "restorePurchases": {"method": "POST", "path": "/v1/receipts"},
+    "syncPurchases": {"method": "POST", "path": "/v1/receipts"},
+    "logIn": {"method": "POST", "path": "/v1/subscribers/identify"},
+    "changeUser": {"method": "POST", "path": "/v1/subscribers/identify"}
+  }
+}

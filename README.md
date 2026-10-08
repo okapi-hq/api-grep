@@ -25,7 +25,8 @@ re-runs itself with `--max-old-space-size=8192` (override with `APICALLS_HEAP_MB
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| sdk | registry-driven: `stripe`, `openai`, `@octokit/rest`, `@slack/web-api`, `twilio`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
+| sdk | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
+| ai sdk | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway) |
 | framework | options-object helpers from `src/detect/registry/frameworks.json`: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
 Callees are identified by declaration through the type checker, never by name, so a
@@ -40,6 +41,11 @@ is a `GET /rest/v1/tasks` at the start of the chain (filters and `.single()` are
 with the host taken from the URL given to `createClient`. Firebase paths are read from the
 reference (`getDoc(doc(db, "users", uid))` is `.../documents/users/{uid}`); `signOut` and
 `Sentry.init` send nothing and are not reported.
+
+A client constructed with its own base URL (`new OpenAI({ baseURL: "https://openrouter.ai/api/v1" })`,
+`new PostHog(key, { host })`, `new ConvexHttpClient(url)`) sends its calls there, and the provider
+follows the URL when it names another known service (OpenRouter, Groq, `localhost:11434` for
+Ollama). MCP clients get the server URL from the HTTP transport built in the same file.
 
 ## Example requests
 

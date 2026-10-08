@@ -1,0 +1,27 @@
+{
+  "$comment": "@google/genai: the model is part of the path (`/v1beta/models/gemini-2.0-flash:generateContent`).",
+  "package": "@google/genai",
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual",
+  "instance": {"names": ["GoogleGenAI"]},
+  "inlinePathLiterals": true,
+  "methods": {
+    "models.generateContent": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.generateContentStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.embedContent": {"method": "POST", "path": "/v1beta/models/{model}:embedContent", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.countTokens": {"method": "POST", "path": "/v1beta/models/{model}:countTokens", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.generateImages": {"method": "POST", "path": "/v1beta/models/{model}:predict", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.generateVideos": {"method": "POST", "path": "/v1beta/models/{model}:predictLongRunning", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "models.list": {"method": "GET", "path": "/v1beta/models"},
+    "models.get": {"method": "GET", "path": "/v1beta/models/{model}", "params": {"model": "arg:0.model"}},
+    "chats.create.sendMessage": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "chats.create.sendMessageStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "files.upload": {"method": "POST", "path": "/upload/v1beta/files", "bodyArg": 0, "encoding": "multipart"},
+    "files.list": {"method": "GET", "path": "/v1beta/files"},
+    "files.get": {"method": "GET", "path": "/v1beta/files/{name}", "params": {"name": "arg:0.name"}},
+    "files.delete": {"method": "DELETE", "path": "/v1beta/files/{name}", "params": {"name": "arg:0.name"}},
+    "caches.create": {"method": "POST", "path": "/v1beta/cachedContents", "bodyArg": 0}
+  }
+}

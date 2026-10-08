@@ -1,0 +1,15 @@
+{
+  "package": "@aws-sdk/client-bedrock-runtime",
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "instance": {"names": ["BedrockRuntimeClient", "BedrockRuntime"]},
+  "commands": {
+    "InvokeModelCommand": {"method": "POST", "path": "/model/{modelId}/invoke", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModel"},
+    "InvokeModelWithResponseStreamCommand": {"method": "POST", "path": "/model/{modelId}/invoke-with-response-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModelWithResponseStream"},
+    "ConverseCommand": {"method": "POST", "path": "/model/{modelId}/converse", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "Converse"},
+    "ConverseStreamCommand": {"method": "POST", "path": "/model/{modelId}/converse-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "ConverseStream"},
+    "ApplyGuardrailCommand": {"method": "POST", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "bodyArg": 0, "pathFromBody": ["guardrailIdentifier", "guardrailVersion"], "operationId": "ApplyGuardrail"}
+  }
+}

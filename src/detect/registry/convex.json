@@ -1,0 +1,29 @@
+{
+  "$comment": "Convex clients and hooks; `{function}` is the function reference (`api.tasks.get` -> `tasks/get`). Only client-side entry points: `query()` / `mutation()` from convex/server define functions and are not calls.",
+  "package": "convex",
+  "provider": "convex",
+  "host": "{deployment}.convex.cloud",
+  "auth": "bearer",
+  "generatedFrom": "manual",
+  "instance": {"names": [], "urlArg": {"ConvexHttpClient": 0, "ConvexReactClient": 0, "ConvexClient": 0}},
+  "inlinePathLiterals": true,
+  "methods": {
+    "useQuery": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "usePaginatedQuery": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "useMutation": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}},
+    "useAction": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}},
+    "fetchQuery": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "fetchMutation": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "fetchAction": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "preloadQuery": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexHttpClient.query": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexHttpClient.mutation": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexHttpClient.action": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexClient.query": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexClient.mutation": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexClient.action": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexReactClient.query": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexReactClient.mutation": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1},
+    "ConvexReactClient.action": {"method": "POST", "path": "/api/run/{function}", "params": {"function": "fn:0"}, "bodyArg": 1}
+  }
+}

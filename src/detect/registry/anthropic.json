@@ -1,0 +1,28 @@
+{
+  "package": "@anthropic-ai/sdk",
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual",
+  "instance": {"names": ["default", "Anthropic"], "urlArg": {"default": "0.baseURL", "Anthropic": "0.baseURL"}},
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "messages.stream": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "messages.countTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyArg": 0},
+    "messages.batches.create": {"method": "POST", "path": "/v1/messages/batches", "bodyArg": 0},
+    "messages.batches.retrieve": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "pathArgs": [0]},
+    "messages.batches.list": {"method": "GET", "path": "/v1/messages/batches", "queryArg": 0},
+    "messages.batches.results": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}/results", "pathArgs": [0]},
+    "messages.batches.cancel": {"method": "POST", "path": "/v1/messages/batches/{message_batch_id}/cancel", "pathArgs": [0]},
+    "beta.messages.create": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "beta.messages.stream": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "beta.messages.countTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyArg": 0},
+    "beta.messages.batches.create": {"method": "POST", "path": "/v1/messages/batches", "bodyArg": 0},
+    "beta.files.upload": {"method": "POST", "path": "/v1/files", "bodyArg": 0, "encoding": "multipart"},
+    "beta.files.list": {"method": "GET", "path": "/v1/files", "queryArg": 0},
+    "beta.files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "pathArgs": [0]},
+    "models.list": {"method": "GET", "path": "/v1/models", "queryArg": 0},
+    "models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "pathArgs": [0]},
+    "completions.create": {"method": "POST", "path": "/v1/complete", "bodyArg": 0}
+  }
+}

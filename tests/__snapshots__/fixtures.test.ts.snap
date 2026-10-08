@@ -9388,8 +9388,28 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 17,
+    "filesSeen": 32,
     "skipped": [
+      {
+        "file": "ai-sdk/generate.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "anthropic/claude.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "bedrock/invoke.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "convex/app.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "convex/functions.ts",
+        "reason": "excluded",
+      },
       {
         "file": "firebase-modular/firebase.ts",
         "reason": "excluded",
@@ -9400,6 +9420,42 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "firebase-modular/store.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "gemini/genai.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "gemini/legacy.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "lemonsqueezy/billing.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp/tools.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "openai-compatible/clients.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "posthog/server.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "posthog/web.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "resend/mail.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "revenuecat/paywall.ts",
         "reason": "excluded",
       },
       {
@@ -9426,9 +9482,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "file": "supabase/tasks.ts",
         "reason": "excluded",
       },
+      {
+        "file": "convex/_generated/api.ts",
+        "reason": "excluded",
+      },
     ],
     "skippedCounts": {
-      "excluded": 9,
+      "excluded": 24,
     },
     "unfollowed": [],
   },
