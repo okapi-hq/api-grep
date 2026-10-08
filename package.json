@@ -2,8 +2,27 @@
   "name": "apicalls",
   "version": "0.1.0",
   "description": "Outbound HTTP/SDK call extractor for TypeScript repositories",
+  "keywords": [
+    "typescript",
+    "static-analysis",
+    "api",
+    "http",
+    "sdk",
+    "openapi",
+    "inventory",
+    "cli"
+  ],
+  "homepage": "https://github.com/okapi-hq/api-grep#readme",
+  "bugs": {
+    "url": "https://github.com/okapi-hq/api-grep/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okapi-hq/api-grep.git"
+  },
   "type": "module",
   "license": "MIT",
+  "author": "Okapi",
   "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=20"
