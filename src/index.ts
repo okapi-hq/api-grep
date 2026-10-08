@@ -5,6 +5,7 @@ export { ReportSchema, CallSchema, ShapeSchema, DiagnosticsSchema, type Report, 
 export { diagnosticsLine } from "./report/diagnostics.js";
 export { Registry, defaultRegistry } from "./detect/registry/index.js";
 export { evaluate, partsToTemplate } from "./resolve/evaluate.js";
+export { PROVIDERS, providerForHost, providerFromEnvName, resolveProvider, type ProviderInfo, type ProviderSource } from "./normalize/provider.js";
 export { resolveUrl, partsToUrlShape } from "./resolve/url.js";
 export { resolveBody, shapeOf } from "./resolve/body.js";
 export { resolveHeaders } from "./resolve/headers.js";

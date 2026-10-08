@@ -33,7 +33,7 @@ A Husky pre-commit hook runs lint-staged, the type checker and the tests.
 | `src/detect/registry/` | JSON registries mapping SDK member chains to endpoints |
 | `src/resolve/` | resolves URLs, methods, query, headers and bodies to templates and shapes |
 | `src/wrappers/` | one-hop expansion of local HTTP wrapper functions |
-| `src/normalize/` | path templates and provider names |
+| `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/validate/` | OpenAPI spec loading, operation matching and shape checks |
 | `src/examples/` | synthesized example requests |
 | `src/report/` | report schema, JSON, table and curl output, diagnostics, secret redaction |

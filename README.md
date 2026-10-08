@@ -138,13 +138,24 @@ reference (`getDoc(doc(db, "users", uid))` is `.../documents/users/{uid}`); `sig
 The pipeline is `detect → resolve → normalize → validate → score → emit`.
 
 - **URL**: string and template literals, `+` concatenation, `new URL(path, base)`, same-file
-  and imported constants, `as const` config objects, enums and `process.env.X` (with hints
-  from `.env.example`). Unresolvable segments become `{name}` placeholders and are listed under
+  and imported constants, `as const` config objects, enums, `process.env.X` (with hints
+  from `.env.example`), local helpers that return a URL (`apiUrl("sendMessage")`, arguments
+  substituted), `this.baseUrl` set in the constructor or as a parameter property default, and
+  parameter defaults. Unresolvable segments become `{name}` placeholders and are listed under
   `dynamic` with their origin (`param`, `call`, `env`, `unknown`).
 - **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
   flagged; anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
+- **Provider**: from the SDK registry, else the host through
+  [`src/normalize/providers.json`](src/normalize/providers.json) (`id`, `name`, `hosts`,
+  `packages`; an exact host wins over the longest matching suffix). An env URL with a literal
+  default (`process.env.X ?? "https://api.langdock.com/v1"`) keeps `envName` and takes the
+  default's host and base path; with no value at all, the env var's name is used
+  (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`, lower confidence). A
+  host that still holds a placeholder never becomes a provider: it is `internal` (localhost),
+  `env:<NAME>` or `unknown`. `internal` (relative URLs, localhost) is the repo's own backend.
+  `apicalls providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
 - **Wrappers** (one hop): a local function or method whose body performs an HTTP call *and*

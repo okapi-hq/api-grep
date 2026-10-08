@@ -41,6 +41,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "POST",
       "pathTemplate": "/v1/accounts:signInWithIdp",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [
         "key",
       ],
@@ -100,6 +101,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "POST",
       "pathTemplate": "/v1/accounts:signUp",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [
         "key",
       ],
@@ -159,6 +161,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "POST",
       "pathTemplate": "/v1/accounts:signInWithPassword",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [
         "key",
       ],
@@ -226,6 +229,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "GET",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -272,6 +276,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "GET",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -346,6 +351,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "PATCH",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -431,6 +437,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "POST",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}/comments",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -503,6 +510,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "PATCH",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/{ref}",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -557,6 +565,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "DELETE",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -603,6 +612,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "method": "GET",
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders",
       "provider": "firebase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -683,6 +693,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "method": "POST",
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -727,6 +738,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "method": "POST",
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -772,6 +784,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "method": "POST",
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -816,6 +829,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
       "method": "POST",
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -892,6 +906,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -950,6 +965,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "PATCH",
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -990,6 +1006,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/invoices",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1030,6 +1047,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/invoices",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1071,6 +1089,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1153,6 +1172,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1214,6 +1234,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1273,6 +1294,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "PATCH",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1314,6 +1336,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "DELETE",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1355,6 +1378,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1396,6 +1420,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1459,6 +1484,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/rest/v1/rpc/project_stats",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1500,6 +1526,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "GET",
       "pathTemplate": "/auth/v1/user",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1576,6 +1603,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/auth/v1/token",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [
         "grant_type",
       ],
@@ -1654,6 +1682,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/storage/v1/object/avatars/{userId}/avatar.png",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -1717,6 +1746,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "method": "POST",
       "pathTemplate": "/functions/v1/notify-assignee",
       "provider": "supabase",
+      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
-import { inferProvider } from "./normalize/provider.js";
+import { resolveProvider } from "./normalize/provider.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, type BodyResult } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
@@ -98,7 +98,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const { headers, headerValues, authScheme } = resolveAuth(raw, ctx);
   const q = queryShapeOf(url, raw, ctx, dynamic);
-  const provider = inferProvider({ hostKind: url.hostKind, host: url.host, envName: url.envName, sdkProvider: raw.sdk?.provider });
+  const { provider, source: providerSource } = resolveProvider({ hostKind: url.hostKind, host: url.host, envName: url.envName, sdkProvider: raw.sdk?.provider });
   const evidence = evidenceOf(raw, url, body);
   const id = createHash("sha1").update(`${loc.file}:${loc.line}:${loc.col}`).digest("hex").slice(0, 12);
   return {
@@ -108,6 +108,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
     sdk: raw.sdk ? { package: raw.sdk.package, version: base.sdkVersion(raw.node.getSourceFile().getFilePath(), raw.sdk.package), chain: raw.sdk.chain } : undefined,
     framework: raw.framework,
     provider,
+    providerSource,
     host: url.host,
     hostKind: url.hostKind,
     envName: url.envName,

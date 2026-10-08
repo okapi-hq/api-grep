@@ -3,6 +3,7 @@ import { classPropertyInitializer, unwrap } from "../detect/callee.js";
 import { identifierOrigin } from "../detect/origin.js";
 import { bindingElementValue, declarationsOf, getProp, paramSubstitution } from "../detect/options.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
+import { localReturn } from "./local-return.js";
 import { typeToShape } from "./type-shape.js";
 
 const MAX_DEPTH = 5;
@@ -84,7 +85,7 @@ function markConst(parts: Part[]): Part[] {
 function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   for (const decl of declarationsOf(u)) {
     const sub = paramSubstitution(decl, ctx);
-    if (sub.isParam) return sub.expr ? evaluate(sub.expr, ctx, depth + 1) : dyn(u, "param");
+    if (sub.isParam) return sub.expr ? evaluate(sub.expr, ctx, depth + 1) : paramDefault(decl, u, ctx, depth);
     if (Node.isVariableDeclaration(decl)) {
       const init = decl.getInitializer();
       if (init) return renameSingleDynamic(markConst(evaluate(init, ctx, depth + 1)), u);
@@ -98,6 +99,13 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     if (bound) return markConst(evaluate(bound, ctx, depth + 1));
   }
   return typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+/** A parameter nobody substituted: its literal default (`baseUrl = "https://api.gladia.io"`) is the best static guess. */
+function paramDefault(decl: Node, u: Expression, ctx: EvalCtx, depth: number): Part[] {
+  const init = Node.isParameterDeclaration(decl) || Node.isBindingElement(decl) ? decl.getInitializer() : undefined;
+  const parts = init ? evaluate(init, ctx, depth + 1) : undefined;
+  return parts && staticText(parts) !== undefined ? markConst(parts) : dyn(u, "param");
 }
 
 function typeLiteral(u: Expression): Part[] | undefined {
@@ -161,7 +169,15 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
       return arr.getElements().flatMap((el, i) => [...(i ? [{ kind: "static", text: s } as Part] : []), ...evaluate(el, ctx, depth + 1)]);
     }
   }
-  return typeLiteral(u) ?? dyn(u, "call");
+  return helperResult(u, ctx, depth) ?? typeLiteral(u) ?? dyn(u, "call");
+}
+
+/** What a local URL helper returns, when that says more than the call itself (some static text or an env var). */
+function helperResult(u: Expression, ctx: EvalCtx, depth: number): Part[] | undefined {
+  const local = localReturn(u, ctx);
+  if (!local) return undefined;
+  const parts = evaluate(local.expr, local.ctx, depth + 1);
+  return parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")) ? parts : undefined;
 }
 
 function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
@@ -174,6 +190,20 @@ function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   return parts;
 }
 
+/**
+ * `a ?? "https://host"` / `a || ...`: an env var on the left wins (it can override) but keeps the literal right side
+ * as its default host; any other left side gives way to the right side.
+ */
+function evalDefault(left: Expression, right: Expression, ctx: EvalCtx, depth: number): Part[] {
+  const l = evaluate(left, ctx, depth + 1);
+  const r = evaluate(right, ctx, depth + 1);
+  const env = l.findIndex((p) => p.kind === "env");
+  if (env < 0) return r;
+  const fallback = staticText(r);
+  if (fallback === undefined) return l;
+  return l.map((p, i) => (i === env && p.kind === "env" ? { ...p, fallback } : p));
+}
+
 /** Evaluates a string-ish expression into static / env / dynamic parts. */
 export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[] {
   const u = unwrap(expr);
@@ -184,10 +214,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   if (Node.isBinaryExpression(u)) {
     const op = u.getOperatorToken().getKind();
     if (op === SyntaxKind.PlusToken) return [...evaluate(u.getLeft(), ctx, depth + 1), ...evaluate(u.getRight(), ctx, depth + 1)];
-    if (op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken) {
-      const left = evaluate(u.getLeft(), ctx, depth + 1);
-      return left.some((p) => p.kind === "env") ? left : evaluate(u.getRight(), ctx, depth + 1);
-    }
+    if (op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken) return evalDefault(u.getLeft(), u.getRight(), ctx, depth);
     return dyn(u, "unknown");
   }
   if (Node.isIdentifier(u)) return evalIdentifier(u, ctx, depth);

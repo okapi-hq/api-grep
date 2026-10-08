@@ -5,7 +5,7 @@ export type DynamicOrigin = "param" | "call" | "env" | "unknown";
 /** A fragment of an evaluated string expression. */
 export type Part =
   | { kind: "static"; text: string; viaConst?: boolean }
-  | { kind: "env"; name: string }
+  | { kind: "env"; name: string; /** Literal default (`process.env.X ?? "https://..."`), used when no .env.example value exists. */ fallback?: string }
   | { kind: "dynamic"; name: string; origin: DynamicOrigin; shape?: Shape };
 
 /** Substitution map used for one-hop wrapper expansion. */

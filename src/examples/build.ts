@@ -46,7 +46,7 @@ function fillPath(call: Call, ctx: SynthCtx): string {
 function hostPart(call: Call): string {
   const scheme = call.scheme ?? "https";
   if (call.hostKind === "relative") return "";
-  if (call.host && !call.host.includes("{")) return `${scheme}://${call.host}`;
+  if (call.host) return `${scheme}://${call.host}`;
   if (call.hostKind === "env" && call.envName) return `${scheme}://{env:${call.envName}}`;
   const dyn = call.dynamic.find((d) => d.where === "host");
   return `${scheme}://${call.host ?? `{${dyn?.name ?? "host"}}`}`;
