@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { ts, type Node, type SourceFile } from "ts-morph";
-import { buildCall, type BuildCtx } from "./build-call.js";
+import { buildCall, callId, type BuildCtx } from "./build-call.js";
 import { sdkCoverage } from "./coverage.js";
 import { detectFile } from "./detect/index.js";
 import { buildExamples } from "./examples/build.js";
@@ -139,6 +139,24 @@ function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, r
   return { raws, scanned };
 }
 
+/**
+ * One call per request per call site: a wrapper that reaches the same request twice (a retry, two branches building it)
+ * gives it once; different requests from one call site keep distinct ids.
+ */
+function onePerRequest(calls: Call[]): Call[] {
+  const seen = new Set<string>();
+  const perSite = new Map<string, number>();
+  return calls.flatMap((c) => {
+    const { id, ...request } = c;
+    const key = `${id}:${JSON.stringify(request)}`;
+    if (seen.has(key)) return [];
+    seen.add(key);
+    const n = perSite.get(id) ?? 0;
+    perSite.set(id, n + 1);
+    return [n === 0 ? c : { ...c, id: callId(c.location, n) }];
+  });
+}
+
 function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): Call[] {
   const calls: Call[] = [];
   for (const raw of raws) {
@@ -148,7 +166,7 @@ function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): C
       diag.drop({ file: relPath(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
     }
   }
-  return sortCalls(calls);
+  return onePerRequest(sortCalls(calls));
 }
 
 function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {

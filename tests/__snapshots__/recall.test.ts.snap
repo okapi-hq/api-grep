@@ -180,7 +180,6 @@ exports[`regression fixtures > sdk/revenuecat 1`] = `
 exports[`regression fixtures > sdk/sentry 1`] = `
 [
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
-  "checkout.ts:14 sentry POST /api/{projectId}/envelope (wrapper:reportError)",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
 ]

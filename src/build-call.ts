@@ -97,6 +97,12 @@ function providerOf(raw: RawCall, url: UrlShape): ResolvedProvider {
   return raw.sdk ? { provider: raw.sdk.provider, source: "sdk" } : fromUrl;
 }
 
+/** Hash of where the call is; the n-th other request made from the same place (through a wrapper) adds `#n`. */
+export function callId(loc: Call["location"], n = 0): string {
+  const key = `${loc.file}:${loc.line}:${loc.col}${n > 0 ? `#${n}` : ""}`;
+  return createHash("sha1").update(key).digest("hex").slice(0, 12);
+}
+
 /** Resolves a RawCall into the report's Call record. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -111,9 +117,8 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const q = queryShapeOf(url, raw, ctx, dynamic);
   const { provider, source: providerSource } = providerOf(raw, url);
   const evidence = evidenceOf(raw, url, body);
-  const id = createHash("sha1").update(`${loc.file}:${loc.line}:${loc.col}`).digest("hex").slice(0, 12);
   return {
-    id,
+    id: callId(loc),
     location: loc,
     client: raw.client,
     sdk: raw.sdk ? { package: raw.sdk.package, version: base.sdkVersion(raw.node.getSourceFile().getFilePath(), raw.sdk.package), chain: raw.sdk.chain } : undefined,

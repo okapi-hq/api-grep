@@ -269,11 +269,15 @@ The pipeline is `detect → resolve → normalize → validate → score → emi
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
 - **Wrappers** (two hops): a local function or method whose body performs an HTTP call *and*
-  whose parameters flow into it is treated as a client. Calls to it are reported at the call
+  whose parameters flow into its request (URL, method, query, body; for an SDK call, the
+  arguments its registry reads) is treated as a client. Calls to it are reported at the call
   site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
   `fn.call(this, …)` and destructured `options`. A function that passes its parameters to such a
   wrapper is one too (`latest()` -> `tlsFetch(url)` -> `doFetch(url)` -> `fetch` is reported at
-  `latest()` with `via: "wrapper:tlsFetch>doFetch"`).
+  `latest()` with `via: "wrapper:tlsFetch>doFetch"`). `reportError(err)` ->
+  `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
+  the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
+  call per call site; different requests from one call site get distinct `id`s.
 - **Specs**: with `--specs`, path templates are matched to OpenAPI operations. `--validate`
   adds deterministic findings: unknown property, missing required, type mismatch, enum
   mismatch, deprecated.
