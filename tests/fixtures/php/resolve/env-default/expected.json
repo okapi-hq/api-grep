@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "Llm.php", "line": 8, "provider": "langdock"},
+    {"file": "Llm.php", "line": 14, "provider": "elevenlabs"}
+  ]
+}

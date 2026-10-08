@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "signed.php", "line": 7, "provider": "unknown"},
+    {"file": "signed.php", "line": 12, "provider": "mixpanel"},
+    {"file": "signed.php", "line": 17, "provider": "mixpanel"},
+    {"file": "signed.php", "line": 22, "provider": "mixpanel", "orUnfollowed": true}
+  ]
+}

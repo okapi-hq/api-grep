@@ -1,0 +1,43 @@
+{
+  "$comment": "aws/aws-sdk-php Bedrock Runtime: `new BedrockRuntimeClient([...])` or `$sdk->createBedrockRuntime()`; `$client->converse(['modelId' => ..., 'messages' => [...]])`, each with an `*Async` twin. Same Composer package as the S3 registry: tell them apart by the instance name.",
+  "package": "aws/aws-sdk-php",
+  "aliases": [
+    "aws/aws-sdk-php-laravel",
+    "aws/aws-sdk-php-symfony"
+  ],
+  "imports": [
+    "Aws.BedrockRuntime",
+    "Aws.Sdk",
+    "Aws.Laravel.AwsFacade"
+  ],
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against aws/aws-sdk-php 3.399.2 API models: src/data/s3/2006-03-01, src/data/bedrock-runtime/2023-09-30)",
+  "instance": {
+    "names": [
+      "BedrockRuntimeClient",
+      "createBedrockRuntime",
+      "createMultiRegionBedrockRuntime"
+    ],
+    "urlArg": {
+      "BedrockRuntimeClient": "0.endpoint",
+      "createBedrockRuntime": "0.endpoint",
+      "createMultiRegionBedrockRuntime": "0.endpoint"
+    }
+  },
+  "methods": {
+    "invokeModel": {"method": "POST", "path": "/model/{modelId}/invoke", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModel"},
+    "invokeModelAsync": {"method": "POST", "path": "/model/{modelId}/invoke", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModel"},
+    "invokeModelWithResponseStream": {"method": "POST", "path": "/model/{modelId}/invoke-with-response-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModelWithResponseStream"},
+    "invokeModelWithResponseStreamAsync": {"method": "POST", "path": "/model/{modelId}/invoke-with-response-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "InvokeModelWithResponseStream"},
+    "converse": {"method": "POST", "path": "/model/{modelId}/converse", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "Converse"},
+    "converseAsync": {"method": "POST", "path": "/model/{modelId}/converse", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "Converse"},
+    "converseStream": {"method": "POST", "path": "/model/{modelId}/converse-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "ConverseStream"},
+    "converseStreamAsync": {"method": "POST", "path": "/model/{modelId}/converse-stream", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "ConverseStream"},
+    "countTokens": {"method": "POST", "path": "/model/{modelId}/count-tokens", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "CountTokens"},
+    "countTokensAsync": {"method": "POST", "path": "/model/{modelId}/count-tokens", "bodyArg": 0, "pathFromBody": ["modelId"], "operationId": "CountTokens"},
+    "applyGuardrail": {"method": "POST", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "bodyArg": 0, "pathFromBody": ["guardrailIdentifier", "guardrailVersion"], "operationId": "ApplyGuardrail"},
+    "applyGuardrailAsync": {"method": "POST", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "bodyArg": 0, "pathFromBody": ["guardrailIdentifier", "guardrailVersion"], "operationId": "ApplyGuardrail"}
+  }
+}

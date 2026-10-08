@@ -1,0 +1,3372 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, facades, fluent modifiers and option arrays 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "per_page": "50",
+            "state": "open",
+          },
+          "url": "https://api.github.com/repos/beacon/koala/issues?state=open&per_page=50",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "5cf16476e652",
+      "location": {
+        "col": 16,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 22,
+      },
+      "method": "GET",
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [
+        "state",
+        "per_page",
+      ],
+      "queryShape": {
+        "properties": {
+          "per_page": {
+            "enum": [
+              50,
+            ],
+            "type": "integer",
+          },
+          "state": {
+            "enum": [
+              "open",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+          "per_page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "labels": {
+            "items": {
+              "enum": [
+                "bug",
+              ],
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "title": {
+            "hint": "title",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "labels",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "guzzle",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "labels": [
+              "bug",
+            ],
+            "title": "Inlet Fable",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.github.com/repos/echo/atlas/issues",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "4451f2fcf3d4",
+      "location": {
+        "col": 16,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 27,
+      },
+      "method": "POST",
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "method",
+          "origin": "param",
+          "where": "method",
+        },
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/horizon/river",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "bdb7c68a1aa8",
+      "location": {
+        "col": 16,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 32,
+      },
+      "method": "DYNAMIC",
+      "pathTemplate": "/{path}",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/{path}",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "Body": {
+            "enum": [
+              "Hello",
+            ],
+            "type": "string",
+          },
+          "To": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "To",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "guzzle",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "To",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Hello",
+            "To": "elena.dumont@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "2367f1011c97",
+      "location": {
+        "col": 12,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 38,
+      },
+      "method": "POST",
+      "pathTemplate": "/2010-04-01/Accounts/AC123/Messages.json",
+      "provider": "twilio",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "items": {
+          "properties": {
+            "contents": {
+              "hint": "fopen",
+              "origin": "call",
+              "type": "dynamic",
+            },
+            "name": {
+              "enum": [
+                "file",
+              ],
+              "type": "string",
+            },
+          },
+          "required": [
+            "name",
+            "contents",
+          ],
+          "type": "object",
+        },
+        "type": "array",
+      },
+      "bodyEncoding": "multipart",
+      "client": "guzzle",
+      "confidence": 0.6,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": [
+            {
+              "contents": "Jasper birch jasper echo velvet horizon.",
+              "name": "file",
+            },
+          ],
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "f929bd7f2cfc",
+      "location": {
+        "col": 12,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 47,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "notion-version": "2022-06-28",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.notion.com/v1/users/me",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "notion-version": "2022-06-28",
+      },
+      "headers": [
+        "notion-version",
+      ],
+      "host": "api.notion.com",
+      "hostKind": "literal",
+      "id": "e3b3c4c26cc1",
+      "location": {
+        "col": 12,
+        "file": "GitHub.php",
+        "language": "php",
+        "line": 52,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/users/me",
+      "provider": "notion",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/users/me",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "php": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "guzzle": 6,
+    },
+    "byHostKind": {
+      "literal": 6,
+    },
+    "byLanguage": {
+      "php": 6,
+    },
+    "byProvider": {
+      "cloudinary": 1,
+      "github": 3,
+      "notion": 1,
+      "twilio": 1,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, facades, fluent modifiers and option arrays 2`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "subject": {
+            "enum": [
+              "Hi",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "subject",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "laravel-http",
+      "confidence": 0.45,
+      "dynamic": [
+        {
+          "name": "MAILGUN_DOMAIN",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "envName": "MAILGUN_ENDPOINT",
+      "examples": [
+        {
+          "body": {
+            "subject": "Hi",
+            "to": "maya.jansen@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/juniper.example.org/messages",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "env",
+      "id": "02fe88a5bef0",
+      "location": {
+        "col": 16,
+        "file": "Notifier.php",
+        "language": "php",
+        "line": 11,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/{MAILGUN_DOMAIN}/messages",
+      "provider": "mailgun",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:MAILGUN_ENDPOINT}/v3/{env:MAILGUN_DOMAIN}/messages",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "channel": {
+            "hint": "channel",
+            "type": "string",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "channel",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "laravel-http",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "channel",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "channel": "quartz kestrel",
+            "text": "Compass nimbus verdant estuary quiet summit.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://slack.com/api/chat.postMessage",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "slack.com",
+      "hostKind": "literal",
+      "id": "1e7a9b2b3ec2",
+      "location": {
+        "col": 16,
+        "file": "Notifier.php",
+        "language": "php",
+        "line": 18,
+      },
+      "method": "POST",
+      "pathTemplate": "/api/chat.postMessage",
+      "provider": "slack",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://slack.com/api/chat.postMessage",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "laravel-http",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "properties": "email",
+          },
+          "url": "https://api.hubapi.com/crm/v3/objects/contacts/q8t8scf9?properties=email",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.hubapi.com",
+      "hostKind": "const",
+      "id": "beb754b3c253",
+      "location": {
+        "col": 16,
+        "file": "Notifier.php",
+        "language": "php",
+        "line": 26,
+      },
+      "method": "GET",
+      "pathTemplate": "/crm/v3/objects/contacts/{id}",
+      "provider": "hubspot",
+      "providerSource": "host",
+      "query": [
+        "properties",
+      ],
+      "queryShape": {
+        "properties": {
+          "properties": {
+            "enum": [
+              "email",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "properties",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.hubapi.com/crm/v3/objects/contacts/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "ping": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "ping",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "laravel-http",
+      "confidence": 0.3,
+      "dynamic": [
+        {
+          "name": "method",
+          "origin": "param",
+          "where": "method",
+        },
+        {
+          "name": "url",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "ping": true,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "5426a838039f",
+      "location": {
+        "col": 16,
+        "file": "Notifier.php",
+        "language": "php",
+        "line": 33,
+      },
+      "method": "DYNAMIC",
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{url}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 2,
+    "languages": {
+      "php": {
+        "filesScanned": 1,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [
+      {
+        "file": "config/services.php",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 1,
+    },
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "laravel-http": 4,
+    },
+    "byHostKind": {
+      "const": 1,
+      "env": 1,
+      "literal": 1,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "php": 4,
+    },
+    "byProvider": {
+      "hubspot": 1,
+      "mailgun": 1,
+      "slack": 1,
+      "unknown": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, facades, fluent modifiers and option arrays 3`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "symfony-http",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "latitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "where": "query",
+        },
+        {
+          "name": "longitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lon",
+            "type": "number",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "-63.50128",
+            "longitude": "-159.15156",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=-63.50128&longitude=-159.15156",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "9cd5d0fa9644",
+      "location": {
+        "col": 16,
+        "file": "Weather.php",
+        "language": "php",
+        "line": 16,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "providerSource": "host",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "longitude": {
+            "hint": "lon",
+            "type": "number",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "event": {
+            "hint": "event",
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "symfony-http",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "event",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "event": "beacon wander",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.segment.io/v1/track",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.segment.io",
+      "hostKind": "literal",
+      "id": "188e43516f5a",
+      "location": {
+        "col": 9,
+        "file": "Weather.php",
+        "language": "php",
+        "line": 21,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/track",
+      "provider": "segment",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.segment.io/v1/track",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "symfony-http",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.vercel.com/v9/projects",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.vercel.com",
+      "hostKind": "literal",
+      "id": "6f95a4c731c7",
+      "location": {
+        "col": 12,
+        "file": "Weather.php",
+        "language": "php",
+        "line": 28,
+      },
+      "method": "GET",
+      "pathTemplate": "/v9/projects",
+      "provider": "vercel",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.vercel.com/v9/projects",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "query": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "symfony-http",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "query": "ember",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.linear.app",
+      "hostKind": "literal",
+      "id": "fb1adc9d35eb",
+      "location": {
+        "col": 12,
+        "file": "Weather.php",
+        "language": "php",
+        "line": 34,
+      },
+      "method": "POST",
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "php": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "symfony-http": 4,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "php": 4,
+    },
+    "byProvider": {
+      "linear": 1,
+      "open-meteo": 1,
+      "segment": 1,
+      "vercel": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 3,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`php: SDKs > reads instances, factories, facades, static APIs and named arguments 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "q",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "yonder",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "87dbab25c32a",
+      "location": {
+        "col": 12,
+        "file": "Ai.php",
+        "language": "php",
+        "line": 13,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "openai-php/client",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "properties": {},
+            "required": [],
+            "type": "object",
+          },
+          "model": {
+            "enum": [
+              "anthropic/claude-sonnet-4",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": {},
+            "model": "anthropic/claude-sonnet-4",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "openrouter.ai",
+      "hostKind": "literal",
+      "id": "9caf809afa26",
+      "location": {
+        "col": 12,
+        "file": "Ai.php",
+        "language": "php",
+        "line": 19,
+      },
+      "method": "POST",
+      "pathTemplate": "/api/v1/chat/completions",
+      "provider": "openrouter",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "openai-php/client",
+      },
+      "urlTemplate": "https://openrouter.ai/api/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "input": {
+            "hint": "text",
+            "type": "string",
+          },
+          "model": {
+            "enum": [
+              "text-embedding-3-small",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "input",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "input",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "input": "Falcon sable compass compass verdant atlas.",
+            "model": "text-embedding-3-small",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/embeddings",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "cd9c16a1843e",
+      "location": {
+        "col": 12,
+        "file": "Ai.php",
+        "language": "php",
+        "line": 24,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/embeddings",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "embeddings.create",
+        "package": "openai-php/client",
+      },
+      "urlTemplate": "https://api.openai.com/v1/embeddings",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "maxTokens": {
+            "enum": [
+              1024,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "maxTokens",
+          "messages",
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "maxTokens": 1024,
+            "messages": [
+              {
+                "content": "Glacier walnut birch zephyr quiet cedar.",
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.anthropic.com",
+      "hostKind": "literal",
+      "id": "d3b24d50e6f1",
+      "location": {
+        "col": 12,
+        "file": "Ai.php",
+        "language": "php",
+        "line": 30,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.create",
+        "package": "anthropic-ai/sdk",
+      },
+      "urlTemplate": "https://api.anthropic.com/v1/messages",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "token <token>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "generativelanguage.googleapis.com",
+      "hostKind": "literal",
+      "id": "2609cb3de01f",
+      "location": {
+        "col": 12,
+        "file": "Ai.php",
+        "language": "php",
+        "line": 35,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1beta/models/gemini-2.0-flash:generateContent",
+      "provider": "google-ai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "generativeModel.generateContent",
+        "package": "google-gemini-php/client",
+      },
+      "urlTemplate": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "name": {
+            "enum": [
+              "Ada",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "bruno.ekwall@example.com",
+            "name": "Ada",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "08c0c2b2cddb",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 18,
+      },
+      "method": "POST",
+      "operationId": "PostCustomers",
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "customers.create",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "customer",
+          "origin": "param",
+          "shape": {
+            "hint": "customer",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "customer": "anchor onyx",
+            "limit": "3",
+          },
+          "url": "https://api.stripe.com/v1/checkout/sessions?customer=anchor%20onyx&limit=3",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "1f2dcd04b211",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 23,
+      },
+      "method": "GET",
+      "operationId": "GetCheckoutSessions",
+      "pathTemplate": "/v1/checkout/sessions",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [
+        "customer",
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "customer": {
+            "hint": "customer",
+            "type": "string",
+          },
+          "limit": {
+            "enum": [
+              3,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "customer",
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "sdk": {
+        "chain": "checkout.sessions.all",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/checkout/sessions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "ada.ekwall@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "709f89c582c8",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 28,
+      },
+      "method": "POST",
+      "operationId": "PostCustomers",
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Customer.create",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "line_items": {
+            "items": {
+              "properties": {
+                "price": {
+                  "hint": "price",
+                  "type": "string",
+                },
+                "quantity": {
+                  "enum": [
+                    1,
+                  ],
+                  "type": "integer",
+                },
+              },
+              "required": [
+                "price",
+                "quantity",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "mode": {
+            "enum": [
+              "payment",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "mode",
+          "line_items",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "line_items": [
+              {
+                "price": "7270",
+                "quantity": 1,
+              },
+            ],
+            "mode": "payment",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/checkout/sessions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "fbd38dc40105",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 33,
+      },
+      "method": "POST",
+      "operationId": "PostCheckoutSessions",
+      "pathTemplate": "/v1/checkout/sessions",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Checkout.Session.create",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/checkout/sessions",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "intent",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/payment_intents/koala",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "e90aec48f4c8",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 38,
+      },
+      "method": "GET",
+      "operationId": "GetPaymentIntentsIntent",
+      "pathTemplate": "/v1/payment_intents/{intent}",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "PaymentIntent.retrieve",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/payment_intents/{intent}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "payment_method": {
+            "enum": [
+              "pm_card_visa",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "payment_method",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "intent",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "payment_method": "pm_card_visa",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/payment_intents/koala/confirm",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "e90aec48f4c8",
+      "location": {
+        "col": 16,
+        "file": "Billing.php",
+        "language": "php",
+        "line": 38,
+      },
+      "method": "POST",
+      "operationId": "PostPaymentIntentsIntentConfirm",
+      "pathTemplate": "/v1/payment_intents/{intent}/confirm",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "PaymentIntent.retrieve.confirm",
+        "package": "stripe/stripe-php",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/payment_intents/{intent}/confirm",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Body": {
+            "type": "string",
+          },
+          "Bucket": {
+            "enum": [
+              "uploads",
+            ],
+            "type": "string",
+          },
+          "Key": {
+            "hint": "key",
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "raw",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Tundra ridge yarrow mosaic raven ember.",
+            "Bucket": "uploads",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "raw",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/quill/%3CKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "89d46852d82b",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 13,
+      },
+      "method": "PUT",
+      "operationId": "PutObject",
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "putObject",
+        "package": "aws/aws-sdk-php",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "body": {
+            "hint": "json_encode",
+            "origin": "call",
+            "type": "dynamic",
+          },
+          "modelId": {
+            "enum": [
+              "anthropic.claude-3-haiku-20240307-v1:0",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "modelId",
+          "body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "body",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "body": "Meadow pebble zenith compass island dune.",
+            "modelId": "anthropic.claude-3-haiku-20240307-v1:0",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://bedrock-runtime.{region}.amazonaws.com/model/dl8xrcx5/invoke",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "bedrock-runtime.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "963f683601aa",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 19,
+      },
+      "method": "POST",
+      "operationId": "InvokeModel",
+      "pathTemplate": "/model/{modelId}/invoke",
+      "provider": "aws-bedrock",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "invokeModel",
+        "package": "aws/aws-sdk-php",
+      },
+      "urlTemplate": "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "body": {
+            "enum": [
+              "Hello",
+            ],
+            "type": "string",
+          },
+          "from": {
+            "enum": [
+              "+15550000000",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "from",
+          "body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "AccountSid",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "body": "Hello",
+            "from": "+15550000000",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/7zaff8rw/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "abbdd247ef87",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 25,
+      },
+      "method": "POST",
+      "operationId": "CreateMessage",
+      "pathTemplate": "/2010-04-01/Accounts/{AccountSid}/Messages.json",
+      "provider": "twilio",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.create",
+        "package": "twilio/sdk",
+      },
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "ServiceSid",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://verify.twilio.com/v2/Services/4zq4lo81/Verifications",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "verify.twilio.com",
+      "hostKind": "literal",
+      "id": "b0f4fd194173",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 31,
+      },
+      "method": "POST",
+      "operationId": "CreateVerification",
+      "pathTemplate": "/v2/Services/{ServiceSid}/Verifications",
+      "provider": "twilio",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "verify.v2.services.verifications.create",
+        "package": "twilio/sdk",
+      },
+      "urlTemplate": "https://verify.twilio.com/v2/Services/{ServiceSid}/Verifications",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "from": {
+            "enum": [
+              "app@example.com",
+            ],
+            "type": "string",
+          },
+          "html": {
+            "enum": [
+              "<p>Hi</p>",
+            ],
+            "type": "string",
+          },
+          "subject": {
+            "enum": [
+              "Hi",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "from",
+          "to",
+          "subject",
+          "html",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "from": "app@example.com",
+            "html": "<p>Hi</p>",
+            "subject": "Hi",
+            "to": "greta.castel@example.com",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.resend.com/emails",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.resend.com",
+      "hostKind": "literal",
+      "id": "4753b9f5a846",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 37,
+      },
+      "method": "POST",
+      "pathTemplate": "/emails",
+      "provider": "resend",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "emails.send",
+        "package": "resend/resend-php",
+      },
+      "urlTemplate": "https://api.resend.com/emails",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "subject": {
+            "enum": [
+              "News",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "subject",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "domain",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "subject": "News",
+            "to": "elena.ibarra@example.com",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/mosaic.example.org/messages",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "26d801c8a8e4",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 42,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/{domain}/messages",
+      "provider": "mailgun",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.send",
+        "package": "mailgun/mailgun-php",
+      },
+      "urlTemplate": "https://api.mailgun.net/v3/{domain}/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "distinctId": {
+            "hint": "user",
+            "type": "string",
+          },
+          "event": {
+            "enum": [
+              "signed_up",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "distinctId",
+          "event",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "distinctId",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "distinctId": "nwybipj5",
+            "event": "signed_up",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://us.i.posthog.com/batch",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "us.i.posthog.com",
+      "hostKind": "literal",
+      "id": "098e9bd0d035",
+      "location": {
+        "col": 5,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 48,
+      },
+      "method": "POST",
+      "pathTemplate": "/batch",
+      "provider": "posthog",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "PostHog.capture",
+        "package": "posthog/posthog-php",
+      },
+      "urlTemplate": "https://us.i.posthog.com/batch/",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "hint": "mail",
+        "origin": "param",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 0.8,
+      "dynamic": [
+        {
+          "name": "body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.sendgrid.com/v3/mail/send",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.sendgrid.com",
+      "hostKind": "literal",
+      "id": "02b20434a14c",
+      "location": {
+        "col": 12,
+        "file": "Cloud.php",
+        "language": "php",
+        "line": 54,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/mail/send",
+      "provider": "sendgrid",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "send",
+        "package": "sendgrid/sendgrid",
+      },
+      "urlTemplate": "https://api.sendgrid.com/v3/mail/send",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "anthropic-ai/sdk",
+        "provider": "anthropic",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "aws/aws-sdk-php",
+        "provider": "aws",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "google-gemini-php/client",
+        "provider": "google-ai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "mailgun/mailgun-php",
+        "provider": "mailgun",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 3,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai-php/client",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 0,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai-php/laravel",
+        "provider": "openai",
+        "status": "imported-no-calls",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "posthog/posthog-php",
+        "provider": "posthog",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "resend/resend-php",
+        "provider": "resend",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "sendgrid/sendgrid",
+        "provider": "sendgrid",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 6,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "stripe/stripe-php",
+        "provider": "stripe",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "twilio/sdk",
+        "provider": "twilio",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 5,
+    "languages": {
+      "php": {
+        "filesScanned": 3,
+        "filesSeen": 5,
+      },
+    },
+    "skipped": [
+      {
+        "file": "firebase/Users.php",
+        "reason": "excluded",
+      },
+      {
+        "file": "sentry/errors.php",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 2,
+    },
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "sdk": 19,
+    },
+    "byHostKind": {
+      "literal": 19,
+    },
+    "byLanguage": {
+      "php": 19,
+    },
+    "byProvider": {
+      "anthropic": 1,
+      "aws": 1,
+      "aws-bedrock": 1,
+      "google-ai": 1,
+      "mailgun": 1,
+      "openai": 2,
+      "openrouter": 1,
+      "posthog": 1,
+      "resend": 1,
+      "sendgrid": 1,
+      "stripe": 6,
+      "twilio": 2,
+    },
+    "callsFound": 19,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 14,
+    "withDynamic": 14,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`php: constants > follows define(), namespaced and class constants, static properties, sprintf, .= and heredocs 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "pageId",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.notion.com/v1/pages/ioug018f",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.notion.com",
+      "hostKind": "const",
+      "id": "105a1a3ddfb0",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 20,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/pages/{pageId}",
+      "provider": "notion",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/pages/{pageId}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "query": {
+            "enum": [
+              "{ viewer { id } }",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "guzzle",
+      "confidence": 0.6,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "query": "{ viewer { id } }",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.linear.app",
+      "hostKind": "const",
+      "id": "f31db8402022",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 25,
+      },
+      "method": "POST",
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.vercel.com/v9/projects",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.vercel.com",
+      "hostKind": "const",
+      "id": "396ab3fd242e",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 30,
+      },
+      "method": "GET",
+      "pathTemplate": "/v9/projects",
+      "provider": "vercel",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.vercel.com/v9/projects",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "uid",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "apiKey",
+          "origin": "env",
+          "shape": {
+            "hint": "CAL_KEY",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "apiKey": "<apiKey>",
+          },
+          "url": "https://api.cal.com/v1/bookings/w5nwg506?apiKey=%3CapiKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "099f905f106e",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 35,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/bookings/{uid}",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [
+        "apiKey",
+      ],
+      "queryShape": {
+        "properties": {
+          "apiKey": {
+            "hint": "CAL_KEY",
+            "type": "string",
+          },
+        },
+        "required": [
+          "apiKey",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/bookings/{uid}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "shape": {
+            "hint": "q",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "query": "quiet",
+          },
+          "url": "https://api.unsplash.com/search/photos?query=quiet",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.unsplash.com",
+      "hostKind": "const",
+      "id": "4431ec36c6cd",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 42,
+      },
+      "method": "GET",
+      "pathTemplate": "/search/photos",
+      "provider": "unsplash",
+      "providerSource": "host",
+      "query": [
+        "query",
+      ],
+      "queryShape": {
+        "properties": {
+          "query": {
+            "hint": "q",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.unsplash.com/search/photos",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "guzzle",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.cal.com/v1/teams/4523/users",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "bf30fbbf2fbb",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 50,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/teams/{id}/users",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/teams/{id}/users",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "guzzle",
+      "confidence": 0.45,
+      "dynamic": [],
+      "envName": "ANALYTICS_HOST",
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.segment.io/v1/batch",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.segment.io",
+      "hostKind": "env",
+      "id": "e411b422e2f3",
+      "location": {
+        "col": 16,
+        "file": "Pages.php",
+        "language": "php",
+        "line": 55,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/batch",
+      "provider": "segment",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:ANALYTICS_HOST}/v1/batch",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "php": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "guzzle": 7,
+    },
+    "byHostKind": {
+      "const": 6,
+      "env": 1,
+    },
+    "byLanguage": {
+      "php": 7,
+    },
+    "byProvider": {
+      "cal": 2,
+      "linear": 1,
+      "notion": 1,
+      "segment": 1,
+      "unsplash": 1,
+      "vercel": 1,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`php: curl, streams, PSR-18, WordPress > reads curl options, stream contexts, PSR-7 requests and wp_remote_* arguments 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "curl",
+      "confidence": 0.55,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://events.pagerduty.com/v2/enqueue",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "events.pagerduty.com",
+      "hostKind": "const",
+      "id": "71dae29b7965",
+      "location": {
+        "col": 12,
+        "file": "legacy.php",
+        "language": "php",
+        "line": 12,
+      },
+      "method": "POST",
+      "pathTemplate": "/v2/enqueue",
+      "provider": "pagerduty",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.pagerduty.com/v2/enqueue",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "address": {
+            "hint": "email",
+            "type": "string",
+          },
+          "subscribed": {
+            "enum": [
+              "yes",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "address",
+          "subscribed",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "curl",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "address",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "address": "pablo.moreau@example.com",
+            "subscribed": "yes",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/lists/news@example.com/members",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "8c3015b6345b",
+      "location": {
+        "col": 12,
+        "file": "legacy.php",
+        "language": "php",
+        "line": 26,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/lists/news@example.com/members",
+      "provider": "mailgun",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/lists/news@example.com/members",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "curl",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.airtable.com/v0/app123/Tasks/2uu0eu9g",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.airtable.com",
+      "hostKind": "literal",
+      "id": "d60db3a9f87c",
+      "location": {
+        "col": 12,
+        "file": "legacy.php",
+        "language": "php",
+        "line": 34,
+      },
+      "method": "DELETE",
+      "pathTemplate": "/v0/app123/Tasks/{id}",
+      "provider": "airtable",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.airtable.com/v0/app123/Tasks/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "file": {
+            "origin": "call",
+            "type": "dynamic",
+          },
+          "upload_preset": {
+            "enum": [
+              "demo",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "file",
+          "upload_preset",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "client": "curl",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "file",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "file": "linen/yarrow.pdf",
+            "upload_preset": "demo",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "ab596419ef21",
+      "location": {
+        "col": 12,
+        "file": "legacy.php",
+        "language": "php",
+        "line": 41,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "php": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.2.0",
+  "stats": {
+    "byClient": {
+      "curl": 4,
+    },
+    "byHostKind": {
+      "const": 1,
+      "literal": 3,
+    },
+    "byLanguage": {
+      "php": 4,
+    },
+    "byProvider": {
+      "airtable": 1,
+      "cloudinary": 1,
+      "mailgun": 1,
+      "pagerduty": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 3,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;

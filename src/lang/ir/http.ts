@@ -5,7 +5,8 @@ import type { ClientFunction, ClientSpec, OptionRole, Scoped } from "./language.
 import type { CallExpr, FunctionDef } from "./model.js";
 import type { IrCtx, IrRaw, Seg } from "./raw.js";
 import { authOfOption } from "./request.js";
-import { rootLength } from "./sdk.js";
+import { namedAt, rootLength } from "./sdk.js";
+import { deref } from "./values.js";
 
 const BODY_ROLES: OptionRole[] = ["body:json", "body:form", "body:multipart", "body:raw", "body"];
 
@@ -14,12 +15,18 @@ interface Shape {
   modifiers: Seg[];
 }
 
-/** What sits between the import root and the request: nothing, a client object, fluent modifiers. */
+/**
+ * What sits between the import root and the request: nothing, a client object (`Session()`,
+ * `HttpClient::create()`), then fluent modifiers (`withToken($t)`).
+ */
 function middleOf(spec: ClientSpec, middle: Seg[]): Shape | undefined {
-  const out: Shape = { modifiers: [] };
-  for (const s of middle) {
-    if ((s.call || s.typed) && !out.instance && out.modifiers.length === 0 && spec.instances?.names.includes(s.name)) out.instance = s;
-    else if (s.call && spec.modifiers?.[s.name]) out.modifiers.push(s);
+  let i = -1;
+  for (let j = middle.length - 1; j >= 0 && i < 0; j--) {
+    if ((middle[j]!.call || middle[j]!.typed) && spec.instances?.names.some((n) => namedAt(middle, j, n))) i = j;
+  }
+  const out: Shape = { modifiers: [], ...(i >= 0 ? { instance: middle[i] } : {}) };
+  for (const s of middle.slice(i + 1)) {
+    if (s.call && spec.modifiers?.[s.name]) out.modifiers.push(s);
     else return undefined;
   }
   return out;
@@ -29,6 +36,17 @@ function optionsOf(spec: ClientSpec, seg: Seg, optionsArg: number | undefined, c
   if (!seg.call || !seg.fn) return { get: () => undefined, values: () => [], opaque: false };
   if (optionsArg !== undefined) return arrayOptions(argOf(seg, optionsArg), ctx);
   return kwargOptions(seg.call, seg.fn, ctx);
+}
+
+/** A client constructor's options: the first array from `optionsArg` on (`createForBaseUri($url, [...])`). */
+function instanceOptions(spec: ClientSpec, seg: Seg, ctx: IrCtx): Options {
+  const from = spec.instances?.optionsArg;
+  if (from === undefined || !seg.call) return optionsOf(spec, seg, from, ctx);
+  for (let i = from; i < seg.call.args.length; i++) {
+    const arg = argOf(seg, i);
+    if (arg && deref(arg.expr, arg.fn, ctx).expr.k === "dict") return arrayOptions(arg, ctx);
+  }
+  return optionsOf(spec, seg, from, ctx);
 }
 
 /** The first option carrying a role (`json=` before `data=`). */
@@ -83,19 +101,20 @@ function urlOf(f: ClientFunction, method: Seg, spec: ClientSpec, opts: Options):
 
 function buildRaw(spec: ClientSpec, f: ClientFunction, method: Seg, shape: Shape, ctx: IrCtx): IrRaw {
   const opts = optionsOf(spec, method, f.optionsArg, ctx);
-  const inst = shape.instance ? optionsOf(spec, shape.instance, spec.instances?.optionsArg, ctx) : undefined;
+  const inst = shape.instance ? instanceOptions(spec, shape.instance, ctx) : undefined;
   const mod = applyModifiers(spec, shape.modifiers, ctx);
   const all = [opts, ...mod.options, ...(inst ? [inst] : [])];
   const pick = (role: OptionRole): Scoped | undefined => all.map((o) => byRole(spec, o, role)?.value).find((v) => v);
   const { body, role } = bodyFrom(spec, f, method, opts);
   const auth = pick("auth");
+  const authRole = pick("auth:bearer") ? "bearer" : pick("auth:basic") ? "basic" : undefined;
   const methodArg = f.methodArg !== undefined ? argOf(method, f.methodArg) : undefined;
   const raw: IrRaw = {
     call: method.call!,
     fn: method.fn!,
     client: spec.client,
     url: urlOf(f, method, spec, opts),
-    baseUrl: mod.baseUrl ?? pick("baseUrl") ?? (shape.instance && spec.instances?.baseUrlArg !== undefined ? argOf(shape.instance, spec.instances.baseUrlArg) : undefined),
+    baseUrl: mod.baseUrl ?? pick("baseUrl") ?? positionalBase(spec, shape.instance, ctx),
     impliedMethod: f.method,
     method: methodArg ?? (f.method ? undefined : pick("method")),
     body,
@@ -103,7 +122,7 @@ function buildRaw(spec: ClientSpec, f: ClientFunction, method: Seg, shape: Shape
     encoding: mod.encoding,
     query: (f.queryArg !== undefined ? argOf(method, f.queryArg) : undefined) ?? mod.query ?? pick("query"),
     headers: [...all.map((o) => byRole(spec, o, "headers")?.value).filter((v): v is Scoped => !!v), ...mod.headers],
-    auth: mod.auth ?? (auth ? authOfOption(auth, ctx) : undefined),
+    auth: mod.auth ?? authRole ?? (auth ? authOfOption(auth, ctx) : undefined),
     optionsOpaque: opts.opaque,
     inputs: [],
   };
@@ -111,14 +130,33 @@ function buildRaw(spec: ClientSpec, f: ClientFunction, method: Seg, shape: Shape
   return raw;
 }
 
+/** A base URL passed positionally to a client constructor (`ClientSession(url)`), never an options array. */
+function positionalBase(spec: ClientSpec, instance: Seg | undefined, ctx: IrCtx): Scoped | undefined {
+  const i = spec.instances?.baseUrlArg;
+  const arg = instance && i !== undefined ? argOf(instance, i) : undefined;
+  return arg && deref(arg.expr, arg.fn, ctx).expr.k !== "dict" ? arg : undefined;
+}
+
+/** `wp_remote_post($url, $args)`: a client whose functions are global functions. */
+function detectGlobal(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
+  if (chain.root.kind !== "global" || chain.segs.length > 0) return undefined;
+  const name = chain.root.name.toLowerCase();
+  for (const spec of ctx.idx.lang.clients) {
+    const f = spec.global ? spec.functions[name] : undefined;
+    if (f) return buildRaw(spec, f, { name, call, fn, subst: ctx.subst }, { modifiers: [] }, ctx);
+  }
+  return undefined;
+}
+
 /** An HTTP client call from the language's client tables (`requests.post(url, json=...)`, `client.get(url)`). */
-export function detectHttp(chain: Chain, call: CallExpr, _fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
+export function detectHttp(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
+  if (chain.root.kind === "global") return detectGlobal(chain, call, fn, ctx);
   if (chain.root.kind !== "external") return undefined;
   const method = chain.segs[chain.segs.length - 1];
   if (!method || method.call !== call) return undefined;
   for (const spec of ctx.idx.lang.clients) {
     const n = rootLength(chain.segs, spec.imports);
-    if (n === 0 || n >= chain.segs.length) continue;
+    if (n <= 0 || n >= chain.segs.length) continue;
     const f = spec.functions[method.name];
     const shape = f ? middleOf(spec, chain.segs.slice(n, -1)) : undefined;
     if (f && shape) return buildRaw(spec, f, method, shape, ctx);

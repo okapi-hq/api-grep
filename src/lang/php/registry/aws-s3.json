@@ -1,0 +1,79 @@
+{
+  "$comment": "aws/aws-sdk-php S3: `new S3Client([...])` or `(new Aws\\Sdk([...]))->createS3()`; operations are magic methods taking one params array (`$s3->putObject(['Bucket' => ..., 'Key' => ..., 'Body' => ...])`), each with an `*Async` twin. `upload`/`copy`/`does*Exist*` are S3ClientTrait helpers with positional arguments. Paths use path-style addressing like the TS registry (the SDK defaults to virtual-hosted `{Bucket}.s3.{region}.amazonaws.com`).",
+  "package": "aws/aws-sdk-php",
+  "aliases": [
+    "aws/aws-sdk-php-laravel",
+    "aws/aws-sdk-php-symfony"
+  ],
+  "imports": [
+    "Aws.S3",
+    "Aws.Sdk",
+    "Aws.Laravel.AwsFacade"
+  ],
+  "provider": "aws",
+  "host": "s3.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against aws/aws-sdk-php 3.399.2 API models: src/data/s3/2006-03-01, src/data/bedrock-runtime/2023-09-30)",
+  "instance": {
+    "names": [
+      "S3Client",
+      "S3MultiRegionClient",
+      "createS3",
+      "createMultiRegionS3"
+    ],
+    "urlArg": {
+      "S3Client": "0.endpoint",
+      "S3MultiRegionClient": "0.endpoint",
+      "createS3": "0.endpoint",
+      "createMultiRegionS3": "0.endpoint"
+    }
+  },
+  "methods": {
+    "putObject": {"method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw"},
+    "putObjectAsync": {"method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObject", "encoding": "raw"},
+    "getObject": {"method": "GET", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "GetObject"},
+    "getObjectAsync": {"method": "GET", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "GetObject"},
+    "headObject": {"method": "HEAD", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "HeadObject"},
+    "headObjectAsync": {"method": "HEAD", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "HeadObject"},
+    "deleteObject": {"method": "DELETE", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "DeleteObject"},
+    "deleteObjectAsync": {"method": "DELETE", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "DeleteObject"},
+    "deleteObjects": {"method": "POST", "path": "/{Bucket}?delete", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteObjects"},
+    "deleteObjectsAsync": {"method": "POST", "path": "/{Bucket}?delete", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteObjects"},
+    "copyObject": {"method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CopyObject"},
+    "copyObjectAsync": {"method": "PUT", "path": "/{Bucket}/{Key}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CopyObject"},
+    "listObjectsV2": {"method": "GET", "path": "/{Bucket}?list-type=2", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjectsV2"},
+    "listObjectsV2Async": {"method": "GET", "path": "/{Bucket}?list-type=2", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjectsV2"},
+    "listObjects": {"method": "GET", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjects"},
+    "listObjectsAsync": {"method": "GET", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "ListObjects"},
+    "listBuckets": {"method": "GET", "path": "/", "bodyArg": 0, "operationId": "ListBuckets"},
+    "listBucketsAsync": {"method": "GET", "path": "/", "bodyArg": 0, "operationId": "ListBuckets"},
+    "createBucket": {"method": "PUT", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "CreateBucket"},
+    "createBucketAsync": {"method": "PUT", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "CreateBucket"},
+    "deleteBucket": {"method": "DELETE", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteBucket"},
+    "deleteBucketAsync": {"method": "DELETE", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "DeleteBucket"},
+    "headBucket": {"method": "HEAD", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "HeadBucket"},
+    "headBucketAsync": {"method": "HEAD", "path": "/{Bucket}", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "HeadBucket"},
+    "getBucketLocation": {"method": "GET", "path": "/{Bucket}?location", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "GetBucketLocation"},
+    "getBucketLocationAsync": {"method": "GET", "path": "/{Bucket}?location", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "GetBucketLocation"},
+    "putBucketCors": {"method": "PUT", "path": "/{Bucket}?cors", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "PutBucketCors"},
+    "putBucketCorsAsync": {"method": "PUT", "path": "/{Bucket}?cors", "bodyArg": 0, "pathFromBody": ["Bucket"], "operationId": "PutBucketCors"},
+    "putObjectAcl": {"method": "PUT", "path": "/{Bucket}/{Key}?acl", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObjectAcl"},
+    "putObjectAclAsync": {"method": "PUT", "path": "/{Bucket}/{Key}?acl", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "PutObjectAcl"},
+    "createMultipartUpload": {"method": "POST", "path": "/{Bucket}/{Key}?uploads", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CreateMultipartUpload"},
+    "createMultipartUploadAsync": {"method": "POST", "path": "/{Bucket}/{Key}?uploads", "bodyArg": 0, "pathFromBody": ["Bucket", "Key"], "operationId": "CreateMultipartUpload"},
+    "uploadPart": {"method": "PUT", "path": "/{Bucket}/{Key}?partNumber={PartNumber}&uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "PartNumber", "UploadId"], "operationId": "UploadPart", "encoding": "raw"},
+    "uploadPartAsync": {"method": "PUT", "path": "/{Bucket}/{Key}?partNumber={PartNumber}&uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "PartNumber", "UploadId"], "operationId": "UploadPart", "encoding": "raw"},
+    "completeMultipartUpload": {"method": "POST", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "UploadId"], "operationId": "CompleteMultipartUpload"},
+    "completeMultipartUploadAsync": {"method": "POST", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "UploadId"], "operationId": "CompleteMultipartUpload"},
+    "abortMultipartUpload": {"method": "DELETE", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "UploadId"], "operationId": "AbortMultipartUpload"},
+    "abortMultipartUploadAsync": {"method": "DELETE", "path": "/{Bucket}/{Key}?uploadId={UploadId}", "bodyArg": 0, "pathFromBody": ["Bucket", "Key", "UploadId"], "operationId": "AbortMultipartUpload"},
+    "upload": {"method": "PUT", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:0", "Key": "arg:1"}, "bodyArg": 2, "encoding": "raw"},
+    "uploadAsync": {"method": "PUT", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:0", "Key": "arg:1"}, "bodyArg": 2, "encoding": "raw"},
+    "copy": {"method": "PUT", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:2", "Key": "arg:3"}},
+    "copyAsync": {"method": "PUT", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:2", "Key": "arg:3"}},
+    "doesObjectExist": {"method": "HEAD", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:0", "Key": "arg:1"}},
+    "doesObjectExistV2": {"method": "HEAD", "path": "/{Bucket}/{Key}", "params": {"Bucket": "arg:0", "Key": "arg:1"}},
+    "doesBucketExist": {"method": "HEAD", "path": "/{Bucket}", "params": {"Bucket": "arg:0"}},
+    "doesBucketExistV2": {"method": "HEAD", "path": "/{Bucket}", "params": {"Bucket": "arg:0"}}
+  }
+}

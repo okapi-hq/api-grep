@@ -4,14 +4,14 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
 
-**Find every outbound HTTP and SDK call in a TypeScript or Python codebase, without running it.**
+**Find every outbound HTTP and SDK call in a TypeScript, Python or PHP codebase, without running it.**
 
 Point `apicalls` at a repository and it lists every call the code makes to an external API:
 provider, method, path template, the *shape* of the payload (names and types, never values),
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
-TypeScript through the TypeScript type checker and Python through tree-sitter, and a repository
+TypeScript through the TypeScript type checker, and Python and PHP through tree-sitter; a repository
 that mixes languages gets one report that says which language each call comes from. No AI, no
-network, no runtime. PHP is next; see [docs/languages.md](docs/languages.md).
+network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
 
@@ -68,7 +68,8 @@ scanned 1/1 files, complete
 
 `dyn` counts the parts that could not be known statically; `conf` is the [confidence](#confidence).
 
-The same calls in Python are reported the same way:
+The same calls in Python (and PHP: `\Stripe\Customer::create([...])`, `$stripe->customers->create([...])`)
+are reported the same way:
 
 ```python
 import os
@@ -108,7 +109,7 @@ above, with `--examples 1`, shown as YAML with one comment per field and the sec
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.1.0            # report format version; readers check the major
+schemaVersion: 1.2.0            # report format version; readers check the major
 tool: apicalls
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -120,7 +121,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | python | php
-    client: sdk                 # fetch | axios | got | ky | node-http (TypeScript), requests | httpx | aiohttp | urllib | urllib3 (Python), sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http (TypeScript), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `apicalls providers` id, or internal | env:<NAME> | unknown
     providerSource: sdk         # sdk | host | env-name
@@ -200,8 +201,8 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, â
 
 Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
 and `diagnostics.languages` files per language. The TypeScript front end reports `typescript`, the
-Python one `python`; `javascript` and `php` are reserved for the next front ends, so reports from
-every language share one format. Coverage rows name their package `ecosystem` (`npm`, `pypi`).
+Python one `python`, the PHP one `php`; `javascript` is reserved, so reports from every language
+share one format. Coverage rows name their package `ecosystem` (`npm`, `pypi`, `composer`).
 
 ## Usage
 
@@ -218,7 +219,7 @@ apicalls scan <dir> --language python                 # one language only
 
 | option | description |
 |---|---|
-| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `python` (default: every language with files in scope) |
+| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `python`, `php` (default: every language with files in scope) |
 | `--json` | print the JSON report on stdout instead of the table |
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
@@ -290,6 +291,23 @@ client, `x or OpenAI()` defaults and subclasses of a client class. The builder a
 above apply too: `supabase.table("tasks").select("*").eq(...).execute()` is one `GET /rest/v1/tasks`,
 `OpenAI(base_url="https://openrouter.ai/api/v1")` sends to OpenRouter. How the Python front end
 works, and how to add a language: [docs/languages.md](docs/languages.md).
+
+### PHP
+
+| client | patterns |
+|---|---|
+| Guzzle | `new Client(['base_uri' => ..., 'headers' => ...])`, verbs and `*Async`, `request($method, $uri, $options)`, options `json`, `form_params`, `multipart`, `body`, `query`, `headers`, `auth`; also `ClientInterface` parameters and `\Drupal::httpClient()` |
+| Laravel `Http` | `Http::post($url, $data)` / `get($url, $query)` / `send(...)` with fluent `withToken`, `withBasicAuth`, `withHeaders`, `asForm`, `asMultipart`, `baseUrl`, `withQueryParameters`, `withOptions`; `config('services.x.url')` is read from `config/services.php` |
+| Symfony HttpClient | `HttpClient::create([...])`, `createForBaseUri($url)`, `HttpClientInterface` injection, `request($method, $url, ['json' => ..., 'query' => ..., 'auth_bearer' => ...])` |
+| curl | `curl_init($url)` + `curl_setopt` / `curl_setopt_array` (`CURLOPT_URL`, `CUSTOMREQUEST`, `POST`, `POSTFIELDS`, `HTTPHEADER`, `USERPWD`), reported at `curl_exec` |
+| PSR-7 / PSR-18 | `$client->send(new Request(...))`, `sendRequest(...)`, also through a helper that builds the request |
+| streams | `file_get_contents` / `fopen` on an `http(s)` URL or with a `stream_context_create(['http' => ...])` context (file reads are not calls) |
+| WordPress | `wp_remote_get`, `wp_remote_post`, `wp_remote_request` (and `wp_safe_*`) |
+| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): Stripe (`StripeClient`, static `\Stripe\Customer::create`), openai-php (client, factory with `withBaseUri`, Laravel facade), Anthropic (official, named arguments; mozex), Gemini, AWS (S3, Bedrock runtime), Twilio, Firebase (kreait, Firestore), Sentry, Resend, PostHog, SendGrid, Mailgun, Slack |
+
+Names resolve through namespaces and `use` (classes, functions, constants), `self::` / `static::`,
+class constants, `define()` / `const`, promoted and typed properties, `$this->x` set in any
+method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` and `$_SERVER`.
 
 ## How it works
 
@@ -401,7 +419,9 @@ ecosystem) that a covered manifest declares or a scanned file imports gets a row
 `package.json` (`dependencies`, `peerDependencies`; type-only imports aside) for npm, and
 `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621 and Poetry), `Pipfile`,
 `setup.cfg` and `setup.py` for PyPI (import names that differ from the package, like
-`google-genai` / `google.genai`, are in [`src/lang/python/modules.json`](src/lang/python/modules.json)):
+`google-genai` / `google.genai`, are in [`src/lang/python/modules.json`](src/lang/python/modules.json)),
+and the `require` of `composer.json` for Composer (namespaces per package in
+[`src/lang/php/namespaces.json`](src/lang/php/namespaces.json)):
 
 ```json
 { "package": "@notionhq/client", "ecosystem": "npm", "provider": "notion", "supported": false,
@@ -427,6 +447,9 @@ package. `--changed-since` scans have no coverage section.
   `injected-client`, and SDK methods passed as callbacks (`retry(stripe.Customer.create, ...)`),
   `getattr` calls and module-level configuration (`openai.base_url = ...`) are not followed. See
   [docs/languages.md](docs/languages.md#python) for the full list.
+- PHP has no type checker either: untyped properties and parameters used as clients are listed as
+  `injected-client`; Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
+  are not followed ([docs/languages.md](docs/languages.md#php)).
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
 - Spec matching treats id-looking literal segments as parameters.
 

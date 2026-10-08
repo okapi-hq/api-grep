@@ -21,6 +21,14 @@ function urlParts(s: Scoped, ctx: IrCtx): Part[] {
   return evaluate(s.expr, s.fn, ctx);
 }
 
+/** A client base URL given as a bare host (`withBaseUri('api.example.com/v1')`) is an https URL. */
+function baseUrlParts(s: Scoped, ctx: IrCtx): Part[] {
+  const parts = urlParts(s, ctx);
+  const first = parts[0];
+  const bareHost = first?.kind === "static" && /^[a-z0-9-]+(?:\.[a-z0-9-]+)+(?::\d+)?(?:\/|$)/i.test(first.text);
+  return bareHost ? [{ kind: "static", text: "https://" }, ...parts] : parts;
+}
+
 function resolveUrl(url: Scoped | undefined, base: Scoped | undefined, ctx: IrCtx): UrlShape {
   if (!url && !base) return { hostKind: "unknown", pathTemplate: "/", query: [], queryShape: {}, dynamic: [{ where: "host", name: "url", origin: "unknown" }], raw: "" };
   const pathParts = url ? urlParts(url, ctx) : [];
@@ -50,7 +58,7 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
     return { parts: pieces.flatMap((p, i) => [...(i ? [{ kind: "static", text: "/" } as Part] : []), ...urlParts(p!, ctx)]) };
   }
   const seg = /^seg:(\w+):(\d+)$/.exec(source);
-  if (seg) return { expr: argOf([...before].reverse().find((s) => s.name === seg[1]), Number(seg[2])) };
+  if (seg) return { expr: argOf([...before].reverse().find((s) => s.name === seg[1]), Number(seg[2]), name) };
   const m2 = /^(arg|kw|instance):(\w+)(?:\.(\w+))?$/.exec(source);
   if (!m2) return undefined;
   const target = m2[1] === "instance" ? before[before.length - 1] : m.method;
@@ -68,7 +76,7 @@ function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
     baseUrl: raw.baseUrl,
     envHints: ctx.envHints,
     evaluate: (s) => urlParts(s, ctx),
-    urlParts: (s) => urlParts(s, ctx),
+    urlParts: (s) => baseUrlParts(s, ctx),
     param: (source, name) => sdkParam(m, source, name, ctx),
     arg: (i, name) => argOf(m.method, i, name),
     bodyProp: (name) => propOf(raw.body, name, ctx) ?? argAt(m.method, `kw:${name}`, ctx),

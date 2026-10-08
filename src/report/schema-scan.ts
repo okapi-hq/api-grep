@@ -3,8 +3,11 @@ import { z } from "zod/v4";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const EcosystemSchema = z
-  .enum(["npm", "pypi"])
-  .meta({ id: "Ecosystem", description: "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py)." });
+  .enum(["npm", "pypi", "composer"])
+  .meta({
+    id: "Ecosystem",
+    description: "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json).",
+  });
 
 export const SkippedFileSchema = z
   .object({
@@ -56,13 +59,15 @@ export const DiagnosticsSchema = z
 
 export const SdkCoverageSchema = z
   .object({
-    package: z.string().describe("Package name in its ecosystem: an npm package, a PyPI distribution."),
+    package: z.string().describe("Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package."),
     ecosystem: EcosystemSchema,
     provider: z.string().describe("Provider id the package talks to."),
     supported: z.boolean().describe("An SDK registry exists for the package, so its calls can be listed."),
     declared: z
       .boolean()
-      .describe("Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py."),
+      .describe(
+        "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json.",
+      ),
     imported: z.boolean(),
     importSites: z.number().describe("Scanned files that import the package (type-only imports aside)."),
     calls: z.number().describe("Calls in `calls` made through this package."),

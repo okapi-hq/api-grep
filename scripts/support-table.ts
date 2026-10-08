@@ -1,6 +1,7 @@
 import { AI_SDK_PACKAGES } from "../src/detect/ai-sdk.js";
 import { defaultRegistry } from "../src/detect/registry/index.js";
 import type { IrLanguage } from "../src/lang/ir/language.js";
+import { phpLanguage } from "../src/lang/php/index.js";
 import { pythonLanguage } from "../src/lang/python/index.js";
 import { PROVIDERS } from "../src/normalize/provider.js";
 import type { Ecosystem } from "../src/report/schema.js";
@@ -33,11 +34,11 @@ function irColumn(title: string, lang: IrLanguage): Column {
     ecosystem: lang.ecosystem,
     methods: (pkg) =>
       lang.registry.filter((r) => lang.normalizePackage(r.package) === lang.normalizePackage(pkg) || r.aliases?.includes(pkg)).reduce((n, r) => n + Object.keys(r.methods).length, 0),
-    clients: [...lang.clients.map((c) => c.client), ...(lang.id === "python" ? ["urllib"] : [])],
+    clients: [...new Set([...lang.clients.map((c) => c.client), ...(lang.id === "python" ? ["urllib"] : ["curl", "php-stream"])])],
   };
 }
 
-export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage)];
+export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage), irColumn("PHP (Composer)", phpLanguage)];
 
 function cell(col: Column, packages: string[] | undefined): string {
   if (!packages || packages.length === 0) return "";

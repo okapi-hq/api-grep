@@ -1,0 +1,46 @@
+{
+  "$comment": "posthog/posthog-php is mostly a static facade: `PostHog::init($key, ['host' => 'https://eu.i.posthog.com'])` once, then `PostHog::capture([...])` anywhere (keys `PostHog.*`). `new PostHog\\Client($key, ['host' => ...])` gives the same methods on an instance (unprefixed keys; `groupIdentify` is static-only). Events are queued and posted to /batch/ on flush / shutdown; flag reads post to /flags/?v=2 unless evaluated locally with a personal API key.",
+  "package": "posthog/posthog-php",
+  "imports": [
+    "PostHog"
+  ],
+  "provider": "posthog",
+  "host": "us.i.posthog.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against posthog/posthog-php 4.14.1 source)",
+  "instance": {
+    "names": [
+      "Client",
+      "init"
+    ],
+    "urlArg": {
+      "Client": "1.host",
+      "init": "1.host"
+    }
+  },
+  "methods": {
+    "PostHog.capture": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "PostHog.captureException": {"method": "POST", "path": "/batch/"},
+    "PostHog.identify": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "PostHog.alias": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "PostHog.groupIdentify": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "PostHog.isFeatureEnabled": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.getFeatureFlag": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.getFeatureFlagResult": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.getFeatureFlagPayload": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.getAllFlags": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.evaluateFlags": {"method": "POST", "path": "/flags/?v=2"},
+    "PostHog.fetchFeatureVariants": {"method": "POST", "path": "/flags/?v=2"},
+    "capture": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "captureException": {"method": "POST", "path": "/batch/"},
+    "identify": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "alias": {"method": "POST", "path": "/batch/", "bodyArg": 0},
+    "isFeatureEnabled": {"method": "POST", "path": "/flags/?v=2"},
+    "getFeatureFlag": {"method": "POST", "path": "/flags/?v=2"},
+    "getFeatureFlagResult": {"method": "POST", "path": "/flags/?v=2"},
+    "getFeatureFlagPayload": {"method": "POST", "path": "/flags/?v=2"},
+    "getAllFlags": {"method": "POST", "path": "/flags/?v=2"},
+    "evaluateFlags": {"method": "POST", "path": "/flags/?v=2"},
+    "fetchFeatureVariants": {"method": "POST", "path": "/flags/?v=2"}
+  }
+}

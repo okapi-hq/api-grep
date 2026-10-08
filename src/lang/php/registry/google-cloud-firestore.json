@@ -1,0 +1,49 @@
+{
+  "$comment": "google/cloud-firestore: `$db = new FirestoreClient(['projectId' => ...])`; references are built with `collection()` / `document()` (builders, their first argument forms `{path}`), then `set`, `update`, `create`, `delete`, `snapshot`, `add`, `documents`. The client requires ext-grpc and really sends gRPC calls (Commit, BatchGetDocuments, RunQuery, RunAggregationQuery, BatchWrite); REST-equivalent paths are used, like the TS firebase registry. `(default)` is replaced by the `database` option when set.",
+  "package": "google/cloud-firestore",
+  "imports": [
+    "Google.Cloud.Firestore"
+  ],
+  "provider": "firebase",
+  "host": "firestore.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google/cloud-firestore v2.3.3 source)",
+  "instance": {
+    "names": [
+      "FirestoreClient"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "builders": [
+    "collection",
+    "document",
+    "newDocument",
+    "collectionGroup",
+    "where",
+    "orderBy",
+    "limit",
+    "limitToLast",
+    "offset",
+    "startAt",
+    "startAfter",
+    "endAt",
+    "endBefore",
+    "select"
+  ],
+  "methods": {
+    "set": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "update": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "create": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "add": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "delete": {"method": "DELETE", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "snapshot": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "documents": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "listDocuments": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "count": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery", "params": {"path": "chain:collection,document"}},
+    "sum": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery", "params": {"path": "chain:collection,document"}},
+    "avg": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery", "params": {"path": "chain:collection,document"}},
+    "runTransaction": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:commit"},
+    "bulkWriter.commit": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:commit"},
+    "bulkWriter.flush": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:batchWrite"}
+  }
+}

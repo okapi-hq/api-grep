@@ -107,7 +107,12 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   const sites = new Map<string, number>();
   for (const mod of scanned) {
     const hit = new Set<string>();
-    for (const p of mod.importPaths) for (const r of roots) if (r.roots.some((root) => root.every((s, i) => p[i] === s))) hit.add(r.pkg);
+    for (const p of mod.importPaths) {
+      // `Sentry\Laravel\Integration` is sentry/sentry-laravel's, not sentry/sentry's: the longest root wins
+      let best: { pkg: string; length: number } | undefined;
+      for (const r of roots) for (const root of r.roots) if (root.every((s, i) => p[i] === s) && root.length > (best?.length ?? 0)) best = { pkg: r.pkg, length: root.length };
+      if (best) hit.add(best.pkg);
+    }
     for (const pkg of hit) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   }
   const supported = (pkg: string): boolean => lang.registry.some((r) => r.package === pkg || r.aliases?.includes(pkg));

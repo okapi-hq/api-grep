@@ -10,78 +10,79 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 |---|---|---|
 | TypeScript (npm) | 54 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `AI SDK`, `n8n / activepieces helpers` |
 | Python (PyPI) | 21 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
+| PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
 
-| provider | TypeScript (npm) | Python (PyPI) |
-|---|---|---|
-| Stripe | **`stripe`** | **`stripe`** |
-| OpenAI | **`openai`**, **`@ai-sdk/openai`**, `@langchain/openai` | **`openai`**, `openai-agents`, `langchain-openai`, `llama-index-llms-openai` |
-| Azure OpenAI | **`@ai-sdk/azure`**, `@azure/openai` | **`openai`** |
-| Anthropic | **`@anthropic-ai/sdk`**, **`@ai-sdk/anthropic`**, `@langchain/anthropic` | **`anthropic`**, `claude-agent-sdk`, `langchain-anthropic`, `llama-index-llms-anthropic` |
-| Google Gemini | **`@google/genai`**, **`@google/generative-ai`**, **`@ai-sdk/google`**, `@genkit-ai/google-genai` | **`google-genai`**, **`google-generativeai`**, `google-ai-generativelanguage`, `langchain-google-genai` |
-| Google Vertex AI | **`@ai-sdk/google-vertex`**, `@google-cloud/vertexai` | `google-cloud-aiplatform`, `vertexai`, `langchain-google-vertexai` |
-| Google Maps | `@googlemaps/google-maps-services-js` | `googlemaps`, `google-maps-places`, `google-maps-routing` |
-| Firebase | **`firebase`**, `firebase-admin`, **`@firebase/firestore`**, **`@firebase/auth`**, **`@firebase/storage`** | **`firebase-admin`**, **`google-cloud-firestore`**, `pyrebase4` |
-| Google | `googleapis`, `google-auth-library` | `google-api-python-client`, `google-auth`, `google-auth-oauthlib`, `google-cloud-storage`, `google-cloud-bigquery`, `google-cloud-pubsub`, `google-cloud-translate`, `google-cloud-vision`, `google-cloud-speech`, `google-cloud-texttospeech`, `google-cloud-secret-manager`, `google-cloud-tasks`, `gspread` |
-| AWS | **`aws-sdk`**, **`@aws-sdk/client-s3`** | **`boto3`**, `botocore`, **`aioboto3`**, `aiobotocore`, `s3fs` |
-| AWS Bedrock | **`@aws-sdk/client-bedrock-runtime`**, **`@ai-sdk/amazon-bedrock`** | `langchain-aws` |
-| GitHub | **`octokit`**, **`@octokit/rest`**, **`@octokit/core`** | `PyGithub`, `githubkit`, `ghapi`, `github3.py` |
-| Slack | **`@slack/web-api`**, **`@slack/webhook`**, **`@slack/bolt`** | **`slack-sdk`**, `slack-bolt`, **`slackclient`** |
-| Twilio | **`twilio`** | **`twilio`** |
-| SendGrid | `@sendgrid/mail`, `@sendgrid/client` | `sendgrid` |
-| Resend | **`resend`** | **`resend`** |
-| Mailgun | `mailgun.js` | `mailgun` |
-| Postmark | `postmark` | `postmarker` |
-| Brevo | `@getbrevo/brevo`, `sib-api-v3-sdk` | `brevo-python`, `sib-api-v3-sdk` |
-| EmailJS | `@emailjs/browser`, `@emailjs/nodejs` |  |
-| Notion | `@notionhq/client` | `notion-client` |
-| Linear | `@linear/sdk` |  |
-| HubSpot | `@hubspot/api-client` | `hubspot-api-client` |
-| Salesforce | `jsforce` | `simple-salesforce` |
-| Vercel | `@vercel/sdk` |  |
-| Cloudflare | `cloudflare` | `cloudflare` |
-| Vercel Blob | `@vercel/blob` |  |
-| Cloudinary | `cloudinary` | `cloudinary` |
-| Microsoft | `@microsoft/microsoft-graph-client`, `@azure/msal-node` | `msgraph-sdk`, `msal`, `azure-identity` |
-| Mistral AI | `@mistralai/mistralai`, **`@ai-sdk/mistral`** | **`mistralai`**, `langchain-mistralai` |
-| Groq | `groq-sdk`, **`@ai-sdk/groq`** | **`groq`**, `langchain-groq` |
-| OpenRouter | **`@openrouter/ai-sdk-provider`** | `openrouter` |
-| Vercel AI Gateway | **`@ai-sdk/gateway`** |  |
-| Ollama | `ollama`, **`ollama-ai-provider`** | `ollama`, `langchain-ollama` |
-| Z.ai | `z-ai-web-dev-sdk` | `zai-sdk`, `zhipuai` |
-| fal | `@fal-ai/client`, `@fal-ai/serverless-client` | `fal-client` |
-| xAI | **`@ai-sdk/xai`** | `xai-sdk`, `langchain-xai` |
-| DeepSeek | **`@ai-sdk/deepseek`** | `langchain-deepseek` |
-| Together AI | `together-ai`, **`@ai-sdk/togetherai`** | `together`, `langchain-together` |
-| Fireworks AI | **`@ai-sdk/fireworks`** | `fireworks-ai`, `langchain-fireworks` |
-| Perplexity | **`@ai-sdk/perplexity`** | `perplexityai`, `langchain-perplexity` |
-| Cerebras | **`@ai-sdk/cerebras`**, `@cerebras/cerebras_cloud_sdk` | `cerebras-cloud-sdk`, `langchain-cerebras` |
-| Cohere | `cohere-ai`, **`@ai-sdk/cohere`** | **`cohere`**, `langchain-cohere` |
-| Replicate | `replicate` | `replicate` |
-| Hugging Face | `@huggingface/inference` | `huggingface-hub`, `langchain-huggingface` |
-| ElevenLabs | `elevenlabs`, `@elevenlabs/elevenlabs-js` | **`elevenlabs`** |
-| Meta Graph API | `facebook-nodejs-business-sdk` | `facebook-business` |
-| VirusTotal |  | `vt-py` |
-| Telegram | `telegraf`, `node-telegram-bot-api`, `grammy` | `python-telegram-bot`, `pyTelegramBotAPI`, `aiogram` |
-| Discord | `discord.js`, `@discordjs/rest`, `discord-oauth2` | `discord.py`, `py-cord`, `nextcord`, `disnake` |
-| Intercom | `intercom-client` | `python-intercom` |
-| Segment | `@segment/analytics-node` | `segment-analytics-python`, `analytics-python` |
-| Mixpanel | `mixpanel` | `mixpanel` |
-| PostHog | **`posthog-js`**, **`posthog-node`**, **`posthog-react-native`** | **`posthog`** |
-| Airtable | `airtable` | `pyairtable`, `airtable-python-wrapper` |
-| Dub | `dub` | `dub` |
-| Paddle | `@paddle/paddle-node-sdk` | `paddle-python-sdk` |
-| Lemon Squeezy | **`@lemonsqueezy/lemonsqueezy.js`** |  |
-| RevenueCat | **`@revenuecat/purchases-js`**, **`react-native-purchases`**, **`@revenuecat/purchases-capacitor`** |  |
-| Mercado Pago | `mercadopago` | `mercadopago` |
-| Supabase | **`@supabase/supabase-js`**, **`@supabase/ssr`** | **`supabase`**, `postgrest`, `supabase-auth`, `gotrue`, `storage3`, `supabase-functions`, `realtime` |
-| Convex | **`convex`** | **`convex`** |
-| MCP server | **`@modelcontextprotocol/sdk`** | `mcp`, `fastmcp` |
-| Clerk | `@clerk/backend`, `@clerk/clerk-sdk-node` | `clerk-backend-api` |
-| Algolia | `algoliasearch` | `algoliasearch` |
-| Unsplash | `unsplash-js` |  |
-| PagerDuty |  | `pagerduty`, `pdpyras` |
-| Sentry | **`@sentry/react`**, **`@sentry/nextjs`**, **`@sentry/node`**, **`@sentry/browser`**, **`@sentry/react-native`** | **`sentry-sdk`**, `raven` |
-| Datadog |  | `datadog`, `datadog-api-client` |
-| Bugsnag | `@bugsnag/js` | `bugsnag` |
-| ngrok | `@ngrok/ngrok` | `ngrok-api` |
-| Open-Meteo |  | `openmeteo-requests` |
+| provider | TypeScript (npm) | Python (PyPI) | PHP (Composer) |
+|---|---|---|---|
+| Stripe | **`stripe`** | **`stripe`** | **`stripe/stripe-php`**, `laravel/cashier`, `cartalyst/stripe` |
+| OpenAI | **`openai`**, **`@ai-sdk/openai`**, `@langchain/openai` | **`openai`**, `openai-agents`, `langchain-openai`, `llama-index-llms-openai` | **`openai-php/client`**, **`openai-php/laravel`**, **`openai-php/symfony`**, `orhanerday/open-ai`, `symfony/ai-open-ai-platform` |
+| Azure OpenAI | **`@ai-sdk/azure`**, `@azure/openai` | **`openai`** |  |
+| Anthropic | **`@anthropic-ai/sdk`**, **`@ai-sdk/anthropic`**, `@langchain/anthropic` | **`anthropic`**, `claude-agent-sdk`, `langchain-anthropic`, `llama-index-llms-anthropic` | **`anthropic-ai/sdk`**, **`mozex/anthropic-php`**, **`mozex/anthropic-laravel`**, `claude-php/claude-php-sdk`, `symfony/ai-anthropic-platform` |
+| Google Gemini | **`@google/genai`**, **`@google/generative-ai`**, **`@ai-sdk/google`**, `@genkit-ai/google-genai` | **`google-genai`**, **`google-generativeai`**, `google-ai-generativelanguage`, `langchain-google-genai` | **`google-gemini-php/client`**, **`google-gemini-php/laravel`**, `gemini-api-php/client`, `gemini-api-php/laravel`, `symfony/ai-gemini-platform` |
+| Google Vertex AI | **`@ai-sdk/google-vertex`**, `@google-cloud/vertexai` | `google-cloud-aiplatform`, `vertexai`, `langchain-google-vertexai` | `google/cloud-ai-platform` |
+| Google Maps | `@googlemaps/google-maps-services-js` | `googlemaps`, `google-maps-places`, `google-maps-routing` |  |
+| Firebase | **`firebase`**, `firebase-admin`, **`@firebase/firestore`**, **`@firebase/auth`**, **`@firebase/storage`** | **`firebase-admin`**, **`google-cloud-firestore`**, `pyrebase4` | **`kreait/firebase-php`**, **`kreait/laravel-firebase`**, **`kreait/firebase-bundle`**, **`google/cloud-firestore`** |
+| Google | `googleapis`, `google-auth-library` | `google-api-python-client`, `google-auth`, `google-auth-oauthlib`, `google-cloud-storage`, `google-cloud-bigquery`, `google-cloud-pubsub`, `google-cloud-translate`, `google-cloud-vision`, `google-cloud-speech`, `google-cloud-texttospeech`, `google-cloud-secret-manager`, `google-cloud-tasks`, `gspread` | `google/apiclient`, `google/apiclient-services`, `google/auth`, `google/cloud-storage` |
+| AWS | **`aws-sdk`**, **`@aws-sdk/client-s3`** | **`boto3`**, `botocore`, **`aioboto3`**, `aiobotocore`, `s3fs` | **`aws/aws-sdk-php`**, **`aws/aws-sdk-php-laravel`**, **`aws/aws-sdk-php-symfony`**, `league/flysystem-aws-s3-v3`, `symfony/amazon-mailer` |
+| AWS Bedrock | **`@aws-sdk/client-bedrock-runtime`**, **`@ai-sdk/amazon-bedrock`** | `langchain-aws` | **`aws/aws-sdk-php`** |
+| GitHub | **`octokit`**, **`@octokit/rest`**, **`@octokit/core`** | `PyGithub`, `githubkit`, `ghapi`, `github3.py` | `knplabs/github-api`, `graham-campbell/github` |
+| Slack | **`@slack/web-api`**, **`@slack/webhook`**, **`@slack/bolt`** | **`slack-sdk`**, `slack-bolt`, **`slackclient`** | **`jolicode/slack-php-api`**, `laravel/slack-notification-channel`, `symfony/slack-notifier` |
+| Twilio | **`twilio`** | **`twilio`** | **`twilio/sdk`**, `symfony/twilio-notifier` |
+| SendGrid | `@sendgrid/mail`, `@sendgrid/client` | `sendgrid` | **`sendgrid/sendgrid`**, **`sendgrid/php-http-client`**, `symfony/sendgrid-mailer` |
+| Resend | **`resend`** | **`resend`** | **`resend/resend-php`**, **`resend/resend-laravel`**, `symfony/resend-mailer` |
+| Mailgun | `mailgun.js` | `mailgun` | **`mailgun/mailgun-php`**, `symfony/mailgun-mailer` |
+| Postmark | `postmark` | `postmarker` | `wildbit/postmark-php`, `symfony/postmark-mailer` |
+| Brevo | `@getbrevo/brevo`, `sib-api-v3-sdk` | `brevo-python`, `sib-api-v3-sdk` | `getbrevo/brevo-php`, `sendinblue/api-v3-sdk`, `symfony/brevo-mailer` |
+| EmailJS | `@emailjs/browser`, `@emailjs/nodejs` |  |  |
+| Notion | `@notionhq/client` | `notion-client` | `brd6/notion-sdk-php` |
+| Linear | `@linear/sdk` |  |  |
+| HubSpot | `@hubspot/api-client` | `hubspot-api-client` | `hubspot/api-client` |
+| Salesforce | `jsforce` | `simple-salesforce` | `omniphx/forrest` |
+| Vercel | `@vercel/sdk` |  |  |
+| Cloudflare | `cloudflare` | `cloudflare` | `cloudflare/sdk` |
+| Vercel Blob | `@vercel/blob` |  |  |
+| Cloudinary | `cloudinary` | `cloudinary` | `cloudinary/cloudinary_php`, `cloudinary-labs/cloudinary-laravel` |
+| Microsoft | `@microsoft/microsoft-graph-client`, `@azure/msal-node` | `msgraph-sdk`, `msal`, `azure-identity` | `microsoft/microsoft-graph` |
+| Mistral AI | `@mistralai/mistralai`, **`@ai-sdk/mistral`** | **`mistralai`**, `langchain-mistralai` | `helgesverre/mistral`, `symfony/ai-mistral-platform` |
+| Groq | `groq-sdk`, **`@ai-sdk/groq`** | **`groq`**, `langchain-groq` | `lucianotonet/groq-php` |
+| OpenRouter | **`@openrouter/ai-sdk-provider`** | `openrouter` |  |
+| Vercel AI Gateway | **`@ai-sdk/gateway`** |  |  |
+| Ollama | `ollama`, **`ollama-ai-provider`** | `ollama`, `langchain-ollama` | `ardagnsrn/ollama-php` |
+| Z.ai | `z-ai-web-dev-sdk` | `zai-sdk`, `zhipuai` |  |
+| fal | `@fal-ai/client`, `@fal-ai/serverless-client` | `fal-client` |  |
+| xAI | **`@ai-sdk/xai`** | `xai-sdk`, `langchain-xai` |  |
+| DeepSeek | **`@ai-sdk/deepseek`** | `langchain-deepseek` |  |
+| Together AI | `together-ai`, **`@ai-sdk/togetherai`** | `together`, `langchain-together` |  |
+| Fireworks AI | **`@ai-sdk/fireworks`** | `fireworks-ai`, `langchain-fireworks` |  |
+| Perplexity | **`@ai-sdk/perplexity`** | `perplexityai`, `langchain-perplexity` |  |
+| Cerebras | **`@ai-sdk/cerebras`**, `@cerebras/cerebras_cloud_sdk` | `cerebras-cloud-sdk`, `langchain-cerebras` |  |
+| Cohere | `cohere-ai`, **`@ai-sdk/cohere`** | **`cohere`**, `langchain-cohere` |  |
+| Replicate | `replicate` | `replicate` |  |
+| Hugging Face | `@huggingface/inference` | `huggingface-hub`, `langchain-huggingface` |  |
+| ElevenLabs | `elevenlabs`, `@elevenlabs/elevenlabs-js` | **`elevenlabs`** |  |
+| Meta Graph API | `facebook-nodejs-business-sdk` | `facebook-business` | `facebook/graph-sdk`, `facebook/php-business-sdk` |
+| VirusTotal |  | `vt-py` |  |
+| Telegram | `telegraf`, `node-telegram-bot-api`, `grammy` | `python-telegram-bot`, `pyTelegramBotAPI`, `aiogram` | `irazasyed/telegram-bot-sdk`, `longman/telegram-bot`, `telegram-bot/api`, `laravel-notification-channels/telegram`, `symfony/telegram-notifier` |
+| Discord | `discord.js`, `@discordjs/rest`, `discord-oauth2` | `discord.py`, `py-cord`, `nextcord`, `disnake` | `team-reflex/discord-php`, `restcord/restcord`, `laravel-notification-channels/discord`, `symfony/discord-notifier` |
+| Intercom | `intercom-client` | `python-intercom` | `intercom/intercom-php` |
+| Segment | `@segment/analytics-node` | `segment-analytics-python`, `analytics-python` | `segmentio/analytics-php` |
+| Mixpanel | `mixpanel` | `mixpanel` | `mixpanel/mixpanel-php` |
+| PostHog | **`posthog-js`**, **`posthog-node`**, **`posthog-react-native`** | **`posthog`** | **`posthog/posthog-php`** |
+| Airtable | `airtable` | `pyairtable`, `airtable-python-wrapper` |  |
+| Dub | `dub` | `dub` | `dub/dub-php` |
+| Paddle | `@paddle/paddle-node-sdk` | `paddle-python-sdk` | `paddlehq/paddle-php-sdk`, `laravel/cashier-paddle` |
+| Lemon Squeezy | **`@lemonsqueezy/lemonsqueezy.js`** |  | `lemonsqueezy/laravel` |
+| RevenueCat | **`@revenuecat/purchases-js`**, **`react-native-purchases`**, **`@revenuecat/purchases-capacitor`** |  |  |
+| Mercado Pago | `mercadopago` | `mercadopago` | `mercadopago/dx-php` |
+| Supabase | **`@supabase/supabase-js`**, **`@supabase/ssr`** | **`supabase`**, `postgrest`, `supabase-auth`, `gotrue`, `storage3`, `supabase-functions`, `realtime` |  |
+| Convex | **`convex`** | **`convex`** |  |
+| MCP server | **`@modelcontextprotocol/sdk`** | `mcp`, `fastmcp` |  |
+| Clerk | `@clerk/backend`, `@clerk/clerk-sdk-node` | `clerk-backend-api` |  |
+| Algolia | `algoliasearch` | `algoliasearch` | `algolia/algoliasearch-client-php`, `algolia/scout-extended` |
+| Unsplash | `unsplash-js` |  | `unsplash/unsplash` |
+| PagerDuty |  | `pagerduty`, `pdpyras` |  |
+| Sentry | **`@sentry/react`**, **`@sentry/nextjs`**, **`@sentry/node`**, **`@sentry/browser`**, **`@sentry/react-native`** | **`sentry-sdk`**, `raven` | **`sentry/sentry`**, **`sentry/sentry-laravel`**, **`sentry/sentry-symfony`** |
+| Datadog |  | `datadog`, `datadog-api-client` | `datadog/php-datadogstatsd` |
+| Bugsnag | `@bugsnag/js` | `bugsnag` | `bugsnag/bugsnag`, `bugsnag/bugsnag-laravel`, `bugsnag/bugsnag-symfony` |
+| ngrok | `@ngrok/ngrok` | `ngrok-api` |  |
+| Open-Meteo |  | `openmeteo-requests` |  |

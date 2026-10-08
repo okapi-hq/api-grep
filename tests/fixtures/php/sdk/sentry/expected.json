@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "errors.php", "line": 9, "provider": "sentry"},
+    {"file": "errors.php", "line": 14, "provider": "sentry"},
+    {"file": "errors.php", "line": 19, "provider": "sentry"}
+  ]
+}

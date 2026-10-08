@@ -10,13 +10,21 @@ const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", 
 
 const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 
-/** Segments an import root covers (`google.genai` covers `[google, genai]`), the longest root first. */
+/**
+ * Segments an import root covers (`google.genai` covers `[google, genai]`), the longest root first; -1 when none
+ * does. A root that is a class constructed on the spot (`new \SendGrid($key)`) covers nothing: the class is the first
+ * segment after it, the instance.
+ */
 export function rootLength(segs: Seg[], roots: string[]): number {
-  let best = 0;
+  let best = -1;
+  let bestParts = 0;
   for (const root of roots) {
     const parts = root.split(".");
-    if (parts.length <= best || parts.length > segs.length) continue;
-    if (parts.every((p, i) => segs[i]!.name === p && !invoked(segs[i]!))) best = parts.length;
+    if (parts.length <= bestParts || parts.length > segs.length || !parts.every((p, i) => segs[i]!.name === p)) continue;
+    const open = parts.findIndex((_, i) => invoked(segs[i]!));
+    if (open >= 0 && open < parts.length - 1) continue;
+    best = open === parts.length - 1 ? parts.length - 1 : parts.length;
+    bestParts = parts.length;
   }
   return best;
 }
@@ -29,11 +37,16 @@ function selected(entry: IrRegistryEntry, seg: Seg, ctx: IrCtx): boolean {
   return value !== undefined && sel.equals.includes(value);
 }
 
-/** `client` matches a `client(...)` segment; a dotted name (`firestore.client`) also the segments before it. */
-function namedAt(rel: Seg[], i: number, name: string): boolean {
+/**
+ * `client` matches a `client(...)` segment after the import root or after other calls (`Session().client(...)`); a
+ * dotted name (`firestore.client`) also the segments before it. A plain name does not match deeper in a namespace:
+ * `Client` is `Anthropic\Client`, not `Anthropic\Bedrock\Client`.
+ */
+export function namedAt(rel: Seg[], i: number, name: string): boolean {
   const parts = name.split(".");
-  if (parts.length > i + 1) return false;
-  return parts.every((p, j) => rel[i - (parts.length - 1) + j]!.name === p);
+  const from = i - (parts.length - 1);
+  if (from < 0 || !parts.every((p, j) => rel[from + j]!.name === p)) return false;
+  return rel.slice(0, from).every((s) => !!s.call);
 }
 
 /** The constructor / factory segment: the last one named in `instance.names` before the method. */
@@ -53,7 +66,7 @@ function keyOf(entry: IrRegistryEntry, rel: Seg[], inst: number): string {
 
 function matchEntry(entry: IrRegistryEntry, segs: Seg[], ctx: IrCtx): IrSdkMatch | undefined {
   const n = rootLength(segs, entry.imports);
-  if (n === 0 || n >= segs.length) return undefined;
+  if (n < 0 || n >= segs.length) return undefined;
   const rel = segs.slice(n);
   const inst = instanceIndex(entry, rel);
   if (inst >= 0 && !selected(entry, rel[inst]!, ctx)) return undefined;

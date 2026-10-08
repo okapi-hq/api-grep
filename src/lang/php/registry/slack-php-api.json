@@ -1,0 +1,48 @@
+{
+  "$comment": "jolicode/slack-php-api: `$client = JoliCode\\Slack\\ClientFactory::create($token)`; one flat method per Web API method (`$client->chatPostMessage(['channel' => ..., 'text' => ...])`). Write methods send their array form-encoded, read methods send it as the query string (GET). `filesUpload` throws (removed by Slack) and is not listed; `filesUploadV2($files, $channelId)` chains getUploadURLExternal, a raw upload and completeUploadExternal.",
+  "package": "jolicode/slack-php-api",
+  "imports": [
+    "JoliCode.Slack"
+  ],
+  "provider": "slack",
+  "host": "slack.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (generated from jolicode/slack-php-api v4.10.0 generated/Endpoint classes)",
+  "instance": {
+    "names": [
+      "ClientFactory.create"
+    ]
+  },
+  "methods": {
+    "chatPostMessage": {"method": "POST", "path": "/api/chat.postMessage", "bodyArg": 0, "encoding": "form", "operationId": "chat_postMessage"},
+    "chatPostEphemeral": {"method": "POST", "path": "/api/chat.postEphemeral", "bodyArg": 0, "encoding": "form", "operationId": "chat_postEphemeral"},
+    "chatUpdate": {"method": "POST", "path": "/api/chat.update", "bodyArg": 0, "encoding": "form", "operationId": "chat_update"},
+    "chatDelete": {"method": "POST", "path": "/api/chat.delete", "bodyArg": 0, "encoding": "form", "operationId": "chat_delete"},
+    "chatScheduleMessage": {"method": "POST", "path": "/api/chat.scheduleMessage", "bodyArg": 0, "encoding": "form", "operationId": "chat_scheduleMessage"},
+    "chatGetPermalink": {"method": "GET", "path": "/api/chat.getPermalink", "queryArg": 0, "operationId": "chat_getPermalink"},
+    "conversationsList": {"method": "GET", "path": "/api/conversations.list", "queryArg": 0, "operationId": "conversations_list"},
+    "conversationsInfo": {"method": "GET", "path": "/api/conversations.info", "queryArg": 0, "operationId": "conversations_info"},
+    "conversationsOpen": {"method": "POST", "path": "/api/conversations.open", "bodyArg": 0, "encoding": "form", "operationId": "conversations_open"},
+    "conversationsHistory": {"method": "GET", "path": "/api/conversations.history", "queryArg": 0, "operationId": "conversations_history"},
+    "conversationsReplies": {"method": "GET", "path": "/api/conversations.replies", "queryArg": 0, "operationId": "conversations_replies"},
+    "conversationsMembers": {"method": "GET", "path": "/api/conversations.members", "queryArg": 0, "operationId": "conversations_members"},
+    "conversationsJoin": {"method": "POST", "path": "/api/conversations.join", "bodyArg": 0, "encoding": "form", "operationId": "conversations_join"},
+    "conversationsCreate": {"method": "POST", "path": "/api/conversations.create", "bodyArg": 0, "encoding": "form", "operationId": "conversations_create"},
+    "conversationsInvite": {"method": "POST", "path": "/api/conversations.invite", "bodyArg": 0, "encoding": "form", "operationId": "conversations_invite"},
+    "usersInfo": {"method": "GET", "path": "/api/users.info", "queryArg": 0, "operationId": "users_info"},
+    "usersList": {"method": "GET", "path": "/api/users.list", "queryArg": 0, "operationId": "users_list"},
+    "usersLookupByEmail": {"method": "GET", "path": "/api/users.lookupByEmail", "queryArg": 0, "operationId": "users_lookupByEmail"},
+    "usersProfileGet": {"method": "GET", "path": "/api/users.profile.get", "queryArg": 0, "operationId": "users_profile_get"},
+    "usersConversations": {"method": "GET", "path": "/api/users.conversations", "queryArg": 0, "operationId": "users_conversations"},
+    "viewsOpen": {"method": "POST", "path": "/api/views.open", "bodyArg": 0, "encoding": "form", "operationId": "views_open"},
+    "viewsPublish": {"method": "POST", "path": "/api/views.publish", "bodyArg": 0, "encoding": "form", "operationId": "views_publish"},
+    "viewsUpdate": {"method": "POST", "path": "/api/views.update", "bodyArg": 0, "encoding": "form", "operationId": "views_update"},
+    "reactionsAdd": {"method": "POST", "path": "/api/reactions.add", "bodyArg": 0, "encoding": "form", "operationId": "reactions_add"},
+    "filesGetUploadUrlExternal": {"method": "POST", "path": "/api/files.getUploadURLExternal", "queryArg": 0, "operationId": "files_getUploadURLExternal"},
+    "filesCompleteUploadExternal": {"method": "POST", "path": "/api/files.completeUploadExternal", "queryArg": 0, "operationId": "files_completeUploadExternal"},
+    "authTest": {"method": "GET", "path": "/api/auth.test", "operationId": "auth_test"},
+    "teamInfo": {"method": "GET", "path": "/api/team.info", "queryArg": 0, "operationId": "team_info"},
+    "oauthV2Access": {"method": "GET", "path": "/api/oauth.v2.access", "queryArg": 0, "operationId": "oauth_v2_access"},
+    "filesUploadV2": {"method": "POST", "path": "/api/files.getUploadURLExternal", "operationId": "files_getUploadURLExternal"}
+  }
+}

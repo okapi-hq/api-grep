@@ -1,0 +1,39 @@
+{
+  "$comment": "twilio/sdk: `$twilio = new Twilio\\Rest\\Client($sid, $token)`; list resources are properties, instance resources are calls (`$twilio->messages($sid)->fetch()`). Required fields are positional (`messages->create($to, [...])`, `calls->create($to, $from, [...])`), the options array follows them. Verify and Lookups live on their own hosts; `$twilio->verify->services(...)` and `$twilio->lookups->phoneNumbers(...)` are shortcuts to Verify v2 and Lookups v1. `{AccountSid}` is the client's account (constructor argument 2, else argument 0).",
+  "package": "twilio/sdk",
+  "imports": [
+    "Twilio"
+  ],
+  "provider": "twilio",
+  "host": "api.twilio.com",
+  "auth": "basic",
+  "generatedFrom": "manual (checked against twilio/sdk 8.12.2 source)",
+  "instance": {
+    "names": [
+      "Rest.Client"
+    ]
+  },
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyArg": 1, "encoding": "form", "operationId": "CreateMessage"},
+    "messages.read": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryArg": 0, "operationId": "ListMessage"},
+    "messages.stream": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryArg": 0, "operationId": "ListMessage"},
+    "messages.fetch": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "operationId": "FetchMessage"},
+    "messages.update": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "bodyArg": 0, "encoding": "form", "operationId": "UpdateMessage"},
+    "messages.delete": {"method": "DELETE", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "operationId": "DeleteMessage"},
+    "calls.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyArg": 2, "encoding": "form", "operationId": "CreateCall"},
+    "calls.read": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "queryArg": 0, "operationId": "ListCall"},
+    "calls.stream": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "queryArg": 0, "operationId": "ListCall"},
+    "calls.fetch": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json", "params": {"Sid": "seg:calls:0"}, "operationId": "FetchCall"},
+    "calls.update": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json", "params": {"Sid": "seg:calls:0"}, "bodyArg": 0, "encoding": "form", "operationId": "UpdateCall"},
+    "incomingPhoneNumbers.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json", "bodyArg": 0, "encoding": "form", "operationId": "CreateIncomingPhoneNumber"},
+    "incomingPhoneNumbers.read": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json", "queryArg": 0, "operationId": "ListIncomingPhoneNumber"},
+    "availablePhoneNumbers.local.read": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/AvailablePhoneNumbers/{CountryCode}/Local.json", "params": {"CountryCode": "seg:availablePhoneNumbers:0"}, "queryArg": 0, "operationId": "ListAvailablePhoneNumberLocal"},
+    "verify.v2.services.verifications.create": {"method": "POST", "host": "verify.twilio.com", "path": "/v2/Services/{ServiceSid}/Verifications", "params": {"ServiceSid": "seg:services:0"}, "bodyArg": 2, "encoding": "form", "operationId": "CreateVerification"},
+    "verify.services.verifications.create": {"method": "POST", "host": "verify.twilio.com", "path": "/v2/Services/{ServiceSid}/Verifications", "params": {"ServiceSid": "seg:services:0"}, "bodyArg": 2, "encoding": "form", "operationId": "CreateVerification"},
+    "verify.v2.services.verificationChecks.create": {"method": "POST", "host": "verify.twilio.com", "path": "/v2/Services/{ServiceSid}/VerificationCheck", "params": {"ServiceSid": "seg:services:0"}, "bodyArg": 0, "encoding": "form", "operationId": "CreateVerificationCheck"},
+    "verify.services.verificationChecks.create": {"method": "POST", "host": "verify.twilio.com", "path": "/v2/Services/{ServiceSid}/VerificationCheck", "params": {"ServiceSid": "seg:services:0"}, "bodyArg": 0, "encoding": "form", "operationId": "CreateVerificationCheck"},
+    "lookups.v2.phoneNumbers.fetch": {"method": "GET", "host": "lookups.twilio.com", "path": "/v2/PhoneNumbers/{PhoneNumber}", "params": {"PhoneNumber": "seg:phoneNumbers:0"}, "queryArg": 0, "operationId": "FetchPhoneNumber"},
+    "lookups.v1.phoneNumbers.fetch": {"method": "GET", "host": "lookups.twilio.com", "path": "/v1/PhoneNumbers/{PhoneNumber}", "params": {"PhoneNumber": "seg:phoneNumbers:0"}, "queryArg": 0, "operationId": "FetchPhoneNumber"},
+    "lookups.phoneNumbers.fetch": {"method": "GET", "host": "lookups.twilio.com", "path": "/v1/PhoneNumbers/{PhoneNumber}", "params": {"PhoneNumber": "seg:phoneNumbers:0"}, "queryArg": 0, "operationId": "FetchPhoneNumber"}
+  }
+}

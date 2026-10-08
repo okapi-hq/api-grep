@@ -1,0 +1,55 @@
+{
+  "$comment": "resend/resend-php: `$resend = Resend::client($key)`; services are reachable as properties or calls (`$resend->emails->send([...])` and `$resend->emails()->send([...])` give the same key). Laravel facade: `Resend\\Laravel\\Facades\\Resend::emails()->send([...])`. The base URL comes from the RESEND_BASE_URL env var only. Contacts are global (`/contacts`) in this SDK version, unlike the audience-scoped paths of the TS registry.",
+  "package": "resend/resend-php",
+  "aliases": [
+    "resend/resend-laravel"
+  ],
+  "imports": [
+    "Resend",
+    "Resend.Laravel.Facades.Resend"
+  ],
+  "provider": "resend",
+  "host": "api.resend.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against resend/resend-php v1.16.0 source)",
+  "instance": {
+    "names": [
+      "client"
+    ]
+  },
+  "methods": {
+    "emails.send": {"method": "POST", "path": "/emails", "bodyArg": 0},
+    "emails.create": {"method": "POST", "path": "/emails", "bodyArg": 0},
+    "emails.get": {"method": "GET", "path": "/emails/{email_id}", "params": {"email_id": "arg:0"}},
+    "emails.list": {"method": "GET", "path": "/emails", "queryArg": 0},
+    "emails.update": {"method": "PATCH", "path": "/emails/{email_id}", "params": {"email_id": "arg:0"}, "bodyArg": 1},
+    "emails.cancel": {"method": "POST", "path": "/emails/{email_id}/cancel", "params": {"email_id": "arg:0"}},
+    "batch.send": {"method": "POST", "path": "/emails/batch", "bodyArg": 0},
+    "batch.create": {"method": "POST", "path": "/emails/batch", "bodyArg": 0},
+    "contacts.create": {"method": "POST", "path": "/contacts", "bodyArg": 0},
+    "contacts.get": {"method": "GET", "path": "/contacts/{id}", "params": {"id": "arg:0"}},
+    "contacts.list": {"method": "GET", "path": "/contacts", "queryArg": 0},
+    "contacts.update": {"method": "PATCH", "path": "/contacts/{id}", "params": {"id": "arg:0"}, "bodyArg": 1},
+    "contacts.remove": {"method": "DELETE", "path": "/contacts/{id}", "params": {"id": "arg:0"}},
+    "audiences.create": {"method": "POST", "path": "/audiences", "bodyArg": 0},
+    "audiences.get": {"method": "GET", "path": "/audiences/{id}", "params": {"id": "arg:0"}},
+    "audiences.list": {"method": "GET", "path": "/audiences", "queryArg": 0},
+    "audiences.remove": {"method": "DELETE", "path": "/audiences/{id}", "params": {"id": "arg:0"}},
+    "segments.create": {"method": "POST", "path": "/segments", "bodyArg": 0},
+    "segments.get": {"method": "GET", "path": "/segments/{id}", "params": {"id": "arg:0"}},
+    "segments.list": {"method": "GET", "path": "/segments", "queryArg": 0},
+    "segments.remove": {"method": "DELETE", "path": "/segments/{id}", "params": {"id": "arg:0"}},
+    "domains.create": {"method": "POST", "path": "/domains", "bodyArg": 0},
+    "domains.get": {"method": "GET", "path": "/domains/{domain_id}", "params": {"domain_id": "arg:0"}},
+    "domains.list": {"method": "GET", "path": "/domains", "queryArg": 0},
+    "domains.update": {"method": "PATCH", "path": "/domains/{domain_id}", "params": {"domain_id": "arg:0"}, "bodyArg": 1},
+    "domains.remove": {"method": "DELETE", "path": "/domains/{domain_id}", "params": {"domain_id": "arg:0"}},
+    "domains.verify": {"method": "POST", "path": "/domains/{domain_id}/verify", "params": {"domain_id": "arg:0"}},
+    "broadcasts.create": {"method": "POST", "path": "/broadcasts", "bodyArg": 0},
+    "broadcasts.get": {"method": "GET", "path": "/broadcasts/{broadcast_id}", "params": {"broadcast_id": "arg:0"}},
+    "broadcasts.list": {"method": "GET", "path": "/broadcasts", "queryArg": 0},
+    "broadcasts.update": {"method": "PATCH", "path": "/broadcasts/{broadcast_id}", "params": {"broadcast_id": "arg:0"}, "bodyArg": 1},
+    "broadcasts.send": {"method": "POST", "path": "/broadcasts/{broadcast_id}/send", "params": {"broadcast_id": "arg:0"}, "bodyArg": 1},
+    "broadcasts.remove": {"method": "DELETE", "path": "/broadcasts/{broadcast_id}", "params": {"broadcast_id": "arg:0"}}
+  }
+}

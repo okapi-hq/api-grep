@@ -1,0 +1,29 @@
+{
+  "$comment": "sendgrid/sendgrid: `$sg = new \\SendGrid($key, ['host' => ...])`; `$sg->send($mail)` posts a `SendGrid\\Mail\\Mail` object. Other endpoints go through the fluent sendgrid/php-http-client (`$sg->client->mail()->send()->post($body)`): every segment between `client` and the HTTP verb is a path segment, so only common chains are listed. `post/put/patch($body, $query)`, `get($body, $query)`. The `host` option replaces the host only (`/v3` stays).",
+  "package": "sendgrid/sendgrid",
+  "aliases": [
+    "sendgrid/php-http-client"
+  ],
+  "imports": [
+    "SendGrid"
+  ],
+  "provider": "sendgrid",
+  "host": "api.sendgrid.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against sendgrid/sendgrid 8.1.11 and sendgrid/php-http-client 4.1.3 source)",
+  "instance": {
+    "names": [
+      "SendGrid"
+    ],
+    "urlArg": {
+      "SendGrid": "1.host"
+    }
+  },
+  "methods": {
+    "send": {"method": "POST", "path": "/v3/mail/send", "bodyArg": 0},
+    "client.mail.send.post": {"method": "POST", "path": "/v3/mail/send", "bodyArg": 0},
+    "client.marketing.contacts.put": {"method": "PUT", "path": "/v3/marketing/contacts", "bodyArg": 0},
+    "client.templates.get": {"method": "GET", "path": "/v3/templates", "queryArg": 1},
+    "client.templates.post": {"method": "POST", "path": "/v3/templates", "bodyArg": 0}
+  }
+}

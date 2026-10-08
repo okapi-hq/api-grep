@@ -1,0 +1,177 @@
+{
+  "$comment": "PHP HTTP clients. `functions` are methods of the client objects built by `instances` (or of a facade's static API: `Http::post`); `optionsArg` is the position of the options array, whose keys `keys` maps to what they carry. `modifiers` are fluent calls before the request (`Http::withToken($t)->asForm()->post(...)`); `global` clients are plain functions.",
+  "clients": [
+    {
+      "client": "guzzle",
+      "imports": ["GuzzleHttp"],
+      "instances": {"names": ["Client", "ClientInterface"], "optionsArg": 0},
+      "functions": {
+        "get": {"method": "GET", "optionsArg": 1},
+        "getAsync": {"method": "GET", "optionsArg": 1},
+        "head": {"method": "HEAD", "optionsArg": 1},
+        "headAsync": {"method": "HEAD", "optionsArg": 1},
+        "options": {"method": "OPTIONS", "optionsArg": 1},
+        "optionsAsync": {"method": "OPTIONS", "optionsArg": 1},
+        "delete": {"method": "DELETE", "optionsArg": 1},
+        "deleteAsync": {"method": "DELETE", "optionsArg": 1},
+        "post": {"method": "POST", "optionsArg": 1},
+        "postAsync": {"method": "POST", "optionsArg": 1},
+        "put": {"method": "PUT", "optionsArg": 1},
+        "putAsync": {"method": "PUT", "optionsArg": 1},
+        "patch": {"method": "PATCH", "optionsArg": 1},
+        "patchAsync": {"method": "PATCH", "optionsArg": 1},
+        "request": {"methodArg": 0, "urlArg": 1, "optionsArg": 2},
+        "requestAsync": {"methodArg": 0, "urlArg": 1, "optionsArg": 2}
+      },
+      "keys": {
+        "base_uri": "baseUrl",
+        "json": "body:json",
+        "form_params": "body:form",
+        "multipart": "body:multipart",
+        "body": "body:raw",
+        "query": "query",
+        "headers": "headers",
+        "auth": "auth"
+      }
+    },
+    {
+      "client": "guzzle",
+      "imports": ["Drupal"],
+      "instances": {"names": ["httpClient"], "optionsArg": 0},
+      "functions": {
+        "get": {"method": "GET", "optionsArg": 1},
+        "getAsync": {"method": "GET", "optionsArg": 1},
+        "head": {"method": "HEAD", "optionsArg": 1},
+        "headAsync": {"method": "HEAD", "optionsArg": 1},
+        "options": {"method": "OPTIONS", "optionsArg": 1},
+        "optionsAsync": {"method": "OPTIONS", "optionsArg": 1},
+        "delete": {"method": "DELETE", "optionsArg": 1},
+        "deleteAsync": {"method": "DELETE", "optionsArg": 1},
+        "post": {"method": "POST", "optionsArg": 1},
+        "postAsync": {"method": "POST", "optionsArg": 1},
+        "put": {"method": "PUT", "optionsArg": 1},
+        "putAsync": {"method": "PUT", "optionsArg": 1},
+        "patch": {"method": "PATCH", "optionsArg": 1},
+        "patchAsync": {"method": "PATCH", "optionsArg": 1},
+        "request": {"methodArg": 0, "urlArg": 1, "optionsArg": 2},
+        "requestAsync": {"methodArg": 0, "urlArg": 1, "optionsArg": 2}
+      },
+      "keys": {
+        "base_uri": "baseUrl",
+        "json": "body:json",
+        "form_params": "body:form",
+        "multipart": "body:multipart",
+        "body": "body:raw",
+        "query": "query",
+        "headers": "headers",
+        "auth": "auth"
+      }
+    },
+    {
+      "client": "laravel-http",
+      "imports": ["Illuminate.Support.Facades.Http", "Http", "Illuminate.Http.Client"],
+      "instances": {"names": ["Factory", "PendingRequest"]},
+      "functions": {
+        "get": {"method": "GET", "queryArg": 1},
+        "head": {"method": "HEAD", "queryArg": 1},
+        "delete": {"method": "DELETE", "bodyArg": 1},
+        "post": {"method": "POST", "bodyArg": 1},
+        "put": {"method": "PUT", "bodyArg": 1},
+        "patch": {"method": "PATCH", "bodyArg": 1},
+        "send": {"methodArg": 0, "urlArg": 1, "optionsArg": 2}
+      },
+      "modifiers": {
+        "timeout": {},
+        "connectTimeout": {},
+        "retry": {},
+        "throw": {},
+        "throwIf": {},
+        "throwUnless": {},
+        "withoutVerifying": {},
+        "withoutRedirecting": {},
+        "withUserAgent": {},
+        "withMiddleware": {},
+        "withRequestMiddleware": {},
+        "withResponseMiddleware": {},
+        "withCookies": {},
+        "acceptJson": {},
+        "accept": {},
+        "asJson": {},
+        "contentType": {},
+        "bodyFormat": {},
+        "maxRedirects": {},
+        "sink": {},
+        "dump": {},
+        "dd": {},
+        "async": {},
+        "withUrlParameters": {},
+        "beforeSending": {},
+        "replaceHeaders": {},
+        "withHeader": {},
+        "throwIfStatus": {},
+        "throwUnlessStatus": {},
+        "withAttributes": {},
+        "globalOptions": {},
+        "preventStrayRequests": {},
+        "stub": {},
+        "withToken": {"auth": "bearer"},
+        "withBasicAuth": {"auth": "basic"},
+        "withDigestAuth": {"auth": "basic"},
+        "withHeaders": {"headersArg": 0},
+        "asForm": {"encoding": "form"},
+        "asMultipart": {"encoding": "multipart"},
+        "attach": {"encoding": "multipart"},
+        "baseUrl": {"baseUrlArg": 0},
+        "withQueryParameters": {"queryArg": 0},
+        "withOptions": {"optionsArg": 0}
+      },
+      "keys": {
+        "base_uri": "baseUrl",
+        "json": "body:json",
+        "form_params": "body:form",
+        "multipart": "body:multipart",
+        "body": "body:raw",
+        "query": "query",
+        "headers": "headers",
+        "auth": "auth"
+      }
+    },
+    {
+      "client": "symfony-http",
+      "imports": ["Symfony.Component.HttpClient", "Symfony.Contracts.HttpClient"],
+      "instances": {
+        "names": ["HttpClient.create", "HttpClient.createForBaseUri", "HttpClientInterface", "CurlHttpClient", "NativeHttpClient", "AmpHttpClient", "RetryableHttpClient"],
+        "optionsArg": 0,
+        "baseUrlArg": 0
+      },
+      "functions": {
+        "request": {"methodArg": 0, "urlArg": 1, "optionsArg": 2}
+      },
+      "keys": {
+        "base_uri": "baseUrl",
+        "json": "body:json",
+        "body": "body:form",
+        "query": "query",
+        "headers": "headers",
+        "auth_bearer": "auth:bearer",
+        "auth_basic": "auth:basic"
+      }
+    },
+    {
+      "client": "wordpress",
+      "imports": [],
+      "global": true,
+      "functions": {
+        "wp_remote_get": {"method": "GET", "optionsArg": 1},
+        "wp_safe_remote_get": {"method": "GET", "optionsArg": 1},
+        "wp_remote_post": {"method": "POST", "optionsArg": 1},
+        "wp_safe_remote_post": {"method": "POST", "optionsArg": 1},
+        "wp_remote_head": {"method": "HEAD", "optionsArg": 1},
+        "wp_safe_remote_head": {"method": "HEAD", "optionsArg": 1},
+        "wp_remote_request": {"optionsArg": 1},
+        "wp_safe_remote_request": {"optionsArg": 1}
+      },
+      "keys": {"method": "method", "body": "body:form", "headers": "headers"}
+    }
+  ]
+}

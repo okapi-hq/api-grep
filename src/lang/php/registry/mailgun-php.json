@@ -1,0 +1,37 @@
+{
+  "$comment": "mailgun/mailgun-php: `$mg = Mailgun::create($key)` (EU: `Mailgun::create($key, 'https://api.eu.mailgun.net')`); resources are method calls with the domain as first positional argument (`$mg->messages()->send('example.com', ['from' => ..., 'to' => ...])`). Bodies are sent as multipart/form-data, auth is HTTP basic `api:<key>`.",
+  "package": "mailgun/mailgun-php",
+  "imports": [
+    "Mailgun"
+  ],
+  "provider": "mailgun",
+  "host": "api.mailgun.net",
+  "auth": "basic",
+  "generatedFrom": "manual (checked against mailgun/mailgun-php v4.5.2 source)",
+  "instance": {
+    "names": [
+      "Mailgun.create",
+      "Mailgun"
+    ],
+    "urlArg": {
+      "Mailgun.create": "1"
+    }
+  },
+  "methods": {
+    "messages.send": {"method": "POST", "path": "/v3/{domain}/messages", "params": {"domain": "arg:0"}, "bodyArg": 1, "encoding": "multipart"},
+    "messages.sendMime": {"method": "POST", "path": "/v3/{domain}/messages.mime", "params": {"domain": "arg:0"}, "bodyArg": 3, "encoding": "multipart"},
+    "messages.retrieveStoredMessage": {"method": "GET", "path": "/v3/domains/{domain}/messages/{storage_id}", "params": {"domain": "arg:0", "storage_id": "arg:1"}},
+    "events.get": {"method": "GET", "path": "/v3/{domain}/events", "params": {"domain": "arg:0"}, "queryArg": 1},
+    "domains.index": {"method": "GET", "path": "/v3/domains"},
+    "domains.show": {"method": "GET", "path": "/v3/domains/{domain}", "params": {"domain": "arg:0"}},
+    "domains.create": {"method": "POST", "path": "/v3/domains", "encoding": "multipart"},
+    "domains.delete": {"method": "DELETE", "path": "/v3/domains/{domain}", "params": {"domain": "arg:0"}},
+    "domains.verify": {"method": "PUT", "path": "/v3/domains/{domain}/verify", "params": {"domain": "arg:0"}},
+    "suppressions.bounces.index": {"method": "GET", "path": "/v3/{domain}/bounces", "params": {"domain": "arg:0"}},
+    "suppressions.bounces.show": {"method": "GET", "path": "/v3/{domain}/bounces/{address}", "params": {"domain": "arg:0", "address": "arg:1"}},
+    "suppressions.bounces.delete": {"method": "DELETE", "path": "/v3/{domain}/bounces/{address}", "params": {"domain": "arg:0", "address": "arg:1"}},
+    "mailingList.member.create": {"method": "POST", "path": "/v3/lists/{list}/members", "params": {"list": "arg:0"}, "encoding": "multipart"},
+    "mailingList.member.update": {"method": "PUT", "path": "/v3/lists/{list}/members/{address}", "params": {"list": "arg:0", "address": "arg:1"}, "bodyArg": 2, "encoding": "multipart"},
+    "mailingList.member.delete": {"method": "DELETE", "path": "/v3/lists/{list}/members/{address}", "params": {"list": "arg:0", "address": "arg:1"}}
+  }
+}
