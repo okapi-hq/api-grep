@@ -110,7 +110,16 @@ function scanRoute(config: ServerConfig, scanner: Scanner, state: { busy: boolea
   };
 }
 
-/** The server's routes: `GET /v1/health` (open), `GET /v1/providers` and `POST /v1/scan` (bearer token). */
+/** `localhost`, `127.0.0.1` and `[::1]`, with or without a port. */
+function loopbackHost(header: string | undefined): boolean {
+  const host = (header ?? "").trim().toLowerCase().replace(/:\d+$/, "");
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+}
+
+/**
+ * The server's routes: `GET /v1/health` (open), `GET /v1/providers` and `POST /v1/scan` (bearer token). Without a
+ * token it only answers requests addressed to localhost, so a web page cannot reach it through DNS rebinding.
+ */
 export function createHandler(config: ServerConfig, scanner: Scanner, log: (line: string) => void): Handler {
   const state = { busy: false };
   const scan = scanRoute(config, scanner, state);
@@ -119,6 +128,9 @@ export function createHandler(config: ServerConfig, scanner: Scanner, log: (line
     const url = new URL(req.url ?? "/", "http://localhost");
     let status = 200;
     try {
+      if (!config.token && !loopbackHost(req.headers.host)) {
+        throw new HttpError(403, "forbidden_host", "without a token, the server only answers requests addressed to localhost");
+      }
       if (url.pathname === "/v1/health") {
         allow(req, "GET");
         return send(res, 200, JSON.stringify({ status: "ok", tool: "api-grep", version: toolVersion(), schemaVersion: SCHEMA_VERSION, busy: state.busy }));

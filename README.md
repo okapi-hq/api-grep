@@ -276,7 +276,9 @@ running (one at a time; `Retry-After` is set), `500` the scan failed, `504` the 
 An archive with a single top-level directory (`git archive --prefix`, a GitHub tarball) is scanned from that
 directory. The archive is untrusted: only regular files and directories are unpacked (no link, device or `.git`),
 an absolute or `..` path or a corrupt archive fails the request, and nothing of it stays on disk after the answer.
-The scan process gets none of the server's environment variables.
+Unpacking and scanning each run in a child process that gets none of the server's environment variables and never
+runs git; a refused archive, a client that goes away or a stopping server (SIGTERM) kills it before its files are
+removed. Without a token the server only answers requests addressed to `localhost`.
 
 | variable | default | |
 |---|---|---|

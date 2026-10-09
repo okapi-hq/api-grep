@@ -12,6 +12,7 @@ import type { Language } from "./report/schema.js";
 import { toTable } from "./report/table.js";
 import { scan } from "./scan.js";
 import { serve } from "./server/index.js";
+import { unpackCommand } from "./server/unpack.js";
 import { toolVersion } from "./version.js";
 
 interface ScanFlags {
@@ -125,6 +126,8 @@ export function buildProgram(): Command {
     .option("--host <address>", "address to listen on (default: API_GREP_HOST or 127.0.0.1)")
     .option("--port <n>", "port to listen on, 0 for any free one (default: API_GREP_PORT, PORT or 8080)", port)
     .action((flags: { host?: string; port?: number }) => serve(flags, process.argv[1]!));
+  // the server's own step: stdin to a directory, the archive checked as `serve` describes
+  program.command("unpack", { hidden: true }).argument("<dir>").action(unpackCommand);
   return program;
 }
 
@@ -149,6 +152,9 @@ function respawnWithHeap(): boolean {
 
 const isMain = process.argv[1] && /(?:^|[\\/])(?:cli\.(?:ts|js|mjs)|api-grep)$/.test(process.argv[1]);
 if (isMain && !respawnWithHeap()) {
+  // a child of `serve` ends at its deadline by itself, even if the server could not kill it
+  const deadline = Number(process.env.API_GREP_DEADLINE_MS);
+  if (deadline > 0) setTimeout(() => process.exit(124), deadline).unref();
   buildProgram()
     .parseAsync(process.argv)
     .catch((err: unknown) => {

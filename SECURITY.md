@@ -16,7 +16,8 @@ include secrets that leak into reports despite redaction, crashes or resource ex
 triggered by a crafted repository, output (table, `--curl`) that a crafted repository can turn
 into terminal control sequences or shell commands, and anything that makes a scan run code,
 read files outside the scanned directory or open connections. For `api-grep serve`: an archive that writes outside
-its temporary directory or brings a link, a request that gets past the token, or a scan that outlives its request. The
+its temporary directory, brings a link or leaves files behind, a request that gets past the token, or a child process
+that outlives its request. The
 protections in place are
 listed in the README's [Scanning untrusted code](README.md#scanning-untrusted-code) section and
 tested in [`tests/e2e/security.e2e.test.ts`](tests/e2e/security.e2e.test.ts).

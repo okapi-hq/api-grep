@@ -7,13 +7,16 @@ const run = promisify(execFile);
 
 /**
  * A scanned directory is not trusted: its `.git/config` could name a program for git to run while it refreshes the
- * index (`core.fsmonitor`) or diffs (`diff.external`, textconv drivers). The first is switched off for every command,
- * `diff` runs with `--no-ext-diff --no-textconv`.
+ * index (`core.fsmonitor`), diffs (`diff.external`, textconv drivers) or fetches a missing object from a promisor
+ * remote (`uploadpack`). The monitor is switched off, transports are refused (`protocol.allow`, no lazy fetch), a bare
+ * repository is only opened when named (`safe.bareRepository`), and `diff` runs with `--no-ext-diff --no-textconv`.
  */
-const SAFE_CONFIG = ["-c", "core.fsmonitor=false"];
+const SAFE_CONFIG = ["-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "-c", "safe.bareRepository=explicit"];
 
 async function git(dir: string, args: string[]): Promise<string> {
-  const { stdout } = await run("git", [...SAFE_CONFIG, ...args], { cwd: dir, maxBuffer: 64 * 1024 * 1024, encoding: "utf8" });
+  if (process.env.API_GREP_NO_GIT) throw new Error("git is off (API_GREP_NO_GIT)");
+  const env = { ...process.env, GIT_NO_LAZY_FETCH: "1" };
+  const { stdout } = await run("git", [...SAFE_CONFIG, ...args], { cwd: dir, env, maxBuffer: 64 * 1024 * 1024, encoding: "utf8" });
   return stdout;
 }
 

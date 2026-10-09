@@ -44,9 +44,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`.
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template}.ts`.
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`).
-- `src/server/`: `api-grep serve`. `archive.ts` unpacks the request body (files and directories only, limits, strict),
-  `run-scan.ts` runs `cli.js scan --json` in its own process group (timeout, report cap, minimal env), `app.ts` routes
-  and authenticates (`API_GREP_TOKEN`), one scan at a time. `src/version.ts`: the version plus `+<API_GREP_BUILD>`.
+- `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
+  request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
+  `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
+  (`run-scan.ts`). `src/version.ts`: the version plus `+<API_GREP_BUILD>`.
 - The report is a versioned contract (`src/report/schema.ts`, `schema/report.v1.json`): new fields or enum values bump
   the minor of `SCHEMA_VERSION`, breaking changes the major. Each call's language is `location.language`.
 

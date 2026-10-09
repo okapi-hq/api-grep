@@ -1,4 +1,4 @@
-import { createServer, type Server } from "node:http";
+import { createServer, request, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createHandler, parseQuery, type Scanner, type ScanQuery } from "../../src/server/app.js";
@@ -96,6 +96,33 @@ describe("POST /v1/scan", () => {
     expect(await res.text()).not.toContain("/tmp/secret");
     expect(res.status).toBe(500);
     expect(logs).toContain("internal error: Error");
+  });
+});
+
+describe("without a token", () => {
+  /** A raw request, so the test sets the Host header a browser would send. */
+  function get(port: number, host: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const req = request({ host: "127.0.0.1", port, path: "/v1/health", headers: { host } }, (res) => {
+        res.resume();
+        resolve(res.statusCode ?? 0);
+      });
+      req.on("error", reject);
+      req.end();
+    });
+  }
+
+  it("answers only requests addressed to localhost", async () => {
+    const open = createServer((req, res) => void createHandler({ ...config, token: undefined }, scanner, () => undefined)(req, res));
+    await new Promise<void>((resolve) => open.listen(0, "127.0.0.1", resolve));
+    const { port } = open.address() as AddressInfo;
+    try {
+      expect(await get(port, `localhost:${port}`)).toBe(200);
+      expect(await get(port, `127.0.0.1:${port}`)).toBe(200);
+      expect(await get(port, "attacker.example")).toBe(403);
+    } finally {
+      await new Promise<void>((resolve) => open.close(() => resolve()));
+    }
   });
 });
 

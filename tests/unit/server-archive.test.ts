@@ -76,6 +76,11 @@ describe("unpackArchive", () => {
     expect(await refusal(truncated)).toMatchObject({ status: 422, code: "invalid_archive" });
   });
 
+  it("counts the entries it skips toward the file limit", async () => {
+    const links = Array.from({ length: 5 }, (_, i) => ({ path: `repo/l${i}.ts`, type: "SymbolicLink" as const, linkpath: "/etc/hostname" }));
+    expect(await refusal(links, { API_GREP_MAX_FILES: "3" })).toMatchObject({ status: 413, code: "archive_too_large" });
+  });
+
   it("stops at the file count, unpacked size and archive size limits", async () => {
     const many = Array.from({ length: 5 }, (_, i) => ({ path: `repo/f${i}.ts`, body: "x" }));
     expect(await refusal(many, { API_GREP_MAX_FILES: "3" })).toMatchObject({ status: 413, code: "archive_too_large" });

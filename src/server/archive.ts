@@ -52,12 +52,16 @@ export async function unpackArchive(input: Readable, dest: string, limits: Limit
     preserveOwner: false,
     filter: (entryPath, entry) => {
       const e = entry as ReadEntry;
-      if (!KEPT.has(e.type) || gitMetadata(entryPath)) return false;
+      // every entry counts, written or not: skipped ones still cost parsing
       entries += 1;
+      if (entries > limits.maxEntries) {
+        unpack.abort(tooLarge(`more than ${limits.maxEntries} files`));
+        return false;
+      }
+      if (!KEPT.has(e.type) || gitMetadata(entryPath)) return false;
       unpackedBytes += e.size ?? 0;
-      if (entries > limits.maxEntries) unpack.abort(tooLarge(`more than ${limits.maxEntries} files`));
-      else if (unpackedBytes > limits.maxUnpackedBytes) unpack.abort(tooLarge(`more than ${limits.maxUnpackedBytes / MB} MB unpacked`));
-      else return true;
+      if (unpackedBytes <= limits.maxUnpackedBytes) return true;
+      unpack.abort(tooLarge(`more than ${limits.maxUnpackedBytes / MB} MB unpacked`));
       return false;
     },
   });

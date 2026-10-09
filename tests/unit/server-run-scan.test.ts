@@ -37,7 +37,8 @@ describe("runScan", () => {
     try {
       const { env } = JSON.parse(await run("ok", { maxReportBytes: 1024 * 1024 })) as { env: Record<string, string> };
       expect(env.API_GREP_TOKEN).toBeUndefined();
-      expect(env).toMatchObject({ API_GREP_NO_RESPAWN: "1", GIT_CEILING_DIRECTORIES: root });
+      expect(env).toMatchObject({ API_GREP_NO_RESPAWN: "1", API_GREP_NO_GIT: "1", GIT_CEILING_DIRECTORIES: root });
+      expect(Number(env.API_GREP_DEADLINE_MS)).toBeGreaterThan(10_000);
     } finally {
       delete process.env.API_GREP_TOKEN;
     }
