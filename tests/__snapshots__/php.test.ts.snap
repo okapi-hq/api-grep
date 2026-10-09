@@ -1873,7 +1873,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
           },
           "method": "POST",
           "query": {},
-          "url": "https://api.stripe.com/v1/payment_intents/koala/confirm",
+          "url": "https://api.stripe.com/v1/payment_intents/ridge/confirm",
           "variant": "minimal",
         },
       ],
@@ -1882,7 +1882,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
       "headers": [],
       "host": "api.stripe.com",
       "hostKind": "literal",
-      "id": "e90aec48f4c8",
+      "id": "0053fe9fd7e1",
       "location": {
         "col": 16,
         "file": "Billing.php",

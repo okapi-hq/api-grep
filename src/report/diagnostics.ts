@@ -37,12 +37,16 @@ export class DiagnosticsCollector {
   }
 }
 
+/** `1 call`, `3 calls`. */
+export function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
 /**
  * `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 call dropped` (or `..., complete`); with several
  * languages, the files of each: `scanned 40/40 files (typescript 30, python 10), complete`.
  */
 export function diagnosticsLine(d: Omit<Diagnostics, "languages"> & Partial<Pick<Diagnostics, "languages">>): string {
-  const plural = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
   const langs = Object.entries(d.languages ?? {});
   const perLanguage = langs.length > 1 ? ` (${langs.map(([id, l]) => `${id} ${l.filesScanned}`).join(", ")})` : "";
   const parts = [`scanned ${d.filesScanned}/${d.filesSeen} files${perLanguage}`];
@@ -58,7 +62,7 @@ export function diagnosticsLine(d: Omit<Diagnostics, "languages"> & Partial<Pick
 export function coverageWarnings(coverage: Coverage): string[] {
   const out: string[] = [];
   for (const s of coverage.sdks) {
-    const where = `imported in ${s.importSites} ${s.importSites === 1 ? "file" : "files"}`;
+    const where = `imported in ${plural(s.importSites, "file", "files")}`;
     if (s.status === "unsupported") out.push(`${s.package} ${where}, no registry: its calls are not listed`);
     if (s.status === "imported-no-calls") out.push(`${s.package} ${where}, but no call was found (used through a wrapper?)`);
   }

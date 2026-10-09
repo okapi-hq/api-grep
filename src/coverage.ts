@@ -1,4 +1,5 @@
 import path from "node:path";
+import { isInside } from "./files.js";
 import type { Call, Ecosystem, SdkCoverage } from "./report/schema.js";
 
 export { sdkCoverage } from "./lang/typescript/coverage.js";
@@ -50,7 +51,7 @@ export function coverageRows(input: CoverageInput): SdkCoverage[] {
 export function manifestDirs(rootDir: string, files: string[]): Set<string> {
   const dirs = new Set<string>([rootDir]);
   for (const f of files) {
-    for (let dir = path.dirname(f); dir.startsWith(rootDir) && !dirs.has(dir); dir = path.dirname(dir)) dirs.add(dir);
+    for (let dir = path.dirname(f); isInside(rootDir, dir) && !dirs.has(dir); dir = path.dirname(dir)) dirs.add(dir);
   }
   return dirs;
 }

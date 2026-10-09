@@ -57,7 +57,6 @@ exports[`regression fixtures > php/sdk/sentry 1`] = `
 [
   "errors.php:9 sentry POST /api/{projectId}/envelope",
   "errors.php:14 sentry POST /api/{projectId}/envelope",
-  "errors.php:19 sentry POST /api/{projectId}/envelope (wrapper:report)",
 ]
 `;
 
@@ -116,7 +115,6 @@ exports[`regression fixtures > python/sdk/sentry 1`] = `
 [
   "errors.py:8 sentry POST /api/{projectId}/envelope",
   "errors.py:12 sentry POST /api/{projectId}/envelope",
-  "errors.py:16 sentry POST /api/{projectId}/envelope (wrapper:report)",
 ]
 `;
 
@@ -242,6 +240,13 @@ exports[`regression fixtures > sdk/convex 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/discord 1`] = `
+[
+  "bot.ts:3 discord POST /api/v10/channels/{channelId}/messages",
+  "bot.ts:5 discord POST /",
+]
+`;
+
 exports[`regression fixtures > sdk/firebase-modular 1`] = `
 [
   "session.ts:4 firebase POST /v1/accounts:signInWithIdp",
@@ -316,7 +321,6 @@ exports[`regression fixtures > sdk/revenuecat 1`] = `
 exports[`regression fixtures > sdk/sentry 1`] = `
 [
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
-  "checkout.ts:14 sentry POST /api/{projectId}/envelope (wrapper:reportError)",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
 ]

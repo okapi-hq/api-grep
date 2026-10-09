@@ -690,7 +690,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
 }
 `;
 
-exports[`sentry > reports capture calls from any @sentry package, also through a local wrapper, but not init 1`] = `
+exports[`sentry > reports capture calls from any @sentry package, inside a local wrapper but not at its callers, and not init 1`] = `
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
@@ -739,53 +739,6 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
         "package": "@sentry/nextjs",
       },
       "urlTemplate": "https://{org}.ingest.sentry.io/api/{projectId}/envelope/",
-    },
-    {
-      "authScheme": "unknown",
-      "bodyEncoding": "none",
-      "client": "sdk",
-      "confidence": 0.9,
-      "dynamic": [
-        {
-          "name": "projectId",
-          "origin": "sdk",
-          "where": "path",
-        },
-      ],
-      "examples": [
-        {
-          "bodyEncoding": "none",
-          "headers": {},
-          "method": "POST",
-          "query": {},
-          "url": "https://{org}.ingest.sentry.io/api/z3ocz31t/envelope",
-          "variant": "minimal",
-        },
-      ],
-      "findings": [],
-      "headerValues": {},
-      "headers": [],
-      "host": "{org}.ingest.sentry.io",
-      "hostKind": "literal",
-      "id": "5704b0ca5d49",
-      "location": {
-        "col": 3,
-        "file": "checkout.ts",
-        "language": "typescript",
-        "line": 14,
-      },
-      "method": "POST",
-      "pathTemplate": "/api/{projectId}/envelope",
-      "provider": "sentry",
-      "providerSource": "sdk",
-      "query": [],
-      "scheme": "https",
-      "sdk": {
-        "chain": "captureException",
-        "package": "@sentry/react",
-      },
-      "urlTemplate": "https://{org}.ingest.sentry.io/api/{projectId}/envelope/",
-      "via": "wrapper:reportError",
     },
     {
       "authScheme": "unknown",
@@ -894,7 +847,7 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
         "supported": true,
       },
       {
-        "calls": 3,
+        "calls": 2,
         "declared": false,
         "ecosystem": "npm",
         "importSites": 1,
@@ -924,23 +877,23 @@ exports[`sentry > reports capture calls from any @sentry package, also through a
   "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
-      "sdk": 4,
+      "sdk": 3,
     },
     "byHostKind": {
-      "literal": 4,
+      "literal": 3,
     },
     "byLanguage": {
-      "typescript": 4,
+      "typescript": 3,
     },
     "byProvider": {
-      "sentry": 4,
+      "sentry": 3,
     },
-    "callsFound": 4,
+    "callsFound": 3,
     "durationMs": 0,
     "filesScanned": 2,
     "redacted": 0,
     "withBodyShape": 0,
-    "withDynamic": 4,
+    "withDynamic": 3,
     "withFindings": 0,
   },
   "tool": "apicalls",

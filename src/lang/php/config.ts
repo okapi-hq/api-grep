@@ -34,7 +34,7 @@ export function laravelConfig(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scop
   const [file, ...path] = key?.split(".") ?? [];
   const mod = file ? configFile(ctx.idx, file) : undefined;
   const root = mod?.top.returns[0];
-  let hit: Scoped | undefined = root ? { expr: root, fn: mod!.top } : undefined;
+  let hit: Scoped | undefined = root ? { expr: root, fn: mod.top } : undefined;
   for (const k of path) {
     const dict = hit ? dictOf(hit.expr, hit.fn, ctx) : undefined;
     hit = dict ? entryOf(dict, k, ctx) : undefined;

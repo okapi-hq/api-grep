@@ -2,7 +2,6 @@
   "issue": "https://github.com/okapi-hq/api-grep/issues/3",
   "calls": [
     {"file": "checkout.ts", "line": 8, "provider": "sentry"},
-    {"file": "checkout.ts", "line": 14, "provider": "sentry"},
     {"file": "monitoring.ts", "line": 6, "provider": "sentry"},
     {"file": "monitoring.ts", "line": 9, "provider": "sentry"}
   ]

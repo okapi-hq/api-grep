@@ -1,8 +1,7 @@
+import { PLACEHOLDER_RE, placeholderNames } from "../normalize/path.js";
 import type { MethodSpec, Part, UrlShape } from "../types.js";
 import { staticText } from "./parts.js";
 import { partsToUrlShape } from "./url-shape.js";
-
-const PLACEHOLDER_RE = /\{([^}]+)\}/g;
 
 /**
  * What an SDK call's URL is built from, independently of the language: the registry method, and how to read the call's
@@ -54,7 +53,7 @@ export function staticHostUrl<E>(src: SdkSource<E>, pathT: string): UrlShape {
   const url = partsToUrlShape(parts, { envHints: src.envHints });
   url.hostKind = "literal";
   url.host = src.host;
-  const names = [...pathT.matchAll(PLACEHOLDER_RE)].map((m) => m[1]!);
+  const names = placeholderNames(pathT);
   url.dynamic = names.map((name, i) => ({ where: "path" as const, name, origin: sdkPathOrigin(src, name, i) })).filter((d) => d.origin !== "static");
   return url;
 }

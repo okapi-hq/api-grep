@@ -1,11 +1,11 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { bindingElementValue, declarationsOf, paramSubstitution, propertyKey } from "../detect/options.js";
+import { constructedName, isUndefinedLiteral, unwrap } from "../ast/expr.js";
+import { bindingElementValue, declarationsOf, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { collectAppendedKeys } from "./appended.js";
 import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
-import { typeToShape } from "./type-shape.js";
+import { isNullable, typeToShape } from "./type-shape.js";
 
 const MAX_DEPTH = 6;
 
@@ -15,11 +15,6 @@ export interface BodyResult {
   dynamic: DynamicPart[];
   fromType?: string;
   fromLiteral: boolean;
-}
-
-function isUndefinedExpr(e: Expression): boolean {
-  const u = unwrap(e);
-  return Node.isIdentifier(u) && u.getText() === "undefined";
 }
 
 function literalToShape(u: Expression, ctx: EvalCtx, depth: number): Shape | undefined {
@@ -49,7 +44,6 @@ interface ShapeResult {
   fromLiteral: boolean;
   origin?: DynamicOrigin;
 }
-
 
 function mergeSpread(target: { properties: Record<string, Shape>; required: string[]; dynamicKeys: boolean }, spread: Shape): void {
   if (spread.type === "object") {
@@ -84,12 +78,11 @@ function objectLiteralShape(u: Expression, ctx: EvalCtx, depth: number, dynamic:
       acc.dynamicKeys = true;
       continue;
     }
-    const valueExpr = Node.isPropertyAssignment(member) ? member.getInitializer() : Node.isShorthandPropertyAssignment(member) ? member.getNameNode() : undefined;
-    if (!valueExpr) continue;
-    if (isUndefinedExpr(valueExpr)) continue;
+    const valueExpr = propertyValue(member);
+    if (!valueExpr || isUndefinedLiteral(valueExpr)) continue;
     const r = shapeOf(valueExpr, ctx, depth + 1, dynamic);
     acc.properties[key] = r.shape;
-    if (!(r.shape.type === "union" && r.shape.anyOf.some((s) => s.type === "null") && !r.fromLiteral)) acc.required.push(key);
+    if (r.fromLiteral || !isNullable(r.shape)) acc.required.push(key);
     if (!r.fromLiteral) dynamic.push({ where: "body", name: key, origin: r.origin ?? originOf(r.shape) });
   }
   return { type: "object", properties: acc.properties, required: acc.required, ...(acc.dynamicKeys ? { dynamicKeys: true } : {}) };
@@ -161,8 +154,8 @@ function stripBodyWrappers(expr: Expression): Expression {
   const u = unwrap(expr);
   if (Node.isConditionalExpression(u)) {
     const [a, b] = [unwrap(u.getWhenTrue()), unwrap(u.getWhenFalse())];
-    if (isUndefinedExpr(b) || b.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(a);
-    if (isUndefinedExpr(a) || a.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(b);
+    if (isUndefinedLiteral(b) || b.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(a);
+    if (isUndefinedLiteral(a) || a.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(b);
   }
   if (Node.isCallExpression(u) && u.getArguments().length === 0) {
     const callee = u.getExpression();
@@ -179,7 +172,7 @@ function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?
     if (FORM_STRINGIFY_RE.test(callee)) return { inner: u.getArguments()[0] as Expression | undefined, encoding: "form" };
   }
   if (Node.isNewExpression(u)) {
-    const name = u.getExpression().getText();
+    const name = constructedName(u);
     const arg = u.getArguments()[0] as Expression | undefined;
     if (name === "URLSearchParams") return { inner: arg, encoding: "form", keys: appendedKeys(expr) };
     if (name === "FormData") return { inner: undefined, encoding: "multipart", keys: appendedKeys(expr) };

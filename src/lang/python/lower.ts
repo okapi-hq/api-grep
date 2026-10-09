@@ -76,7 +76,7 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
   }
   if ((left.type === "pattern_list" || left.type === "tuple_pattern") && value?.k === "list") {
     named(left).forEach((t, i) => {
-      if (t.type === "identifier" && value.items[i]) st.fn.assigns.push({ target: t.text, value: value.items[i]!, offset: n.endIndex });
+      if (t.type === "identifier" && value.items[i]) st.fn.assigns.push({ target: t.text, value: value.items[i], offset: n.endIndex });
     });
   }
 }

@@ -2,7 +2,7 @@ import { Node, type CallExpression, type Expression, type NewExpression } from "
 import { evaluate, staticText } from "../resolve/evaluate.js";
 import type { AuthScheme, Callee, EvalCtx, FrameworkEntry, FrameworkKeys, RawCall } from "../types.js";
 import { exportedChain } from "./callee.js";
-import { getProp, toObjectLiteral } from "./options.js";
+import { getProp, toObjectLiteral } from "../ast/object.js";
 
 const DEFAULT_KEYS: Required<Omit<FrameworkKeys, "auth">> = {
   method: "method",

@@ -24,7 +24,7 @@ function lowerGeneric(n: SyntaxNode, st: PyState): { type?: Expr; optional: bool
   const members = params.filter((p) => p.text !== "None");
   if (OPTIONAL_TYPES.has(head) || (head === "Union" && members.length < params.length)) return { type: lowerType(members[0], st).type, optional: true };
   if (WRAPPER_TYPES.has(head)) return lowerType(params[0], st);
-  const items = params.map((p) => lowerType(p, st).type ?? ({ k: "unknown", text: p.text } as Expr));
+  const items = params.map((p): Expr => lowerType(p, st).type ?? { k: "unknown", text: p.text });
   return { type: { k: "index", obj: lowerExpr(named(n)[0]!, st), key: items.length === 1 ? items[0]! : { k: "list", items } }, optional: false };
 }
 

@@ -99,10 +99,10 @@ describe("php: SDKs", () => {
     expect(at(r, "Users.php", 25)).toMatchObject({ method: "PATCH", pathTemplate: "/v1/projects/{projectId}/databases/(default)/documents/users/{uid}" });
     expect(r.calls.some((c) => c.location.line === 41)).toBe(false);
     const sentry = await scanFixture("php/sdk/sentry");
+    // `track()` -> `report($e)` sends the same request as the capture inside `report`: not a call of its own
     expect(sentry.calls.map((c) => [c.location.line, c.sdk?.chain, c.via ?? null])).toEqual([
       [9, "captureException", null],
       [14, "captureMessage", null],
-      [19, "captureException", "wrapper:report"],
     ]);
   });
 });

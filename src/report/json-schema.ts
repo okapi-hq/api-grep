@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import { ReportSchema, SCHEMA_URL } from "./schema.js";
 
 type JsonSchema = Record<string, unknown>;

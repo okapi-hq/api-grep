@@ -96,7 +96,8 @@ describe("python: SDKs", () => {
     expect(at(r, "store.py", 21)).toMatchObject({ host: "identitytoolkit.googleapis.com" });
     expect(r.calls.some((c) => c.location.line === 29)).toBe(false);
     const sentry = await scanFixture("python/sdk/sentry");
-    expect(sentry.calls.map((c) => c.location.line)).toEqual([8, 12, 16]);
+    // `track(err)` -> `report(err)` sends the same request as the capture inside `report`: not a call of its own
+    expect(sentry.calls.map((c) => c.location.line)).toEqual([8, 12]);
   });
 });
 
