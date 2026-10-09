@@ -1,0 +1,69 @@
+{
+  "$comment": "google-gemini-php/client: `Gemini::client($key)` or `Gemini::factory()->withApiKey($key)->withBaseUrl('...')->make()`; the model is chosen by a call segment (`$client->generativeModel(model: 'gemini-2.0-flash')->generateContent('...')`) and becomes part of the path. The SDK prefixes bare ids with `models/`, so `{model}` is the bare id. Laravel facade: `Gemini\\Laravel\\Facades\\Gemini::generativeModel(...)`. Request bodies are built from variadic parts / value objects, so no bodyArg is given for model calls.",
+  "package": "google-gemini-php/client",
+  "aliases": [
+    "google-gemini-php/laravel"
+  ],
+  "imports": [
+    "Gemini",
+    "Gemini.Laravel.Facades.Gemini"
+  ],
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against google-gemini-php/client 2.7.4 source)",
+  "instance": {
+    "names": [
+      "client",
+      "factory",
+      "make"
+    ],
+    "urlArg": {
+      "withBaseUrl": "0"
+    }
+  },
+  "basePath": "/v1beta",
+  "inlinePathLiterals": true,
+  "builders": [
+    "withSafetySetting",
+    "withGenerationConfig",
+    "withSystemInstruction",
+    "withTool",
+    "withToolConfig",
+    "withCachedContent",
+    "startChat"
+  ],
+  "methods": {
+    "generativeModel.generateContent": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "seg:generativeModel:0"}},
+    "generativeModel.streamGenerateContent": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "seg:generativeModel:0"}},
+    "generativeModel.countTokens": {"method": "POST", "path": "/v1beta/models/{model}:countTokens", "params": {"model": "seg:generativeModel:0"}},
+    "generativeModel.sendMessage": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "seg:generativeModel:0"}},
+    "generativeModel.streamSendMessage": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "seg:generativeModel:0"}},
+    "chat.sendMessage": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "seg:chat:0"}},
+    "chat.streamSendMessage": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "seg:chat:0"}},
+    "geminiPro.generateContent": {"method": "POST", "path": "/v1beta/models/gemini-pro:generateContent"},
+    "geminiPro.streamGenerateContent": {"method": "POST", "path": "/v1beta/models/gemini-pro:streamGenerateContent"},
+    "geminiPro.countTokens": {"method": "POST", "path": "/v1beta/models/gemini-pro:countTokens"},
+    "geminiFlash.generateContent": {"method": "POST", "path": "/v1beta/models/gemini-1.5-flash:generateContent"},
+    "geminiFlash.streamGenerateContent": {"method": "POST", "path": "/v1beta/models/gemini-1.5-flash:streamGenerateContent"},
+    "geminiFlash.countTokens": {"method": "POST", "path": "/v1beta/models/gemini-1.5-flash:countTokens"},
+    "embeddingModel.embedContent": {"method": "POST", "path": "/v1beta/models/{model}:embedContent", "params": {"model": "seg:embeddingModel:0"}},
+    "embeddingModel.batchEmbedContents": {"method": "POST", "path": "/v1beta/models/{model}:batchEmbedContents", "params": {"model": "seg:embeddingModel:0"}},
+    "models.list": {"method": "GET", "path": "/v1beta/models"},
+    "models.retrieve": {"method": "GET", "path": "/v1beta/models/{model}", "params": {"model": "arg:0"}},
+    "files.upload": {"method": "POST", "path": "/upload/v1beta/files", "encoding": "multipart"},
+    "files.list": {"method": "GET", "path": "/v1beta/files"},
+    "files.metadataGet": {"method": "GET", "path": "/v1beta/files/{name}", "params": {"name": "arg:0"}},
+    "files.delete": {"method": "DELETE", "path": "/v1beta/files/{name}", "params": {"name": "arg:0"}},
+    "cachedContents.create": {"method": "POST", "path": "/v1beta/cachedContents"},
+    "cachedContents.list": {"method": "GET", "path": "/v1beta/cachedContents"},
+    "cachedContents.retrieve": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "cachedContents.update": {"method": "PATCH", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "cachedContents.delete": {"method": "DELETE", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "fileSearchStores.create": {"method": "POST", "path": "/v1beta/fileSearchStores"},
+    "fileSearchStores.list": {"method": "GET", "path": "/v1beta/fileSearchStores"},
+    "fileSearchStores.get": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "fileSearchStores.delete": {"method": "DELETE", "path": "/v1beta/{name}", "params": {"name": "arg:0"}},
+    "fileSearchStores.upload": {"method": "POST", "path": "/upload/v1beta/{name}:uploadToFileSearchStore", "params": {"name": "arg:0"}, "encoding": "multipart"}
+  }
+}

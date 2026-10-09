@@ -4,7 +4,7 @@ import path from "node:path";
 import { defineConfig } from "tsup";
 
 /** Tree-sitter grammars (WebAssembly) the tree-sitter languages parse with, shipped next to the bundle. */
-const GRAMMARS = ["python"];
+const GRAMMARS = ["python", "php"];
 
 export default defineConfig({
   entry: ["src/cli.ts", "src/index.ts"],

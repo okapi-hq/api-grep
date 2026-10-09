@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "Telegram.php", "line": 21, "provider": "telegram"},
+    {"file": "Telegram.php", "line": 26, "provider": "meta-graph"}
+  ]
+}

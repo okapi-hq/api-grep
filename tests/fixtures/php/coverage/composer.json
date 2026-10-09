@@ -1,0 +1,12 @@
+{
+  "name": "acme/app",
+  "require": {
+    "php": "^8.2",
+    "ext-json": "*",
+    "stripe/stripe-php": "^13.0",
+    "guzzlehttp/guzzle": "^7.8",
+    "knplabs/github-api": "^3.14",
+    "sentry/sentry-laravel": "^4.0",
+    "sendgrid/sendgrid": "^8.1"
+  }
+}

@@ -150,11 +150,12 @@ describe("several languages in one repository", () => {
     const r = await scanFixture("polyglot", { exclude: [] });
     expect(r.calls.map((c) => [c.location.file, c.location.language, c.provider, c.sdk?.version])).toEqual([
       ["api/chat.py", "python", "openai", ">=1.40"],
+      ["billing/chat.php", "php", "openai", "^0.10"],
       ["web/chat.ts", "typescript", "openai", "^4.0.0"],
     ]);
-    expect(r.stats.byLanguage).toEqual({ python: 1, typescript: 1 });
-    expect(r.diagnostics?.languages).toEqual({ typescript: { filesSeen: 1, filesScanned: 1 }, python: { filesSeen: 1, filesScanned: 1 } });
-    expect(r.coverage?.sdks.map((s) => `${s.ecosystem}:${s.package}:${s.status}`)).toEqual(["npm:openai:ok", "pypi:openai:ok"]);
+    expect(r.stats.byLanguage).toEqual({ python: 1, php: 1, typescript: 1 });
+    expect(r.diagnostics?.languages).toEqual({ typescript: { filesSeen: 1, filesScanned: 1 }, python: { filesSeen: 1, filesScanned: 1 }, php: { filesSeen: 1, filesScanned: 1 } });
+    expect(r.coverage?.sdks.map((s) => `${s.ecosystem}:${s.package}:${s.status}`)).toEqual(["npm:openai:ok", "pypi:openai:ok", "composer:openai-php/client:ok"]);
     const onlyPython = await scanFixture("polyglot", { exclude: [], languages: ["python"] });
     expect(onlyPython.calls.map((c) => c.location.language)).toEqual(["python"]);
   });

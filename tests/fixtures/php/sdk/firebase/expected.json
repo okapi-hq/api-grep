@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "Users.php", "line": 20, "provider": "firebase"},
+    {"file": "Users.php", "line": 25, "provider": "firebase"},
+    {"file": "Users.php", "line": 30, "provider": "firebase"},
+    {"file": "Users.php", "line": 36, "provider": "firebase"}
+  ]
+}

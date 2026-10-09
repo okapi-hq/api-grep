@@ -1599,17 +1599,6 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
   "coverage": {
     "sdks": [
       {
-        "calls": 0,
-        "declared": false,
-        "ecosystem": "pypi",
-        "importSites": 1,
-        "imported": true,
-        "package": "aioboto3",
-        "provider": "aws",
-        "status": "imported-no-calls",
-        "supported": true,
-      },
-      {
         "calls": 2,
         "declared": false,
         "ecosystem": "pypi",
@@ -1687,17 +1676,6 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "supported": true,
       },
       {
-        "calls": 0,
-        "declared": false,
-        "ecosystem": "pypi",
-        "importSites": 1,
-        "imported": true,
-        "package": "slackclient",
-        "provider": "slack",
-        "status": "imported-no-calls",
-        "supported": true,
-      },
-      {
         "calls": 5,
         "declared": false,
         "ecosystem": "pypi",
@@ -1751,7 +1729,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "sdk": 22,
@@ -2280,7 +2258,7 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "requests": 10,
@@ -2577,7 +2555,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "httpx": 4,
@@ -2803,7 +2781,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "aiohttp": 2,
@@ -3147,7 +3125,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "urllib": 4,
@@ -3655,7 +3633,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "requests": 7,
@@ -4040,7 +4018,7 @@ exports[`python: wrappers > expands project functions and methods at their call 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "stats": {
     "byClient": {
       "requests": 5,

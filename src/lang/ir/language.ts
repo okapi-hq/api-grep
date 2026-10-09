@@ -44,7 +44,20 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
 }
 
 /** What an option of an HTTP client call carries (`json=` -> `body:json`, `params=` -> `query`). */
-export type OptionRole = "url" | "baseUrl" | "method" | "query" | "headers" | "auth" | "body" | "body:json" | "body:form" | "body:multipart" | "body:raw";
+export type OptionRole =
+  | "url"
+  | "baseUrl"
+  | "method"
+  | "query"
+  | "headers"
+  | "auth"
+  | "auth:bearer"
+  | "auth:basic"
+  | "body"
+  | "body:json"
+  | "body:form"
+  | "body:multipart"
+  | "body:raw";
 
 export interface ClientFunction {
   /** HTTP method of a verb function (`get`, `post`). */
@@ -78,6 +91,8 @@ export interface ClientModifier {
 export interface ClientSpec {
   client: ClientKind;
   imports: string[];
+  /** The functions are global functions (`wp_remote_post($url, $args)`), not reached through an import. */
+  global?: boolean;
   /** Constructors of client objects; their options give the base URL, headers and auth of every call. */
   instances?: { names: string[]; optionsArg?: number; baseUrlArg?: number };
   functions: Record<string, ClientFunction>;
@@ -111,6 +126,8 @@ export interface IrLanguage {
   clients: ClientSpec[];
   /** Detectors for calls that tables cannot describe (`urlopen(Request(...))`, curl handles). */
   detectors?: IrDetector[];
+  /** A call that stands for another expression of the project (Laravel `config('services.x.url')`: an entry of `config/services.php`). */
+  resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

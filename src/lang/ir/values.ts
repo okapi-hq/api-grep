@@ -23,6 +23,10 @@ export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
     const values = classField(fn.cls, e.name, ctx.idx);
     if (values.length === 1) return deref(values[0]!.value, values[0]!.fn, ctx, depth + 1);
   }
+  if (e.k === "call") {
+    const resolved = ctx.idx.lang.resolveCall?.(e, fn, ctx);
+    if (resolved) return deref(resolved.expr, resolved.fn, ctx, depth + 1);
+  }
   if (e.k === "or") {
     const left = deref(e.left, fn, ctx, depth + 1);
     return left.expr.k === "dict" ? left : deref(e.right, fn, ctx, depth + 1);

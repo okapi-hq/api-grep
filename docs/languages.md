@@ -8,7 +8,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 |---|---|---|---|---|
 | TypeScript | supported | ts-morph (TypeScript type checker) | npm | `package.json` |
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
-| PHP | planned (next pull request) | tree-sitter + shared engine | Packagist | `composer.json` |
+| PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
 
 ## Goals
 
@@ -16,7 +16,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   `apicalls scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
-  `ecosystem` (`npm`, `pypi`), so the same package name in two ecosystems (`openai`) is two rows.
+  `ecosystem` (`npm`, `pypi`, `composer`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
   `Call` schema, provider table, confidence rules, example requests, curl output, spec validation, secret redaction,
   diagnostics and SDK coverage. Only detection and resolution are language specific.
@@ -77,13 +77,14 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `detect.ts`, `wrappers.ts` | detection per function, two-hop wrapper expansion, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `build.ts`, `scan.ts` | report `Call`s, the scan driver (per-file errors are diagnostics, never fatal) and SDK coverage |
 
-A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`):
+A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, `src/lang/php/`):
 
 - `lower*.ts`: syntax tree to the IR, including the language's environment reads and string formatting;
 - `clients.json`: HTTP clients, as tables (functions, client constructors, keyword / option names and what they carry);
 - `registry/*.json`: SDK registries;
 - `manifests.ts` and `modules.json`: declared packages, their versions, and import names that differ from the package;
-- `index.ts`: the `IrLanguage` (excludes, passthrough calls, serializers, custom detectors such as `urllib.request`).
+- `index.ts`: the `IrLanguage` (excludes, passthrough calls, serializers, custom detectors such as `urllib.request`
+  or curl handles, and `resolveCall` for calls that stand for project data, like Laravel's `config()`).
 
 ### Registries
 
@@ -98,9 +99,10 @@ as `IrRegistryEntry` / `IrMethodSpec` in `src/lang/ir/language.ts`:
 - path parameter sources `kw:<name>`, `seg:<segment>:<N>`, `chain:<a>,<b>`; `arg:N` also matches the keyword argument
   named like the placeholder.
 
-The Python Stripe registry is derived from the TypeScript one (itself generated from Stripe's OpenAPI spec) by
-`pnpm gen:stripe-ports`. The other Python registries were written against each SDK's own request code; their notes
-(versions checked, calls that send nothing) are in each file's `$comment` and `generatedFrom`.
+The Python and PHP Stripe registries are derived from the TypeScript one (itself generated from Stripe's OpenAPI spec)
+by `pnpm gen:stripe-ports`. The other registries were written against each SDK's own request code; their notes
+(versions checked, calls that send nothing) are in each file's `$comment` and `generatedFrom`. PHP 8 named arguments
+use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 
 ## Python
 
@@ -132,43 +134,44 @@ project modules, relative imports and `src/` layouts), class attributes, `self.x
 - Some SDK endpoints depend on an argument (`stream=True` switching paths on Bedrock / Vertex, supabase `rpc(get=True)`);
   the registry lists the default form.
 
+## PHP
+
+**Detected:** Guzzle (`new Client(['base_uri' => ...])`, verbs, `*Async`, `request`, `ClientInterface` parameters,
+`\Drupal::httpClient()`), the Laravel `Http` facade with its fluent modifiers, Symfony HttpClient (`create`,
+`createForBaseUri`, `HttpClientInterface`), curl handles (`curl_init` / `curl_setopt` / `curl_setopt_array`, reported
+at `curl_exec`), PSR-7 requests sent through `send` / `sendRequest`, `file_get_contents` / `fopen` on http(s) URLs or
+with an http stream context, WordPress `wp_remote_*`, and the SDKs in [`sdk-support.md`](sdk-support.md) (Stripe,
+openai-php, Anthropic, Gemini, AWS S3 and Bedrock runtime, Twilio, kreait Firebase, Google Cloud Firestore, Sentry,
+Resend, PostHog, SendGrid, Mailgun, jolicode Slack).
+
+**Resolved:** namespaces and `use` (classes, `use function`, `use const`, groups, aliases), fully qualified names,
+`self::` / `static::` / `parent::`, class constants and static properties, `define()` and `const` (visible from every
+file), promoted constructor properties, typed properties and parameters, `$this->x` set in any method, closures and
+arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
+`getenv()`, `$_ENV`, `$_SERVER`, and Laravel `config('file.key')` / `Config::get(...)` read from `config/<file>.php`.
+
+**Out of scope by default:** `vendor/`, `tests/`, `Tests/`, `test/`, `*Test.php`, `storage/`, `bootstrap/cache/`,
+`var/cache/`, `*.blade.php`.
+
+**Limitations:**
+
+- Untyped properties and parameters used as clients (`$this->client->post(...)` with an untyped `$client`) are listed
+  as `injected-client`.
+- Saloon connectors, Laravel `Mail` / `Storage` / notification drivers, AWS command objects (`getCommand`, `execute`),
+  `$sdk->createClient('s3')` and PostHog's `init()` host are not followed; SDK coverage shows such packages.
+- Laravel facades are matched by their class (`Illuminate\Support\Facades\Http`, or `Http` without a namespace);
+  a facade alias registered under another name is not.
+
 ## How the open issues apply to each language
 
-| issue | TypeScript | Python | PHP (planned) |
+| issue | TypeScript | Python | PHP |
 |---|---|---|---|
-| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php, google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK |
+| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same |
-| #5 regression fixtures and recall | done | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**` |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | Packagist packages per provider |
-| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package |
-| #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants |
-
-## PHP plan (next pull request)
-
-PHP reuses the IR engine; the work is a lowering, client tables, registries and manifests.
-
-- **Parsing:** `tree-sitter-php` (the grammar with HTML, so templates parse). Lowering handles namespaces and `use`
-  (classes, functions, constants, groups, aliases) into qualified names, `$this`, `self::` / `static::`, static calls
-  and properties, `new`, promoted constructor properties, typed properties and parameters, arrays (keyed arrays are
-  dicts, positional ones lists), single / double-quoted and heredoc strings with interpolation, `.` and `.=`, `??`,
-  `?:`, `sprintf`, closures (`use (...)`) and arrow functions. PHP functions do not see file-level `$variables`, but
-  `define()` / `const` and functions are global (`sharedGlobals`).
-- **HTTP clients:** Guzzle (`new Client(['base_uri' => ...])`, verbs, `request`, `*Async`, options `json`,
-  `form_params`, `multipart`, `body`, `query`, `headers`, `auth`), Laravel `Http` facade (fluent `withToken`,
-  `withBasicAuth`, `withHeaders`, `asForm`, `asMultipart`, `baseUrl`, `withQueryParameters`), Symfony HttpClient
-  (`HttpClient::create()`, `createForBaseUri`, `HttpClientInterface` injection, options `json`, `body`, `query`,
-  `headers`, `auth_bearer`, `auth_basic`), curl (`curl_init` / `curl_setopt` / `curl_setopt_array` / `curl_exec`),
-  `file_get_contents` on an `http(s)` URL with a `stream_context_create` context, WordPress `wp_remote_get`,
-  `wp_remote_post`, `wp_remote_request`.
-- **Environment:** `getenv()`, `$_ENV[...]`, `$_SERVER[...]`, Laravel / Symfony `env('X', 'default')`, and Laravel
-  `config('services.x.url')` read from `config/services.php`.
-- **Registries (drafted):** stripe-php (ported from the TypeScript registry: `$stripe->customers->create()` and the
-  static `\Stripe\Customer::create()`), openai-php (+ Laravel facade), anthropic-ai/sdk, mozex/anthropic-php,
-  google-gemini-php, aws-sdk-php (S3, Bedrock runtime), twilio/sdk, kreait/firebase-php, google/cloud-firestore,
-  sentry, resend-php, posthog-php, sendgrid, mailgun, jolicode/slack-php-api. PHP 8 named arguments reuse the keyword
-  argument support of the engine.
-- **Out of scope by default:** `vendor/`, `tests/`, `*Test.php`, `storage/`, `bootstrap/cache/`, `*.blade.php`.
-- **Coverage:** `composer.json` `require`, namespaces per Packagist package (`namespaces.json`), `ecosystem: "composer"`.
+| #5 regression fixtures and recall | done | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist |
+| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` |
+| #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` |
 
 ## Adding a language
 
@@ -181,7 +184,7 @@ PHP reuses the IR engine; the work is a lowering, client tables, registries and 
 4. List the ecosystem's packages per provider in `src/normalize/providers.json` and add a column to
    `scripts/support-table.ts`; run `pnpm gen:support`.
 5. Add fixtures under `tests/fixtures/<language>/` (with `expected.json` for regression patterns), a test file like
-   `tests/python.test.ts`, and unit tests for the lowering and manifests.
+   `tests/python.test.ts` or `tests/php.test.ts`, and unit tests for the lowering and manifests.
 
 A language whose needs go beyond the IR (a type system the engine should use, like Java or C#) can implement
 `Language` directly, as TypeScript does.

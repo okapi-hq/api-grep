@@ -1,0 +1,52 @@
+{
+  "$comment": "Official Anthropic PHP SDK (Stainless): `$client = new Anthropic\\Client(apiKey: ..., baseUrl: ...)`; services are properties (`$client->messages->create(maxTokens: 1024, messages: [...], model: '...')`). Request bodies are built from NAMED arguments (camelCase -> snake_case), so no bodyArg is given. `Anthropic\\Bedrock\\Client` / `Anthropic\\Vertex\\Client` / `Anthropic\\Foundry\\Client` extend this client but target other hosts: match the `Client` instance on its fully qualified name `Anthropic\\Client` only.",
+  "package": "anthropic-ai/sdk",
+  "imports": [
+    "Anthropic"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against anthropic-ai/sdk v0.56.0 source)",
+  "instance": {
+    "names": [
+      "Client"
+    ],
+    "urlArg": {
+      "Client": "3|kw:baseUrl"
+    }
+  },
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/v1/messages", "bodyKwargs": true},
+    "messages.createStream": {"method": "POST", "path": "/v1/messages", "bodyKwargs": true},
+    "messages.countTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyKwargs": true},
+    "messages.batches.create": {"method": "POST", "path": "/v1/messages/batches", "bodyKwargs": true},
+    "messages.batches.retrieve": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:0"}},
+    "messages.batches.list": {"method": "GET", "path": "/v1/messages/batches", "queryKwargs": true},
+    "messages.batches.delete": {"method": "DELETE", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:0"}},
+    "messages.batches.cancel": {"method": "POST", "path": "/v1/messages/batches/{message_batch_id}/cancel", "params": {"message_batch_id": "arg:0"}, "bodyKwargs": true},
+    "messages.batches.resultsStream": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}/results", "params": {"message_batch_id": "arg:0"}},
+    "models.list": {"method": "GET", "path": "/v1/models", "queryKwargs": true},
+    "models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "params": {"model_id": "arg:0"}},
+    "files.upload": {"method": "POST", "path": "/v1/files", "encoding": "multipart", "bodyKwargs": true},
+    "files.list": {"method": "GET", "path": "/v1/files", "queryKwargs": true},
+    "files.retrieveMetadata": {"method": "GET", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "files.download": {"method": "GET", "path": "/v1/files/{file_id}/content", "params": {"file_id": "arg:0"}},
+    "files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "beta.messages.create": {"method": "POST", "path": "/v1/messages", "bodyKwargs": true},
+    "beta.messages.createStream": {"method": "POST", "path": "/v1/messages", "bodyKwargs": true},
+    "beta.messages.countTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyKwargs": true},
+    "beta.messages.batches.create": {"method": "POST", "path": "/v1/messages/batches", "bodyKwargs": true},
+    "beta.messages.batches.retrieve": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:0"}},
+    "beta.messages.batches.list": {"method": "GET", "path": "/v1/messages/batches", "queryKwargs": true},
+    "beta.messages.batches.cancel": {"method": "POST", "path": "/v1/messages/batches/{message_batch_id}/cancel", "params": {"message_batch_id": "arg:0"}, "bodyKwargs": true},
+    "beta.messages.batches.resultsStream": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}/results", "params": {"message_batch_id": "arg:0"}},
+    "beta.files.upload": {"method": "POST", "path": "/v1/files", "encoding": "multipart", "bodyKwargs": true},
+    "beta.files.list": {"method": "GET", "path": "/v1/files", "queryKwargs": true},
+    "beta.files.retrieveMetadata": {"method": "GET", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "beta.files.download": {"method": "GET", "path": "/v1/files/{file_id}/content", "params": {"file_id": "arg:0"}},
+    "beta.files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "beta.models.list": {"method": "GET", "path": "/v1/models", "queryKwargs": true},
+    "beta.models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "params": {"model_id": "arg:0"}}
+  }
+}

@@ -119,6 +119,8 @@ function evalDefault(left: Expr, right: Expr, fn: FunctionDef, ctx: IrCtx, depth
   const l = evaluate(left, fn, ctx, depth + 1);
   const r = evaluate(right, fn, ctx, depth + 1);
   const env = l.findIndex((p) => p.kind === "env");
+  // `$url ?? ''`: an empty default says nothing, the left side stays
+  if (env < 0 && staticText(r) === "") return l;
   if (env < 0) return staticText(l) !== undefined && l.length > 0 && left.k !== "null" ? l : r;
   const fallback = staticText(r);
   if (fallback === undefined) return l;
@@ -189,6 +191,8 @@ function urljoinParts(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
 }
 
 function evalCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
+  const resolved = ctx.idx.lang.resolveCall?.(call, fn, ctx);
+  if (resolved) return markConst(evaluate(resolved.expr, resolved.fn, ctx, depth + 1));
   const name = calleeName(call);
   const pass = ctx.idx.lang.passthrough;
   if (name && pass.methods.has(name) && call.fn.k === "attr") return evaluate(call.fn.obj, fn, ctx, depth + 1);

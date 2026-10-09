@@ -1,10 +1,11 @@
 import type { Language } from "../report/schema.js";
+import { php } from "./php/index.js";
 import { python } from "./python/index.js";
 import type { LanguageFrontEnd } from "./types.js";
 import { typescript } from "./typescript/index.js";
 
 /** Every language the scanner reads, in report order. */
-export const LANGUAGES: LanguageFrontEnd[] = [typescript, python];
+export const LANGUAGES: LanguageFrontEnd[] = [typescript, python, php];
 
 export const LANGUAGE_IDS = LANGUAGES.map((l) => l.id);
 

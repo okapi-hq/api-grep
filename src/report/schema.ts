@@ -7,20 +7,40 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.1.0";
+export const SCHEMA_VERSION = "1.2.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
   .enum(["typescript", "javascript", "python", "php"])
-  .meta({ id: "Language", description: "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python." });
+  .meta({ id: "Language", description: "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python, the PHP one php." });
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
 export const ClientSchema = z
-  .enum(["fetch", "axios", "got", "ky", "node-http", "requests", "httpx", "aiohttp", "urllib", "urllib3", "sdk", "framework"])
+  .enum([
+    "fetch",
+    "axios",
+    "got",
+    "ky",
+    "node-http",
+    "requests",
+    "httpx",
+    "aiohttp",
+    "urllib",
+    "urllib3",
+    "guzzle",
+    "laravel-http",
+    "symfony-http",
+    "curl",
+    "psr-18",
+    "php-stream",
+    "wordpress",
+    "sdk",
+    "framework",
+  ])
   .meta({
     id: "Client",
     description:
-      "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. Any language: sdk (a registry), framework (a framework helper).",
+      "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper).",
   });
 
 export const ShapeSchema: z.ZodType<Shape> = z

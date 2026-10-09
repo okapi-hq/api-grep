@@ -21,12 +21,14 @@ export class ProjectIndex {
   private readonly functions = new Map<string, FunctionDef>();
   /** Module-level constants every file sees (PHP `define()` / `const`), when the language shares them. */
   private readonly globals = new Map<string, { assign: Assign; fn: FunctionDef }>();
+  /** Functions by their short name (PHP: a namespaced helper called from its own namespace), when globals are shared. */
+  private readonly shortFunctions = new Map<string, FunctionDef>();
   /** Import roots of known SDKs and clients: never resolved to a project module (`services/stripe.py` is not `stripe`). */
   private readonly external: Set<string>;
 
   constructor(
     readonly lang: IrLanguage,
-    mods: ModuleModel[],
+    private readonly mods: ModuleModel[],
   ) {
     this.external = new Set([...lang.registry.flatMap((r) => r.imports), ...lang.clients.flatMap((c) => c.imports)].map((i) => i.split(".")[0]!));
     for (const m of mods) this.add(m);
@@ -45,6 +47,7 @@ export class ProjectIndex {
       if (!this.functions.has(q)) this.functions.set(q, f);
     }
     if (!this.lang.sharedGlobals) return;
+    for (const f of m.functions.values()) if (!this.shortFunctions.has(f.name)) this.shortFunctions.set(f.name, f);
     for (const a of m.top.assigns) if (!a.target.startsWith("$") && !a.target.includes(".") && !this.globals.has(a.target)) this.globals.set(a.target, { assign: a, fn: m.top });
   }
 
@@ -79,10 +82,15 @@ export class ProjectIndex {
     return undefined;
   }
 
+  /** Every module of the language. */
+  all(): ModuleModel[] {
+    return this.mods;
+  }
+
   /** A global function or constant defined in any file (PHP `define()` / helpers): the last resort of a lookup. */
   global(name: string): Binding {
     if (!this.lang.sharedGlobals) return { kind: "none" };
-    const fn = this.functions.get(name);
+    const fn = this.functions.get(name) ?? this.shortFunctions.get(name);
     if (fn) return { kind: "function", fn };
     const g = this.globals.get(name);
     return g ? { kind: "value", assign: g.assign, fn: g.fn } : { kind: "none" };
@@ -136,9 +144,10 @@ function visibleInParent(fn: FunctionDef, name: string): boolean {
 /** Resolves a name where it is used: locals, parameters, enclosing functions, then the module and the project. */
 export function lookup(name: string, fn: FunctionDef, at: number | undefined, idx: ProjectIndex): Binding {
   const local = lastAssign(fn.assigns, name, at);
-  if (local) return { kind: "value", assign: local, fn };
   const param = fn.params.find((p) => p.name === name);
-  if (param) return { kind: "param", fn, param };
+  // a parameter reassigned only later (`$url = $response->getHeader(...)` in a loop) is still the parameter here
+  if (param && (!local || (at !== undefined && local.offset >= at))) return { kind: "param", fn, param };
+  if (local) return { kind: "value", assign: local, fn };
   if (visibleInParent(fn, name)) return lookup(name, fn.parent!, fn.pos.offset, idx);
   const mod = fn.module;
   if (fn === mod.top || idx.lang.moduleVarsVisible || !name.startsWith("$")) {

@@ -1,0 +1,31 @@
+{
+  "$comment": "Sentry PHP SDK sends events to the DSN's ingest host. Namespaced functions (`\\Sentry\\captureException($e)`), the hub (`\\Sentry\\SentrySdk::getCurrentHub()->captureException($e)`, or a `Sentry\\State\\HubInterface` injected in Symfony), the Laravel facade (`Sentry\\Laravel\\Facade`, aliased as `\\Sentry`) and `Sentry\\Laravel\\Integration::captureUnhandledException($e)` all end in the envelope endpoint. `\\Sentry\\init()` only configures the client and is not listed.",
+  "package": "sentry/sentry",
+  "aliases": [
+    "sentry/sentry-laravel",
+    "sentry/sentry-symfony"
+  ],
+  "imports": [
+    "Sentry",
+    "Sentry.Laravel.Facade",
+    "Sentry.Laravel.Integration"
+  ],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against sentry/sentry 4.34.0 and sentry/sentry-laravel 4.29.0 source)",
+  "methods": {
+    "captureException": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "captureMessage": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "captureEvent": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "captureLastError": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "captureCheckIn": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "withMonitor": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "captureUnhandledException": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "SentrySdk.getCurrentHub.captureException": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "SentrySdk.getCurrentHub.captureMessage": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "SentrySdk.getCurrentHub.captureEvent": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "SentrySdk.getCurrentHub.captureLastError": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "SentrySdk.getCurrentHub.captureCheckIn": {"method": "POST", "path": "/api/{projectId}/envelope/"}
+  }
+}

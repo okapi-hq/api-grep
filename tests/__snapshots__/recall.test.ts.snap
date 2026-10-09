@@ -14,6 +14,62 @@ exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 
 exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
 
+exports[`regression fixtures > php/negatives 1`] = `[]`;
+
+exports[`regression fixtures > php/resolve/class-base-url 1`] = `
+[
+  "Gladia.php:18 gladia POST /v2/upload",
+  "Gladia.php:30 elevenlabs GET /v1/voices",
+]
+`;
+
+exports[`regression fixtures > php/resolve/env-default 1`] = `
+[
+  "Llm.php:8 langdock POST /openai/eu/v1/chat/completions",
+  "Llm.php:14 elevenlabs POST /v1/text-to-speech/{voiceId}",
+]
+`;
+
+exports[`regression fixtures > php/resolve/env-name 1`] = `
+[
+  "clients.php:7 openrouter GET /models",
+  "clients.php:12 gladia POST /v2/transcription",
+]
+`;
+
+exports[`regression fixtures > php/resolve/helper-url 1`] = `
+[
+  "Telegram.php:21 telegram POST /bot{TELEGRAM_TOKEN}/sendMessage",
+  "Telegram.php:26 meta-graph GET /v19.0/{pageId}/feed",
+]
+`;
+
+exports[`regression fixtures > php/sdk/firebase 1`] = `
+[
+  "Users.php:20 firebase POST /v1/accounts:signUp",
+  "Users.php:25 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/users/{uid}",
+  "Users.php:30 firebase POST /v1/projects/{projectId}/databases/(default)/documents/users/{uid}/posts",
+  "Users.php:36 firebase POST /v1/projects/{projectId}/messages:send",
+]
+`;
+
+exports[`regression fixtures > php/sdk/sentry 1`] = `
+[
+  "errors.php:9 sentry POST /api/{projectId}/envelope",
+  "errors.php:14 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > php/wrappers/injected-client 1`] = `[]`;
+
+exports[`regression fixtures > php/wrappers/two-hop 1`] = `
+[
+  "signed.php:7 unknown POST /",
+  "signed.php:12 mixpanel POST /{path} (wrapper:do_fetch)",
+  "signed.php:17 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
+]
+`;
+
 exports[`regression fixtures > python/negatives 1`] = `[]`;
 
 exports[`regression fixtures > python/resolve/class-base-url 1`] = `

@@ -1,0 +1,46 @@
+{
+  "$comment": "Community client mozex/anthropic-php (same shape as openai-php): `Anthropic::client($key)` or `Anthropic::factory()->withApiKey($key)->withBaseUri('...')->make()`; resources are method calls (`$client->messages()->create([...])`). Laravel facade: `Anthropic\\Laravel\\Facades\\Anthropic::messages()->create([...])`. Shares the `Anthropic\\` namespace with the official anthropic-ai/sdk: tell them apart through composer.json (and the global `Anthropic` class, which only this package defines).",
+  "package": "mozex/anthropic-php",
+  "aliases": [
+    "mozex/anthropic-laravel"
+  ],
+  "imports": [
+    "Anthropic",
+    "Anthropic.Laravel.Facades.Anthropic"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against mozex/anthropic-php 1.8.0 source)",
+  "instance": {
+    "names": [
+      "client",
+      "factory",
+      "make"
+    ],
+    "urlArg": {
+      "withBaseUri": "0"
+    }
+  },
+  "basePath": "/v1",
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "messages.createStreamed": {"method": "POST", "path": "/v1/messages", "bodyArg": 0},
+    "messages.countTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyArg": 0},
+    "completions.create": {"method": "POST", "path": "/v1/complete", "bodyArg": 0},
+    "completions.createStreamed": {"method": "POST", "path": "/v1/complete", "bodyArg": 0},
+    "models.list": {"method": "GET", "path": "/v1/models", "queryArg": 0},
+    "models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "params": {"model_id": "arg:0"}},
+    "batches.create": {"method": "POST", "path": "/v1/messages/batches", "bodyArg": 0},
+    "batches.retrieve": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:0"}},
+    "batches.list": {"method": "GET", "path": "/v1/messages/batches", "queryArg": 0},
+    "batches.cancel": {"method": "POST", "path": "/v1/messages/batches/{message_batch_id}/cancel", "params": {"message_batch_id": "arg:0"}},
+    "batches.delete": {"method": "DELETE", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:0"}},
+    "batches.results": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}/results", "params": {"message_batch_id": "arg:0"}},
+    "files.upload": {"method": "POST", "path": "/v1/files", "bodyArg": 0, "encoding": "multipart"},
+    "files.list": {"method": "GET", "path": "/v1/files", "queryArg": 0},
+    "files.retrieveMetadata": {"method": "GET", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "files.download": {"method": "GET", "path": "/v1/files/{file_id}/content", "params": {"file_id": "arg:0"}},
+    "files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "params": {"file_id": "arg:0"}}
+  }
+}

@@ -5,6 +5,9 @@
  *   stripe-python  StripeClient services in snake_case (`client.payment_intents.create(params={...})`, also under
  *                  `client.v1`), and the classic resource API (`stripe.PaymentIntent.create(amount=...)`); every
  *                  method also has its `*_async` twin.
+ *   stripe-php     StripeClient services, camelCase like TypeScript (`$stripe->paymentIntents->create([...])`, `all`
+ *                  for `list`, `delete` for `del`), the static API (`\Stripe\Customer::create([...])`), and the
+ *                  operations of a retrieved object (`\Stripe\PaymentIntent::retrieve($id)->confirm([...])`).
  *
  *   pnpm gen:stripe-ports
  */
@@ -74,6 +77,57 @@ function python(): IrRegistryEntry {
   };
 }
 
+const PHP_SKIP = new Set(["subscriptions.del", "subscriptionItems.createUsageRecord", "invoices.retrieveUpcoming"]);
+const PHP_STATIC = new Set(["create", "retrieve", "update", "list", "search"]);
+
+/** `list` -> `all`, `listLineItems` -> `allLineItems`, `del` -> `delete`. */
+function phpVerb(verb: string): string {
+  if (verb === "del") return "delete";
+  return verb.startsWith("list") ? `all${verb.slice(4)}` : verb;
+}
+
+/** `checkout.sessions` -> `Checkout.Session` (`\Stripe\Checkout\Session`). */
+function phpClass(service: string): string {
+  const parts = service.split(".");
+  const last = parts.pop()!;
+  return [...parts.map(pascal), CLASSES[last] ?? pascal(last.replace(/s$/, ""))].join(".");
+}
+
+/** `$intent = PaymentIntent::retrieve($id); $intent->confirm($params)`: the id comes from `retrieve`. */
+function instanceOp(spec: MethodSpec): IrMethodSpec {
+  const { pathArgs, bodyArg, queryArg, ...rest } = spec;
+  const id = /\{([^}]+)\}/.exec(spec.path)?.[1];
+  const shift = (i: number): number => Math.max(0, i - (pathArgs?.length ?? 0));
+  const out: IrMethodSpec = { ...rest, ...(id ? { params: { [id]: "seg:retrieve:0" } } : {}) };
+  if (bodyArg !== undefined) out.bodyArg = shift(bodyArg);
+  if (queryArg !== undefined) out.queryArg = shift(queryArg);
+  return out;
+}
+
+function php(): IrRegistryEntry {
+  const methods: Record<string, IrMethodSpec> = {};
+  const statics: Record<string, IrMethodSpec> = {};
+  for (const [key, spec] of Object.entries(ts.methods ?? {})) {
+    if (PHP_SKIP.has(key)) continue;
+    const parts = key.split(".");
+    const verb = parts.pop()!;
+    const cls = phpClass(parts.join("."));
+    methods[[...parts, phpVerb(verb)].join(".")] = spec;
+    if (PHP_STATIC.has(verb)) statics[`${cls}.${phpVerb(verb)}`] = spec;
+    else if (spec.pathArgs?.length === 1) statics[`${cls}.retrieve.${phpVerb(verb)}`] = instanceOp(spec);
+  }
+  return {
+    package: "stripe/stripe-php",
+    imports: ["Stripe"],
+    provider: ts.provider,
+    host: ts.host,
+    auth: ts.auth,
+    generatedFrom: "scripts/port-stripe.ts from src/detect/registry/stripe.json",
+    instance: { names: ["StripeClient"], urlArg: { StripeClient: "0.api_base" } },
+    methods: { ...methods, ...statics },
+  };
+}
+
 function write(file: string, entry: IrRegistryEntry): void {
   const { methods, ...head } = entry;
   const lines = Object.entries(methods).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`);
@@ -83,3 +137,4 @@ function write(file: string, entry: IrRegistryEntry): void {
 }
 
 write("src/lang/python/registry/stripe.json", python());
+write("src/lang/php/registry/stripe-php.json", php());

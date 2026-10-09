@@ -289,7 +289,7 @@
         "python",
         "php"
       ],
-      "description": "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python."
+      "description": "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python, the PHP one php."
     },
     "Client": {
       "type": "string",
@@ -304,10 +304,17 @@
         "aiohttp",
         "urllib",
         "urllib3",
+        "guzzle",
+        "laravel-http",
+        "symfony-http",
+        "curl",
+        "psr-18",
+        "php-stream",
+        "wordpress",
         "sdk",
         "framework"
       ],
-      "description": "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. Any language: sdk (a registry), framework (a framework helper)."
+      "description": "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper)."
     },
     "Shape": {
       "description": "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
@@ -868,7 +875,7 @@
       "properties": {
         "package": {
           "type": "string",
-          "description": "Package name in its ecosystem: an npm package, a PyPI distribution."
+          "description": "Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package."
         },
         "ecosystem": {
           "$ref": "#/definitions/Ecosystem"
@@ -883,7 +890,7 @@
         },
         "declared": {
           "type": "boolean",
-          "description": "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py."
+          "description": "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json."
         },
         "imported": {
           "type": "boolean"
@@ -924,9 +931,10 @@
       "type": "string",
       "enum": [
         "npm",
-        "pypi"
+        "pypi",
+        "composer"
       ],
-      "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py)."
+      "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json)."
     }
   }
 }

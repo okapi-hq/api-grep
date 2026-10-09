@@ -36,12 +36,11 @@ function bindingChain(b: Binding, name: string, ctx: IrCtx, depth: number): Chai
     case "param": {
       const sub = ctx.subst?.get(b.param);
       if (sub) return valueChain(sub.expr, sub.fn, ctx, depth + 1);
-      if (b.param.type) {
-        const typed = typeChain(b.param.type, b.fn, ctx, depth + 1);
-        if (resolved(typed)) return typed;
-      }
+      // a default instance (`Client $http = new Client(['base_uri' => ...])`) says more than the type alone
       const dflt = b.param.default ? valueChain(b.param.default, b.fn, ctx, depth + 1) : UNKNOWN;
-      return resolved(dflt) ? dflt : { root: { kind: "param", name }, segs: [] };
+      if (resolved(dflt)) return dflt;
+      const typed = b.param.type ? typeChain(b.param.type, b.fn, ctx, depth + 1) : UNKNOWN;
+      return resolved(typed) ? typed : { root: { kind: "param", name }, segs: [] };
     }
     case "value": {
       const c = valueChain(b.assign.value, b.fn, ctx, depth + 1);
@@ -143,7 +142,7 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
 }
 
 function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
-  const c = valueChain(e.fn, fn, ctx, depth + 1);
+  const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
     if (c.root.kind === "function") return factoryResult(c.root.fn, e, fn, ctx, depth);
     if (c.root.kind === "class") return { root: { kind: "instance", cls: c.root.cls }, segs: [] };
@@ -164,8 +163,9 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
       return fn.cls ? { root: { kind: "instance", cls: fn.cls }, segs: [] } : UNKNOWN;
     case "fnref":
       return { root: { kind: "function", fn: e.fn }, segs: [] };
+    // members and calls are structure (bounded by the expression); only lookups count against the depth
     case "attr":
-      return member(valueChain(e.obj, fn, ctx, depth + 1), e.name, ctx, depth);
+      return member(valueChain(e.obj, fn, ctx, depth), e.name, ctx, depth);
     case "call":
       return callChain(e, fn, ctx, depth);
     case "index": {
