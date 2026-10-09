@@ -9521,7 +9521,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 32,
+    "filesSeen": 33,
     "skipped": [
       {
         "file": "ai-sdk/generate.ts",
@@ -9541,6 +9541,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "convex/functions.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "discord/bot.ts",
         "reason": "excluded",
       },
       {
@@ -9621,7 +9625,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 24,
+      "excluded": 25,
     },
     "unfollowed": [],
   },
