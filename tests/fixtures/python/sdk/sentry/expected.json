@@ -2,7 +2,6 @@
   "issue": "https://github.com/okapi-hq/api-grep/issues/3",
   "calls": [
     {"file": "errors.py", "line": 8, "provider": "sentry"},
-    {"file": "errors.py", "line": 12, "provider": "sentry"},
-    {"file": "errors.py", "line": 16, "provider": "sentry"}
+    {"file": "errors.py", "line": 12, "provider": "sentry"}
   ]
 }

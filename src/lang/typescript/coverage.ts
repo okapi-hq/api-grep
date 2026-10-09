@@ -1,30 +1,18 @@
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
 import { Node, SyntaxKind, type SourceFile } from "ts-morph";
 import { coverageRows, manifestDirs } from "../../coverage.js";
 import { AI_SDK_PACKAGES } from "../../detect/ai-sdk.js";
-import { packageFromSpecifier, specifierOf } from "../../detect/origin.js";
+import { packageFromSpecifier, specifierOf } from "../../ast/origin.js";
 import type { Registry } from "../../detect/registry/index.js";
 import { sdkPackages } from "../../normalize/provider.js";
+import { PackageJsonReader } from "../../package-json.js";
 import type { Call, Coverage } from "../../report/schema.js";
 
-interface PackageJson {
-  dependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-}
-
 /** `dependencies` and `peerDependencies` of every package.json between the scanned files and the scanned directory. */
-function declaredPackages(rootDir: string, files: string[]): Set<string> {
+function declaredPackages(rootDir: string, files: string[], packages: PackageJsonReader): Set<string> {
   const out = new Set<string>();
   for (const dir of manifestDirs(rootDir, files)) {
-    const file = path.join(dir, "package.json");
-    if (!existsSync(file)) continue;
-    try {
-      const json = JSON.parse(readFileSync(file, "utf8")) as PackageJson;
-      for (const name of [...Object.keys(json.dependencies ?? {}), ...Object.keys(json.peerDependencies ?? {})]) out.add(name);
-    } catch {
-      // an unreadable package.json declares nothing
-    }
+    const json = packages.read(dir);
+    for (const name of [...Object.keys(json.dependencies ?? {}), ...Object.keys(json.peerDependencies ?? {})]) out.add(name);
   }
   return out;
 }
@@ -55,7 +43,7 @@ export interface PageImports {
 }
 
 /** SDK coverage of the npm packages a TypeScript / JavaScript repo declares and imports (HTML pages through CDN scripts). */
-export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, pages: PageImports[] = []): Coverage {
+export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, pages: PageImports[] = [], packageJsons = new PackageJsonReader(rootDir)): Coverage {
   const known = sdkPackages("npm");
   const sites = new Map<string, number>();
   const imports = new Map<string, Set<string>>();
@@ -63,5 +51,5 @@ export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[],
   for (const p of pages) imports.set(p.file, new Set([...(imports.get(p.file) ?? []), ...p.packages]));
   for (const pkgs of imports.values()) for (const pkg of pkgs) if (known.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   const supported = (pkg: string): boolean => !!registry.byPackage(pkg) || AI_SDK_PACKAGES.has(pkg);
-  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, [...imports.keys()]), sites, calls, supported }) };
+  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, [...imports.keys()], packageJsons), sites, calls, supported }) };
 }

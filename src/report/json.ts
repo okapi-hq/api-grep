@@ -3,13 +3,14 @@ import { type Report, ReportSchema } from "./schema.js";
 import { splitValid } from "./valid.js";
 
 /**
- * Validates, redacts and serializes a report. Redaction count is folded into stats.
+ * The report as written: redacted and validated. Redaction count is folded into stats.
  * The report's own `commit` hash is metadata, not a scanned value, so it is kept out
  * of the redaction walk (a 40-hex SHA otherwise matches the generic hex-secret rule).
  * Calls are validated one by one: a call that does not fit the schema is dropped, listed
  * in `diagnostics.droppedCalls` and reported through `onWarning`; the rest is still written.
+ * Every output (JSON, table, curl) is rendered from this, so none of them can show what redaction removed.
  */
-export function toJson(report: Report, pretty = true, onWarning?: (message: string) => void): string {
+export function finalizeReport(report: Report, onWarning?: (message: string) => void): Report {
   const { commit, ...rest } = report;
   const { value, count } = redact(rest);
   value.stats.redacted = count;
@@ -22,6 +23,15 @@ export function toJson(report: Report, pretty = true, onWarning?: (message: stri
       value.diagnostics.complete = false;
     }
   }
-  const parsed = ReportSchema.parse({ ...value, calls: valid, commit });
-  return JSON.stringify(parsed, null, pretty ? 2 : undefined);
+  return ReportSchema.parse({ ...value, calls: valid, commit });
+}
+
+/** Redacts, validates and serializes a report (see `finalizeReport`). */
+export function toJson(report: Report, pretty = true, onWarning?: (message: string) => void): string {
+  return serializeReport(finalizeReport(report, onWarning), pretty);
+}
+
+/** Serializes a report that already went through `finalizeReport`. */
+export function serializeReport(report: Report, pretty = true): string {
+  return JSON.stringify(report, null, pretty ? 2 : undefined);
 }

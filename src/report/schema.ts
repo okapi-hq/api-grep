@@ -1,4 +1,5 @@
-import { z } from "zod/v4";
+import { z } from "zod";
+import type { Shape } from "../types.js";
 import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
 
 /**
@@ -49,7 +50,7 @@ export const ClientSchema = z
       "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper).",
   });
 
-export const ShapeSchema: z.ZodType<unknown> = z
+export const ShapeSchema: z.ZodType<Shape> = z
   .lazy(() =>
     z.union([
       z.object({
@@ -124,7 +125,7 @@ export const DynamicPartSchema = z
 
 export const CallSchema = z
   .object({
-    id: z.string().describe("Stable id: a hash of file, line and column."),
+    id: z.string().describe("Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."),
     location: LocationSchema,
     client: ClientSchema,
     sdk: z

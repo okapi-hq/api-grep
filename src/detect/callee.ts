@@ -1,57 +1,34 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
+import { memberChain, unwrap, type Chain } from "../ast/expr.js";
+import { isFunctionLike, type FunctionLike } from "../ast/function.js";
+import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
 import type { Callee } from "../types.js";
-import { identifierOrigin, packageFromFilePath, packageFromSpecifier } from "./origin.js";
 import { annotatedPackage } from "./type-annotation.js";
 
 const MAX_DEPTH = 6;
 
-/** Strips parentheses, casts, non-null assertions and awaits. */
-export function unwrap(e: Expression): Expression {
-  let cur = e;
-  for (;;) {
-    if (Node.isParenthesizedExpression(cur) || Node.isAsExpression(cur) || Node.isNonNullExpression(cur)) cur = cur.getExpression();
-    else if (Node.isSatisfiesExpression(cur) || Node.isTypeAssertion(cur) || Node.isAwaitExpression(cur)) cur = cur.getExpression();
-    else return cur;
-  }
-}
-
-export interface Chain {
-  root: Expression;
-  /** nodes[i] is the expression covering root + chain[0..i-1]. */
-  nodes: Expression[];
-  chain: string[];
-}
-
-/** `a.b.c` -> root `a`, chain ["b", "c"]; supports `a["b"]`. */
-export function memberChain(expr: Expression): Chain {
-  const names: string[] = [];
-  const nodes: Expression[] = [];
-  let cur = unwrap(expr);
-  for (;;) {
-    if (Node.isPropertyAccessExpression(cur)) {
-      names.unshift(cur.getName());
-      nodes.unshift(cur);
-      cur = unwrap(cur.getExpression());
-    } else if (Node.isElementAccessExpression(cur) && Node.isStringLiteral(cur.getArgumentExpression())) {
-      names.unshift((cur.getArgumentExpression() as Expression & { getLiteralValue(): string }).getLiteralValue());
-      nodes.unshift(cur);
-      cur = unwrap(cur.getExpression());
-    } else break;
-  }
-  nodes.unshift(cur);
-  return { root: cur, nodes, chain: names };
+/** `import { get } from "axios"` (not the default or namespace import): the callee is that export, not the package itself. */
+export function isNamedImport(c: Callee): boolean {
+  return !!c.importedName && c.importedName !== "default" && c.importedName !== "*";
 }
 
 /** Chain as seen from the package's exports: named import name is prepended, default/namespace are not. */
 export function exportedChain(c: Callee): string[] {
-  const n = c.importedName;
-  if (!n || n === "default" || n === "*") return c.chain;
-  return [n, ...c.chain];
+  return isNamedImport(c) ? [c.importedName!, ...c.chain] : c.chain;
+}
+
+/** Options given to the factory the client came from (`axios.create(cfg)`, `got.extend(cfg)`), when it is one of `factories`. */
+export function factoryOptions(c: Callee, factories: string[]): Expression | undefined {
+  const inst = c.instance;
+  if (!inst || inst.kind !== "call") return undefined;
+  const last = inst.chain[inst.chain.length - 1];
+  return last !== undefined && factories.includes(last) ? inst.args[0] : undefined;
 }
 
 export function describeCallee(call: CallExpression | NewExpression, depth = 0): Callee {
   const expr = call.getExpression();
-  const mc = memberChain(expr as Expression);
+  const mc = memberChain(expr);
   return calleeFromChain(mc, depth);
 }
 
@@ -167,7 +144,7 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
 
 function thisCallee(mc: Chain, depth: number): Callee {
   const { root, chain } = mc;
-  const cls = root.getFirstAncestorByKind(SyntaxKind.ClassDeclaration) ?? root.getFirstAncestorByKind(SyntaxKind.ClassExpression);
+  const cls = enclosingClass(root);
   const propName = chain[0];
   if (!cls || !propName) return { ...typeFallback(mc, 1), thisRoot: true };
   const prop = cls.getProperty(propName);
@@ -175,7 +152,7 @@ function thisCallee(mc: Chain, depth: number): Callee {
   if (method) return { localDecl: method, chain: chain.slice(1) };
   const rest: Chain = { root: mc.nodes[1] ?? root, nodes: mc.nodes.slice(1), chain: chain.slice(1) };
   if (prop?.getInitializer()) return localCallee(prop, rest, depth + 1);
-  const paramProp = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.isParameterProperty());
+  const paramProp = parameterProperty(cls, propName);
   if (paramProp?.getInitializer()) return localCallee(paramProp, rest, depth + 1);
   // `this._stripe = null` in the constructor, `this._stripe = new Stripe(key)` in `configure()`: the one that builds
   const built = fieldAssignments(cls, propName)
@@ -183,56 +160,6 @@ function thisCallee(mc: Chain, depth: number): Callee {
     .find((u) => Node.isCallExpression(u) || Node.isNewExpression(u));
   if (built && (Node.isCallExpression(built) || Node.isNewExpression(built))) return instanceCallee(built, rest.chain, depth + 1);
   return { ...typeFallback(mc, 1), thisRoot: true };
-}
-
-/** Values assigned to `this.<propName>`: in the constructor first, then in the other methods. */
-function fieldAssignments(cls: Node, propName: string): Expression[] {
-  if (!Node.isClassDeclaration(cls) && !Node.isClassExpression(cls)) return [];
-  const bodies = [...cls.getConstructors(), ...cls.getMethods(), ...cls.getSetAccessors()];
-  return bodies.flatMap((b) =>
-    b.getDescendantsOfKind(SyntaxKind.BinaryExpression).flatMap((bin) => {
-      const left = bin.getLeft();
-      const isField = bin.getOperatorToken().getKind() === SyntaxKind.EqualsToken && Node.isPropertyAccessExpression(left) && Node.isThisExpression(left.getExpression()) && left.getName() === propName;
-      return isField ? [bin.getRight()] : [];
-    }),
-  );
-}
-
-/** Initializer of `this.<prop>`: property initializer or `this.prop = ...` in the constructor. */
-export function classPropertyInitializer(at: Node, propName: string): Expression | undefined {
-  const cls = at.getFirstAncestorByKind(SyntaxKind.ClassDeclaration) ?? at.getFirstAncestorByKind(SyntaxKind.ClassExpression);
-  if (!cls) return undefined;
-  const prop = cls.getProperty(propName);
-  const init = prop?.getInitializer();
-  if (init) return init;
-  const param = cls.getConstructors().flatMap((c) => c.getParameters()).find((p) => p.getName() === propName && p.isParameterProperty());
-  // `constructor(private baseUrl = "https://api.gladia.io")`: the default, unless the constructor reassigns it
-  if (param) return constructorAssignment(cls, propName) ?? param.getInitializer();
-  return constructorAssignment(cls, propName);
-}
-
-function constructorAssignment(cls: Node, propName: string): Expression | undefined {
-  if (!Node.isClassDeclaration(cls) && !Node.isClassExpression(cls)) return undefined;
-  for (const ctor of cls.getConstructors()) {
-    for (const bin of ctor.getDescendantsOfKind(SyntaxKind.BinaryExpression)) {
-      const left = bin.getLeft();
-      if (bin.getOperatorToken().getKind() !== SyntaxKind.EqualsToken) continue;
-      if (Node.isPropertyAccessExpression(left) && Node.isThisExpression(left.getExpression()) && left.getName() === propName) {
-        return bin.getRight();
-      }
-    }
-  }
-  return undefined;
-}
-
-export function packageOfType(t: import("ts-morph").Type): string | undefined {
-  const sym = t.getSymbol() ?? t.getAliasSymbol();
-  if (!sym) return undefined;
-  for (const d of sym.getDeclarations()) {
-    const pkg = packageFromFilePath(d.getSourceFile().getFilePath());
-    if (pkg) return pkg;
-  }
-  return undefined;
 }
 
 /**
@@ -255,4 +182,20 @@ function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
     if (pkg) return { package: pkg, chain: mc.chain.slice(i), viaType: true };
   }
   return { chain: mc.chain, localDecl: decl && Node.isParameterDeclaration(decl) ? undefined : decl };
+}
+
+/** `fn.call(this, ...args)` invokes `fn` with the arguments shifted by one. */
+export function callShift(callee: Callee): number {
+  return callee.chain.length === 1 && callee.chain[0] === "call" && isFunctionLike(callee.localDecl) ? 1 : 0;
+}
+
+/** The function a call resolves to: a local function (also through `.call(this, …)`), or a method of a local class (`svc.post`, `Svc.post`). */
+export function wrapperFunction(callee: Callee): FunctionLike | undefined {
+  const d = callee.localDecl;
+  if (isFunctionLike(d) && (callee.chain.length === 0 || callShift(callee) === 1)) return d;
+  if (d && (Node.isClassDeclaration(d) || Node.isClassExpression(d)) && callee.chain.length === 1) {
+    const m = d.getMethod(callee.chain[0]!);
+    return isFunctionLike(m) ? m : undefined;
+  }
+  return undefined;
 }

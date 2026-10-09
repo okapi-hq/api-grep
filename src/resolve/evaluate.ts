@@ -1,7 +1,9 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
-import { classPropertyInitializer, unwrap } from "../detect/callee.js";
-import { identifierOrigin } from "../detect/origin.js";
-import { bindingElementValue, declarationsOf, getProp, paramSubstitution } from "../detect/options.js";
+import { classPropertyInitializer } from "../ast/class.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { bindingElementValue, declarationsOf, getProp, paramSubstitution } from "../ast/object.js";
+import { identifierOrigin } from "../ast/origin.js";
+import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
 import { localReturn } from "./local-return.js";
 import { markConst, partsToTemplate, staticText } from "./parts.js";
@@ -17,7 +19,7 @@ function dynamicName(e: Expression): string {
   if (Node.isIdentifier(u)) return u.getText();
   if (Node.isPropertyAccessExpression(u)) return u.getName();
   if (Node.isElementAccessExpression(u)) return dynamicName(u.getExpression());
-  if (Node.isCallExpression(u)) return dynamicName(u.getExpression() as Expression);
+  if (Node.isCallExpression(u)) return dynamicName(u.getExpression());
   if (Node.isConditionalExpression(u)) return dynamicName(u.getWhenTrue());
   return "expr";
 }
@@ -122,7 +124,8 @@ function paramDefault(decl: Node, u: Expression, ctx: EvalCtx, depth: number): P
 function typeLiteral(u: Expression): Part[] | undefined {
   try {
     const t = u.getType();
-    if (t.isStringLiteral() || t.isNumberLiteral()) return [{ kind: "static", text: String(t.getLiteralValue()), viaConst: true }];
+    const v = t.isStringLiteral() || t.isNumberLiteral() ? t.getLiteralValue() : undefined;
+    if (typeof v === "string" || typeof v === "number") return [{ kind: "static", text: String(v), viaConst: true }];
   } catch {
     return undefined;
   }
@@ -172,7 +175,7 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : callee.getText();
   if (PASSTHROUGH_CALLS.has(name)) {
     const target = Node.isPropertyAccessExpression(callee) && name !== "String" ? callee.getExpression() : u.getArguments()[0];
-    if (target && Node.isExpression(target)) return evaluate(target as Expression, ctx, depth + 1);
+    if (target && Node.isExpression(target)) return evaluate(target, ctx, depth + 1);
   }
   if (name === "join" && Node.isPropertyAccessExpression(callee)) {
     const arr = unwrap(callee.getExpression());
@@ -233,7 +236,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   if (Node.isIdentifier(u)) return evalIdentifier(u, ctx, depth);
   if (Node.isPropertyAccessExpression(u) || Node.isElementAccessExpression(u)) return evalPropertyAccess(u, ctx, depth);
   if (Node.isCallExpression(u)) return evalCall(u, ctx, depth);
-  if (Node.isNewExpression(u) && u.getExpression().getText() === "URL") return evalNewUrl(u, ctx, depth);
+  if (constructedName(u) === "URL") return evalNewUrl(u, ctx, depth);
   if (Node.isConditionalExpression(u)) {
     const a = evaluate(u.getWhenTrue(), ctx, depth + 1);
     const b = evaluate(u.getWhenFalse(), ctx, depth + 1);
@@ -249,7 +252,7 @@ export function evalNewUrl(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   if (!a) return dyn(u, "unknown");
   const pathParts = evaluate(a, ctx, depth + 1);
   const pathText = partsToTemplate(pathParts);
-  if (!b || /^[a-z][a-z0-9+.-]*:\/\//i.test(pathText)) return pathParts;
+  if (!b || SCHEME_RE.test(pathText)) return pathParts;
   const baseParts = evaluate(b, ctx, depth + 1);
   if (pathText.startsWith("/")) return [...originOnly(baseParts), ...pathParts];
   const baseText = partsToTemplate(baseParts);
@@ -263,10 +266,4 @@ function originOnly(parts: Part[]): Part[] {
   if (m && staticText(parts) !== undefined) return [{ kind: "static", text: m[1]!, viaConst: parts.some((p) => p.kind === "static" && p.viaConst) }];
   if (parts[0] && parts[0].kind !== "static") return [parts[0]];
   return parts;
-}
-
-/** Convenience: parts joined with static text and `{name}` placeholders, plus the dynamic names. */
-export function evaluateToTemplate(expr: Expression, ctx: EvalCtx = {}): { template: string; parts: Part[] } {
-  const parts = evaluate(expr, ctx);
-  return { template: partsToTemplate(parts), parts };
 }

@@ -44,7 +44,7 @@ function lowerString(n: SyntaxNode, st: PhpState): Expr {
   }
   if (n.type === "heredoc" || n.type === "nowdoc") dedent(parts, n);
   if (parts.length === 0) return { k: "str", v: "" };
-  return parts.length === 1 && parts[0]!.k === "str" ? parts[0]! : { k: "tmpl", parts };
+  return parts.length === 1 && parts[0]!.k === "str" ? parts[0] : { k: "tmpl", parts };
 }
 
 /** A heredoc loses the closing marker's indentation on every line, and its last newline (PHP 7.3+). */

@@ -1,17 +1,14 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, EvalCtx, RawCall } from "../types.js";
-import { exportedChain, unwrap } from "./callee.js";
-import { getProp, isStringLike, toObjectLiteral } from "./options.js";
+import { isStringLike, unwrap } from "../ast/expr.js";
+import { getProp, toObjectLiteral } from "../ast/object.js";
+import { exportedChain, factoryOptions, isNamedImport } from "./callee.js";
 
 const VERBS = new Set(["get", "delete", "head", "options", "post", "put", "patch"]);
 const WITH_BODY = new Set(["post", "put", "patch"]);
 
 function instanceConfig(callee: Callee): Expression | undefined {
-  const inst = callee.instance;
-  if (!inst || inst.kind !== "call") return undefined;
-  const last = inst.chain[inst.chain.length - 1];
-  if (last !== "create") return undefined;
-  return inst.args[0];
+  return factoryOptions(callee, ["create"]);
 }
 
 function fromConfig(node: CallExpression, cfg: Expression | undefined, callee: Callee, ctx: EvalCtx): RawCall {
@@ -68,7 +65,7 @@ export function detectAxios(node: CallExpression | NewExpression, callee: Callee
   const ch = exportedChain(callee);
   const args = node.getArguments() as Expression[];
   if (ch.length === 0 || (ch.length === 1 && ch[0] === "request")) {
-    if (!callee.instance && ch.length === 0 && callee.importedName && callee.importedName !== "default" && callee.importedName !== "*") return null;
+    if (!callee.instance && ch.length === 0 && isNamedImport(callee)) return null;
     // `axios(url, config)`: the URL first, the config second
     if (ch.length === 0 && args[0] && !toObjectLiteral(args[0], ctx) && urlFirst(args[0])) return { ...fromConfig(node, args[1], callee, ctx), urlExpr: args[0] };
     return fromConfig(node, args[0], callee, ctx);

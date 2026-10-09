@@ -1,8 +1,9 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { unwrap } from "../ast/expr.js";
+import { getProp, toObjectLiteral } from "../ast/object.js";
 import { evaluate, staticText } from "../resolve/evaluate.js";
 import type { Callee, EvalCtx, RawCall } from "../types.js";
-import { exportedChain, unwrap } from "./callee.js";
-import { getProp, toObjectLiteral } from "./options.js";
+import { exportedChain } from "./callee.js";
 
 const VERBS: Record<string, string | undefined> = { ajax: undefined, get: "GET", getJSON: "GET", post: "POST" };
 

@@ -1,6 +1,6 @@
 import type { Expression } from "ts-morph";
-import { memberChain } from "../detect/callee.js";
-import { getProp } from "../detect/options.js";
+import { memberChain } from "../ast/expr.js";
+import { getProp } from "../ast/object.js";
 import type { EvalCtx, Part, RawCall, UrlShape } from "../types.js";
 import { evaluate } from "./evaluate.js";
 import { refParts } from "./ref-path.js";

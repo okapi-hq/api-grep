@@ -51,12 +51,12 @@ describe("firebase modular sdk", () => {
 });
 
 describe("sentry", () => {
-  it("reports capture calls from any @sentry package, also through a local wrapper, but not init", async () => {
+  it("reports capture calls from any @sentry package, inside a local wrapper but not at its callers, and not init", async () => {
     const r = await scanFixture("sdk/sentry");
     expect(r).toMatchSnapshot();
+    // `reportError(err)` sends the same request from every caller: only the capture inside it is a call
     expect(r.calls.map((c) => [c.location.file, c.location.line, c.sdk?.chain, c.via ?? null])).toEqual([
       ["checkout.ts", 8, "captureException", null],
-      ["checkout.ts", 14, "captureException", "wrapper:reportError"],
       ["monitoring.ts", 6, "captureException", null],
       ["monitoring.ts", 9, "captureMessage", null],
     ]);

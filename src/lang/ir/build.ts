@@ -1,10 +1,10 @@
 import { assembleCall } from "../../assemble.js";
+import { relativePosix } from "../../files.js";
 import type { Call, Language } from "../../report/schema.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Part, UrlShape } from "../../types.js";
-import { relPath } from "../files.js";
 import { argAt, argOf, propOf } from "./args.js";
 import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
@@ -115,7 +115,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
   const file = raw.fn.module.file;
   const sdk = raw.sdk;
   return assembleCall({
-    location: { file: relPath(base.rootDir, file), line: raw.call.pos.line, col: raw.call.pos.col, language: base.language },
+    location: { file: relativePosix(base.rootDir, file), line: raw.call.pos.line, col: raw.call.pos.col, language: base.language },
     client: raw.client,
     sdk: sdk ? { package: sdk.entry.package, version: base.sdkVersion(file, sdk.entry.package), chain: sdk.key, provider: sdk.entry.provider, operationId: sdk.spec.operationId } : undefined,
     url,

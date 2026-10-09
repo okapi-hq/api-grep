@@ -1,12 +1,13 @@
 import { Node, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { getProp } from "../detect/options.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { getProp } from "../ast/object.js";
+import { SCHEME_RE } from "../normalize/path.js";
 import type { EvalCtx, Part, UrlShape } from "../types.js";
 import { collectAppended } from "./appended.js";
 import { evalNewUrl, evaluate, partsToTemplate } from "./evaluate.js";
-import { joinParts, partsToUrlShape, SCHEME_RE } from "./url-shape.js";
+import { joinParts, partsToUrlShape } from "./url-shape.js";
 
-export { normalizePath, partsToUrlShape } from "./url-shape.js";
+export { partsToUrlShape } from "./url-shape.js";
 
 /** `searchParams.set("k", v)` calls become `?k={v}` parts so values keep their shape. */
 function appendedQueryParts(u: Expression, ctx: EvalCtx, hasQuery: boolean): Part[] {
@@ -35,7 +36,7 @@ function urlBuilderParts(u: Expression, ctx: EvalCtx): Part[] | undefined {
 
 export function urlParts(expr: Expression, ctx: EvalCtx): Part[] {
   const u = unwrap(expr);
-  if (Node.isNewExpression(u) && u.getExpression().getText() === "URL") return evalNewUrl(u, ctx, 0);
+  if (constructedName(u) === "URL") return evalNewUrl(u, ctx, 0);
   const built = urlBuilderParts(u, ctx);
   if (built) return built;
   const parts = evaluate(u, ctx);

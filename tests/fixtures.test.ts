@@ -104,6 +104,14 @@ describe("wrappers", () => {
     expect(at(r, "intermediate.ts", 6)).toMatchObject({ via: "wrapper:proxied", provider: "pagerduty", method: "POST", pathTemplate: "/incidents" });
   });
 
+  it("reports each request a wrapper makes once per call site, with distinct ids", async () => {
+    const r = await scanFixture("wrappers");
+    const site = (line: number) => r.calls.filter((c) => c.location.file === "several-requests.ts" && c.location.line === line).map((c) => `${c.method} ${c.pathTemplate}`);
+    expect(site(15)).toEqual(["GET /status"]);
+    expect(site(16)).toEqual(["GET /items/{id}", "PUT /items/{id}", "POST /items"]);
+    expect(new Set(r.calls.map((c) => c.id)).size).toBe(r.calls.length);
+  });
+
   it("can be disabled", async () => {
     const r = await scan({ dir: path.join(FIXTURES, "wrappers"), wrappers: false });
     expect(r.calls.some((c) => c.via)).toBe(false);

@@ -1,4 +1,4 @@
-import { packageFromCdnUrl } from "../../detect/origin.js";
+import { packageFromCdnUrl } from "../../ast/origin.js";
 import { neutralizeTemplates } from "./templates.js";
 
 /** A form submitted to an explicit action URL. */

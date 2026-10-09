@@ -38,7 +38,7 @@ export function detectStream(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain:
   if (!urlArg) return undefined;
   const url: Scoped = { expr: urlArg.value, fn };
   const ctxArgIndex = chain.root.name.toLowerCase() === "fopen" ? 3 : 2;
-  const context = httpContext(call.args[ctxArgIndex] ? { expr: call.args[ctxArgIndex]!.value, fn } : undefined, ctx);
+  const context = httpContext(call.args[ctxArgIndex] ? { expr: call.args[ctxArgIndex].value, fn } : undefined, ctx);
   const head = evaluate(url.expr, fn, ctx)[0];
   const isHttp = head?.kind === "static" ? HTTP_URL.test(head.text) : head?.kind === "env";
   if (!isHttp && !context) return undefined;

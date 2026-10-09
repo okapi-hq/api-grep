@@ -1,5 +1,5 @@
 import { Node, SyntaxKind, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
+import { unwrap } from "../ast/expr.js";
 
 export interface AppendedEntry {
   key: string;
