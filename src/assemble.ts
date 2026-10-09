@@ -59,13 +59,19 @@ function confidenceOf(r: ResolvedCall): number {
   });
 }
 
+/** Hash of where the call is; the n-th other request made from the same place (through a wrapper) adds `#n`. */
+export function callId(loc: Call["location"], n = 0): string {
+  const key = `${loc.file}:${loc.line}:${loc.col}${n > 0 ? `#${n}` : ""}`;
+  return createHash("sha1").update(key).digest("hex").slice(0, 12);
+}
+
 /** The report's Call record: provider, confidence and id are decided here, the same way for every language. */
 export function assembleCall(r: ResolvedCall): Call {
   const { provider, source: providerSource } = providerOf(r);
   const q = queryOf(r.url, r.query);
   const loc = r.location;
   return {
-    id: createHash("sha1").update(`${loc.file}:${loc.line}:${loc.col}`).digest("hex").slice(0, 12),
+    id: callId(loc),
     location: loc,
     client: r.client,
     sdk: r.sdk ? { package: r.sdk.package, version: r.sdk.version, chain: r.sdk.chain } : undefined,

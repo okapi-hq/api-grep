@@ -59,7 +59,6 @@ exports[`regression fixtures > python/sdk/sentry 1`] = `
 [
   "errors.py:8 sentry POST /api/{projectId}/envelope",
   "errors.py:12 sentry POST /api/{projectId}/envelope",
-  "errors.py:16 sentry POST /api/{projectId}/envelope (wrapper:report)",
 ]
 `;
 
@@ -266,7 +265,6 @@ exports[`regression fixtures > sdk/revenuecat 1`] = `
 exports[`regression fixtures > sdk/sentry 1`] = `
 [
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
-  "checkout.ts:14 sentry POST /api/{projectId}/envelope (wrapper:reportError)",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
 ]

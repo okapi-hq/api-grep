@@ -98,7 +98,7 @@ export const DynamicPartSchema = z
 
 export const CallSchema = z
   .object({
-    id: z.string().describe("Stable id: a hash of file, line and column."),
+    id: z.string().describe("Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."),
     location: LocationSchema,
     client: ClientSchema,
     sdk: z

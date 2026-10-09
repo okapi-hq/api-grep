@@ -1,6 +1,6 @@
 import type { Chain } from "./chain.js";
 import { argAt, argOf, kwargsDict, propOf } from "./args.js";
-import type { IrRegistryEntry, Scoped } from "./language.js";
+import type { IrMethodSpec, IrRegistryEntry, Scoped } from "./language.js";
 import type { CallExpr, FunctionDef } from "./model.js";
 import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
 import { staticKey } from "./values.js";
@@ -110,6 +110,15 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
   return i >= 0 ? argOf(m.segs[i], m.spec.urlFromInstanceArg) : undefined;
 }
 
+/**
+ * Whether the method builds its request from the call's arguments. `capture_exception(err)` sends the same request
+ * whatever `err` is, so a `report(err)` wrapper around it is not a client of its own.
+ */
+function readsArgs(spec: IrMethodSpec): boolean {
+  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, ...(spec.pathArgs ?? [])];
+  return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || Object.keys(spec.params ?? {}).length > 0;
+}
+
 /** An SDK call: a chain from a registry's import root to one of its methods. */
 export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
   if (chain.root.kind !== "external" || chain.segs[chain.segs.length - 1]?.call !== call) return undefined;
@@ -130,7 +139,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
       baseUrl,
       headers: [],
-      inputs: [...args, ...(baseUrl ? [baseUrl] : [])],
+      inputs: [...(readsArgs(m.spec) ? args : []), ...(baseUrl ? [baseUrl] : [])],
     };
   }
   return undefined;

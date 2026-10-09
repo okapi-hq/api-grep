@@ -1,5 +1,6 @@
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
+import { callId } from "./assemble.js";
 import { buildExamples } from "./examples/build.js";
 import type { Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit } from "./git.js";
@@ -60,6 +61,24 @@ function sortCalls(calls: Call[]): Call[] {
   return calls.sort((a, b) => a.location.file.localeCompare(b.location.file) || a.location.line - b.location.line || a.location.col - b.location.col);
 }
 
+/**
+ * One call per request per call site: a wrapper that reaches the same request twice (a retry, two branches building it)
+ * gives it once; different requests from one call site keep distinct ids.
+ */
+function onePerRequest(calls: Call[]): Call[] {
+  const seen = new Set<string>();
+  const perSite = new Map<string, number>();
+  return calls.flatMap((c) => {
+    const { id, ...request } = c;
+    const key = `${id}:${JSON.stringify(request)}`;
+    if (seen.has(key)) return [];
+    seen.add(key);
+    const n = perSite.get(id) ?? 0;
+    perSite.set(id, n + 1);
+    return [n === 0 ? c : { ...c, id: callId(c.location, n) }];
+  });
+}
+
 function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {
   if (max <= 0) return calls;
   for (const c of calls) {
@@ -102,7 +121,7 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const diag = new DiagnosticsCollector(opts.onWarning);
   const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
   const found = await scanLanguages(rootDir, opts, diag, changed);
-  const built = sortCalls(found.calls);
+  const built = onePerRequest(sortCalls(found.calls));
   if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate, onWarning: opts.onWarning });
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);

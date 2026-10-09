@@ -5,7 +5,7 @@ import { callShift, wrapperFunction } from "../detect/callee.js";
 import { detectFile, detectNode, type DetectResult, type WrapperCandidate } from "../detect/index.js";
 import type { Registry } from "../detect/registry/index.js";
 import type { Unfollowed } from "../detect/unfollowed.js";
-import type { RawCall, Subst } from "../types.js";
+import type { RawCall, SdkMatch, Subst } from "../types.js";
 
 const MAX_INNER = 3;
 
@@ -19,10 +19,24 @@ function wrapperName(fn: FunctionLike): string {
   return Node.isVariableDeclaration(parent) ? parent.getName() : "anonymous";
 }
 
-/** True when at least one of the wrapper's parameters is referenced by the inner call's url/method/body/options. */
+/**
+ * SDK arguments the request is built from (path, query, body). The error given to `captureException` is not one: a
+ * `reportError(err)` wrapper sends the same request from every caller, so its call sites are not calls of their own.
+ */
+function requestArgs(sdk: SdkMatch): Expression[] {
+  const { spec } = sdk;
+  const idx = [spec.bodyArg, spec.queryArg, spec.routeArg, ...(spec.pathArgs ?? [])];
+  for (const from of Object.values(spec.params ?? {})) {
+    const m = /^(?:arg|ref|fn):(\d+)/.exec(from);
+    if (m) idx.push(Number(m[1]));
+  }
+  return idx.flatMap((i) => (i !== undefined && sdk.args[i] ? [sdk.args[i]] : []));
+}
+
+/** True when at least one of the wrapper's parameters is referenced by what the inner call's request is built from. */
 function paramsFlowInto(fn: FunctionLike, raw: RawCall): boolean {
   const params = new Set<Node>(fn.getParameters());
-  const exprs = [raw.urlExpr, raw.baseUrlExpr, raw.methodExpr, raw.bodyExpr, raw.optionsExpr, raw.queryExpr, ...(raw.sdk?.args ?? [])].filter((e): e is Expression => !!e);
+  const exprs = [raw.urlExpr, raw.baseUrlExpr, raw.methodExpr, raw.bodyExpr, raw.optionsExpr, raw.queryExpr, ...(raw.sdk ? requestArgs(raw.sdk) : [])].filter((e): e is Expression => !!e);
   return exprs.some((e) => referencesParam(e, params, 0));
 }
 
