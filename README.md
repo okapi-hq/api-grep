@@ -6,7 +6,7 @@
 
 **Find every outbound HTTP and SDK call in a TypeScript, JavaScript, Python, PHP or HTML codebase, without running it.**
 
-Point `apicalls` at a repository and it lists every call the code makes to an external API:
+Point `api-grep` at a repository and it lists every call the code makes to an external API:
 provider, method, path template, the *shape* of the payload (names and types, never values),
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
@@ -19,7 +19,8 @@ Use it to:
 - inventory the third-party APIs a codebase depends on;
 - review the outbound calls a pull request adds (`--changed-since origin/main`);
 - check request payloads against OpenAPI specs (`--specs`, `--validate`);
-- get a runnable `curl` command for every call (`--curl`).
+- get a runnable `curl` command for every call (`--curl`);
+- run it as a service: `api-grep serve` scans the archives sent to it ([HTTP server](#http-server), [Docker](#docker)).
 
 ## Quick start
 
@@ -33,7 +34,11 @@ pnpm build
 node dist/cli.js scan path/to/your-repo
 ```
 
-`pnpm dev scan <dir>` runs the CLI from source without building.
+`pnpm dev scan <dir>` runs the CLI from source without building. With Docker, no install is needed:
+
+```sh
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/okapi-hq/api-grep scan /repo
+```
 
 ## Example
 
@@ -51,7 +56,7 @@ export async function createCustomer(email: string, userId: string) {
 export const getIntent = (id: string) => stripe.paymentIntents.retrieve(id);
 ```
 
-`apicalls scan` prints one section per file, with its language, then one row per call:
+`api-grep scan` prints one section per file, with its language, then one row per call:
 
 ```
 ┌──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┐
@@ -105,13 +110,13 @@ curl -X POST 'https://api.stripe.com/v1/customers' \
 
 ## Output format
 
-`apicalls scan <dir> --json` (or `--out report.json`) writes one JSON document. For the example
+`api-grep scan <dir> --json` (or `--out report.json`) writes one JSON document. For the example
 above, with `--examples 1`, shown as YAML with one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
 schemaVersion: 1.3.0            # report format version; readers check the major
-tool: apicalls
+tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
 commit: 9ae2b37…                # HEAD, when the directory is a git repository
@@ -124,7 +129,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       language: typescript      # typescript | javascript | html | python | php
     client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
-    provider: stripe            # `apicalls providers` id, or internal | env:<NAME> | unknown
+    provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     providerSource: sdk         # sdk | host | env-name
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
     hostKind: literal           # literal | const | env | relative | unknown
@@ -189,7 +194,7 @@ coverage:                       # API SDKs the repo uses, see SDK coverage
 The format is specified by a JSON Schema (draft-07), [`schema/report.v1.json`](schema/report.v1.json),
 which describes every field. It is generated from [`src/report/schema.ts`](src/report/schema.ts)
 and a test fails when it is out of date, so it always matches what the CLI writes. Get it from
-this repository, from `apicalls schema`, or in Node from `import schema from "apicalls/schema.json"`,
+this repository, from `api-grep schema`, or in Node from `import schema from "api-grep/schema.json"`,
 and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, …).
 
 `schemaVersion` is the version of the format, separate from the tool's `version`:
@@ -208,14 +213,15 @@ package `ecosystem` (`npm`, `pypi`, `composer`).
 ## Usage
 
 ```sh
-apicalls scan <dir>                                   # table
-apicalls scan <dir> --curl                            # one curl command per example request
-apicalls scan <dir> --json                            # JSON report on stdout
-apicalls scan <dir> --out report.json --changed-since origin/main
-apicalls scan <dir> --specs ./specs --validate
-apicalls schema                                       # JSON Schema of the --json report
-apicalls providers                                    # provider ids, names, hosts and packages
-apicalls scan <dir> --language python                 # one language only
+api-grep scan <dir>                                   # table
+api-grep scan <dir> --curl                            # one curl command per example request
+api-grep scan <dir> --json                            # JSON report on stdout
+api-grep scan <dir> --out report.json --changed-since origin/main
+api-grep scan <dir> --specs ./specs --validate
+api-grep schema                                       # JSON Schema of the --json report
+api-grep providers                                    # provider ids, names, hosts and packages
+api-grep scan <dir> --language python                 # one language only
+api-grep serve --port 8080                            # HTTP server, see below
 ```
 
 | option | description |
@@ -234,7 +240,7 @@ apicalls scan <dir> --language python                 # one language only
 | `--no-wrappers` | disable wrapper expansion |
 
 Large monorepos need several GB of heap. The CLI re-runs itself with
-`--max-old-space-size=8192`; set `APICALLS_HEAP_MB` to change it, or to `0` to opt out.
+`--max-old-space-size=8192`; set `API_GREP_HEAP_MB` to change it, or to `0` to opt out.
 
 **Exit codes:** `0` complete scan, `2` partial scan (the report is still written, see
 [diagnostics](#diagnostics)), `1` fatal error (for example the directory does not exist).
@@ -243,6 +249,60 @@ The package also exports the scanner as a library (`scan`, `finalizeReport`, `to
 `ReportSchema`, `reportJsonSchema`, …). `scan` returns the raw report: pass it through `finalizeReport` (redaction,
 validation) before `toTable` or `toCurl`. See
 [`src/index.ts`](src/index.ts).
+
+## HTTP server
+
+`api-grep serve` scans the archives it receives: POST a gzip-compressed tar of a repository, get the JSON report
+back. It is the same scan as the command line, run in a child process for each request.
+
+```sh
+export API_GREP_TOKEN=$(openssl rand -hex 32)
+api-grep serve --host 0.0.0.0 --port 8080
+git archive --format=tar.gz --prefix=repo/ HEAD \
+  | curl --data-binary @- -H "authorization: Bearer $API_GREP_TOKEN" -H "content-type: application/gzip" \
+    "http://localhost:8080/v1/scan?examples=1"
+```
+
+| route | answer |
+|---|---|
+| `POST /v1/scan` | the report (`200`, a partial scan included) for the archive in the body. Query: `language` (as `--language`), `examples` (0 to 20). A `Server-Timing` header gives the unpack and scan times |
+| `GET /v1/providers` | the provider table, as `api-grep providers` prints it |
+| `GET /v1/health` | `status`, `version`, `schemaVersion` and whether a scan is running. The only route without the token |
+
+Errors are JSON, `{ "error": { "code", "message" } }`: `400` bad query, `401` missing or wrong token, `413` archive
+over a limit, `415` not `application/gzip`, `422` not a readable archive or an unsafe entry, `429` a scan is already
+running (one at a time; `Retry-After` is set), `500` the scan failed, `504` the scan timed out.
+
+An archive with a single top-level directory (`git archive --prefix`, a GitHub tarball) is scanned from that
+directory. The archive is untrusted: only regular files and directories are unpacked (no link, device or `.git`),
+an absolute or `..` path or a corrupt archive fails the request, and nothing of it stays on disk after the answer.
+The scan process gets none of the server's environment variables.
+
+| variable | default | |
+|---|---|---|
+| `API_GREP_TOKEN` | none | bearer token of every route but health; required to listen beyond loopback, at least 16 characters |
+| `API_GREP_HOST`, `API_GREP_PORT` | `127.0.0.1`, `8080` (or `PORT`) | address and port; `--host` and `--port` win |
+| `API_GREP_MAX_ARCHIVE_MB` | 512 | largest request body |
+| `API_GREP_MAX_UNPACKED_MB`, `API_GREP_MAX_FILES` | 2048, 200000 | largest unpacked size and entry count of one archive |
+| `API_GREP_SCAN_TIMEOUT_S` | 900 | the scan process is killed after it |
+| `API_GREP_MAX_REPORT_MB` | 256 | largest report |
+| `API_GREP_HEAP_MB` | 8192 | heap of each scan process; keep it below the memory the server has |
+
+Logs give the route, status and duration of each request, never a path or a value from an archive.
+
+## Docker
+
+The image runs `api-grep serve` on port 8080 by default, and any other command when given one:
+
+```sh
+docker run --rm -p 8080:8080 -e API_GREP_TOKEN=<16+ characters> ghcr.io/okapi-hq/api-grep
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/okapi-hq/api-grep scan /repo --json
+```
+
+Tags: `main` follows the main branch, `X.Y.Z` and `X.Y` are releases. The version an image reports is
+`<version>+<commit>` (`0.2.0+f71db3312345`), so every report names the exact code that wrote it; the same comes from
+`API_GREP_BUILD` outside Docker. `docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) .`
+builds it locally.
 
 ## What it detects
 
@@ -364,7 +424,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`, lower confidence). A
   host that still holds a placeholder never becomes a provider: it is `internal` (localhost),
   `env:<NAME>` or `unknown`. `internal` (relative URLs, localhost) is the repo's own backend.
-  `apicalls providers` prints the table as JSON so other tools can share the same names.
+  `api-grep providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
 - **Wrappers** (two hops): a local function or method whose body performs an HTTP call *and*

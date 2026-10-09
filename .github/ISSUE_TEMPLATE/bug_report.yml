@@ -29,13 +29,13 @@ body:
     id: command
     attributes:
       label: Command
-      placeholder: apicalls scan ./my-repo --json
+      placeholder: api-grep scan ./my-repo --json
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: What apicalls reported
+      label: What api-grep reported
       description: Table, JSON excerpt or error message.
     validations:
       required: true

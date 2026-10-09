@@ -14,6 +14,6 @@ function newestSource(dir: string): number {
 /** The suite tests the build, so a missing or stale `dist/` would test the wrong code. */
 export default function setup(): void {
   if (!existsSync(CLI)) throw new Error(`${CLI} not found: run \`pnpm build\` before \`pnpm test:e2e\``);
-  if (process.env.APICALLS_E2E_CLI) return;
+  if (process.env.API_GREP_E2E_CLI) return;
   if (statSync(CLI).mtimeMs < newestSource(path.join(ROOT, "src"))) throw new Error("dist/ is older than src/: run `pnpm build` first");
 }

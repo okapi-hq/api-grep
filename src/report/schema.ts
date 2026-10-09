@@ -139,7 +139,7 @@ export const CallSchema = z
     framework: z.string().optional().describe("Framework helper (n8n, activepieces, ...), when client is framework."),
     provider: z
       .string()
-      .describe("Provider id from `apicalls providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."),
+      .describe("Provider id from `api-grep providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."),
     providerSource: z.enum(["sdk", "host", "env-name"]).optional().describe("sdk: the SDK registry. host: a known host. env-name: only the env var's name."),
     host: z.string().optional().describe("Host, possibly with placeholders (`{project}.supabase.co`). Absent when unknown."),
     hostKind: z.enum(["literal", "const", "env", "relative", "unknown"]).describe("Where the host came from."),
@@ -197,7 +197,7 @@ export const ReportSchema = z
     diagnostics: DiagnosticsSchema.optional(),
     coverage: CoverageSchema.optional(),
   })
-  .meta({ title: "api-grep report", description: "Outbound HTTP and SDK calls found in a codebase by `apicalls scan --json`." });
+  .meta({ title: "api-grep report", description: "Outbound HTTP and SDK calls found in a codebase by `api-grep scan --json`." });
 
 export type Language = z.infer<typeof LanguageSchema>;
 export type ClientKind = z.infer<typeof ClientSchema>;

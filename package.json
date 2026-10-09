@@ -1,6 +1,6 @@
 {
-  "name": "apicalls",
-  "version": "0.1.0",
+  "name": "api-grep",
+  "version": "0.2.0",
   "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP and HTML repositories",
   "keywords": [
     "typescript",
@@ -33,7 +33,7 @@
     "node": ">=20"
   },
   "bin": {
-    "apicalls": "./dist/cli.js"
+    "api-grep": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -75,6 +75,7 @@
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.7",
     "smol-toml": "^1.9.0",
+    "tar": "^7.5.22",
     "ts-morph": "^25.0.1",
     "web-tree-sitter": "0.27.0",
     "zod": "^4.6.5"

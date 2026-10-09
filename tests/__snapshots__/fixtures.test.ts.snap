@@ -837,8 +837,8 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "withDynamic": 8,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -1267,8 +1267,8 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "withDynamic": 5,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -2088,8 +2088,8 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "withDynamic": 8,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -3082,8 +3082,8 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "withDynamic": 10,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -3696,8 +3696,8 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "withDynamic": 6,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -4128,8 +4128,8 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "withDynamic": 2,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -4290,8 +4290,8 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "withDynamic": 1,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -4418,8 +4418,8 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "withDynamic": 0,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -9716,8 +9716,8 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "withDynamic": 12,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -10686,7 +10686,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "withDynamic": 13,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;

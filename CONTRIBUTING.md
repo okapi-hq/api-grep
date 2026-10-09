@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in `apicalls`. Bug reports, missed or false calls, new SDK registries,
+Thanks for your interest in `api-grep`. Bug reports, missed or false calls, new SDK registries,
 new languages and documentation fixes are all welcome.
 
 ## Reporting a missed or wrong call
@@ -73,7 +73,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
   `pnpm vitest run -u` and check the diff.
 - CLI behavior (options, output formats, exit codes) and anything about untrusted input
   belongs in `tests/e2e/`: those tests spawn `dist/cli.js` and build throwaway repositories
-  with `tempRepo()`. `APICALLS_E2E_CLI=/path/to/cli.js` runs them against another build.
+  with `tempRepo()`. `API_GREP_E2E_CLI=/path/to/cli.js` runs them against another build.
 
 ## Adding an SDK registry
 

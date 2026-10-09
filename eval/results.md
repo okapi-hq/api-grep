@@ -1,4 +1,4 @@
-# apicalls eval run — 2026-09-10
+# api-grep eval run — 2026-09-10
 
 Shallow clones, no `node_modules` installed in the targets (types of third-party packages are therefore unresolved; SDK detection relies on imports). Per-repo JSON reports are in `eval/out/<repo>.json`.
 
@@ -93,7 +93,7 @@ Compared with the 2026-09-09 run (3641 calls): 17507 calls, same 20 repos and co
 - **Enum members from uninstalled packages.** `HttpMethod.POST` / `AuthenticationType.BEARER_TOKEN` read as
   their member name when the enum's package has no types installed, which fixes activepieces methods and auth.
 - **Memory.** 9.8k-file activepieces needs ~2.8 GB of heap; the CLI now re-runs itself with
-  `--max-old-space-size=8192` (`APICALLS_HEAP_MB` overrides) and `pnpm eval` passes the flag explicitly.
+  `--max-old-space-size=8192` (`API_GREP_HEAP_MB` overrides) and `pnpm eval` passes the flag explicitly.
 
 Where example URLs are still unresolved (38% overall):
 
