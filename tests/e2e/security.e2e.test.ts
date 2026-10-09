@@ -110,6 +110,16 @@ describe.skipIf(!posix)("files a hostile repository links to", () => {
     expect(report.calls.map((c) => c.host)).toEqual(["inside.example"]);
   });
 
+  it("does the same for Python sources and manifests", () => {
+    const outside = tempRepo({ "secret.py": `import requests\nrequests.get("https://outside.example/leak")\n` });
+    const repo = tempRepo({ "app/main.py": `import requests\nrequests.get("https://inside.example/ok")\n` });
+    for (const name of ["requirements.txt", "pyproject.toml", "setup.py"]) symlinkSync("/dev/zero", path.join(repo, name));
+    symlinkSync(path.join(outside, "secret.py"), path.join(repo, "app", "leak.py"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => c.host)).toEqual(["inside.example"]);
+  });
+
   it("takes no env hint from a .env.example that links out of the repository", () => {
     const outside = tempRepo({ ".env": "API_URL=https://internal.corp.example\n" });
     const repo = tempRepo({ "api.ts": "export const a = () => fetch(`${process.env.API_URL}/v1/x`);\n" });

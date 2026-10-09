@@ -1,0 +1,54 @@
+{
+  "$comment": "twilio-python: `client = Client(account_sid, auth_token)`; `client.messages.create(to=..., from_=..., body=...)` (keyword arguments are the form fields, `from_` is `From`). `{AccountSid}` comes from the client. A call segment's argument picks the resource: `client.messages(sid).fetch()`, `client.verify.v2.services(sid).verifications.create(...)`. Verify, Lookups and Conversations live on their own hosts.",
+  "package": "twilio",
+  "imports": [
+    "twilio.rest",
+    "twilio"
+  ],
+  "provider": "twilio",
+  "host": "api.twilio.com",
+  "auth": "basic",
+  "generatedFrom": "manual (checked against twilio-python 9.11.2 source)",
+  "instance": {
+    "names": [
+      "Client",
+      "rest.Client"
+    ]
+  },
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateMessage"},
+    "messages.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryKwargs": true, "operationId": "ListMessage"},
+    "messages.stream": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryKwargs": true, "operationId": "ListMessage"},
+    "messages.fetch": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "operationId": "FetchMessage"},
+    "messages.update": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "bodyKwargs": true, "encoding": "form"},
+    "messages.delete": {"method": "DELETE", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}},
+    "calls.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateCall"},
+    "calls.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "queryKwargs": true, "operationId": "ListCall"},
+    "calls.fetch": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json", "params": {"Sid": "seg:calls:0"}},
+    "calls.update": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json", "params": {"Sid": "seg:calls:0"}, "bodyKwargs": true, "encoding": "form"},
+    "incoming_phone_numbers.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateIncomingPhoneNumber"},
+    "incoming_phone_numbers.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json", "queryKwargs": true},
+    "available_phone_numbers.local.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/AvailablePhoneNumbers/{CountryCode}/Local.json", "params": {"CountryCode": "seg:available_phone_numbers:0"}, "queryKwargs": true, "operationId": "ListAvailablePhoneNumberLocal"},
+    "api.account.messages.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateMessage"},
+    "api.account.messages.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryKwargs": true, "operationId": "ListMessage"},
+    "api.account.calls.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateCall"},
+    "api.v2010.account.messages.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateMessage"},
+    "api.v2010.account.messages.list": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryKwargs": true, "operationId": "ListMessage"},
+    "api.v2010.account.calls.create": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateCall"},
+    "messages.create_async": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateMessage"},
+    "messages.list_async": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages.json", "queryKwargs": true, "operationId": "ListMessage"},
+    "messages.fetch_async": {"method": "GET", "path": "/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json", "params": {"Sid": "seg:messages:0"}, "operationId": "FetchMessage"},
+    "calls.create_async": {"method": "POST", "path": "/2010-04-01/Accounts/{AccountSid}/Calls.json", "bodyKwargs": true, "encoding": "form", "operationId": "CreateCall"},
+    "verify.v2.services.verifications.create": {"method": "POST", "path": "/v2/Services/{ServiceSid}/Verifications", "params": {"ServiceSid": "seg:services:0"}, "bodyKwargs": true, "encoding": "form", "host": "verify.twilio.com", "operationId": "CreateVerification"},
+    "verify.v2.services.verification_checks.create": {"method": "POST", "path": "/v2/Services/{ServiceSid}/VerificationCheck", "params": {"ServiceSid": "seg:services:0"}, "bodyKwargs": true, "encoding": "form", "host": "verify.twilio.com", "operationId": "CreateVerificationCheck"},
+    "verify.services.verifications.create": {"method": "POST", "path": "/v2/Services/{ServiceSid}/Verifications", "params": {"ServiceSid": "seg:services:0"}, "bodyKwargs": true, "encoding": "form", "host": "verify.twilio.com", "operationId": "CreateVerification"},
+    "verify.services.verification_checks.create": {"method": "POST", "path": "/v2/Services/{ServiceSid}/VerificationCheck", "params": {"ServiceSid": "seg:services:0"}, "bodyKwargs": true, "encoding": "form", "host": "verify.twilio.com", "operationId": "CreateVerificationCheck"},
+    "verify.v2.services.create": {"method": "POST", "path": "/v2/Services", "bodyKwargs": true, "encoding": "form", "host": "verify.twilio.com"},
+    "lookups.v2.phone_numbers.fetch": {"method": "GET", "path": "/v2/PhoneNumbers/{PhoneNumber}", "params": {"PhoneNumber": "seg:phone_numbers:0"}, "queryKwargs": true, "host": "lookups.twilio.com", "operationId": "FetchPhoneNumber"},
+    "lookups.v1.phone_numbers.fetch": {"method": "GET", "path": "/v1/PhoneNumbers/{PhoneNumber}", "params": {"PhoneNumber": "seg:phone_numbers:0"}, "queryKwargs": true, "host": "lookups.twilio.com"},
+    "conversations.v1.conversations.create": {"method": "POST", "path": "/v1/Conversations", "bodyKwargs": true, "encoding": "form", "host": "conversations.twilio.com"},
+    "conversations.v1.conversations.list": {"method": "GET", "path": "/v1/Conversations", "queryKwargs": true, "host": "conversations.twilio.com"},
+    "conversations.v1.conversations.messages.create": {"method": "POST", "path": "/v1/Conversations/{ConversationSid}/Messages", "params": {"ConversationSid": "seg:conversations:0"}, "bodyKwargs": true, "encoding": "form", "host": "conversations.twilio.com"},
+    "conversations.v1.conversations.participants.create": {"method": "POST", "path": "/v1/Conversations/{ConversationSid}/Participants", "params": {"ConversationSid": "seg:conversations:0"}, "bodyKwargs": true, "encoding": "form", "host": "conversations.twilio.com"}
+  }
+}

@@ -798,11 +798,17 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "droppedCalls": [],
     "filesScanned": 10,
     "filesSeen": 10,
+    "languages": {
+      "typescript": {
+        "filesScanned": 10,
+        "filesSeen": 10,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1222,11 +1228,17 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "droppedCalls": [],
     "filesScanned": 6,
     "filesSeen": 6,
+    "languages": {
+      "typescript": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2038,11 +2050,17 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "droppedCalls": [],
     "filesScanned": 3,
     "filesSeen": 3,
+    "languages": {
+      "typescript": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3023,11 +3041,17 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "droppedCalls": [],
     "filesScanned": 9,
     "filesSeen": 9,
+    "languages": {
+      "typescript": {
+        "filesScanned": 9,
+        "filesSeen": 9,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3638,11 +3662,17 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "droppedCalls": [],
     "filesScanned": 3,
     "filesSeen": 3,
+    "languages": {
+      "typescript": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4061,11 +4091,17 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "droppedCalls": [],
     "filesScanned": 2,
     "filesSeen": 2,
+    "languages": {
+      "typescript": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4201,6 +4237,12 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "droppedCalls": [],
     "filesScanned": 5,
     "filesSeen": 9,
+    "languages": {
+      "typescript": {
+        "filesScanned": 5,
+        "filesSeen": 9,
+      },
+    },
     "skipped": [
       {
         "file": "data-uri/thumbnail.ts",
@@ -4224,7 +4266,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4343,11 +4385,17 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "droppedCalls": [],
     "filesScanned": 1,
     "filesSeen": 1,
+    "languages": {
+      "typescript": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9458,6 +9506,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@aws-sdk/client-s3",
@@ -9468,6 +9517,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@octokit/rest",
@@ -9478,6 +9528,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 1,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@slack/web-api",
@@ -9488,6 +9539,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "openai",
@@ -9498,6 +9550,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 7,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 3,
         "imported": true,
         "package": "stripe",
@@ -9508,6 +9561,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "twilio",
@@ -9522,6 +9576,12 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "droppedCalls": [],
     "filesScanned": 8,
     "filesSeen": 33,
+    "languages": {
+      "typescript": {
+        "filesScanned": 8,
+        "filesSeen": 33,
+      },
+    },
     "skipped": [
       {
         "file": "ai-sdk/generate.ts",
@@ -9629,7 +9689,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -10133,6 +10193,12 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "droppedCalls": [],
     "filesScanned": 4,
     "filesSeen": 6,
+    "languages": {
+      "typescript": {
+        "filesScanned": 4,
+        "filesSeen": 6,
+      },
+    },
     "skipped": [
       {
         "file": "injected-fetch/pricing.ts",
@@ -10148,7 +10214,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "axios": 2,

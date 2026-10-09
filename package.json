@@ -1,16 +1,18 @@
 {
   "name": "apicalls",
   "version": "0.1.0",
-  "description": "Outbound HTTP/SDK call extractor for TypeScript repositories",
+  "description": "Outbound HTTP/SDK call extractor for TypeScript and Python repositories",
   "keywords": [
     "typescript",
+    "python",
     "static-analysis",
     "api",
     "http",
     "sdk",
     "openapi",
     "inventory",
-    "cli"
+    "cli",
+    "tree-sitter"
   ],
   "homepage": "https://github.com/okapi-hq/api-grep#readme",
   "bugs": {
@@ -56,6 +58,8 @@
     "eval:score": "tsx eval/score.ts",
     "gen:registry": "tsx scripts/gen-registry.ts",
     "gen:schema": "tsx scripts/gen-schema.ts",
+    "gen:stripe-ports": "tsx scripts/port-stripe.ts",
+    "gen:support": "tsx scripts/gen-support.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -67,7 +71,9 @@
     "openapi-types": "^12.1.3",
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.7",
+    "smol-toml": "^1.9.0",
     "ts-morph": "^25.0.1",
+    "web-tree-sitter": "0.27.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -80,6 +86,7 @@
     "lint-staged": "^16.4.0",
     "openai": "^7.30.1",
     "stripe": "^22.6.1",
+    "tree-sitter-python": "0.25.0",
     "tsup": "^8.4.0",
     "tsx": "^4.23.15",
     "typescript": "^5.8.2",

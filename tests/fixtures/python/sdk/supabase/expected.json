@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "db.py", "line": 9, "provider": "supabase"},
+    {"file": "db.py", "line": 13, "provider": "supabase"},
+    {"file": "db.py", "line": 17, "provider": "supabase"},
+    {"file": "db.py", "line": 21, "provider": "supabase"},
+    {"file": "db.py", "line": 25, "provider": "supabase"},
+    {"file": "db.py", "line": 29, "provider": "supabase"},
+    {"file": "db.py", "line": 33, "provider": "supabase"},
+    {"file": "db.py", "line": 37, "provider": "supabase"},
+    {"file": "db.py", "line": 42, "provider": "supabase"},
+    {"file": "db.py", "line": 46, "provider": "supabase"}
+  ]
+}

@@ -6,21 +6,13 @@ import { identifierOrigin } from "../ast/origin.js";
 import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
 import { localReturn } from "./local-return.js";
+import { markConst, partsToTemplate, staticText } from "./parts.js";
 import { typeToShape } from "./type-shape.js";
+
+export { partsToTemplate, staticText } from "./parts.js";
 
 const MAX_DEPTH = 5;
 const PASSTHROUGH_CALLS = new Set(["encodeURIComponent", "encodeURI", "String", "toString", "trim", "toLowerCase", "toUpperCase"]);
-
-export function staticText(parts: Part[]): string | undefined {
-  if (parts.every((p) => p.kind === "static")) return parts.map((p) => (p as { text: string }).text).join("");
-  return undefined;
-}
-
-export function partsToTemplate(parts: Part[]): string {
-  return parts
-    .map((p) => (p.kind === "static" ? p.text : p.kind === "env" ? `{env:${p.name}}` : `{${p.name}}`))
-    .join("");
-}
 
 function dynamicName(e: Expression): string {
   const u = unwrap(e);
@@ -78,10 +70,6 @@ function renameSingleDynamic(parts: Part[], ident: Expression): Part[] {
   const only = parts.length === 1 ? parts[0] : undefined;
   if (!only || only.kind !== "dynamic" || (only.origin !== "call" && only.name !== "expr")) return parts;
   return [{ ...only, name: ident.getText(), shape: only.shape ?? exprShape(ident) }];
-}
-
-function markConst(parts: Part[]): Part[] {
-  return parts.map((p) => (p.kind === "static" ? { ...p, viaConst: true } : p));
 }
 
 function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {

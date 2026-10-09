@@ -1,4 +1,5 @@
 import { isSafeKey } from "../record-keys.js";
+import type { Ecosystem } from "../report/schema.js";
 import type { HostKind } from "../types.js";
 import data from "./providers.json" with { type: "json" };
 
@@ -7,8 +8,8 @@ export interface ProviderInfo {
   name: string;
   /** Exact hosts; a leading dot matches any subdomain (`.supabase.co`). */
   hosts: string[];
-  /** npm packages that talk to this provider. */
-  packages?: string[];
+  /** SDK packages that talk to this provider, by ecosystem (npm package, PyPI distribution). */
+  packages?: Partial<Record<Ecosystem, string[]>>;
   category?: string;
 }
 
@@ -16,6 +17,13 @@ export interface ProviderInfo {
 export type ProviderSource = "sdk" | "host" | "env-name";
 
 export const PROVIDERS: ProviderInfo[] = data.providers;
+
+/** Known API SDK packages of an ecosystem -> provider id (the first provider listing a package wins). */
+export function sdkPackages(ecosystem: Ecosystem): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const p of PROVIDERS) for (const pkg of p.packages?.[ecosystem] ?? []) if (!out.has(pkg)) out.set(pkg, p.id);
+  return out;
+}
 
 const EXACT = new Map<string, string>();
 const SUFFIXES: [string, string][] = [];

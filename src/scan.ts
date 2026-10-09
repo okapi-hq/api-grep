@@ -1,31 +1,29 @@
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
-import { ts, type Node, type SourceFile } from "ts-morph";
-import { buildCall, type BuildCtx } from "./build-call.js";
-import { sdkCoverage } from "./coverage.js";
-import { detectFile } from "./detect/index.js";
 import { buildExamples } from "./examples/build.js";
-import { defaultRegistry, type Registry } from "./detect/registry/index.js";
-import { changedFiles, headCommit, selectChanged } from "./git.js";
-import { PackageJsonReader } from "./package-json.js";
-import { relativePosix } from "./files.js";
-import { loadProject, type Loaded, type Unreadable } from "./project.js";
-import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Report, type Stats } from "./report/schema.js";
+import type { Registry } from "./detect/registry/index.js";
+import { changedFiles, headCommit } from "./git.js";
+import { errorText } from "./lang/files.js";
+import { selectLanguages } from "./lang/index.js";
+import type { LanguageScanResult } from "./lang/types.js";
+import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Language, type Report, type SdkCoverage, type Stats } from "./report/schema.js";
 import { DiagnosticsCollector } from "./report/diagnostics.js";
 import { splitValid } from "./report/valid.js";
-import type { RawCall } from "./types.js";
 import { applySpecs } from "./validate/index.js";
-import { expandWrappers } from "./wrappers/detect.js";
 import pkg from "../package.json" with { type: "json" };
 
 export interface ScanOptions {
   dir: string;
+  /** Languages to scan (default: every supported language with files in scope). */
+  languages?: Language[];
+  /** TypeScript: tsconfig.json to load (default: nearest). */
   tsconfig?: string;
   include?: string[];
   exclude?: string[];
   changedSince?: string;
   specs?: string;
   validate?: boolean;
+  /** TypeScript SDK registry (default: the built-in one). */
   registry?: Registry;
   repo?: string;
   wrappers?: boolean;
@@ -62,64 +60,6 @@ function sortCalls(calls: Call[]): Call[] {
   return calls.sort((a, b) => a.location.file.localeCompare(b.location.file) || a.location.line - b.location.line || a.location.col - b.location.col);
 }
 
-function errorText(err: unknown): string {
-  return (err instanceof Error ? err.message : String(err)).split("\n")[0]!;
-}
-
-function lineOf(node: Node): number {
-  return node.getSourceFile().getLineAndColumnAtPos(node.getStart()).line;
-}
-
-/** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
-function unreadable(sf: SourceFile): string | undefined {
-  const syntax = sf.getProject().getProgram().compilerObject.getSyntacticDiagnostics(sf.compilerNode)[0];
-  if (syntax) return ts.flattenDiagnosticMessageText(syntax.messageText, " ");
-  const decls = [...sf.getImportDeclarations(), ...sf.getExportDeclarations()];
-  const bad = decls.some((d) => d.compilerNode.moduleSpecifier !== undefined && !ts.isStringLiteral(d.compilerNode.moduleSpecifier));
-  return bad ? "Expected the module specifier to be a string literal." : undefined;
-}
-
-interface Detected {
-  raws: RawCall[];
-  scanned: SourceFile[];
-}
-
-/** Runs every detector on each file; a file that cannot be read or makes a detector throw is skipped, not fatal. */
-function detectAll(files: SourceFile[], registry: Registry, opts: ScanOptions, rootDir: string, diag: DiagnosticsCollector): Detected {
-  const raws: RawCall[] = [];
-  const scanned: SourceFile[] = [];
-  for (const sf of files) {
-    const file = relativePosix(rootDir, sf.getFilePath());
-    try {
-      const problem = unreadable(sf);
-      if (problem) {
-        diag.skip({ file, reason: "parse-error", detail: problem });
-        continue;
-      }
-      const { calls, candidates, unfollowed } = detectFile(sf, registry);
-      const expanded = opts.wrappers !== false ? expandWrappers(candidates, registry) : { calls: [], unfollowed: [] };
-      raws.push(...calls, ...expanded.calls);
-      for (const u of [...unfollowed, ...expanded.unfollowed]) diag.unfollow({ file, line: lineOf(u.node), reason: u.reason, expr: u.expr, via: u.via });
-      scanned.push(sf);
-    } catch (err) {
-      diag.skip({ file, reason: "internal-error", detail: errorText(err) });
-    }
-  }
-  return { raws, scanned };
-}
-
-function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): Call[] {
-  const calls: Call[] = [];
-  for (const raw of raws) {
-    try {
-      calls.push(buildCall(raw, ctx));
-    } catch (err) {
-      diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
-    }
-  }
-  return sortCalls(calls);
-}
-
 function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {
   if (max <= 0) return calls;
   for (const c of calls) {
@@ -132,33 +72,37 @@ function withExamples(calls: Call[], max: number, opts: ScanOptions): Call[] {
   return calls;
 }
 
-/** The files this scan covers; what it leaves out (unreadable, or removed by the options) goes to diagnostics. */
-async function filesInScope(loaded: Loaded, opts: ScanOptions, rootDir: string, diag: DiagnosticsCollector): Promise<{ files: SourceFile[]; seen: number }> {
-  const parseError = (u: Unreadable): void => diag.skip({ file: u.file, reason: "parse-error", detail: u.detail });
-  if (opts.changedSince) {
-    const changed = await changedFiles(rootDir, opts.changedSince);
-    const unreadable = loaded.unreadable.filter((u) => changed.has(u.path));
-    unreadable.forEach(parseError);
-    const files = selectChanged(loaded.files, changed);
-    return { files, seen: files.length + unreadable.length };
+interface Scanned {
+  calls: Call[];
+  filesSeen: number;
+  filesScanned: number;
+  coverage: SdkCoverage[];
+  languages: Record<string, { filesSeen: number; filesScanned: number }>;
+}
+
+/** Runs each language front end in turn and merges what they found. */
+async function scanLanguages(rootDir: string, opts: ScanOptions, diag: DiagnosticsCollector, changed?: Set<string>): Promise<Scanned> {
+  const out: Scanned = { calls: [], filesSeen: 0, filesScanned: 0, coverage: [], languages: {} };
+  for (const lang of selectLanguages(opts.languages)) {
+    const r: LanguageScanResult | undefined = await lang.scan({ rootDir, opts, diag, changed });
+    if (!r) continue;
+    out.calls.push(...r.calls);
+    out.filesSeen += r.filesSeen;
+    out.filesScanned += r.filesScanned;
+    out.coverage.push(...r.coverage);
+    out.languages[lang.id] = { filesSeen: r.filesSeen, filesScanned: r.filesScanned };
   }
-  loaded.unreadable.forEach(parseError);
-  for (const l of loaded.leftOut) diag.skip(l);
-  return { files: loaded.files, seen: loaded.files.length + loaded.leftOut.length + loaded.unreadable.length };
+  return out;
 }
 
 export async function scan(opts: ScanOptions): Promise<Report> {
   const started = Date.now();
   const rootDir = path.resolve(opts.dir);
   if (!existsSync(rootDir) || !statSync(rootDir).isDirectory()) throw new Error(`directory not found: ${rootDir}`);
-  const registry = opts.registry ?? defaultRegistry();
   const diag = new DiagnosticsCollector(opts.onWarning);
-  const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude });
-  const { files, seen } = await filesInScope(loaded, opts, rootDir, diag);
-  const { raws, scanned } = detectAll(files, registry, opts, rootDir, diag);
-  const packages = new PackageJsonReader(rootDir);
-  const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: (file, name) => packages.versionOf(file, name) };
-  const built = buildAll(raws, ctx, diag);
+  const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
+  const found = await scanLanguages(rootDir, opts, diag, changed);
+  const built = sortCalls(found.calls);
   if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate, onWarning: opts.onWarning });
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
@@ -170,9 +114,9 @@ export async function scan(opts: ScanOptions): Promise<Report> {
     repo: opts.repo,
     commit: await headCommit(rootDir),
     calls,
-    stats: computeStats(calls, scanned.length, Date.now() - started),
-    diagnostics: diag.finish(seen, scanned.length),
+    stats: computeStats(calls, found.filesScanned, Date.now() - started),
+    diagnostics: diag.finish(found.filesSeen, found.filesScanned, found.languages),
     // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-    coverage: opts.changedSince ? undefined : sdkCoverage(rootDir, scanned, calls, registry, packages),
+    coverage: changed ? undefined : { sdks: found.coverage },
   };
 }

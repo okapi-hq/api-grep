@@ -1,0 +1,28 @@
+{
+  "$comment": "cohere v2 client: `co = cohere.ClientV2(api_key=...)`; `co.chat(model=..., messages=[...])` is POST /v2/chat. Kept apart from cohere.json because the same method names hit /v1 on `cohere.Client`.",
+  "package": "cohere",
+  "imports": [
+    "cohere"
+  ],
+  "provider": "cohere",
+  "host": "api.cohere.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against cohere-python 7.2.0 source)",
+  "instance": {
+    "names": [
+      "ClientV2",
+      "AsyncClientV2"
+    ],
+    "urlArg": {
+      "ClientV2": "kw:base_url",
+      "AsyncClientV2": "kw:base_url"
+    }
+  },
+  "methods": {
+    "chat": {"method": "POST", "path": "/v2/chat", "bodyKwargs": true},
+    "chat_stream": {"method": "POST", "path": "/v2/chat", "bodyKwargs": true},
+    "embed": {"method": "POST", "path": "/v2/embed", "bodyKwargs": true},
+    "rerank": {"method": "POST", "path": "/v2/rerank", "bodyKwargs": true},
+    "models.list": {"method": "GET", "path": "/v1/models", "queryKwargs": true}
+  }
+}

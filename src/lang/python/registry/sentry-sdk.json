@@ -1,0 +1,25 @@
+{
+  "$comment": "sentry-python sends events to the DSN's ingest host (the DSN is given to `sentry_sdk.init`, which sends nothing by itself). Only the capture functions are calls; scope variants cover the `get_current_scope()` / legacy `Hub.current` forms.",
+  "package": "sentry-sdk",
+  "imports": [
+    "sentry_sdk"
+  ],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against sentry-python 2.71.0)",
+  "methods": {
+    "capture_exception": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "capture_message": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "capture_event": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "crons.capture_checkin": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "get_current_scope.capture_exception": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "get_current_scope.capture_message": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "get_current_scope.capture_event": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "get_isolation_scope.capture_exception": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "get_isolation_scope.capture_message": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "Hub.current.capture_exception": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "Hub.current.capture_message": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "Hub.current.capture_event": {"method": "POST", "path": "/api/{projectId}/envelope/"}
+  }
+}

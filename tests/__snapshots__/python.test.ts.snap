@@ -1,0 +1,4070 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bodies 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Body": {
+            "type": "string",
+          },
+          "Bucket": {
+            "enum": [
+              "uploads",
+            ],
+            "type": "string",
+          },
+          "Key": {
+            "hint": "key",
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "raw",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Fable falcon linen zenith amber fable.",
+            "Bucket": "uploads",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "raw",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/kestrel/%3CKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "167904066f82",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 21,
+      },
+      "method": "PUT",
+      "operationId": "PutObject",
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "put_object",
+        "package": "boto3",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "body": {
+            "hint": "dumps",
+            "origin": "call",
+            "type": "dynamic",
+          },
+          "modelId": {
+            "enum": [
+              "anthropic.claude-3-haiku-20240307-v1:0",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "modelId",
+          "body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "body",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "body": "Prairie opal fable inlet orbit saffron.",
+            "modelId": "anthropic.claude-3-haiku-20240307-v1:0",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://bedrock-runtime.{region}.amazonaws.com/model/n4qhkkgy/invoke",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "bedrock-runtime.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "07c2b50fa662",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 25,
+      },
+      "method": "POST",
+      "operationId": "InvokeModel",
+      "pathTemplate": "/model/{modelId}/invoke",
+      "provider": "aws-bedrock",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "invoke_model",
+        "package": "boto3",
+      },
+      "urlTemplate": "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "body": {
+            "enum": [
+              "Hello",
+            ],
+            "type": "string",
+          },
+          "from_": {
+            "enum": [
+              "+15550000000",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "from_",
+          "body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "AccountSid",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "body": "Hello",
+            "from_": "+15550000000",
+            "to": "bruno.castel@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/vx2acdiy/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "4726625b590b",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 33,
+      },
+      "method": "POST",
+      "operationId": "CreateMessage",
+      "pathTemplate": "/2010-04-01/Accounts/{AccountSid}/Messages.json",
+      "provider": "twilio",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.create",
+        "package": "twilio",
+      },
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/{AccountSid}/Messages.json",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "channel": {
+            "enum": [
+              "sms",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "channel",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "ServiceSid",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "channel": "sms",
+            "to": "felix.hoshi@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://verify.twilio.com/v2/Services/uvcmwkx6/Verifications",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "verify.twilio.com",
+      "hostKind": "literal",
+      "id": "bff73b0587a4",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 37,
+      },
+      "method": "POST",
+      "operationId": "CreateVerification",
+      "pathTemplate": "/v2/Services/{ServiceSid}/Verifications",
+      "provider": "twilio",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "verify.v2.services.verifications.create",
+        "package": "twilio",
+      },
+      "urlTemplate": "https://verify.twilio.com/v2/Services/{ServiceSid}/Verifications",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "channel": {
+            "hint": "channel",
+            "type": "string",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "channel",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "channel",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "channel": "quartz echo",
+            "text": "Koala marble marble beacon fable fable.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://slack.com/api/chat.postMessage",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "slack.com",
+      "hostKind": "literal",
+      "id": "a0753d1d2852",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 41,
+      },
+      "method": "POST",
+      "operationId": "chat_postMessage",
+      "pathTemplate": "/api/chat.postMessage",
+      "provider": "slack",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat_postMessage",
+        "package": "slack-sdk",
+      },
+      "urlTemplate": "https://slack.com/api/chat.postMessage",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "text": "Inlet lagoon sable falcon horizon ridge.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://hooks.slack.com/services/T000/B000/XXXX",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "hooks.slack.com",
+      "hostKind": "literal",
+      "id": "6242e226d9fc",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 45,
+      },
+      "method": "POST",
+      "pathTemplate": "/services/T000/B000/XXXX",
+      "provider": "slack",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "send",
+        "package": "slack-sdk",
+      },
+      "urlTemplate": "https://hooks.slack.com/services/T000/B000/XXXX",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "from": {
+            "enum": [
+              "app@example.com",
+            ],
+            "type": "string",
+          },
+          "html": {
+            "enum": [
+              "<p>Hi</p>",
+            ],
+            "type": "string",
+          },
+          "subject": {
+            "enum": [
+              "Hi",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "from",
+          "to",
+          "subject",
+          "html",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "from": "app@example.com",
+            "html": "<p>Hi</p>",
+            "subject": "Hi",
+            "to": "dario.ibarra@example.com",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.resend.com/emails",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.resend.com",
+      "hostKind": "literal",
+      "id": "5261244e2c6f",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 49,
+      },
+      "method": "POST",
+      "pathTemplate": "/emails",
+      "provider": "resend",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Emails.send",
+        "package": "resend",
+      },
+      "urlTemplate": "https://api.resend.com/emails",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "POST",
+          "query": {},
+          "url": "https://us.i.posthog.com/batch",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "us.i.posthog.com",
+      "hostKind": "literal",
+      "id": "30266a23c8ef",
+      "location": {
+        "col": 5,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 53,
+      },
+      "method": "POST",
+      "pathTemplate": "/batch",
+      "provider": "posthog",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "capture",
+        "package": "posthog",
+      },
+      "urlTemplate": "https://us.i.posthog.com/batch/",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "distinct_id": {
+            "hint": "user",
+            "type": "string",
+          },
+          "event": {
+            "enum": [
+              "paid",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "distinct_id",
+          "event",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "distinct_id",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "distinct_id": "0qo3132q",
+            "event": "paid",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://eu.i.posthog.com/batch",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "eu.i.posthog.com",
+      "hostKind": "literal",
+      "id": "159908f92e45",
+      "location": {
+        "col": 5,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 54,
+      },
+      "method": "POST",
+      "pathTemplate": "/batch",
+      "provider": "posthog",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "capture",
+        "package": "posthog",
+      },
+      "urlTemplate": "https://eu.i.posthog.com/batch/",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.2,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "temperature",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "messages",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "Juniper falcon yonder walnut falcon haven.",
+            ],
+            "model": "gpt-4o",
+            "temperature": 0.2,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "46270b45b5e6",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 16,
+      },
+      "method": "POST",
+      "operationId": "createChatCompletion",
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "input": {
+            "hint": "text",
+            "type": "string",
+          },
+          "model": {
+            "enum": [
+              "text-embedding-3-small",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "input",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "input",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "input": "Walnut velvet summit echo verdant prairie.",
+            "model": "text-embedding-3-small",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/embeddings",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "b1cbdbda2cb0",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 20,
+      },
+      "method": "POST",
+      "operationId": "createEmbedding",
+      "pathTemplate": "/v1/embeddings",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "embeddings.create",
+        "package": "openai",
+      },
+      "urlTemplate": "https://api.openai.com/v1/embeddings",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "anthropic/claude-sonnet-4",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Mosaic yonder amber ridge ember cedar.",
+                "role": "user",
+              },
+            ],
+            "model": "anthropic/claude-sonnet-4",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "openrouter.ai",
+      "hostKind": "literal",
+      "id": "17c7adc30744",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 24,
+      },
+      "method": "POST",
+      "operationId": "createChatCompletion",
+      "pathTemplate": "/api/v1/chat/completions",
+      "provider": "openrouter",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+      },
+      "urlTemplate": "https://openrouter.ai/api/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "file_id",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.openai.com/v1/files/oxim4w9z",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "0d09470c7af1",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 28,
+      },
+      "method": "GET",
+      "operationId": "retrieveFile",
+      "pathTemplate": "/v1/files/{file_id}",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "files.retrieve",
+        "package": "openai",
+      },
+      "urlTemplate": "https://api.openai.com/v1/files/{file_id}",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              1024,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 1024,
+            "messages": [
+              {
+                "content": "River haven verdant prairie yarrow yarrow.",
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.anthropic.com",
+      "hostKind": "literal",
+      "id": "fdfc023ea4fd",
+      "location": {
+        "col": 18,
+        "file": "llm.py",
+        "language": "python",
+        "line": 32,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.create",
+        "package": "anthropic",
+      },
+      "urlTemplate": "https://api.anthropic.com/v1/messages",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "Anchor cedar atlas marble zenith echo.",
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages/count_tokens",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.anthropic.com",
+      "hostKind": "literal",
+      "id": "5d973002ba5f",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 36,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/messages/count_tokens",
+      "provider": "anthropic",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.count_tokens",
+        "package": "anthropic",
+      },
+      "urlTemplate": "https://api.anthropic.com/v1/messages/count_tokens",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "contents": {
+            "hint": "prompt",
+            "type": "string",
+          },
+        },
+        "required": [
+          "contents",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "contents",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "contents": "Beacon orbit walnut verdant linen dune.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "generativelanguage.googleapis.com",
+      "hostKind": "literal",
+      "id": "2407728a4266",
+      "location": {
+        "col": 12,
+        "file": "llm.py",
+        "language": "python",
+        "line": 40,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1beta/models/gemini-2.0-flash:generateContent",
+      "provider": "google-ai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "models.generate_content",
+        "package": "google-genai",
+      },
+      "urlTemplate": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "input": {
+            "hint": "q",
+            "type": "string",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "input",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "input",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "input": "umber",
+            "model": "gpt-4.1",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/responses",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "c1ffbda1859d",
+      "location": {
+        "col": 22,
+        "file": "llm.py",
+        "language": "python",
+        "line": 48,
+      },
+      "method": "POST",
+      "operationId": "createResponse",
+      "pathTemplate": "/v1/responses",
+      "provider": "openai",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "responses.create",
+        "package": "openai",
+      },
+      "urlTemplate": "https://api.openai.com/v1/responses",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "name": {
+            "enum": [
+              "Ada",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "ada.galli@example.com",
+            "name": "Ada",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "e405535ced68",
+      "location": {
+        "col": 12,
+        "file": "stripe_billing.py",
+        "language": "python",
+        "line": 9,
+      },
+      "method": "POST",
+      "operationId": "PostCustomers",
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Customer.create",
+        "package": "stripe",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "intent",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/payment_intents/garden",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "272bdb28a02d",
+      "location": {
+        "col": 12,
+        "file": "stripe_billing.py",
+        "language": "python",
+        "line": 13,
+      },
+      "method": "GET",
+      "operationId": "GetPaymentIntentsIntent",
+      "pathTemplate": "/v1/payment_intents/{intent}",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "PaymentIntent.retrieve",
+        "package": "stripe",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/payment_intents/{intent}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "line_items": {
+            "items": {
+              "properties": {
+                "price": {
+                  "hint": "price",
+                  "type": "string",
+                },
+                "quantity": {
+                  "enum": [
+                    1,
+                  ],
+                  "type": "integer",
+                },
+              },
+              "required": [
+                "price",
+                "quantity",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "mode": {
+            "enum": [
+              "subscription",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "mode",
+          "line_items",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "line_items": [
+              {
+                "price": "8551",
+                "quantity": 1,
+              },
+            ],
+            "mode": "subscription",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/checkout/sessions",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "592b821f3e4c",
+      "location": {
+        "col": 12,
+        "file": "stripe_billing.py",
+        "language": "python",
+        "line": 17,
+      },
+      "method": "POST",
+      "operationId": "PostCheckoutSessions",
+      "pathTemplate": "/v1/checkout/sessions",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "checkout.Session.create",
+        "package": "stripe",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/checkout/sessions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "pablo.dumont@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "a0ca283b6598",
+      "location": {
+        "col": 12,
+        "file": "stripe_billing.py",
+        "language": "python",
+        "line": 21,
+      },
+      "method": "POST",
+      "operationId": "PostCustomers",
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "customers.create",
+        "package": "stripe",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "sdk",
+      "confidence": 1,
+      "dynamic": [
+        {
+          "name": "subscription_exposed_id",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.stripe.com/v1/subscriptions/3rkn7sky",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "6633062801e6",
+      "location": {
+        "col": 12,
+        "file": "stripe_billing.py",
+        "language": "python",
+        "line": 25,
+      },
+      "method": "DELETE",
+      "operationId": "DeleteSubscriptionsSubscriptionExposedId",
+      "pathTemplate": "/v1/subscriptions/{subscription_exposed_id}",
+      "provider": "stripe",
+      "providerSource": "sdk",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "v1.subscriptions.cancel",
+        "package": "stripe",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/subscriptions/{subscription_exposed_id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 0,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "aioboto3",
+        "provider": "aws",
+        "status": "imported-no-calls",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "anthropic",
+        "provider": "anthropic",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "boto3",
+        "provider": "aws",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "google-genai",
+        "provider": "google-ai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 5,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "posthog",
+        "provider": "posthog",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "resend",
+        "provider": "resend",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "slack-sdk",
+        "provider": "slack",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 0,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "slackclient",
+        "provider": "slack",
+        "status": "imported-no-calls",
+        "supported": true,
+      },
+      {
+        "calls": 5,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "stripe",
+        "provider": "stripe",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": false,
+        "ecosystem": "pypi",
+        "importSites": 1,
+        "imported": true,
+        "package": "twilio",
+        "provider": "twilio",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 6,
+    "languages": {
+      "python": {
+        "filesScanned": 3,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [
+      {
+        "file": "firebase/store.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "sentry/errors.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "supabase/db.py",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 3,
+    },
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "sdk": 22,
+    },
+    "byHostKind": {
+      "literal": 22,
+    },
+    "byLanguage": {
+      "python": 22,
+    },
+    "byProvider": {
+      "anthropic": 2,
+      "aws": 1,
+      "aws-bedrock": 1,
+      "google-ai": 1,
+      "openai": 4,
+      "openrouter": 1,
+      "posthog": 2,
+      "resend": 1,
+      "slack": 2,
+      "stripe": 5,
+      "twilio": 2,
+    },
+    "callsFound": 22,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 18,
+    "withDynamic": 17,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: constants > follows module constants, imported modules, class constants and string formatting 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "uid",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "apiKey",
+          "origin": "env",
+          "shape": {
+            "hint": "CAL_KEY",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "apiKey": "<apiKey>",
+          },
+          "url": "https://api.cal.com/v1/bookings/orye3oti?apiKey=%3CapiKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "8f06472357c8",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 10,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/bookings/{uid}",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [
+        "apiKey",
+      ],
+      "queryShape": {
+        "properties": {
+          "apiKey": {
+            "hint": "CAL_KEY",
+            "type": "string",
+          },
+        },
+        "required": [
+          "apiKey",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/bookings/{uid}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "uid",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.cal.com/v1/bookings/84nkqhtr",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "c10180a07a94",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 14,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/bookings/{uid}",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/bookings/{uid}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "team_id",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.cal.com/v1/teams/5448/users",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "566f0d13a81f",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 18,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/teams/{team_id}/users",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/teams/{team_id}/users",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.cal.com/v2/me",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "literal",
+      "id": "76a222a595a1",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 22,
+      },
+      "method": "GET",
+      "pathTemplate": "/v2/me",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v2/me",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.cal.com/v1/schedules",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cal.com",
+      "hostKind": "const",
+      "id": "931d8853b4c8",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 28,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/schedules",
+      "provider": "cal",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cal.com/v1/schedules",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.25,
+      "dynamic": [],
+      "envName": "ANALYTICS_HOST",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.segment.io/v1/batch",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.segment.io",
+      "hostKind": "env",
+      "id": "e26665e82d70",
+      "location": {
+        "col": 12,
+        "file": "formats.py",
+        "language": "python",
+        "line": 32,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/batch",
+      "provider": "segment",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:ANALYTICS_HOST}/v1/batch",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "page_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.notion.com/v1/pages/ccpuapdo",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.notion.com",
+      "hostKind": "const",
+      "id": "f0ae69b001f0",
+      "location": {
+        "col": 12,
+        "file": "use_config.py",
+        "language": "python",
+        "line": 8,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/pages/{page_id}",
+      "provider": "notion",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/pages/{page_id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "query": {
+            "enum": [
+              "{ viewer { id } }",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "query": "{ viewer { id } }",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.linear.app",
+      "hostKind": "const",
+      "id": "0b6e091b21a8",
+      "location": {
+        "col": 12,
+        "file": "use_config.py",
+        "language": "python",
+        "line": 12,
+      },
+      "method": "POST",
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.vercel.com/v9/projects",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.vercel.com",
+      "hostKind": "const",
+      "id": "47d2e2d7c483",
+      "location": {
+        "col": 12,
+        "file": "use_config.py",
+        "language": "python",
+        "line": 16,
+      },
+      "method": "GET",
+      "pathTemplate": "/v9/projects",
+      "provider": "vercel",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.vercel.com/v9/projects",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "db_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.notion.com/v1/databases/ywzscryk/query",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.notion.com",
+      "hostKind": "const",
+      "id": "636363a71789",
+      "location": {
+        "col": 12,
+        "file": "use_config.py",
+        "language": "python",
+        "line": 20,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/databases/{db_id}/query",
+      "provider": "notion",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/databases/{db_id}/query",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 4,
+    "languages": {
+      "python": {
+        "filesScanned": 2,
+        "filesSeen": 4,
+      },
+    },
+    "skipped": [
+      {
+        "file": "config/__init__.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "config/urls.py",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 2,
+    },
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "requests": 10,
+    },
+    "byHostKind": {
+      "const": 8,
+      "env": 1,
+      "literal": 1,
+    },
+    "byLanguage": {
+      "python": 10,
+    },
+    "byProvider": {
+      "cal": 5,
+      "linear": 1,
+      "notion": 2,
+      "segment": 1,
+      "vercel": 1,
+    },
+    "callsFound": 10,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 5,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and request objects 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "httpx",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "teamId",
+          "origin": "param",
+          "shape": {
+            "hint": "team",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "limit": "20",
+            "teamId": "59havtkp",
+          },
+          "url": "https://api.vercel.com/v6/deployments?teamId=59havtkp&limit=20",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.vercel.com",
+      "hostKind": "const",
+      "id": "b32ed97665f4",
+      "location": {
+        "col": 22,
+        "file": "client.py",
+        "language": "python",
+        "line": 8,
+      },
+      "method": "GET",
+      "pathTemplate": "/v6/deployments",
+      "provider": "vercel",
+      "providerSource": "host",
+      "query": [
+        "teamId",
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              20,
+            ],
+            "type": "integer",
+          },
+          "teamId": {
+            "hint": "team",
+            "type": "string",
+          },
+        },
+        "required": [
+          "teamId",
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.vercel.com/v6/deployments",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "channel": {
+            "hint": "channel",
+            "type": "string",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "channel",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "httpx",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "channel",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "channel": "falcon onyx",
+            "text": "Island juniper falcon summit xenon glacier.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://slack.com/api/chat.postMessage",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "slack.com",
+      "hostKind": "literal",
+      "id": "5065dc917cb0",
+      "location": {
+        "col": 12,
+        "file": "client.py",
+        "language": "python",
+        "line": 13,
+      },
+      "method": "POST",
+      "pathTemplate": "/api/chat.postMessage",
+      "provider": "slack",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://slack.com/api/chat.postMessage",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "raw",
+      "client": "httpx",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "key",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Hollow compass verdant willow quartz onyx.",
+          "bodyEncoding": "raw",
+          "headers": {
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.example.com/v1/blobs/%3Ckey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example.com",
+      "hostKind": "literal",
+      "id": "efbed58e681b",
+      "location": {
+        "col": 12,
+        "file": "client.py",
+        "language": "python",
+        "line": 17,
+      },
+      "method": "PUT",
+      "pathTemplate": "/v1/blobs/{key}",
+      "provider": "api.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example.com/v1/blobs/{key}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "httpx",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "job",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example.com/v1/jobs/estuary/logs",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example.com",
+      "hostKind": "literal",
+      "id": "9e85511d6542",
+      "location": {
+        "col": 10,
+        "file": "client.py",
+        "language": "python",
+        "line": 21,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/jobs/{job}/logs",
+      "provider": "api.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example.com/v1/jobs/{job}/logs",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "python": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "httpx": 4,
+    },
+    "byHostKind": {
+      "const": 1,
+      "literal": 3,
+    },
+    "byLanguage": {
+      "python": 4,
+    },
+    "byProvider": {
+      "api.example.com": 2,
+      "slack": 1,
+      "vercel": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and request objects 2`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "personalizations": {
+            "items": {
+              "properties": {
+                "to": {
+                  "items": {
+                    "properties": {
+                      "email": {
+                        "hint": "to",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "email",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "to",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "subject": {
+            "hint": "subject",
+            "type": "string",
+          },
+        },
+        "required": [
+          "personalizations",
+          "subject",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "aiohttp",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "subject",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "pablo.nakamura@example.com",
+                  },
+                ],
+              },
+            ],
+            "subject": "Ultra Echo",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.sendgrid.com/v3/mail/send",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.sendgrid.com",
+      "hostKind": "literal",
+      "id": "628989ccfcbb",
+      "location": {
+        "col": 20,
+        "file": "session.py",
+        "language": "python",
+        "line": 6,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/mail/send",
+      "provider": "sendgrid",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.sendgrid.com/v3/mail/send",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "aiohttp",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "latitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "where": "query",
+        },
+        {
+          "name": "longitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lon",
+            "type": "number",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "69.95968",
+            "longitude": "61.88284",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=69.95968&longitude=61.88284",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "2a3e4da67185",
+      "location": {
+        "col": 20,
+        "file": "session.py",
+        "language": "python",
+        "line": 12,
+      },
+      "method": "GET",
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "providerSource": "host",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "longitude": {
+            "hint": "lon",
+            "type": "number",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "python": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "aiohttp": 2,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "python": 2,
+    },
+    "byProvider": {
+      "open-meteo": 1,
+      "sendgrid": 1,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 1,
+    "withDynamic": 2,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and request objects 3`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "query": {
+            "hint": "q",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "urllib3",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "query": "fable",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.unsplash.com/search/photos",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.unsplash.com",
+      "hostKind": "literal",
+      "id": "c30d244ff371",
+      "location": {
+        "col": 12,
+        "file": "pool.py",
+        "language": "python",
+        "line": 7,
+      },
+      "method": "GET",
+      "pathTemplate": "/search/photos",
+      "provider": "unsplash",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.unsplash.com/search/photos",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "urllib3",
+      "confidence": 0.55,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://events.pagerduty.com/v2/enqueue",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "events.pagerduty.com",
+      "hostKind": "literal",
+      "id": "c8aacc8f2420",
+      "location": {
+        "col": 12,
+        "file": "pool.py",
+        "language": "python",
+        "line": 11,
+      },
+      "method": "POST",
+      "pathTemplate": "/v2/enqueue",
+      "provider": "pagerduty",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.pagerduty.com/v2/enqueue",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "urllib",
+      "confidence": 0.4,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/meta",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "5a848b3b1dc4",
+      "location": {
+        "col": 12,
+        "file": "request.py",
+        "language": "python",
+        "line": 7,
+      },
+      "method": "GET",
+      "pathTemplate": "/meta",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/meta",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "urllib",
+      "confidence": 0.55,
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.segment.io/v1/track",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "api.segment.io",
+      "hostKind": "literal",
+      "id": "4bba10d4817a",
+      "location": {
+        "col": 12,
+        "file": "request.py",
+        "language": "python",
+        "line": 12,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/track",
+      "provider": "segment",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.segment.io/v1/track",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "address": {
+            "hint": "email",
+            "type": "string",
+          },
+        },
+        "required": [
+          "address",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "urllib",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "address",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "address": "maya.ibarra@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/lists/news@example.com/members",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "daa896e686eb",
+      "location": {
+        "col": 12,
+        "file": "request.py",
+        "language": "python",
+        "line": 16,
+      },
+      "method": "POST",
+      "pathTemplate": "/v3/lists/news@example.com/members",
+      "provider": "mailgun",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/lists/news@example.com/members",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "urllib",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "list_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/lists/9l174twg",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "407f7cc0d540",
+      "location": {
+        "col": 12,
+        "file": "request.py",
+        "language": "python",
+        "line": 20,
+      },
+      "method": "DELETE",
+      "pathTemplate": "/v3/lists/{list_id}",
+      "provider": "mailgun",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/lists/{list_id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "python": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "urllib": 4,
+      "urllib3": 2,
+    },
+    "byHostKind": {
+      "literal": 6,
+    },
+    "byLanguage": {
+      "python": 6,
+    },
+    "byProvider": {
+      "github": 1,
+      "mailgun": 2,
+      "pagerduty": 1,
+      "segment": 1,
+      "unsplash": 1,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 3,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: requests > matches snapshot and key expectations 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "contact_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.hubapi.com/crm/v3/objects/contacts/7db95fh9",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.hubapi.com",
+      "hostKind": "literal",
+      "id": "fa7abc8aaa27",
+      "location": {
+        "col": 16,
+        "file": "session.py",
+        "language": "python",
+        "line": 10,
+      },
+      "method": "GET",
+      "pathTemplate": "/crm/v3/objects/contacts/{contact_id}",
+      "provider": "hubspot",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.hubapi.com/crm/v3/objects/contacts/{contact_id}",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "Body": {
+            "type": "string",
+          },
+          "To": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "To",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "To",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Juniper valley ultra indigo orbit xenon.",
+            "To": "felix.galli@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "3ff310c36f48",
+      "location": {
+        "col": 16,
+        "file": "session.py",
+        "language": "python",
+        "line": 15,
+      },
+      "method": "POST",
+      "pathTemplate": "/2010-04-01/Accounts/AC123/Messages.json",
+      "provider": "twilio",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/AC123/Messages.json",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "name": {
+            "enum": [
+              "Ada Lovelace",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "maya.moreau@example.com",
+            "name": "Ada Lovelace",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "660e5187f31c",
+      "location": {
+        "col": 12,
+        "file": "verbs.py",
+        "language": "python",
+        "line": 10,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "state",
+          "origin": "param",
+          "shape": {
+            "hint": "state",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "per_page": "50",
+            "state": "active",
+          },
+          "url": "https://api.github.com/repos/pebble/raven/issues?state=active&per_page=50",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "46765cb3bc2e",
+      "location": {
+        "col": 12,
+        "file": "verbs.py",
+        "language": "python",
+        "line": 18,
+      },
+      "method": "GET",
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "providerSource": "host",
+      "query": [
+        "state",
+        "per_page",
+      ],
+      "queryShape": {
+        "properties": {
+          "per_page": {
+            "enum": [
+              50,
+            ],
+            "type": "integer",
+          },
+          "state": {
+            "hint": "state",
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+          "per_page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.4,
+      "dynamic": [
+        {
+          "name": "page_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "notion-version": "2022-06-28",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.notion.com/v1/blocks/62poqakj",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "notion-version": "2022-06-28",
+      },
+      "headers": [
+        "notion-version",
+      ],
+      "host": "api.notion.com",
+      "hostKind": "literal",
+      "id": "dcf21ce45c21",
+      "location": {
+        "col": 12,
+        "file": "verbs.py",
+        "language": "python",
+        "line": 22,
+      },
+      "method": "DELETE",
+      "pathTemplate": "/v1/blocks/{page_id}",
+      "provider": "notion",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/blocks/{page_id}",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "file": {
+            "hint": "open",
+            "origin": "call",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "file",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "file",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "file": "fjord/copper.pdf",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "502a62ca79c1",
+      "location": {
+        "col": 16,
+        "file": "verbs.py",
+        "language": "python",
+        "line": 27,
+      },
+      "method": "POST",
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "query": {
+            "enum": [
+              "{ viewer { id } }",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "method",
+          "origin": "param",
+          "where": "method",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "query": "{ viewer { id } }",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.linear.app",
+      "hostKind": "literal",
+      "id": "9f1cbea80f86",
+      "location": {
+        "col": 12,
+        "file": "verbs.py",
+        "language": "python",
+        "line": 31,
+      },
+      "method": "DYNAMIC",
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "python": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "requests": 7,
+    },
+    "byHostKind": {
+      "literal": 7,
+    },
+    "byLanguage": {
+      "python": 7,
+    },
+    "byProvider": {
+      "cloudinary": 1,
+      "github": 1,
+      "hubspot": 1,
+      "linear": 1,
+      "notion": 1,
+      "stripe": 1,
+      "twilio": 1,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 7,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;
+
+exports[`python: wrappers > expands project functions and methods at their call sites 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.55,
+      "dynamic": [
+        {
+          "name": "method",
+          "origin": "param",
+          "where": "method",
+        },
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.intercom.io/prairie/meadow",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.intercom.io",
+      "hostKind": "const",
+      "id": "1fe0b02ec7ad",
+      "location": {
+        "col": 12,
+        "file": "client.py",
+        "language": "python",
+        "line": 7,
+      },
+      "method": "DYNAMIC",
+      "pathTemplate": "/{path}",
+      "provider": "intercom",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.intercom.io{path}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "fields": {
+            "dynamicKeys": true,
+            "properties": {},
+            "required": [],
+            "type": "object",
+          },
+        },
+        "required": [
+          "fields",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.6,
+      "dynamic": [
+        {
+          "name": "base_id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "table",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "fields",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "fields": {},
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.airtable.com/v0/usdjagll/anchor",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.airtable.com",
+      "hostKind": "literal",
+      "id": "1239fc0df0f8",
+      "location": {
+        "col": 16,
+        "file": "client.py",
+        "language": "python",
+        "line": 15,
+      },
+      "method": "POST",
+      "pathTemplate": "/v0/{base_id}/{table}",
+      "provider": "airtable",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.airtable.com/v0/{base_id}/{table}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "fields": {
+            "properties": {
+              "Name": {
+                "hint": "title",
+                "type": "string",
+              },
+            },
+            "required": [
+              "Name",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "fields",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.5,
+      "dynamic": [
+        {
+          "name": "base_id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "Name",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "fields": {
+              "Name": "Xenon Beacon",
+            },
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.airtable.com/v0/a74ymf7e/Tasks",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.airtable.com",
+      "hostKind": "literal",
+      "id": "ca49f360245d",
+      "location": {
+        "col": 16,
+        "file": "client.py",
+        "language": "python",
+        "line": 18,
+      },
+      "method": "POST",
+      "pathTemplate": "/v0/{base_id}/Tasks",
+      "provider": "airtable",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.airtable.com/v0/{base_id}/Tasks",
+      "via": "wrapper:Airtable._post",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "client": "requests",
+      "confidence": 0.3,
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.intercom.io/contacts",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.intercom.io",
+      "hostKind": "const",
+      "id": "31961ccfdbf6",
+      "location": {
+        "col": 12,
+        "file": "client.py",
+        "language": "python",
+        "line": 22,
+      },
+      "method": "GET",
+      "pathTemplate": "/contacts",
+      "provider": "intercom",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.intercom.io/contacts",
+      "via": "wrapper:intercom",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "id": {
+            "hint": "tag_id",
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "client": "requests",
+      "confidence": 0.5,
+      "dynamic": [
+        {
+          "name": "contact_id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "id",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "id": "uenjuyht",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.intercom.io/contacts/glaw022x/tags",
+          "variant": "minimal",
+        },
+      ],
+      "findings": [],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.intercom.io",
+      "hostKind": "const",
+      "id": "f7935c206bde",
+      "location": {
+        "col": 12,
+        "file": "client.py",
+        "language": "python",
+        "line": 26,
+      },
+      "method": "POST",
+      "pathTemplate": "/contacts/{contact_id}/tags",
+      "provider": "intercom",
+      "providerSource": "host",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.intercom.io/contacts/{contact_id}/tags",
+      "via": "wrapper:intercom",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "python": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.1.0",
+  "stats": {
+    "byClient": {
+      "requests": 5,
+    },
+    "byHostKind": {
+      "const": 3,
+      "literal": 2,
+    },
+    "byLanguage": {
+      "python": 5,
+    },
+    "byProvider": {
+      "airtable": 2,
+      "intercom": 3,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 4,
+    "withFindings": 0,
+  },
+  "tool": "apicalls",
+  "version": "0.1.0",
+}
+`;

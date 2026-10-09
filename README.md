@@ -4,12 +4,14 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
 
-**Find every outbound HTTP and SDK call in a TypeScript codebase, without running it.**
+**Find every outbound HTTP and SDK call in a TypeScript or Python codebase, without running it.**
 
 Point `apicalls` at a repository and it lists every call the code makes to an external API:
 provider, method, path template, the *shape* of the payload (names and types, never values),
-headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads the
-code through the TypeScript type checker. No AI, no network, no runtime.
+headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
+TypeScript through the TypeScript type checker and Python through tree-sitter, and a repository
+that mixes languages gets one report that says which language each call comes from. No AI, no
+network, no runtime. PHP is next; see [docs/languages.md](docs/languages.md).
 
 Use it to:
 
@@ -66,6 +68,26 @@ scanned 1/1 files, complete
 
 `dyn` counts the parts that could not be known statically; `conf` is the [confidence](#confidence).
 
+The same calls in Python are reported the same way:
+
+```python
+import os
+import stripe
+
+stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+
+def create_customer(email: str, user_id: str):
+    return stripe.Customer.create(email=email, name="Ada", metadata={"userId": user_id})
+```
+
+```
+├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┤
+│ billing.py  python                                                                                                            │
+├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┤
+│ 7    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │ 1.00 │
+└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┘
+```
+
 With `--curl`, each call becomes concrete example requests. Credentials are never invented:
 
 ```sh
@@ -86,7 +108,7 @@ above, with `--examples 1`, shown as YAML with one comment per field and the sec
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.0.0            # report format version; readers check the major
+schemaVersion: 1.1.0            # report format version; readers check the major
 tool: apicalls
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -98,7 +120,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | python | php
-    client: sdk                 # fetch | axios | got | ky | node-http | sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http (TypeScript), requests | httpx | aiohttp | urllib | urllib3 (Python), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `apicalls providers` id, or internal | env:<NAME> | unknown
     providerSource: sdk         # sdk | host | env-name
@@ -153,10 +175,11 @@ diagnostics:                    # what the scan could not read, see Diagnostics
   skippedCounts: {}
   droppedCalls: []
   unfollowed: []
+  languages: { typescript: { filesSeen: 1, filesScanned: 1 } }   # files per language
   complete: true                # false: partial scan, exit code 2
 coverage:                       # API SDKs the repo uses, see SDK coverage
   sdks:
-    - { package: stripe, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
+    - { package: stripe, ecosystem: npm, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
 ```
 
 ### Contract
@@ -175,9 +198,10 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, �
 - **major** (`2.0.0`): anything that can break a reader. The schema moves to `report.v2.json` and
   `report.v1.json` stays.
 
-Each call names its file and language in `location`, and `stats.byLanguage` counts calls per
-language. The TypeScript scanner reports `typescript`; `javascript`, `python` and `php` are
-reserved for the other extractors, so reports from every language share one format.
+Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
+and `diagnostics.languages` files per language. The TypeScript front end reports `typescript`, the
+Python one `python`; `javascript` and `php` are reserved for the next front ends, so reports from
+every language share one format. Coverage rows name their package `ecosystem` (`npm`, `pypi`).
 
 ## Usage
 
@@ -189,20 +213,22 @@ apicalls scan <dir> --out report.json --changed-since origin/main
 apicalls scan <dir> --specs ./specs --validate
 apicalls schema                                       # JSON Schema of the --json report
 apicalls providers                                    # provider ids, names, hosts and packages
+apicalls scan <dir> --language python                 # one language only
 ```
 
 | option | description |
 |---|---|
+| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `python` (default: every language with files in scope) |
 | `--json` | print the JSON report on stdout instead of the table |
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
 | `--out <file>` | write the JSON report to a file |
-| `--tsconfig <path>` | tsconfig.json to load (default: nearest) |
+| `--tsconfig <path>` | TypeScript: tsconfig.json to load (default: nearest) |
 | `--changed-since <ref>` | only scan files changed since a git ref, plus their direct importers |
 | `--specs <dir>` | directory of `<provider>.{json,yaml}` OpenAPI specs, or an [APIs-guru](https://github.com/APIs-guru/openapi-directory) checkout |
 | `--validate` | check request shapes against the specs (requires `--specs`) |
 | `--min-confidence <n>` | hide calls below this confidence (0 to 1) in the table and `--curl` output (default 0.3; JSON keeps everything) |
-| `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable) |
+| `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable); excluded files are still read to resolve imports |
 | `--no-wrappers` | disable wrapper expansion |
 
 Large monorepos need several GB of heap. The CLI re-runs itself with
@@ -217,6 +243,10 @@ validation) before `toTable` or `toCurl`. See
 [`src/index.ts`](src/index.ts).
 
 ## What it detects
+
+Which SDKs have a registry in which language: [docs/sdk-support.md](docs/sdk-support.md).
+
+### TypeScript
 
 | client | patterns |
 |---|---|
@@ -245,9 +275,32 @@ A client constructed with its own base URL (`new OpenAI({ baseURL: "https://open
 follows the URL when it names another known service (OpenRouter, Groq, `localhost:11434` for
 Ollama). MCP clients get the server URL from the HTTP transport built in the same file.
 
+### Python
+
+| client | patterns |
+|---|---|
+| requests | `requests.get/post/...(url, json=, data=, files=, params=, headers=, auth=)`, `requests.request(method, url)`, `Session()` objects (also `with requests.Session() as s`) |
+| httpx | module functions, `request`, `stream`, `Client` / `AsyncClient` with `base_url` and `headers`, also through `async with` |
+| aiohttp | `ClientSession(base_url)` and its verbs, `request(method, url)` |
+| urllib | `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))` (POST when there is data), `urllib3.PoolManager().request(...)` |
+| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex |
+
+Python keyword arguments are SDK bodies (`client.chat.completions.create(model=..., messages=...)`).
+Clients are followed through module variables and imports, `self.client = OpenAI()` in any method,
+annotated parameters and locals (`client: OpenAI`, `db: Client = ctx.db`), factories that return a
+client, `x or OpenAI()` defaults and subclasses of a client class. The builder and base URL rules
+above apply too: `supabase.table("tasks").select("*").eq(...).execute()` is one `GET /rest/v1/tasks`,
+`OpenAI(base_url="https://openrouter.ai/api/v1")` sends to OpenRouter. How the Python front end
+works, and how to add a language: [docs/languages.md](docs/languages.md).
+
 ## How it works
 
-The pipeline is `detect → resolve → normalize → validate → score → emit`.
+The pipeline is `detect → resolve → normalize → validate → score → emit`. Detection and resolution
+are per language (TypeScript through the type checker, Python through tree-sitter and a shared
+engine, see [docs/languages.md](docs/languages.md)); everything after that is shared, so a call is
+described, scored and checked the same way whatever its language. The rules below are given for
+TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and `.format()`,
+`os.getenv("X", "https://...")`, `os.environ[...]`, dataclass / TypedDict / pydantic bodies).
 
 - **URL**: string and template literals, `+` concatenation, `new URL(path, base)`, same-file
   and imported constants, `as const` config objects, enums, `process.env.X` (with hints
@@ -336,6 +389,7 @@ A scanned repository is treated as hostile input:
     { "file": "executors/x.ts", "line": 90, "reason": "injected-fetch", "expr": "this.fetchFn" },
     { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "tlsFetch" }
   ],
+  "languages": { "typescript": { "filesSeen": 1840, "filesScanned": 1702 } },
   "complete": false
 }
 ```
@@ -348,6 +402,7 @@ A scanned repository is treated as hostile input:
 - `droppedCalls`: calls that failed the report schema (`schema-invalid`, with the zod path) or
   made the resolver throw (`internal-error`). The rest of the report is still written.
 - `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
+  an HTTP client object received without a type that names it (`injected-client`: `self.session.post(url)`),
   and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
@@ -361,13 +416,16 @@ Skipped files and dropped calls are also printed to stderr as `warning:` lines.
 ### SDK coverage
 
 `coverage.sdks` compares the API SDKs a repo uses with the calls found, so "0 Supabase calls"
-never reads as "no Supabase". Each known SDK package (the `packages` of `providers.json`) that a
-covered `package.json` declares (`dependencies`, `peerDependencies`) or a scanned file imports
-(type-only imports aside) gets a row:
+never reads as "no Supabase". Each known SDK package (the `packages` of `providers.json`, by
+ecosystem) that a covered manifest declares or a scanned file imports gets a row. The manifests are
+`package.json` (`dependencies`, `peerDependencies`; type-only imports aside) for npm, and
+`requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621 and Poetry), `Pipfile`,
+`setup.cfg` and `setup.py` for PyPI (import names that differ from the package, like
+`google-genai` / `google.genai`, are in [`src/lang/python/modules.json`](src/lang/python/modules.json)):
 
 ```json
-{ "package": "@notionhq/client", "provider": "notion", "supported": false, "declared": true,
-  "imported": true, "importSites": 41, "calls": 0, "status": "unsupported" }
+{ "package": "@notionhq/client", "ecosystem": "npm", "provider": "notion", "supported": false,
+  "declared": true, "imported": true, "importSites": 41, "calls": 0, "status": "unsupported" }
 ```
 
 `ok` (registry and calls), `unsupported` (imported, no registry: its calls are missed),
@@ -384,13 +442,17 @@ package. `--changed-since` scans have no coverage section.
   is one call with an unknown host: the candidate hosts are not listed.
 - `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
   a `window.fetch = ...` override are not requests and are not reported.
-- SDK detection only covers the packages in [`src/detect/registry`](src/detect/registry).
+- SDK detection only covers the packages with a registry ([docs/sdk-support.md](docs/sdk-support.md)).
+- Python has no type checker: a client received as an untyped parameter is listed as
+  `injected-client`, and SDK methods passed as callbacks (`retry(stripe.Customer.create, ...)`),
+  `getattr` calls and module-level configuration (`openai.base_url = ...`) are not followed. See
+  [docs/languages.md](docs/languages.md#python) for the full list.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
 - Spec matching treats id-looking literal segments as parameters.
 
 ## Evaluation
 
-The scanner is measured on 20 open-source TypeScript repositories listed in
+The TypeScript scanner is measured on 20 open-source TypeScript repositories listed in
 [`eval/repos.json`](eval/repos.json). Results are in [`eval/results.md`](eval/results.md).
 
 ```sh
@@ -406,7 +468,7 @@ The labeling protocol is in [`eval/label/README.md`](eval/label/README.md). Betw
 
 ## Contributing
 
-Contributions are welcome, especially new SDK registries. See [CONTRIBUTING.md](CONTRIBUTING.md)
+Contributions are welcome, especially new SDK registries and languages. See [CONTRIBUTING.md](CONTRIBUTING.md)
 for the development setup and guidelines. This project follows the
 [Contributor Covenant](CODE_OF_CONDUCT.md).
 

@@ -6,11 +6,20 @@ body:
     attributes:
       value: |
         Please share a minimal snippet written from scratch. Never paste code, hosts or credentials from a private codebase.
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - TypeScript
+        - Python
+    validations:
+      required: true
   - type: textarea
     id: snippet
     attributes:
-      label: Minimal TypeScript snippet
-      render: ts
+      label: Minimal snippet
+      description: A few lines in the language above, with the import of the client or SDK.
     validations:
       required: true
   - type: input

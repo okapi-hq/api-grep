@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "store.py", "line": 9, "provider": "firebase"},
+    {"file": "store.py", "line": 13, "provider": "firebase"},
+    {"file": "store.py", "line": 17, "provider": "firebase"},
+    {"file": "store.py", "line": 21, "provider": "firebase"},
+    {"file": "store.py", "line": 25, "provider": "firebase"}
+  ]
+}

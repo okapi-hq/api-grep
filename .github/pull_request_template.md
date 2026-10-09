@@ -12,3 +12,4 @@
 - [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm test:e2e` pass
 - [ ] Snapshot changes reviewed
 - [ ] README updated if the CLI or report changed
+- [ ] `pnpm gen:support` run if a registry or `providers.json` changed

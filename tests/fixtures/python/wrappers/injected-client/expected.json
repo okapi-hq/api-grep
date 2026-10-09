@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "provider.py", "line": 10, "provider": "mistral", "orUnfollowed": true},
+    {"file": "provider.py", "line": 13, "provider": "mistral", "orUnfollowed": true}
+  ]
+}

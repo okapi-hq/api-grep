@@ -1,0 +1,38 @@
+{
+  "$comment": "cohere v1 client: `co = cohere.Client(api_key=...)`; `co.chat(message=..., model=...)` is POST /v1/chat; `co.v2.chat(...)` reaches the v2 API.",
+  "package": "cohere",
+  "imports": [
+    "cohere"
+  ],
+  "provider": "cohere",
+  "host": "api.cohere.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against cohere-python 7.2.0 source)",
+  "instance": {
+    "names": [
+      "Client",
+      "AsyncClient"
+    ],
+    "urlArg": {
+      "Client": "kw:base_url",
+      "AsyncClient": "kw:base_url"
+    }
+  },
+  "methods": {
+    "chat": {"method": "POST", "path": "/v1/chat", "bodyKwargs": true},
+    "chat_stream": {"method": "POST", "path": "/v1/chat", "bodyKwargs": true},
+    "generate": {"method": "POST", "path": "/v1/generate", "bodyKwargs": true},
+    "generate_stream": {"method": "POST", "path": "/v1/generate", "bodyKwargs": true},
+    "embed": {"method": "POST", "path": "/v1/embed", "bodyKwargs": true},
+    "rerank": {"method": "POST", "path": "/v1/rerank", "bodyKwargs": true},
+    "classify": {"method": "POST", "path": "/v1/classify", "bodyKwargs": true},
+    "summarize": {"method": "POST", "path": "/v1/summarize", "bodyKwargs": true},
+    "tokenize": {"method": "POST", "path": "/v1/tokenize", "bodyKwargs": true},
+    "detokenize": {"method": "POST", "path": "/v1/detokenize", "bodyKwargs": true},
+    "v2.chat": {"method": "POST", "path": "/v2/chat", "bodyKwargs": true},
+    "v2.chat_stream": {"method": "POST", "path": "/v2/chat", "bodyKwargs": true},
+    "v2.embed": {"method": "POST", "path": "/v2/embed", "bodyKwargs": true},
+    "v2.rerank": {"method": "POST", "path": "/v2/rerank", "bodyKwargs": true},
+    "models.list": {"method": "GET", "path": "/v1/models", "queryKwargs": true}
+  }
+}
