@@ -410,10 +410,12 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
 
 - **URL**: string and template literals, `+` concatenation, `new URL(path, base)`, same-file
   and imported constants, `as const` config objects, enums, `process.env.X` (with hints
-  from `.env.example`), local helpers that return a URL (`apiUrl("sendMessage")`, arguments
-  substituted), `this.baseUrl` set in the constructor or as a parameter property default, and
-  parameter defaults. Unresolvable segments become `{name}` placeholders and are listed under
-  `dynamic` with their origin (`param`, `call`, `env`, `unknown`).
+  from `.env.example`), helpers that return a URL (`apiUrl("sendMessage")`, local or imported,
+  arguments substituted), `this.baseUrl` set in the constructor, as a parameter property default
+  or by a getter, parameter defaults, and `.replace("{id}", id)` on a literal pattern (a regex
+  pattern is never run: the string stays as it is). Unresolvable segments become `{name}`
+  placeholders and are listed under `dynamic` with their origin (`param`, `call`, `env`,
+  `unknown`).
 - **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
   flagged; anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
@@ -425,17 +427,22 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   default's host and base path; with no value at all, the env var's name is used
   (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`, lower confidence). A
   host that still holds a placeholder never becomes a provider: it is `internal` (localhost),
-  `env:<NAME>` or `unknown`. `internal` (relative URLs, localhost) is the repo's own backend.
+  `env:<NAME>` or `unknown`, except a templated subdomain: of a provider listed by suffix it is
+  that provider (`{instance}.my.salesforce.com` is `salesforce`), of any other domain the vendor's
+  domain (`{subdomain}.zendesk.com` is `zendesk.com`). `internal` (relative URLs, localhost, a
+  path prefix such as `${process.env.NEXT_PUBLIC_BASE_PATH}/api/...`) is the repo's own backend.
   `api-grep providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (two hops): a local function or method whose body performs an HTTP call *and*
+- **Wrappers** (up to four deep): a local function or method whose body performs an HTTP call *and*
   whose parameters flow into its request (URL, method, query, body; for an SDK call, the
   arguments its registry reads) is treated as a client. Calls to it are reported at the call
   site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
   `fn.call(this, …)` and destructured `options`. A function that passes its parameters to such a
   wrapper is one too (`latest()` -> `tlsFetch(url)` -> `doFetch(url)` -> `fetch` is reported at
-  `latest()` with `via: "wrapper:tlsFetch>doFetch"`). `reportError(err)` ->
+  `latest()` with `via: "wrapper:tlsFetch>doFetch"`). An object argument is followed into its
+  properties (`send({ base, path })` reading `call.base + call.path`; in Python and PHP an object
+  built in the project: a dataclass, `Call(base=...)`, `new Call(base: ...)`). `reportError(err)` ->
   `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
   the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
   call per call site; different requests from one call site get distinct `id`s.
@@ -547,11 +554,14 @@ package. `--changed-since` scans have no coverage section.
 
 ## Limitations
 
-- A conditional between two static URLs (`prod ? A : B`) resolves to the first branch.
-- Wrapper expansion stops at two hops; the definition-site call is still reported and deeper
-  call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
-- One call site that picks its host from a table (``fetch(`${PRESETS[name].baseUrl}/models`)``)
-  is one call with an unknown host: the candidate hosts are not listed.
+- A conditional (`prod ? A : B`) resolves to its first branch when both are static, else to the
+  branch with a literal host (`cloud ? "https://api..." : selfHostedUrl`): the other value is not
+  listed. A helper with several `return`s and a variable assigned in branches read the same way.
+- Wrapper expansion stops at four wrappers; the definition-site call is still reported and
+  deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
+- A table of URLs indexed by an unknown key (`HOSTS[region]`) reads as its first entry with a
+  literal host; the other hosts are not listed. A table of objects
+  (``fetch(`${PRESETS[name].baseUrl}/models`)``) gives one call with an unknown host.
 - `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
   a `window.fetch = ...` override are not requests and are not reported.
 - SDK detection only covers the packages with a registry ([docs/sdk-support.md](docs/sdk-support.md)).
@@ -570,8 +580,9 @@ package. `--changed-since` scans have no coverage section.
 
 ## Evaluation
 
-The TypeScript scanner is measured on 20 open-source TypeScript repositories listed in
-[`eval/repos.json`](eval/repos.json). Results are in [`eval/results.md`](eval/results.md).
+The scanner is measured on 33 open-source repositories listed in
+[`eval/repos.json`](eval/repos.json): 20 TypeScript, 6 Python and 7 PHP (a `language` entry scans that
+language only). Results are in [`eval/results.md`](eval/results.md).
 
 ```sh
 pnpm eval                       # shallow-clone, scan, write eval/out/<repo>.json and a summary

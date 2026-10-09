@@ -2544,15 +2544,22 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 2,
-    "filesSeen": 2,
+    "filesSeen": 3,
     "languages": {
       "python": {
         "filesScanned": 2,
-        "filesSeen": 2,
+        "filesSeen": 3,
       },
     },
-    "skipped": [],
-    "skippedCounts": {},
+    "skipped": [
+      {
+        "file": "httpx2/weather.py",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 1,
+    },
     "unfollowed": [],
   },
   "schemaVersion": "1.3.0",
@@ -3114,15 +3121,22 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 2,
-    "filesSeen": 2,
+    "filesSeen": 3,
     "languages": {
       "python": {
         "filesScanned": 2,
-        "filesSeen": 2,
+        "filesSeen": 3,
       },
     },
-    "skipped": [],
-    "skippedCounts": {},
+    "skipped": [
+      {
+        "file": "urlretrieve/maps.py",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 1,
+    },
     "unfollowed": [],
   },
   "schemaVersion": "1.3.0",
@@ -3622,15 +3636,26 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 2,
-    "filesSeen": 2,
+    "filesSeen": 4,
     "languages": {
       "python": {
         "filesScanned": 2,
-        "filesSeen": 2,
+        "filesSeen": 4,
       },
     },
-    "skipped": [],
-    "skippedCounts": {},
+    "skipped": [
+      {
+        "file": "hardened/http_client.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "hardened/notify.py",
+        "reason": "excluded",
+      },
+    ],
+    "skippedCounts": {
+      "excluded": 2,
+    },
     "unfollowed": [],
   },
   "schemaVersion": "1.3.0",

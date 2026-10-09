@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "Upstream.php", "line": 23, "provider": "unknown"},
+    {"file": "Upstream.php", "line": 29, "provider": "unknown"},
+    {"file": "Upstream.php", "line": 32, "provider": "api.example-weather.com"},
+    {"file": "Upstream.php", "line": 33, "provider": "api.example-weather.com"},
+    {"file": "Upstream.php", "line": 34, "provider": "api.example-status.com"}
+  ]
+}

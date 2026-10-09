@@ -4,6 +4,6 @@
     {"file": "signed.py", "line": 5, "provider": "unknown"},
     {"file": "signed.py", "line": 9, "provider": "mixpanel"},
     {"file": "signed.py", "line": 13, "provider": "mixpanel"},
-    {"file": "signed.py", "line": 17, "provider": "mixpanel", "orUnfollowed": true}
+    {"file": "signed.py", "line": 17, "provider": "mixpanel"}
   ]
 }

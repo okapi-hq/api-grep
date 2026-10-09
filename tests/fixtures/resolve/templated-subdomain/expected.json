@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "tenants.ts", "line": 2, "provider": "salesforce"},
+    {"file": "tenants.ts", "line": 6, "provider": "aws"},
+    {"file": "tenants.ts", "line": 11, "provider": "example-helpdesk.com"}
+  ]
+}

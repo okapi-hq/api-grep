@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "ChatTransport.php", "line": 11, "provider": "api.example-chat.com"}
+  ]
+}

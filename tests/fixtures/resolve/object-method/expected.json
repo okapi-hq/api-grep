@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "invoices.ts", "line": 4, "provider": "api.example-books.com"},
+    {"file": "invoices.ts", "line": 8, "provider": "oauth.example-books.com"},
+    {"file": "invoices.ts", "line": 13, "provider": "api.example-voice.com"}
+  ]
+}

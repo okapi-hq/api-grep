@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "maps.py", "line": 5, "provider": "cdn.example-weather.com"}
+  ]
+}

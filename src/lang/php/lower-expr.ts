@@ -117,10 +117,13 @@ function lowerMember(n: SyntaxNode, st: PhpState): Expr {
 }
 
 function lowerScoped(n: SyntaxNode, st: PhpState): Expr {
-  const scope = scopeExpr(field(n, "scope") ?? named(n)[0]!, st);
+  const scopeNode = field(n, "scope") ?? named(n)[0]!;
+  const scope = scopeExpr(scopeNode, st);
   const nameNode = field(n, "name") ?? named(n)[named(n).length - 1]!;
   if (n.type === "class_constant_access_expression" && nameNode.text === "class" && scope.k === "qname") return { k: "str", v: scope.path.join("\\") };
-  const member: Expr = { k: "attr", obj: scope, name: nameNode.text.replace(/^\$/, ""), pos: posOf(nameNode) };
+  // `static::HOST` binds late, to the class of the object the method runs on, as `$this` does
+  const obj: Expr = scopeNode.text.toLowerCase() === "static" ? { k: "this", pos: posOf(scopeNode) } : scope;
+  const member: Expr = { k: "attr", obj, name: nameNode.text.replace(/^\$/, ""), pos: posOf(nameNode) };
   if (n.type !== "scoped_call_expression") return member;
   return record({ k: "call", fn: member, args: lowerArgs(field(n, "arguments"), st), pos: posOf(n) }, st);
 }

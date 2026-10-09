@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "api.py", "line": 8, "provider": "internal"},
+    {"file": "api.py", "line": 18, "provider": "billing.example.com"},
+    {"file": "api.py", "line": 21, "provider": "billing.example.com"}
+  ]
+}

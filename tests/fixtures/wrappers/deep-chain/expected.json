@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "catalog.ts", "line": 6, "provider": "unknown"},
+    {"file": "catalog.ts", "line": 11, "provider": "api.example-catalog.com"},
+    {"file": "catalog.ts", "line": 15, "provider": "api.example-catalog.com"},
+    {"file": "catalog.ts", "line": 19, "provider": "api.example-catalog.com"},
+    {"file": "catalog.ts", "line": 22, "provider": "api.example-catalog.com"},
+    {"file": "catalog.ts", "line": 24, "provider": "api.example-catalog.com"}
+  ]
+}

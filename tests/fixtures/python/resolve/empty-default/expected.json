@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "charts.py", "line": 6, "provider": "charts.example.com"}
+  ]
+}

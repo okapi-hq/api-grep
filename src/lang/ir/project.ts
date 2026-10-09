@@ -25,6 +25,8 @@ export class ProjectIndex {
   private readonly shortFunctions = new Map<string, FunctionDef>();
   /** Import roots of known SDKs and clients: never resolved to a project module (`services/stripe.py` is not `stripe`). */
   private readonly external: Set<string>;
+  /** Project base classes per class, resolved once: every member lookup walks them (a Laravel model has many traits). */
+  readonly bases = new Map<ClassDef, ClassDef[]>();
 
   constructor(
     readonly lang: IrLanguage,
@@ -194,12 +196,32 @@ export function classFieldType(cls: ClassDef, name: string, idx: ProjectIndex, s
   return undefined;
 }
 
+/** Whether `cls` is `base` or extends it through project classes. */
+export function inherits(cls: ClassDef, base: ClassDef, idx: ProjectIndex, seen = new Set<ClassDef>()): boolean {
+  if (cls === base) return true;
+  if (seen.has(cls)) return false;
+  seen.add(cls);
+  return projectBases(cls, idx).some((b) => inherits(b, base, idx, seen));
+}
+
+/**
+ * The class `self` / `$this` / `static::` stand for in `fn`: the class of the object it runs on when that one extends
+ * the class `fn` is written in (late binding: `BillingAPI.base_url`, not `BaseAPI.base_url`), else the latter.
+ */
+export function receiverClass(fn: FunctionDef, self: ClassDef | undefined, idx: ProjectIndex): ClassDef | undefined {
+  return fn.cls && self && inherits(self, fn.cls, idx) ? self : fn.cls;
+}
+
 /** Base classes defined in the project. */
 export function projectBases(cls: ClassDef, idx: ProjectIndex): ClassDef[] {
-  const out: ClassDef[] = [];
-  for (const b of cls.bases) {
-    const bind = baseBinding(b, cls, idx);
-    if (bind.kind === "class") out.push(bind.cls);
+  let out = idx.bases.get(cls);
+  if (!out) {
+    out = [];
+    for (const b of cls.bases) {
+      const bind = baseBinding(b, cls, idx);
+      if (bind.kind === "class") out.push(bind.cls);
+    }
+    idx.bases.set(cls, out);
   }
   return out;
 }

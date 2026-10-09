@@ -83,6 +83,9 @@ function splitQuery(pathAndQuery: string, origins: Origins, dynamic: DynamicPart
   return { path: path ?? "", query, queryShape };
 }
 
+/** Env vars that hold a path prefix rather than a base URL (`NEXT_PUBLIC_BASE_PATH`, `REACT_APP_BASENAME`, `APP_PATH_PREFIX`). */
+const PATH_PREFIX_ENV = /(?:^|_)(?:BASE_?PATH|BASE_?NAME|PATH_?PREFIX)$/i;
+
 interface HostResult {
   hostKind: HostKind;
   host?: string;
@@ -123,6 +126,8 @@ function classifyHost(template: string, parts: Part[], ctx: EvalCtx, dynamic: Dy
     if (raw.startsWith("env:")) {
       const name = raw.slice(4);
       const hinted = hostFromHint(ctx, name);
+      // `${process.env.NEXT_PUBLIC_BASE_PATH}/api/projects`: a path prefix, so a relative URL (the app's own backend)
+      if (!hinted && PATH_PREFIX_ENV.test(name) && rest.startsWith("/")) return { hostKind: "relative", rest };
       // the env var holds a base URL: its known value's path (`https://api.langdock.com/openai/eu/v1`) comes first
       const base = pathFromHint(ctx, name);
       return { hostKind: "env", host: hinted, envName: name, rest: base + (rest.startsWith("/") || rest === "" ? rest : `/${rest}`) };
@@ -172,7 +177,8 @@ function withEnvDefaults(parts: Part[], ctx: EvalCtx): EvalCtx {
 
 export function partsToUrlShape(parts: Part[], baseCtx: EvalCtx = {}): UrlShape {
   const ctx = withEnvDefaults(parts, baseCtx);
-  const template = stripUserinfo(partsToTemplate(parts));
+  // `" https://api.example.com/call"`: a stray leading space does not make the URL relative
+  const template = stripUserinfo(partsToTemplate(parts)).trimStart();
   const origins = originMap(parts);
   const dynamic: DynamicPart[] = [];
   const h = classifyHost(template, parts, ctx, dynamic, origins);

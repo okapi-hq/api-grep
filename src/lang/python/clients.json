@@ -18,8 +18,15 @@
       "keys": { "url": "url", "method": "method", "params": "query", "json": "body:json", "data": "body:form", "files": "body:multipart", "headers": "headers", "auth": "auth" }
     },
     {
+      "client": "requests",
+      "imports": ["requests_hardened"],
+      "instances": { "names": ["Manager"] },
+      "functions": { "send_request": { "methodArg": 0, "urlArg": 1 } },
+      "keys": { "url": "url", "method": "method", "params": "query", "json": "body:json", "data": "body:form", "files": "body:multipart", "headers": "headers", "auth": "auth" }
+    },
+    {
       "client": "httpx",
-      "imports": ["httpx"],
+      "imports": ["httpx", "httpx2"],
       "instances": { "names": ["Client", "AsyncClient"] },
       "functions": {
         "get": { "method": "GET" },

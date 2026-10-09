@@ -1,9 +1,10 @@
-import { Node, type Expression, type ObjectLiteralExpression } from "ts-morph";
+import { Node, type Expression, type ObjectLiteralExpression, type VariableDeclaration } from "ts-morph";
 import { isSafeKey } from "../record-keys.js";
 import type { EvalCtx } from "../types.js";
 import { unwrap } from "./expr.js";
 
-const MAX_DEPTH = 4;
+/** Object hops per property read: a parameter to its argument, a spread, a const; two per wrapper an object is passed down. */
+const MAX_DEPTH = 8;
 
 function keyText(nameNode: Node): string | undefined {
   if (Node.isIdentifier(nameNode) || Node.isPrivateIdentifier(nameNode)) return nameNode.getText();
@@ -76,11 +77,23 @@ export function bindingElementValue(decl: Node, ctx: EvalCtx = {}, depth = 0): E
   return getProp(init, name, ctx, depth + 1) ?? decl.getInitializer();
 }
 
-/** Resolves an expression to an object literal through const identifiers and parameter substitution (one hop each). */
+/** `import { config } from "./config"`: the variable a project file exports under that name. */
+function importedVariable(ident: Expression): VariableDeclaration | undefined {
+  const sym = ident.getSymbol();
+  if (!sym?.isAlias()) return undefined;
+  const decls = sym.getAliasedSymbol()?.getDeclarations() ?? [];
+  return decls.find((d): d is VariableDeclaration => Node.isVariableDeclaration(d) && !d.getSourceFile().isFromExternalLibrary());
+}
+
+/**
+ * Resolves an expression to an object literal through const identifiers (imported ones too), nested properties
+ * (`CONFIG.API`) and parameter substitution.
+ */
 export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {}, depth = 0): ObjectLiteralExpression | undefined {
   if (!expr || depth > MAX_DEPTH) return undefined;
   const u = unwrap(expr);
   if (Node.isObjectLiteralExpression(u)) return u;
+  if (Node.isPropertyAccessExpression(u)) return toObjectLiteral(getProp(u.getExpression(), u.getName(), ctx, depth + 1), ctx, depth + 1);
   if (Node.isIdentifier(u)) {
     for (const decl of declarationsOf(u)) {
       const sub = paramSubstitution(decl, ctx);
@@ -88,6 +101,7 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
       if (Node.isVariableDeclaration(decl)) return toObjectLiteral(decl.getInitializer(), ctx, depth + 1);
       if (Node.isBindingElement(decl)) return toObjectLiteral(bindingElementValue(decl, ctx, depth + 1), ctx, depth + 1);
     }
+    return toObjectLiteral(importedVariable(u)?.getInitializer(), ctx, depth + 1);
   }
   return undefined;
 }

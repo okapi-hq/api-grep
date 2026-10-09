@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "endpoint.py", "line": 11, "provider": "unknown"},
+    {"file": "endpoint.py", "line": 15, "provider": "api.example-status.com"},
+    {"file": "endpoint.py", "line": 19, "provider": "api.example-status.com"},
+    {"file": "upstream.py", "line": 17, "provider": "unknown"},
+    {"file": "upstream.py", "line": 21, "provider": "unknown"},
+    {"file": "upstream.py", "line": 25, "provider": "api.example-weather.com"},
+    {"file": "upstream.py", "line": 29, "provider": "api.example-weather.com"}
+  ]
+}

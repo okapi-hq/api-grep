@@ -1,4 +1,5 @@
 import { Node, SyntaxKind, type ClassDeclaration, type ClassExpression, type Expression, type ParameterDeclaration } from "ts-morph";
+import { isFunctionLike } from "./function.js";
 
 export type ClassLike = ClassDeclaration | ClassExpression;
 
@@ -41,7 +42,16 @@ export function fieldAssignments(cls: ClassLike, propName: string): Expression[]
   );
 }
 
-/** Initializer of `this.<prop>`: property initializer or `this.prop = ...` in the constructor. */
+/** `get baseUrl() { return "https://..." }`: the one value the getter returns (nested functions aside). */
+function getterReturn(cls: ClassLike, propName: string): Expression | undefined {
+  const getter = cls.getGetAccessor(propName);
+  if (!getter) return undefined;
+  const own = (r: Node): boolean => r.getFirstAncestor((a) => isFunctionLike(a) || Node.isGetAccessorDeclaration(a)) === getter;
+  const returns = getter.getDescendantsOfKind(SyntaxKind.ReturnStatement).filter(own);
+  return returns.length === 1 ? returns[0]!.getExpression() : undefined;
+}
+
+/** Initializer of `this.<prop>`: property initializer, `this.prop = ...` in the constructor, or what its getter returns. */
 export function classPropertyInitializer(at: Node, propName: string): Expression | undefined {
   const cls = enclosingClass(at);
   if (!cls) return undefined;
@@ -50,5 +60,5 @@ export function classPropertyInitializer(at: Node, propName: string): Expression
   const param = parameterProperty(cls, propName);
   // `constructor(private baseUrl = "https://api.gladia.io")`: the default, unless the constructor reassigns it
   if (param) return constructorAssignment(cls, propName) ?? param.getInitializer();
-  return constructorAssignment(cls, propName);
+  return constructorAssignment(cls, propName) ?? getterReturn(cls, propName);
 }
