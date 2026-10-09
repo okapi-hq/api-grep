@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "signed.py", "line": 5, "provider": "unknown"},
+    {"file": "signed.py", "line": 9, "provider": "mixpanel"},
+    {"file": "signed.py", "line": 13, "provider": "mixpanel"},
+    {"file": "signed.py", "line": 17, "provider": "mixpanel", "orUnfollowed": true}
+  ]
+}

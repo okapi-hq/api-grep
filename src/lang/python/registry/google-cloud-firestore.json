@@ -1,0 +1,50 @@
+{
+  "$comment": "google-cloud-firestore used directly: `db = firestore.Client()`; same keys and REST-equivalent paths as the Firestore part of firebase-admin.json.",
+  "package": "google-cloud-firestore",
+  "imports": [
+    "google.cloud.firestore",
+    "google.cloud.firestore_v1"
+  ],
+  "provider": "firebase",
+  "host": "firestore.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-firestore 2.34.0)",
+  "instance": {
+    "names": [
+      "Client",
+      "AsyncClient"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "builders": [
+    "collection",
+    "document",
+    "collection_group",
+    "where",
+    "order_by",
+    "limit",
+    "limit_to_last",
+    "offset",
+    "start_at",
+    "start_after",
+    "end_at",
+    "end_before",
+    "select",
+    "find_nearest"
+  ],
+  "methods": {
+    "get": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "stream": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "on_snapshot": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "list_documents": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "set": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "update": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "create": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "add": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}, "bodyArg": 0},
+    "delete": {"method": "DELETE", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,document"}},
+    "count.get": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery", "params": {"path": "chain:collection,document"}},
+    "get_all": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:batchGet"},
+    "batch.commit": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:commit"},
+    "collections": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:listCollectionIds"}
+  }
+}

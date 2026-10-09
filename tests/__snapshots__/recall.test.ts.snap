@@ -14,6 +14,84 @@ exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 
 exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
 
+exports[`regression fixtures > python/negatives 1`] = `[]`;
+
+exports[`regression fixtures > python/resolve/class-base-url 1`] = `
+[
+  "gladia.py:10 gladia POST /v2/upload",
+  "gladia.py:20 elevenlabs GET /v1/voices",
+  "gladia.py:23 elevenlabs GET /v1/models",
+]
+`;
+
+exports[`regression fixtures > python/resolve/env-default 1`] = `
+[
+  "llm.py:10 langdock POST /openai/eu/v1/chat/completions",
+  "llm.py:14 elevenlabs POST /v1/text-to-speech/{voice_id}",
+]
+`;
+
+exports[`regression fixtures > python/resolve/env-name 1`] = `
+[
+  "clients.py:7 openrouter GET /models",
+  "clients.py:11 gladia POST /v2/transcription",
+]
+`;
+
+exports[`regression fixtures > python/resolve/helper-url 1`] = `
+[
+  "telegram.py:16 telegram POST /bot{TELEGRAM_TOKEN}/sendMessage",
+  "telegram.py:20 meta-graph GET /v19.0/{page_id}/feed",
+]
+`;
+
+exports[`regression fixtures > python/sdk/firebase 1`] = `
+[
+  "store.py:9 firebase GET /v1/projects/{projectId}/databases/(default)/documents/users",
+  "store.py:13 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/users/{uid}",
+  "store.py:17 firebase POST /v1/projects/{projectId}/databases/(default)/documents/users/{uid}/posts",
+  "store.py:21 firebase POST /v1/projects/{projectId}/accounts",
+  "store.py:25 firebase POST /v1/projects/{projectId}/messages:send",
+]
+`;
+
+exports[`regression fixtures > python/sdk/sentry 1`] = `
+[
+  "errors.py:8 sentry POST /api/{projectId}/envelope",
+  "errors.py:12 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > python/sdk/supabase 1`] = `
+[
+  "db.py:9 supabase GET /rest/v1/tasks",
+  "db.py:13 supabase POST /rest/v1/tasks",
+  "db.py:17 supabase POST /rest/v1/profiles",
+  "db.py:17 supabase POST /rest/v1/audit",
+  "db.py:21 supabase POST /rest/v1/rpc/daily_stats",
+  "db.py:25 supabase GET /auth/v1/user",
+  "db.py:29 supabase POST /auth/v1/token",
+  "db.py:33 supabase POST /storage/v1/object/avatars/{path}",
+  "db.py:37 supabase POST /functions/v1/send-welcome",
+  "db.py:42 supabase DELETE /rest/v1/tasks",
+  "db.py:46 supabase GET /rest/v1/teams",
+]
+`;
+
+exports[`regression fixtures > python/wrappers/injected-client 1`] = `
+[
+  "provider.py:13 mistral GET /v1/models",
+]
+`;
+
+exports[`regression fixtures > python/wrappers/two-hop 1`] = `
+[
+  "signed.py:5 unknown POST /",
+  "signed.py:9 mixpanel POST /{path} (wrapper:do_fetch)",
+  "signed.py:13 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
+]
+`;
+
 exports[`regression fixtures > resolve/class-base-url 1`] = `
 [
   "gladia.ts:9 gladia POST /v2/upload",

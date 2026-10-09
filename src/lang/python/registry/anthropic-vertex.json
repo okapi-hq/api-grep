@@ -1,0 +1,34 @@
+{
+  "$comment": "anthropic-python's AnthropicVertex client: messages go to Vertex AI `...publishers/anthropic/models/{model}:rawPredict` (`:streamRawPredict` when streaming). {project_id} and {region} are constructor arguments of AnthropicVertex.",
+  "package": "anthropic",
+  "imports": [
+    "anthropic"
+  ],
+  "provider": "google-vertex",
+  "host": "{region}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against anthropic-python 1.12.1 lib/vertex/_client.py)",
+  "instance": {
+    "names": [
+      "AnthropicVertex",
+      "AsyncAnthropicVertex"
+    ],
+    "urlArg": {
+      "AnthropicVertex": "kw:base_url",
+      "AsyncAnthropicVertex": "kw:base_url"
+    }
+  },
+  "basePath": "/v1",
+  "builders": [
+    "with_raw_response",
+    "with_streaming_response"
+  ],
+  "methods": {
+    "messages.create": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/{model}:rawPredict", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "messages.stream": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/{model}:streamRawPredict", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "messages.count_tokens": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/count-tokens:rawPredict", "bodyKwargs": true},
+    "beta.messages.create": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/{model}:rawPredict", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "beta.messages.stream": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/{model}:streamRawPredict", "params": {"model": "kw:model"}, "bodyKwargs": true},
+    "beta.messages.count_tokens": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/count-tokens:rawPredict", "bodyKwargs": true}
+  }
+}

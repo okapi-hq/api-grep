@@ -638,6 +638,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       {
         "calls": 10,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 3,
         "imported": true,
         "package": "firebase",
@@ -652,11 +653,17 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "droppedCalls": [],
     "filesScanned": 3,
     "filesSeen": 3,
+    "languages": {
+      "typescript": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -831,6 +838,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
       {
         "calls": 1,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@sentry/nextjs",
@@ -841,6 +849,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@sentry/react",
@@ -855,11 +864,17 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "droppedCalls": [],
     "filesScanned": 2,
     "filesSeen": 2,
+    "languages": {
+      "typescript": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -1793,6 +1808,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       {
         "calls": 2,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@supabase/ssr",
@@ -1803,6 +1819,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       {
         "calls": 14,
         "declared": false,
+        "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@supabase/supabase-js",
@@ -1817,11 +1834,17 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "droppedCalls": [],
     "filesScanned": 4,
     "filesSeen": 4,
+    "languages": {
+      "typescript": {
+        "filesScanned": 4,
+        "filesSeen": 4,
+      },
+    },
     "skipped": [],
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "stats": {
     "byClient": {
       "sdk": 16,

@@ -2,16 +2,19 @@ import { spawnSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { Command, InvalidArgumentError } from "commander";
+import { LANGUAGE_IDS } from "./lang/index.js";
 import { PROVIDERS } from "./normalize/provider.js";
 import { toCurl } from "./report/curl.js";
 import { finalizeReport, serializeReport } from "./report/json.js";
 import { reportJsonSchema } from "./report/json-schema.js";
 import { printable } from "./report/printable.js";
+import type { Language } from "./report/schema.js";
 import { toTable } from "./report/table.js";
 import { scan } from "./scan.js";
 import pkg from "../package.json" with { type: "json" };
 
 interface ScanFlags {
+  language?: string[];
   json?: boolean;
   out?: string;
   tsconfig?: string;
@@ -28,6 +31,12 @@ interface ScanFlags {
 
 function collect(value: string, prev: string[] = []): string[] {
   return [...prev, value];
+}
+
+/** `--language python,typescript` and repeated `--language` flags. */
+function languages(values: string[] | undefined): Language[] | undefined {
+  const ids = values?.flatMap((v) => v.split(",")).map((v) => v.trim().toLowerCase()).filter(Boolean);
+  return ids && ids.length > 0 ? (ids as Language[]) : undefined;
 }
 
 function count(value: string): number {
@@ -51,6 +60,7 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
   if (flags.validate && !flags.specs) throw new Error("--validate requires --specs <dir>");
   const scanned = await scan({
     dir,
+    languages: languages(flags.language),
     tsconfig: flags.tsconfig,
     include: flags.include,
     exclude: flags.exclude,
@@ -72,15 +82,16 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
 }
 
 export function buildProgram(): Command {
-  const program = new Command().name("apicalls").description("Outbound API call extractor for TypeScript").version(pkg.version);
+  const program = new Command().name("apicalls").description(`Outbound API call extractor for ${LANGUAGE_IDS.join(", ")} code`).version(pkg.version);
   program
     .command("scan")
     .argument("<dir>", "repository or package directory")
+    .option("--language <ids>", `languages to scan, comma-separated or repeated (default: all of ${LANGUAGE_IDS.join(", ")})`, collect)
     .option("--json", "emit Report JSON to stdout (table otherwise)")
     .option("--curl", "print example requests as curl commands (one per example)")
     .option("--examples <n>", "maximum example requests per call (default 3, 0 disables)", count)
     .option("--out <file>", "write JSON report to file")
-    .option("--tsconfig <path>", "tsconfig.json to load (default: nearest)")
+    .option("--tsconfig <path>", "TypeScript: tsconfig.json to load (default: nearest)")
     .option("--changed-since <ref>", "only files changed vs git ref (+ importers, one hop)")
     .option("--specs <dir>", "directory with <provider>.{json,yaml} specs or an APIs-guru checkout")
     .option("--validate", "run deterministic checks against specs (requires --specs)")
@@ -97,7 +108,7 @@ export function buildProgram(): Command {
     });
   program
     .command("providers")
-    .description("print the provider table (id, name, hosts, packages) as JSON")
+    .description("print the provider table (id, name, hosts, packages by ecosystem) as JSON")
     .action(() => {
       process.stdout.write(`${JSON.stringify(PROVIDERS, null, 2)}\n`);
     });

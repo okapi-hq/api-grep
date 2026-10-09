@@ -7,12 +7,21 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.0.0";
+export const SCHEMA_VERSION = "1.1.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
   .enum(["typescript", "javascript", "python", "php"])
-  .meta({ id: "Language", description: "Source language of a file, from its extension. The TypeScript scanner emits typescript and javascript." });
+  .meta({ id: "Language", description: "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python." });
+
+/** HTTP clients per language; `sdk` and `framework` are shared. */
+export const ClientSchema = z
+  .enum(["fetch", "axios", "got", "ky", "node-http", "requests", "httpx", "aiohttp", "urllib", "urllib3", "sdk", "framework"])
+  .meta({
+    id: "Client",
+    description:
+      "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. Any language: sdk (a registry), framework (a framework helper).",
+  });
 
 export const ShapeSchema: z.ZodType<Shape> = z
   .lazy(() =>
@@ -91,11 +100,11 @@ export const CallSchema = z
   .object({
     id: z.string().describe("Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."),
     location: LocationSchema,
-    client: z.enum(["fetch", "axios", "got", "ky", "node-http", "sdk", "framework"]).describe("How the request is sent."),
+    client: ClientSchema,
     sdk: z
       .object({
         package: z.string(),
-        version: z.string().optional().describe("Version range from the nearest package.json."),
+        version: z.string().optional().describe("Version range from the nearest manifest (package.json, requirements file, pyproject.toml...)."),
         chain: z.string().describe("Method called on the client (`customers.create`)."),
       })
       .optional()
@@ -164,6 +173,7 @@ export const ReportSchema = z
   .meta({ title: "api-grep report", description: "Outbound HTTP and SDK calls found in a codebase by `apicalls scan --json`." });
 
 export type Language = z.infer<typeof LanguageSchema>;
+export type ClientKind = z.infer<typeof ClientSchema>;
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
 export type Stats = z.infer<typeof StatsSchema>;

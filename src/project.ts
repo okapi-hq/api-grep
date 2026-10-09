@@ -1,13 +1,14 @@
 import path from "node:path";
-import fg from "fast-glob";
-import picomatch from "picomatch";
 import { Project, type SourceFile } from "ts-morph";
-import { isConfigFile, isInside, readConfigFile, realPath, relativePosix } from "./files.js";
+import { isConfigFile, isInside, realPath, relativePosix } from "./files.js";
+import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
+
+export { readEnvHints, type LeftOut } from "./lang/files.js";
+
+export const TS_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
 
 export const DEFAULT_EXCLUDES = [
-  "**/node_modules/**",
-  "**/dist/**",
-  "**/build/**",
+  ...SHARED_EXCLUDES,
   "**/.next/**",
   "**/*.test.ts",
   "**/*.test.tsx",
@@ -23,11 +24,6 @@ export interface LoadOptions {
   tsconfig?: string;
   include?: string[];
   exclude?: string[];
-}
-
-export interface LeftOut {
-  file: string;
-  reason: "excluded" | "not-included";
 }
 
 export interface Loaded {
@@ -60,32 +56,9 @@ function findTsconfig(dir: string): string | undefined {
   return undefined;
 }
 
-function globFiles(dir: string, include: string[] | undefined, exclude: string[]): string[] {
-  const patterns = include && include.length > 0 ? include : ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"];
-  return fg.sync(patterns, { cwd: dir, absolute: true, ignore: exclude, followSymbolicLinks: false });
-}
-
-type Matcher = (file: string) => boolean;
-
-/** Matches absolute paths under `dir` against globs relative to it; compiled once, same engine family as fast-glob. */
-function globMatcher(dir: string, globs: string[] | undefined): Matcher | undefined {
-  if (!globs || globs.length === 0) return undefined;
-  const isMatch = picomatch(globs, { dot: true });
-  return (file) => isMatch(relativePosix(dir, file));
-}
-
-/** Reads .env.example / .env.sample for host hints (values are only used if they look like URLs). */
-export function readEnvHints(dir: string): Record<string, string> {
-  const hints: Record<string, string> = {};
-  for (const name of [".env.example", ".env.sample", ".env.template"]) {
-    const text = readConfigFile(path.join(dir, name), dir);
-    if (text === undefined) continue;
-    for (const line of text.split(/\r?\n/)) {
-      const m = /^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*["']?([^"'#\s]*)/.exec(line);
-      if (m && m[2] && /^https?:\/\//.test(m[2])) hints[m[1]!] = m[2];
-    }
-  }
-  return hints;
+/** TypeScript files in scope (an `--include` glob only ever selects TypeScript files here). */
+export function tsFiles(dir: string, include: string[] | undefined, exclude: string[] = []): string[] {
+  return languageFiles(dir, TS_EXTENSIONS, include, [...DEFAULT_EXCLUDES, ...exclude]);
 }
 
 /** Files under `dir`, also once symlinks are resolved: a committed symlink cannot pull in a file from elsewhere on disk. */
@@ -132,7 +105,7 @@ export function loadProject(opts: LoadOptions): Loaded {
   const exclude = [...DEFAULT_EXCLUDES, ...(opts.exclude ?? [])];
   const tsconfig = tsconfigFor(dir, opts.tsconfig);
   const project = createProject(tsconfig);
-  const unreadable = addFiles(project, dir, globFiles(dir, opts.include, exclude));
+  const unreadable = addFiles(project, dir, tsFiles(dir, opts.include, opts.exclude));
   if (tsconfig) {
     try {
       project.resolveSourceFileDependencies();
@@ -141,18 +114,8 @@ export function loadProject(opts: LoadOptions): Loaded {
     }
   }
   const files = selectFiles(project, dir, opts, exclude);
-  return { project, files, envHints: readEnvHints(dir), leftOut: leftOutFiles(dir, opts, files, unreadable), unreadable };
-}
-
-/**
- * Files the default file set would scan but --exclude / --include removed; test files and build output are out of
- * scope, and an unreadable file is already reported as such.
- */
-function leftOutFiles(dir: string, opts: LoadOptions, selected: SourceFile[], unreadable: Unreadable[]): LeftOut[] {
-  if (!opts.include?.length && !opts.exclude?.length) return [];
-  const kept = new Set<string>([...selected.map((sf) => sf.getFilePath() as string), ...unreadable.map((u) => u.path)]);
-  const excluded = globMatcher(dir, opts.exclude);
-  return globFiles(dir, undefined, DEFAULT_EXCLUDES)
-    .filter((f) => !kept.has(f))
-    .map((f) => ({ file: relativePosix(dir, f), reason: excluded?.(f) ? "excluded" : "not-included" }));
+  // an unreadable file is already reported as such
+  const kept = new Set<string>([...files.map((sf) => sf.getFilePath() as string), ...unreadable.map((u) => u.path)]);
+  const leftOut = leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, TS_EXTENSIONS, DEFAULT_EXCLUDES, kept);
+  return { project, files, envHints: readEnvHints(dir), leftOut, unreadable };
 }

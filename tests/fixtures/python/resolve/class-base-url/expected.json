@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "gladia.py", "line": 10, "provider": "gladia"},
+    {"file": "gladia.py", "line": 20, "provider": "elevenlabs"},
+    {"file": "gladia.py", "line": 23, "provider": "elevenlabs"}
+  ]
+}

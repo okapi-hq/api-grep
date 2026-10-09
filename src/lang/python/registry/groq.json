@@ -1,0 +1,48 @@
+{
+  "$comment": "groq-python (OpenAI-shaped): `client = Groq(); client.chat.completions.create(model=..., messages=[...])`. The default base URL is the bare host; every path carries /openai/v1.",
+  "package": "groq",
+  "imports": [
+    "groq"
+  ],
+  "provider": "groq",
+  "host": "api.groq.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against groq-python 1.7.0 source)",
+  "instance": {
+    "names": [
+      "Groq",
+      "AsyncGroq",
+      "Client",
+      "AsyncClient"
+    ],
+    "urlArg": {
+      "Groq": "kw:base_url",
+      "AsyncGroq": "kw:base_url",
+      "Client": "kw:base_url",
+      "AsyncClient": "kw:base_url"
+    }
+  },
+  "builders": [
+    "with_raw_response",
+    "with_streaming_response"
+  ],
+  "methods": {
+    "chat.completions.create": {"method": "POST", "path": "/openai/v1/chat/completions", "bodyKwargs": true},
+    "embeddings.create": {"method": "POST", "path": "/openai/v1/embeddings", "bodyKwargs": true},
+    "audio.transcriptions.create": {"method": "POST", "path": "/openai/v1/audio/transcriptions", "bodyKwargs": true, "encoding": "multipart"},
+    "audio.translations.create": {"method": "POST", "path": "/openai/v1/audio/translations", "bodyKwargs": true, "encoding": "multipart"},
+    "audio.speech.create": {"method": "POST", "path": "/openai/v1/audio/speech", "bodyKwargs": true},
+    "models.list": {"method": "GET", "path": "/openai/v1/models"},
+    "models.retrieve": {"method": "GET", "path": "/openai/v1/models/{model}", "params": {"model": "arg:0"}},
+    "models.delete": {"method": "DELETE", "path": "/openai/v1/models/{model}", "params": {"model": "arg:0"}},
+    "files.create": {"method": "POST", "path": "/openai/v1/files", "bodyKwargs": true, "encoding": "multipart"},
+    "files.list": {"method": "GET", "path": "/openai/v1/files"},
+    "files.info": {"method": "GET", "path": "/openai/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "files.content": {"method": "GET", "path": "/openai/v1/files/{file_id}/content", "params": {"file_id": "arg:0"}},
+    "files.delete": {"method": "DELETE", "path": "/openai/v1/files/{file_id}", "params": {"file_id": "arg:0"}},
+    "batches.create": {"method": "POST", "path": "/openai/v1/batches", "bodyKwargs": true},
+    "batches.retrieve": {"method": "GET", "path": "/openai/v1/batches/{batch_id}", "params": {"batch_id": "arg:0"}},
+    "batches.list": {"method": "GET", "path": "/openai/v1/batches", "queryKwargs": true},
+    "batches.cancel": {"method": "POST", "path": "/openai/v1/batches/{batch_id}/cancel", "params": {"batch_id": "arg:0"}}
+  }
+}

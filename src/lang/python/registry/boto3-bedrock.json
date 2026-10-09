@@ -1,0 +1,45 @@
+{
+  "$comment": "boto3 Bedrock Runtime: `bedrock = boto3.client(\"bedrock-runtime\")`; `bedrock.converse(modelId=..., messages=[...])`. The model id keyword is part of the path.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against botocore 1.43.109 bedrock-runtime 2023-09-30 service-2.json)",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "bedrock-runtime"
+      ]
+    }
+  },
+  "methods": {
+    "invoke_model": {"method": "POST", "path": "/model/{modelId}/invoke", "bodyKwargs": true, "pathFromBody": ["modelId"], "operationId": "InvokeModel"},
+    "invoke_model_with_response_stream": {"method": "POST", "path": "/model/{modelId}/invoke-with-response-stream", "bodyKwargs": true, "pathFromBody": ["modelId"], "operationId": "InvokeModelWithResponseStream"},
+    "converse": {"method": "POST", "path": "/model/{modelId}/converse", "bodyKwargs": true, "pathFromBody": ["modelId"], "operationId": "Converse"},
+    "converse_stream": {"method": "POST", "path": "/model/{modelId}/converse-stream", "bodyKwargs": true, "pathFromBody": ["modelId"], "operationId": "ConverseStream"},
+    "count_tokens": {"method": "POST", "path": "/model/{modelId}/count-tokens", "bodyKwargs": true, "pathFromBody": ["modelId"], "operationId": "CountTokens"},
+    "apply_guardrail": {"method": "POST", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "bodyKwargs": true, "pathFromBody": ["guardrailIdentifier", "guardrailVersion"], "operationId": "ApplyGuardrail"},
+    "start_async_invoke": {"method": "POST", "path": "/async-invoke", "bodyKwargs": true, "operationId": "StartAsyncInvoke"},
+    "get_async_invoke": {"method": "GET", "path": "/async-invoke/{invocationArn}", "bodyKwargs": true, "pathFromBody": ["invocationArn"], "operationId": "GetAsyncInvoke"},
+    "list_async_invokes": {"method": "GET", "path": "/async-invoke", "bodyKwargs": true, "operationId": "ListAsyncInvokes"}
+  }
+}

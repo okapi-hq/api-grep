@@ -26,14 +26,14 @@ export class DiagnosticsCollector {
     this.unfollowed.push(entry);
   }
 
-  finish(filesSeen: number, filesScanned: number): Diagnostics {
+  finish(filesSeen: number, filesScanned: number, languages: Diagnostics["languages"] = {}): Diagnostics {
     const skippedCounts: Record<string, number> = {};
     for (const s of this.skipped) skippedCounts[s.reason] = (skippedCounts[s.reason] ?? 0) + 1;
     const requested = this.skipped.filter((s) => REQUESTED.includes(s.reason));
     const lost = this.skipped.filter((s) => !REQUESTED.includes(s.reason));
     const skipped = requested.length > MAX_LISTED_EXCLUSIONS ? lost : this.skipped;
     const complete = lost.length === 0 && this.droppedCalls.length === 0 && this.unfollowed.length === 0;
-    return { filesSeen, filesScanned, skipped, skippedCounts, droppedCalls: this.droppedCalls, unfollowed: this.unfollowed, complete };
+    return { filesSeen, filesScanned, skipped, skippedCounts, droppedCalls: this.droppedCalls, unfollowed: this.unfollowed, languages, complete };
   }
 }
 
@@ -42,9 +42,14 @@ export function plural(n: number, one: string, many: string): string {
   return `${n} ${n === 1 ? one : many}`;
 }
 
-/** `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 call dropped` (or `..., complete`). */
-export function diagnosticsLine(d: Diagnostics): string {
-  const parts = [`scanned ${d.filesScanned}/${d.filesSeen} files`];
+/**
+ * `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 call dropped` (or `..., complete`); with several
+ * languages, the files of each: `scanned 40/40 files (typescript 30, python 10), complete`.
+ */
+export function diagnosticsLine(d: Omit<Diagnostics, "languages"> & Partial<Pick<Diagnostics, "languages">>): string {
+  const langs = Object.entries(d.languages ?? {});
+  const perLanguage = langs.length > 1 ? ` (${langs.map(([id, l]) => `${id} ${l.filesScanned}`).join(", ")})` : "";
+  const parts = [`scanned ${d.filesScanned}/${d.filesSeen} files${perLanguage}`];
   const skipped = Object.values(d.skippedCounts).reduce((a, b) => a + b, 0);
   if (skipped > 0) parts.push(`${skipped} skipped`);
   if (d.unfollowed.length > 0) parts.push(`${plural(d.unfollowed.length, "call", "calls")} not followed`);

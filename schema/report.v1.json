@@ -66,17 +66,7 @@
           "$ref": "#/definitions/Location"
         },
         "client": {
-          "type": "string",
-          "enum": [
-            "fetch",
-            "axios",
-            "got",
-            "ky",
-            "node-http",
-            "sdk",
-            "framework"
-          ],
-          "description": "How the request is sent."
+          "$ref": "#/definitions/Client"
         },
         "sdk": {
           "description": "Set when client is sdk.",
@@ -86,7 +76,7 @@
               "type": "string"
             },
             "version": {
-              "description": "Version range from the nearest package.json.",
+              "description": "Version range from the nearest manifest (package.json, requirements file, pyproject.toml...).",
               "type": "string"
             },
             "chain": {
@@ -299,7 +289,25 @@
         "python",
         "php"
       ],
-      "description": "Source language of a file, from its extension. The TypeScript scanner emits typescript and javascript."
+      "description": "Source language of a file, from its extension. The TypeScript front end emits typescript and javascript, the Python one python."
+    },
+    "Client": {
+      "type": "string",
+      "enum": [
+        "fetch",
+        "axios",
+        "got",
+        "ky",
+        "node-http",
+        "requests",
+        "httpx",
+        "aiohttp",
+        "urllib",
+        "urllib3",
+        "sdk",
+        "framework"
+      ],
+      "description": "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. Any language: sdk (a registry), framework (a framework helper)."
     },
     "Shape": {
       "description": "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
@@ -710,6 +718,28 @@
             "$ref": "#/definitions/UnfollowedCall"
           }
         },
+        "languages": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "filesSeen": {
+                "type": "number"
+              },
+              "filesScanned": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "filesSeen",
+              "filesScanned"
+            ]
+          },
+          "description": "Files seen and scanned per language, for the languages with files in scope."
+        },
         "complete": {
           "type": "boolean",
           "description": "False when something was lost that was not asked for: an unreadable file, a dropped call or a call not followed."
@@ -722,6 +752,7 @@
         "skippedCounts",
         "droppedCalls",
         "unfollowed",
+        "languages",
         "complete"
       ],
       "description": "What the scan could not read, so a partial report never looks complete."
@@ -796,12 +827,13 @@
           "type": "string",
           "enum": [
             "injected-fetch",
+            "injected-client",
             "wrapper-depth"
           ],
-          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). wrapper-depth: a wrapper three or more hops from its HTTP call."
+          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a wrapper three or more hops from its HTTP call."
         },
         "expr": {
-          "description": "The callee expression, for injected-fetch.",
+          "description": "The callee expression, for injected-fetch and injected-client.",
           "type": "string"
         },
         "via": {
@@ -836,7 +868,10 @@
       "properties": {
         "package": {
           "type": "string",
-          "description": "npm package name."
+          "description": "Package name in its ecosystem: an npm package, a PyPI distribution."
+        },
+        "ecosystem": {
+          "$ref": "#/definitions/Ecosystem"
         },
         "provider": {
           "type": "string",
@@ -848,7 +883,7 @@
         },
         "declared": {
           "type": "boolean",
-          "description": "Declared in `dependencies` / `peerDependencies` of a package.json the scan covered."
+          "description": "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py."
         },
         "imported": {
           "type": "boolean"
@@ -874,6 +909,7 @@
       },
       "required": [
         "package",
+        "ecosystem",
         "provider",
         "supported",
         "declared",
@@ -883,6 +919,14 @@
         "status"
       ],
       "description": "An API SDK the repository uses, compared with the calls found through it."
+    },
+    "Ecosystem": {
+      "type": "string",
+      "enum": [
+        "npm",
+        "pypi"
+      ],
+      "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py)."
     }
   }
 }
