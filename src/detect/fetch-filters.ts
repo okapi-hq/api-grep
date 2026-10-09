@@ -1,9 +1,9 @@
 import { Node, SyntaxKind, type CallExpression, type Expression } from "ts-morph";
 import { evaluate } from "../resolve/evaluate.js";
 import type { EvalCtx } from "../types.js";
-import { isFunctionLike } from "../wrappers/function.js";
-import { unwrap } from "./callee.js";
-import { declarationsOf } from "./options.js";
+import { unwrap } from "../ast/expr.js";
+import { isFunctionLike } from "../ast/function.js";
+import { declarationsOf } from "../ast/object.js";
 
 const LOCAL_SCHEME = /^(?:data|blob):/i;
 /** Calls that produce a `data:` / `blob:` URL from local content. */
@@ -14,7 +14,7 @@ function makesLocalUrl(expr: Expression, depth: number): boolean {
   const u = unwrap(expr);
   if (depth > 3) return false;
   if (Node.isCallExpression(u)) {
-    const callee = unwrap(u.getExpression() as Expression);
+    const callee = unwrap(u.getExpression());
     const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : callee.getText();
     return LOCAL_URL_MAKERS.has(name);
   }

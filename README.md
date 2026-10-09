@@ -201,7 +201,7 @@ apicalls providers                                    # provider ids, names, hos
 | `--changed-since <ref>` | only scan files changed since a git ref, plus their direct importers |
 | `--specs <dir>` | directory of `<provider>.{json,yaml}` OpenAPI specs, or an [APIs-guru](https://github.com/APIs-guru/openapi-directory) checkout |
 | `--validate` | check request shapes against the specs (requires `--specs`) |
-| `--min-confidence <n>` | hide calls below this confidence in the table (default 0.3; JSON keeps everything) |
+| `--min-confidence <n>` | hide calls below this confidence (0 to 1) in the table and `--curl` output (default 0.3; JSON keeps everything) |
 | `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable) |
 | `--no-wrappers` | disable wrapper expansion |
 
@@ -211,7 +211,9 @@ Large monorepos need several GB of heap. The CLI re-runs itself with
 **Exit codes:** `0` complete scan, `2` partial scan (the report is still written, see
 [diagnostics](#diagnostics)), `1` fatal error (for example the directory does not exist).
 
-The package also exports the scanner as a library (`scan`, `toJson`, `ReportSchema`, `reportJsonSchema`, …) from
+The package also exports the scanner as a library (`scan`, `finalizeReport`, `toJson`, `toTable`, `toCurl`,
+`ReportSchema`, `reportJsonSchema`, …). `scan` returns the raw report: pass it through `finalizeReport` (redaction,
+validation) before `toTable` or `toCurl`. See
 [`src/index.ts`](src/index.ts).
 
 ## What it detects
@@ -302,8 +304,26 @@ spec match +0.1. Unknown or relative hosts are capped at 0.4.
 ### Privacy
 
 Reports describe shapes, not data. Before output, every emitted string is checked against a
-denylist (`sk_live_`, `AKIA`, `ghp_`, JWTs, long hex) and secret-looking values are replaced
-with `<redacted>` and counted in `stats.redacted`.
+denylist (`sk_live_`, `AKIA`, `ghp_`, JWTs, long hex, URLs with `user:password@`) and
+secret-looking values are replaced with `<redacted>` and counted in `stats.redacted`. Literal
+values of credential-named body properties and query parameters (`password`, `client_secret`,
+`api_key`, `accessToken`) are dropped, credentials in a URL (`https://user:pass@host`) never
+reach `host` or `urlTemplate`, and credential headers keep their name only.
+
+### Scanning untrusted code
+
+A scanned repository is treated as hostile input:
+
+- Its code is parsed, never run. With `--specs`, `$ref`s resolve inside the specs directory
+  only; a remote `$ref` is an error, not a download.
+- Paths, URLs and values it chooses are printed with control characters escaped, so they cannot
+  drive the terminal. `--curl` quotes every value and uses `--data-raw` / `--form-string`, so a
+  value such as `@/etc/passwd` is sent as written, never read from disk.
+- Symlinks that lead out of the scanned directory are not followed, and `package.json`,
+  `.env.example` and `tsconfig.json` are read only when they are small regular files.
+- `--changed-since` runs `git` in the scanned directory with `core.fsmonitor` off and without
+  external diff or textconv drivers. A `.git` directory that arrived with untrusted files (an
+  archive, not a clone) can still configure other filters: use it on checkouts you made.
 
 ### Diagnostics
 

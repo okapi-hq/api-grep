@@ -1,4 +1,4 @@
-import { Node, ts, type ExportDeclaration, type Identifier, type ImportDeclaration, type Symbol as MorphSymbol } from "ts-morph";
+import { Node, ts, type ExportDeclaration, type Identifier, type ImportDeclaration, type Symbol as MorphSymbol, type Type } from "ts-morph";
 
 export type IdentOrigin =
   | { kind: "package"; package: string; importedName: string }
@@ -6,17 +6,13 @@ export type IdentOrigin =
   | { kind: "local"; decl: Node }
   | { kind: "unknown" };
 
-const NODE_BUILTINS = new Set(["http", "https", "http2", "fs", "path", "url", "crypto", "os", "child_process", "stream", "buffer", "events"]);
-
-/** Bare module specifier -> package root name; relative / alias paths -> null. */
+/** Bare module specifier -> package root name (`node:https` -> `https`); relative / alias paths -> null. */
 export function packageFromSpecifier(spec: string): string | null {
   if (spec.startsWith(".") || spec.startsWith("/") || spec.startsWith("~") || spec.startsWith("@/")) return null;
   const s = spec.startsWith("node:") ? spec.slice(5) : spec;
   const segs = s.split("/");
   if (s.startsWith("@")) return segs.length >= 2 ? `${segs[0]}/${segs[1]}` : s;
-  const root = segs[0] ?? s;
-  if (NODE_BUILTINS.has(root)) return root;
-  return root;
+  return segs[0] ?? s;
 }
 
 export function packageFromFilePath(fp: string): string | undefined {
@@ -26,6 +22,16 @@ export function packageFromFilePath(fp: string): string | undefined {
   if (rest[0] === "typescript" || rest[0] === "@types") return rest[0] === "@types" ? `@types/${rest[1] ?? ""}` : undefined;
   if (rest[0]?.startsWith("@")) return `${rest[0]}/${rest[1] ?? ""}`;
   return rest[0];
+}
+
+/** Package declaring a type (`Stripe` from `node_modules/stripe/...`), when its declarations live in node_modules. */
+export function packageOfType(t: Type): string | undefined {
+  const sym = t.getSymbol() ?? t.getAliasSymbol();
+  for (const d of sym?.getDeclarations() ?? []) {
+    const pkg = packageFromFilePath(d.getSourceFile().getFilePath());
+    if (pkg) return pkg;
+  }
+  return undefined;
 }
 
 function isProjectDecl(decl: Node): boolean {
@@ -53,7 +59,7 @@ function fromImport(sym: MorphSymbol, decl: Node): IdentOrigin | undefined {
     spec = specifierOf(Node.isImportDeclaration(parent) ? parent : undefined);
     importedName = "default";
   } else if (Node.isNamespaceImport(decl)) {
-    spec = specifierOf(decl.getFirstAncestor(Node.isImportDeclaration));
+    spec = specifierOf(decl.getFirstAncestor((a) => Node.isImportDeclaration(a)));
     importedName = "*";
   } else if (Node.isImportEqualsDeclaration(decl)) {
     const ref = decl.getModuleReference();
@@ -77,7 +83,7 @@ function fromImport(sym: MorphSymbol, decl: Node): IdentOrigin | undefined {
 
 function fromRequire(decl: Node): IdentOrigin | undefined {
   if (!Node.isVariableDeclaration(decl) && !Node.isBindingElement(decl)) return undefined;
-  const varDecl = Node.isVariableDeclaration(decl) ? decl : decl.getFirstAncestor(Node.isVariableDeclaration);
+  const varDecl = Node.isVariableDeclaration(decl) ? decl : decl.getFirstAncestor((a) => Node.isVariableDeclaration(a));
   const init = varDecl?.getInitializer();
   if (!init || !Node.isCallExpression(init)) return undefined;
   if (init.getExpression().getText() !== "require") return undefined;

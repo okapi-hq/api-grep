@@ -1,29 +1,27 @@
-import { openapiSchemaToJsonSchema as toJsonSchema } from "@openapi-contrib/openapi-schema-to-json-schema";
 import { Ajv } from "ajv";
 import type { Finding, Shape } from "../types.js";
-
-type JsonSchema = Record<string, unknown> & {
-  type?: string | string[];
-  properties?: Record<string, JsonSchema>;
-  required?: string[];
-  additionalProperties?: boolean | JsonSchema;
-  items?: JsonSchema;
-  enum?: unknown[];
-  deprecated?: boolean;
-  anyOf?: JsonSchema[];
-  oneOf?: JsonSchema[];
-  allOf?: JsonSchema[];
-};
+import { toJsonSchema, type JsonSchema } from "./openapi-schema.js";
 
 const MAX_DEPTH = 6;
 const ajv = new Ajv({ allErrors: true, strict: false });
 
+/** Converted schemas per spec object: every call to one operation shares its request schema. */
+const prepared = new WeakMap<Record<string, unknown>, JsonSchema | null>();
+
 export function prepareSchema(openapiSchema: Record<string, unknown>): JsonSchema | undefined {
+  let schema = prepared.get(openapiSchema);
+  if (schema === undefined) {
+    schema = convert(openapiSchema) ?? null;
+    prepared.set(openapiSchema, schema);
+  }
+  return schema ?? undefined;
+}
+
+function convert(openapiSchema: Record<string, unknown>): JsonSchema | undefined {
   try {
-    const converted = toJsonSchema(openapiSchema as Parameters<typeof toJsonSchema>[0], { keepNotSupported: ["deprecated"] }) as JsonSchema;
-    delete converted.$schema;
-    if (!ajv.validateSchema(converted)) return undefined;
-    return converted;
+    const converted = toJsonSchema(openapiSchema);
+    if (!converted) return undefined;
+    return ajv.validateSchema(converted) ? converted : undefined;
   } catch {
     return undefined;
   }
@@ -75,7 +73,7 @@ function checkObject(shape: Shape & { type: "object" }, schema: JsonSchema, at: 
   const additional = schema.additionalProperties;
   const hasProps = Object.keys(props).length > 0;
   for (const [key, sub] of Object.entries(shape.properties)) {
-    const ps = props[key];
+    const ps = Object.hasOwn(props, key) ? props[key] : undefined;
     if (!ps) {
       if (additional === false) out.push({ rule: "unknown-property", severity: "high", property: `${at}${key}`, message: `property "${key}" is not in the spec`, specRef: ref });
       else if (hasProps && typeof additional !== "object") out.push({ rule: "unknown-property", severity: "low", property: `${at}${key}`, message: `property "${key}" is not in the spec (additional properties not forbidden)`, specRef: ref });
@@ -86,7 +84,7 @@ function checkObject(shape: Shape & { type: "object" }, schema: JsonSchema, at: 
   }
   if (!shape.dynamicKeys) {
     for (const req of schema.required ?? []) {
-      if (!(req in shape.properties)) out.push({ rule: "missing-required", severity: "medium", property: `${at}${req}`, message: `required property "${req}" is missing`, specRef: ref });
+      if (!Object.hasOwn(shape.properties, req)) out.push({ rule: "missing-required", severity: "medium", property: `${at}${req}`, message: `required property "${req}" is missing`, specRef: ref });
     }
   }
 }

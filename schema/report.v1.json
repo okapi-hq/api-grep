@@ -1,25 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
-  "title": "api-grep report",
-  "description": "Outbound HTTP and SDK calls found in a codebase by `apicalls scan --json`.",
   "type": "object",
   "properties": {
     "$schema": {
-      "description": "URL of this JSON Schema.",
-      "type": "string"
+      "type": "string",
+      "description": "URL of this JSON Schema."
     },
     "schemaVersion": {
-      "description": "Version of the report format. Readers check the major; minor versions only add fields and enum values.",
       "type": "string",
-      "pattern": "^1\\.\\d+\\.\\d+$"
+      "pattern": "^1\\.\\d+\\.\\d+$",
+      "description": "Version of the report format. Readers check the major; minor versions only add fields and enum values."
     },
     "tool": {
       "type": "string"
     },
     "version": {
-      "description": "Version of the tool that wrote the report.",
-      "type": "string"
+      "type": "string",
+      "description": "Version of the tool that wrote the report."
     },
     "repo": {
       "description": "Name of the scanned directory.",
@@ -30,11 +28,11 @@
       "type": "string"
     },
     "calls": {
-      "description": "Sorted by file, line and column.",
       "type": "array",
       "items": {
         "$ref": "#/definitions/Call"
-      }
+      },
+      "description": "Sorted by file, line and column."
     },
     "stats": {
       "$ref": "#/definitions/Stats"
@@ -54,20 +52,20 @@
     "calls",
     "stats"
   ],
+  "title": "api-grep report",
+  "description": "Outbound HTTP and SDK calls found in a codebase by `apicalls scan --json`.",
   "definitions": {
     "Call": {
-      "description": "One outbound HTTP or SDK call found in the source.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index.",
-          "type": "string"
+          "type": "string",
+          "description": "Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."
         },
         "location": {
           "$ref": "#/definitions/Location"
         },
         "client": {
-          "description": "How the request is sent.",
           "type": "string",
           "enum": [
             "fetch",
@@ -77,7 +75,8 @@
             "node-http",
             "sdk",
             "framework"
-          ]
+          ],
+          "description": "How the request is sent."
         },
         "sdk": {
           "description": "Set when client is sdk.",
@@ -91,8 +90,8 @@
               "type": "string"
             },
             "chain": {
-              "description": "Method called on the client (`customers.create`).",
-              "type": "string"
+              "type": "string",
+              "description": "Method called on the client (`customers.create`)."
             }
           },
           "required": [
@@ -105,8 +104,8 @@
           "type": "string"
         },
         "provider": {
-          "description": "Provider id from `apicalls providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`.",
-          "type": "string"
+          "type": "string",
+          "description": "Provider id from `apicalls providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."
         },
         "providerSource": {
           "description": "sdk: the SDK registry. host: a known host. env-name: only the env var's name.",
@@ -122,7 +121,6 @@
           "type": "string"
         },
         "hostKind": {
-          "description": "Where the host came from.",
           "type": "string",
           "enum": [
             "literal",
@@ -130,7 +128,8 @@
             "env",
             "relative",
             "unknown"
-          ]
+          ],
+          "description": "Where the host came from."
         },
         "envName": {
           "description": "Env var holding the base URL, when hostKind is env.",
@@ -140,53 +139,49 @@
           "type": "string"
         },
         "method": {
-          "description": "HTTP method, upper case; `DYNAMIC` when it is not known statically.",
-          "type": "string"
+          "type": "string",
+          "description": "HTTP method, upper case; `DYNAMIC` when it is not known statically."
         },
         "pathTemplate": {
-          "description": "Path with `{name}` placeholders for the dynamic segments.",
-          "type": "string"
+          "type": "string",
+          "description": "Path with `{name}` placeholders for the dynamic segments."
         },
         "urlTemplate": {
-          "description": "Full URL template.",
-          "type": "string"
+          "type": "string",
+          "description": "Full URL template."
         },
         "operationId": {
           "description": "OpenAPI operation id, from the SDK registry or a matched spec.",
           "type": "string"
         },
         "query": {
-          "description": "Query parameter names.",
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Query parameter names."
         },
         "queryShape": {
           "$ref": "#/definitions/Shape"
         },
         "headers": {
-          "description": "Header names, lower case.",
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "Header names, lower case."
         },
         "headerValues": {
-          "description": "Literal header values; null for credentials and dynamic values.",
           "default": {},
+          "description": "Literal header values; null for credentials and dynamic values.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           }
         },
@@ -228,10 +223,10 @@
           "type": "string"
         },
         "confidence": {
-          "description": "0 to 1. How sure the scan is of provider, URL and body.",
           "type": "number",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "description": "0 to 1. How sure the scan is of provider, URL and body."
         },
         "findings": {
           "default": [],
@@ -266,23 +261,23 @@
         "confidence",
         "findings",
         "examples"
-      ]
+      ],
+      "description": "One outbound HTTP or SDK call found in the source."
     },
     "Location": {
-      "description": "Where the call is in the source.",
       "type": "object",
       "properties": {
         "file": {
-          "description": "Path relative to the scanned directory, `/` separated.",
-          "type": "string"
+          "type": "string",
+          "description": "Path relative to the scanned directory, `/` separated."
         },
         "line": {
-          "description": "1-based line of the call.",
-          "type": "number"
+          "type": "number",
+          "description": "1-based line of the call."
         },
         "col": {
-          "description": "1-based column of the call.",
-          "type": "number"
+          "type": "number",
+          "description": "1-based column of the call."
         },
         "language": {
           "$ref": "#/definitions/Language"
@@ -293,17 +288,18 @@
         "line",
         "col",
         "language"
-      ]
+      ],
+      "description": "Where the call is in the source."
     },
     "Language": {
-      "description": "Source language of a file, from its extension. The TypeScript scanner emits typescript and javascript.",
       "type": "string",
       "enum": [
         "typescript",
         "javascript",
         "python",
         "php"
-      ]
+      ],
+      "description": "Source language of a file, from its extension. The TypeScript scanner emits typescript and javascript."
     },
     "Shape": {
       "description": "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
@@ -380,16 +376,10 @@
               "description": "Literal values seen in the code.",
               "type": "array",
               "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "boolean"
-                  }
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
                 ]
               }
             },
@@ -435,14 +425,14 @@
               "const": "dynamic"
             },
             "origin": {
-              "description": "Where the value comes from: a parameter, a call result, an env var, or unknown.",
               "type": "string",
               "enum": [
                 "param",
                 "call",
                 "env",
                 "unknown"
-              ]
+              ],
+              "description": "Where the value comes from: a parameter, a call result, an env var, or unknown."
             },
             "hint": {
               "type": "string"
@@ -468,7 +458,6 @@
       ]
     },
     "DynamicPart": {
-      "description": "Part of the request the scan could not know statically.",
       "type": "object",
       "properties": {
         "where": {
@@ -482,12 +471,12 @@
           ]
         },
         "name": {
-          "description": "Placeholder name, as in `{name}` in `pathTemplate`.",
-          "type": "string"
+          "type": "string",
+          "description": "Placeholder name, as in `{name}` in `pathTemplate`."
         },
         "origin": {
-          "description": "param, call, env, sdk or unknown.",
-          "type": "string"
+          "type": "string",
+          "description": "param, call, env, sdk or unknown."
         },
         "shape": {
           "$ref": "#/definitions/Shape"
@@ -497,10 +486,10 @@
         "where",
         "name",
         "origin"
-      ]
+      ],
+      "description": "Part of the request the scan could not know statically."
     },
     "Finding": {
-      "description": "A mismatch between the body shape and the provider's OpenAPI spec (--specs --validate).",
       "type": "object",
       "properties": {
         "rule": {
@@ -522,8 +511,8 @@
           ]
         },
         "property": {
-          "description": "Dotted path of the property in the body.",
-          "type": "string"
+          "type": "string",
+          "description": "Dotted path of the property in the body."
         },
         "message": {
           "type": "string"
@@ -538,37 +527,37 @@
         "severity",
         "property",
         "message"
-      ]
+      ],
+      "description": "A mismatch between the body shape and the provider's OpenAPI spec (--specs --validate)."
     },
     "Example": {
-      "description": "A concrete request synthesized from the call: invented values, stable across runs.",
       "type": "object",
       "properties": {
         "variant": {
-          "description": "minimal: required properties. full: adds optional ones. alt: other enum values, union branches and booleans.",
           "type": "string",
           "enum": [
             "minimal",
             "full",
             "alt"
-          ]
+          ],
+          "description": "minimal: required properties. full: adds optional ones. alt: other enum values, union branches and booleans."
         },
         "method": {
           "type": "string"
         },
         "url": {
-          "description": "Concrete URL; an unresolved host stays visible (`https://{baseUrl}/...`).",
-          "type": "string"
+          "type": "string",
+          "description": "Concrete URL; an unresolved host stays visible (`https://{baseUrl}/...`)."
         },
         "headers": {
-          "description": "Credentials are `<name>` placeholders, never values.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "description": "Credentials are `<name>` placeholders, never values."
         },
         "query": {
           "type": "object",
@@ -598,10 +587,10 @@
         "headers",
         "query",
         "bodyEncoding"
-      ]
+      ],
+      "description": "A concrete request synthesized from the call: invented values, stable across runs."
     },
     "Stats": {
-      "description": "Counts over `calls`.",
       "type": "object",
       "properties": {
         "filesScanned": {
@@ -611,44 +600,44 @@
           "type": "number"
         },
         "byLanguage": {
-          "description": "Calls per source language.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "number"
-          }
+          },
+          "description": "Calls per source language."
         },
         "byClient": {
-          "description": "Calls per client.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "number"
-          }
+          },
+          "description": "Calls per client."
         },
         "byProvider": {
-          "description": "Calls per provider.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "number"
-          }
+          },
+          "description": "Calls per provider."
         },
         "byHostKind": {
-          "description": "Calls per hostKind.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "number"
-          }
+          },
+          "description": "Calls per hostKind."
         },
         "withBodyShape": {
           "type": "number"
@@ -660,8 +649,8 @@
           "type": "number"
         },
         "redacted": {
-          "description": "Secret-looking strings replaced with `<redacted>`.",
-          "type": "number"
+          "type": "number",
+          "description": "Secret-looking strings replaced with `<redacted>`."
         },
         "durationMs": {
           "type": "number"
@@ -679,35 +668,35 @@
         "withFindings",
         "redacted",
         "durationMs"
-      ]
+      ],
+      "description": "Counts over `calls`."
     },
     "Diagnostics": {
-      "description": "What the scan could not read, so a partial report never looks complete.",
       "type": "object",
       "properties": {
         "filesSeen": {
-          "description": "Source files in scope. Test files, mocks, declarations and build output are out of scope.",
-          "type": "number"
+          "type": "number",
+          "description": "Source files in scope. Test files, mocks, declarations and build output are out of scope."
         },
         "filesScanned": {
           "type": "number"
         },
         "skipped": {
-          "description": "Files left out. Above 200, files left out by --exclude / --include are only counted in `skippedCounts`.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/SkippedFile"
-          }
+          },
+          "description": "Files left out. Above 200, files left out by --exclude / --include are only counted in `skippedCounts`."
         },
         "skippedCounts": {
-          "description": "Skipped files per reason.",
           "type": "object",
           "propertyNames": {
             "type": "string"
           },
           "additionalProperties": {
             "type": "number"
-          }
+          },
+          "description": "Skipped files per reason."
         },
         "droppedCalls": {
           "type": "array",
@@ -722,8 +711,8 @@
           }
         },
         "complete": {
-          "description": "False when something was lost that was not asked for: an unreadable file, a dropped call or a call not followed.",
-          "type": "boolean"
+          "type": "boolean",
+          "description": "False when something was lost that was not asked for: an unreadable file, a dropped call or a call not followed."
         }
       },
       "required": [
@@ -734,25 +723,25 @@
         "droppedCalls",
         "unfollowed",
         "complete"
-      ]
+      ],
+      "description": "What the scan could not read, so a partial report never looks complete."
     },
     "SkippedFile": {
-      "description": "A source file in scope that was not scanned.",
       "type": "object",
       "properties": {
         "file": {
-          "description": "Path relative to the scanned directory.",
-          "type": "string"
+          "type": "string",
+          "description": "Path relative to the scanned directory."
         },
         "reason": {
-          "description": "parse-error / internal-error: the file could not be read. excluded / not-included: left out by --exclude / --include.",
           "type": "string",
           "enum": [
             "parse-error",
             "internal-error",
             "excluded",
             "not-included"
-          ]
+          ],
+          "description": "parse-error / internal-error: the file could not be read. excluded / not-included: left out by --exclude / --include."
         },
         "detail": {
           "description": "First line of the error, when there is one.",
@@ -762,10 +751,10 @@
       "required": [
         "file",
         "reason"
-      ]
+      ],
+      "description": "A source file in scope that was not scanned."
     },
     "DroppedCall": {
-      "description": "A call that was found but left out of `calls`.",
       "type": "object",
       "properties": {
         "file": {
@@ -775,12 +764,12 @@
           "type": "number"
         },
         "reason": {
-          "description": "schema-invalid: the call did not fit this schema. internal-error: the resolver threw.",
           "type": "string",
           "enum": [
             "schema-invalid",
             "internal-error"
-          ]
+          ],
+          "description": "schema-invalid: the call did not fit this schema. internal-error: the resolver threw."
         },
         "detail": {
           "description": "For schema-invalid, the failing property path and message.",
@@ -791,10 +780,10 @@
         "file",
         "line",
         "reason"
-      ]
+      ],
+      "description": "A call that was found but left out of `calls`."
     },
     "UnfollowedCall": {
-      "description": "A call site the scan saw but could not follow to a request.",
       "type": "object",
       "properties": {
         "file": {
@@ -804,12 +793,12 @@
           "type": "number"
         },
         "reason": {
-          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). wrapper-depth: a wrapper three or more hops from its HTTP call.",
           "type": "string",
           "enum": [
             "injected-fetch",
             "wrapper-depth"
-          ]
+          ],
+          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). wrapper-depth: a wrapper three or more hops from its HTTP call."
         },
         "expr": {
           "description": "The callee expression, for injected-fetch.",
@@ -824,10 +813,10 @@
         "file",
         "line",
         "reason"
-      ]
+      ],
+      "description": "A call site the scan saw but could not follow to a request."
     },
     "Coverage": {
-      "description": "API SDKs the repository declares or imports. Absent for --changed-since scans.",
       "type": "object",
       "properties": {
         "sdks": {
@@ -839,48 +828,48 @@
       },
       "required": [
         "sdks"
-      ]
+      ],
+      "description": "API SDKs the repository declares or imports. Absent for --changed-since scans."
     },
     "SdkCoverage": {
-      "description": "An API SDK the repository uses, compared with the calls found through it.",
       "type": "object",
       "properties": {
         "package": {
-          "description": "npm package name.",
-          "type": "string"
+          "type": "string",
+          "description": "npm package name."
         },
         "provider": {
-          "description": "Provider id the package talks to.",
-          "type": "string"
+          "type": "string",
+          "description": "Provider id the package talks to."
         },
         "supported": {
-          "description": "An SDK registry exists for the package, so its calls can be listed.",
-          "type": "boolean"
+          "type": "boolean",
+          "description": "An SDK registry exists for the package, so its calls can be listed."
         },
         "declared": {
-          "description": "Declared in `dependencies` / `peerDependencies` of a package.json the scan covered.",
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Declared in `dependencies` / `peerDependencies` of a package.json the scan covered."
         },
         "imported": {
           "type": "boolean"
         },
         "importSites": {
-          "description": "Scanned files that import the package (type-only imports aside).",
-          "type": "number"
+          "type": "number",
+          "description": "Scanned files that import the package (type-only imports aside)."
         },
         "calls": {
-          "description": "Calls in `calls` made through this package.",
-          "type": "number"
+          "type": "number",
+          "description": "Calls in `calls` made through this package."
         },
         "status": {
-          "description": "ok: supported and calls found. unsupported: imported, no registry (its calls are missed). imported-no-calls: supported but no call found (a wrapper, or a detection bug). declared-not-imported: likely unused.",
           "type": "string",
           "enum": [
             "ok",
             "unsupported",
             "imported-no-calls",
             "declared-not-imported"
-          ]
+          ],
+          "description": "ok: supported and calls found. unsupported: imported, no registry (its calls are missed). imported-no-calls: supported but no call found (a wrapper, or a detection bug). declared-not-imported: likely unused."
         }
       },
       "required": [
@@ -892,7 +881,8 @@
         "importSites",
         "calls",
         "status"
-      ]
+      ],
+      "description": "An API SDK the repository uses, compared with the calls found through it."
     }
   }
 }

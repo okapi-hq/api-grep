@@ -1,12 +1,12 @@
 import { Node, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { getProp } from "../detect/options.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { getProp } from "../ast/object.js";
+import { canonicalPath, firstPlaceholder, PLACEHOLDER_RE, SCHEME_RE } from "../normalize/path.js";
+import { isSafeKey } from "../record-keys.js";
+import { maskCredentialQuery, stripUserinfo } from "../secrets.js";
 import type { DynamicPart, EvalCtx, HostKind, Part, Shape, UrlShape } from "../types.js";
 import { collectAppended } from "./appended.js";
 import { evalNewUrl, evaluate, partsToTemplate } from "./evaluate.js";
-
-const SCHEME_RE = /^([a-z][a-z0-9+.-]*):\/\//i;
-const PLACEHOLDER_RE = /\{([^}]+)\}/g;
 
 interface Origin {
   origin: string;
@@ -14,13 +14,6 @@ interface Origin {
 }
 
 type Origins = Map<string, Origin>;
-
-export function normalizePath(p: string): string {
-  let out = p.replace(/\/{2,}/g, "/");
-  if (!out.startsWith("/")) out = `/${out}`;
-  if (out.length > 1 && out.endsWith("/")) out = out.slice(0, -1);
-  return out;
-}
 
 function originMap(parts: Part[]): Origins {
   const m: Origins = new Map();
@@ -45,12 +38,6 @@ function collectDynamic(text: string, where: DynamicPart["where"], origins: Orig
     const o = lookup(origins, raw);
     out.push({ where, name: placeholderName(raw), origin: o.origin, ...(o.shape ? { shape: o.shape } : {}) });
   }
-}
-
-function firstPlaceholder(text: string): string | undefined {
-  const m = PLACEHOLDER_RE.exec(text);
-  PLACEHOLDER_RE.lastIndex = 0;
-  return m?.[1];
 }
 
 /** Shape of a query value from the URL template: a literal becomes a one-value enum, a placeholder its checker shape. */
@@ -84,7 +71,7 @@ function splitQuery(pathAndQuery: string, origins: Origins, dynamic: DynamicPart
   const queryShape: Record<string, Shape> = {};
   for (const pair of (qs ?? "").split("&").filter(Boolean)) {
     const [key, value] = pair.split("=", 2);
-    if (!key) continue;
+    if (!key || !isSafeKey(key)) continue;
     if (key.includes("{")) {
       collectDynamic(key, "query", origins, dynamic);
       continue;
@@ -189,15 +176,15 @@ function withEnvDefaults(parts: Part[], ctx: EvalCtx): EvalCtx {
 
 export function partsToUrlShape(parts: Part[], baseCtx: EvalCtx = {}): UrlShape {
   const ctx = withEnvDefaults(parts, baseCtx);
-  const template = partsToTemplate(parts);
+  const template = stripUserinfo(partsToTemplate(parts));
   const origins = originMap(parts);
   const dynamic: DynamicPart[] = [];
   const h = classifyHost(template, parts, ctx, dynamic, origins);
   const { path, query, queryShape } = splitQuery(h.rest, origins, dynamic);
-  const pathTemplate = normalizePath(path.replace(/\{env:([^}]+)\}/g, "{$1}"));
+  const pathTemplate = canonicalPath(path);
   collectDynamic(path, "path", origins, dynamic);
   const scheme = schemeOf(template, ctx, h.envName);
-  return { hostKind: h.hostKind, host: h.host, envName: h.envName, scheme, pathTemplate, query, queryShape, dynamic, raw: template };
+  return { hostKind: h.hostKind, host: h.host, envName: h.envName, scheme, pathTemplate, query, queryShape, dynamic, raw: maskCredentialQuery(template) };
 }
 
 /** `searchParams.set("k", v)` calls become `?k={v}` parts so values keep their shape. */
@@ -227,7 +214,7 @@ function urlBuilderParts(u: Expression, ctx: EvalCtx): Part[] | undefined {
 
 export function urlParts(expr: Expression, ctx: EvalCtx): Part[] {
   const u = unwrap(expr);
-  if (Node.isNewExpression(u) && u.getExpression().getText() === "URL") return evalNewUrl(u, ctx, 0);
+  if (constructedName(u) === "URL") return evalNewUrl(u, ctx, 0);
   const built = urlBuilderParts(u, ctx);
   if (built) return built;
   const parts = evaluate(u, ctx);

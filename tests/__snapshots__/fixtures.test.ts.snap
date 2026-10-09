@@ -4013,9 +4013,9 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
           "headers": {},
           "method": "GET",
           "query": {
-            "apiKey": "x",
+            "apiKey": "<apiKey>",
           },
-          "url": "https://api.cal.com/v1/bookings?apiKey=x",
+          "url": "https://api.cal.com/v1/bookings?apiKey=%3CapiKey%3E",
           "variant": "minimal",
         },
       ],
@@ -4041,9 +4041,6 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "queryShape": {
         "properties": {
           "apiKey": {
-            "enum": [
-              "x",
-            ],
             "type": "string",
           },
         },
@@ -9524,7 +9521,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 32,
+    "filesSeen": 33,
     "skipped": [
       {
         "file": "ai-sdk/generate.ts",
@@ -9544,6 +9541,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "convex/functions.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "discord/bot.ts",
         "reason": "excluded",
       },
       {
@@ -9624,7 +9625,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 24,
+      "excluded": 25,
     },
     "unfollowed": [],
   },

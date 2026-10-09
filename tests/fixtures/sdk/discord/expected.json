@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "bot.ts", "line": 3, "provider": "discord"},
+    {"file": "bot.ts", "line": 5, "provider": "discord"}
+  ]
+}

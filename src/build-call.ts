@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import path from "node:path";
 import { bodySourceOf, score, type Evidence } from "./confidence.js";
 import { languageOf } from "./language.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
+import { relativePosix } from "./files.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, type BodyResult } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
@@ -10,7 +10,9 @@ import { resolveHeaders } from "./resolve/headers.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
+import { isNullable } from "./resolve/type-shape.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
+import { withoutCredentialLiterals } from "./secrets.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
 export interface BuildCtx extends EvalCtx {
@@ -35,11 +37,8 @@ function queryShapeOf(url: UrlShape, raw: RawCall, ctx: EvalCtx, dynamic: Dynami
   const properties = { ...url.queryShape, ...q.shape };
   const query = [...new Set([...url.query, ...q.names])];
   if (query.length === 0) return { query };
-  const required = query.filter((k) => {
-    const s = properties[k];
-    return !(s && s.type === "union" && s.anyOf.some((x) => x.type === "null"));
-  });
-  return { query, queryShape: { type: "object", properties, required } };
+  const required = query.filter((k) => !(properties[k] && isNullable(properties[k])));
+  return { query, queryShape: withoutCredentialLiterals({ type: "object", properties, required }) };
 }
 
 function defaultEncoding(raw: RawCall, method: string): BodyEncoding {
@@ -53,7 +52,7 @@ function defaultEncoding(raw: RawCall, method: string): BodyEncoding {
 function location(raw: RawCall, rootDir: string): Call["location"] {
   const sf = raw.node.getSourceFile();
   const { line, column } = sf.getLineAndColumnAtPos(raw.node.getStart());
-  return { file: path.relative(rootDir, sf.getFilePath()).split(path.sep).join("/"), line, col: column, language: languageOf(sf.getFilePath()) };
+  return { file: relativePosix(rootDir, sf.getFilePath()), line, col: column, language: languageOf(sf.getFilePath()) };
 }
 
 function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { url: UrlShape; method: string } {
@@ -138,7 +137,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
     headers,
     headerValues,
     authScheme,
-    body: body.shape,
+    body: withoutCredentialLiterals(body.shape),
     bodyFromType: body.fromType,
     bodyEncoding: body.shape ? body.encoding : "none",
     dynamic,

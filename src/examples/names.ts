@@ -1,3 +1,4 @@
+import { isCredentialKey } from "../secrets.js";
 import type { Rng } from "./random.js";
 
 /** What the caller can accept: the synthesizer only uses a hint whose kind fits the shape's type. */
@@ -8,8 +9,6 @@ interface Rule {
   string?: (r: Rng) => string;
   number?: (r: Rng) => number;
 }
-
-const TOKEN_RE = /(^|_|-)(token|secret|password|passwd|api[-_]?key|apikey|credential|private[-_]?key|access[-_]?key)($|_|-)|[a-z]Token$|[a-z]Secret$|[a-z]Key$|^key$|authorization/i;
 
 const RULES: Rule[] = [
   { re: /e[-_]?mail|^(to|from|cc|bcc|reply[-_]?to|recipient|sender)$/i, string: (r) => `${r.firstName().toLowerCase()}.${r.lastName().toLowerCase()}@example.com` },
@@ -69,7 +68,7 @@ const RULES: Rule[] = [
 
 /** Placeholder for credential-like keys: never invent something that looks like a real secret. */
 export function credentialPlaceholder(key: string): string | undefined {
-  return TOKEN_RE.test(key) ? `<${key}>` : undefined;
+  return isCredentialKey(key) ? `<${key}>` : undefined;
 }
 
 /** Name-driven value for `key`, only when a rule fits both the name and the requested kind. */

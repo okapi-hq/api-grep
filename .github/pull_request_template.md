@@ -9,6 +9,6 @@
 ## Checklist
 
 - [ ] Tests or fixtures cover the change
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` pass
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm test:e2e` pass
 - [ ] Snapshot changes reviewed
 - [ ] README updated if the CLI or report changed
