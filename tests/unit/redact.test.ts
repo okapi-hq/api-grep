@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { looksSecret, redact } from "../../src/report/redact.js";
+import { redact } from "../../src/report/redact.js";
+import { looksSecret } from "../../src/secrets.js";
 
 describe("redact", () => {
   it("recognizes common secret shapes", () => {

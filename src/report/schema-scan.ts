@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 

@@ -1,21 +1,32 @@
 import { Node, type Expression, type ObjectLiteralExpression } from "ts-morph";
+import { isSafeKey } from "../record-keys.js";
 import type { EvalCtx } from "../types.js";
-import { unwrap } from "./callee.js";
+import { unwrap } from "./expr.js";
 
 const MAX_DEPTH = 4;
 
-/** Property key text for object literal members (identifier, string, or string-literal computed key). */
-export function propertyKey(member: Node): string | undefined {
-  if (Node.isPropertyAssignment(member) || Node.isShorthandPropertyAssignment(member) || Node.isMethodDeclaration(member)) {
-    const nameNode = member.getNameNode();
-    if (Node.isIdentifier(nameNode) || Node.isPrivateIdentifier(nameNode)) return nameNode.getText();
-    if (Node.isStringLiteral(nameNode) || Node.isNoSubstitutionTemplateLiteral(nameNode)) return nameNode.getLiteralValue();
-    if (Node.isNumericLiteral(nameNode)) return nameNode.getText();
-    if (Node.isComputedPropertyName(nameNode)) {
-      const inner = unwrap(nameNode.getExpression());
-      if (Node.isStringLiteral(inner) || Node.isNoSubstitutionTemplateLiteral(inner)) return inner.getLiteralValue();
-    }
+function keyText(nameNode: Node): string | undefined {
+  if (Node.isIdentifier(nameNode) || Node.isPrivateIdentifier(nameNode)) return nameNode.getText();
+  if (Node.isStringLiteral(nameNode) || Node.isNoSubstitutionTemplateLiteral(nameNode)) return nameNode.getLiteralValue();
+  if (Node.isNumericLiteral(nameNode)) return nameNode.getText();
+  if (Node.isComputedPropertyName(nameNode)) {
+    const inner = unwrap(nameNode.getExpression());
+    if (Node.isStringLiteral(inner) || Node.isNoSubstitutionTemplateLiteral(inner)) return inner.getLiteralValue();
   }
+  return undefined;
+}
+
+/** Property key text for object literal members (identifier, string, or string-literal computed key); an unsafe key reads as computed. */
+export function propertyKey(member: Node): string | undefined {
+  if (!Node.isPropertyAssignment(member) && !Node.isShorthandPropertyAssignment(member) && !Node.isMethodDeclaration(member)) return undefined;
+  const key = keyText(member.getNameNode());
+  return key !== undefined && isSafeKey(key) ? key : undefined;
+}
+
+/** Value of an object literal member: its initializer, or the identifier of a shorthand `{ x }`. */
+export function propertyValue(member: Node): Expression | undefined {
+  if (Node.isPropertyAssignment(member)) return member.getInitializer();
+  if (Node.isShorthandPropertyAssignment(member)) return member.getNameNode();
   return undefined;
 }
 
@@ -39,7 +50,7 @@ export interface Substitution {
 export function paramSubstitution(decl: Node, ctx: EvalCtx): Substitution {
   if (Node.isParameterDeclaration(decl)) return { isParam: true, expr: ctx.subst?.get(decl) };
   if (Node.isBindingElement(decl)) {
-    const param = decl.getFirstAncestor(Node.isParameterDeclaration);
+    const param = decl.getFirstAncestor((a) => Node.isParameterDeclaration(a));
     if (!param) return { isParam: false };
     const sub = ctx.subst?.get(param);
     if (!sub || decl.getParent().getParent() !== param) return { isParam: true };
@@ -81,25 +92,18 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
   return undefined;
 }
 
-/** Looks a property up in an (object-literal-resolvable) expression, following spreads. */
+/** Looks a property up in an (object-literal-resolvable) expression, following spreads; the last definition wins, as at runtime. */
 export function getProp(obj: Expression | undefined, name: string, ctx: EvalCtx = {}, depth = 0): Expression | undefined {
   const lit = toObjectLiteral(obj, ctx, depth);
   if (!lit || depth > MAX_DEPTH) return undefined;
-  for (const member of lit.getProperties()) {
+  for (const member of [...lit.getProperties()].reverse()) {
     if (Node.isSpreadAssignment(member)) {
       const inner = getProp(member.getExpression(), name, ctx, depth + 1);
       if (inner) return inner;
       continue;
     }
-    if (propertyKey(member) !== name) continue;
-    if (Node.isPropertyAssignment(member)) return member.getInitializer();
-    if (Node.isShorthandPropertyAssignment(member)) return member.getNameNode();
+    const value = propertyKey(member) === name ? propertyValue(member) : undefined;
+    if (value) return value;
   }
   return undefined;
-}
-
-export function isStringLike(e: Expression | undefined): boolean {
-  if (!e) return false;
-  const u = unwrap(e);
-  return Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u) || Node.isTemplateExpression(u);
 }

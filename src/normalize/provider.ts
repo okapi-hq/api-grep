@@ -1,3 +1,4 @@
+import { isSafeKey } from "../record-keys.js";
 import type { HostKind } from "../types.js";
 import data from "./providers.json" with { type: "json" };
 
@@ -78,11 +79,13 @@ export function resolveProvider(input: ProviderInput): ResolvedProvider {
   const envName = input.envName ?? /\{env:([^}]+)\}/.exec(input.host ?? "")?.[1];
   const byName = providerFromEnvName(envName);
   if (byName) return { provider: byName, source: "env-name" };
-  const plainHost = input.host && !input.host.includes("{") ? input.host : undefined;
-  if (plainHost) return { provider: plainHost };
+  if (input.host && HOST_RE.test(input.host) && isSafeKey(input.host)) return { provider: input.host };
   if (envName) return { provider: `env:${envName}` };
   return { provider: "unknown" };
 }
+
+/** A host that can name a provider by itself: `api.example.com`, `billing:8080` (no placeholder, no odd characters). */
+const HOST_RE = /^[a-z0-9._-]+(?::\d+)?$/i;
 
 /** Self-hosted model servers on their default port: `localhost:11434` is Ollama, `:8188` ComfyUI. */
 const LOCAL_PORTS: Record<string, string> = { "11434": "ollama", "8188": "comfyui" };

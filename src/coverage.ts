@@ -1,37 +1,27 @@
-import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Node, SyntaxKind, type SourceFile } from "ts-morph";
 import { AI_SDK_PACKAGES } from "./detect/ai-sdk.js";
-import { packageFromSpecifier, specifierOf } from "./detect/origin.js";
+import { packageFromSpecifier, specifierOf } from "./ast/origin.js";
 import type { Registry } from "./detect/registry/index.js";
 import { PROVIDERS } from "./normalize/provider.js";
+import { PackageJsonReader } from "./package-json.js";
+import { isInside } from "./files.js";
 import type { Call, Coverage, SdkCoverage } from "./report/schema.js";
 
 /** Known API SDK packages (from providers.json) -> provider id. */
 const SDK_PACKAGES = new Map<string, string>();
 for (const p of PROVIDERS) for (const pkg of p.packages ?? []) if (!SDK_PACKAGES.has(pkg)) SDK_PACKAGES.set(pkg, p.id);
 
-interface PackageJson {
-  dependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-}
-
 /** `dependencies` and `peerDependencies` of every package.json between the scanned files and the scanned directory. */
-function declaredPackages(rootDir: string, files: SourceFile[]): Set<string> {
+function declaredPackages(rootDir: string, files: SourceFile[], packages: PackageJsonReader): Set<string> {
   const dirs = new Set<string>([rootDir]);
   for (const sf of files) {
-    for (let dir = path.dirname(sf.getFilePath()); dir.startsWith(rootDir) && !dirs.has(dir); dir = path.dirname(dir)) dirs.add(dir);
+    for (let dir = path.dirname(sf.getFilePath()); isInside(rootDir, dir) && !dirs.has(dir); dir = path.dirname(dir)) dirs.add(dir);
   }
   const out = new Set<string>();
   for (const dir of dirs) {
-    const file = path.join(dir, "package.json");
-    if (!existsSync(file)) continue;
-    try {
-      const json = JSON.parse(readFileSync(file, "utf8")) as PackageJson;
-      for (const name of [...Object.keys(json.dependencies ?? {}), ...Object.keys(json.peerDependencies ?? {})]) out.add(name);
-    } catch {
-      // an unreadable package.json declares nothing
-    }
+    const json = packages.read(dir);
+    for (const name of [...Object.keys(json.dependencies ?? {}), ...Object.keys(json.peerDependencies ?? {})]) out.add(name);
   }
   return out;
 }
@@ -65,8 +55,8 @@ function statusOf(s: Omit<SdkCoverage, "status">): SdkCoverage["status"] {
  * Compares the API SDKs a repo declares and imports with the calls found, so "0 Supabase calls" never reads as
  * "this repo does not use Supabase". Files that could not be read are not counted as import sites.
  */
-export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry): Coverage {
-  const declared = declaredPackages(rootDir, files);
+export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, packageJsons = new PackageJsonReader(rootDir)): Coverage {
+  const declared = declaredPackages(rootDir, files, packageJsons);
   const sites = new Map<string, number>();
   for (const sf of files) {
     for (const pkg of importedPackages(sf)) if (SDK_PACKAGES.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);

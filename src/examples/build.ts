@@ -1,21 +1,21 @@
+import { PLACEHOLDER_RE } from "../normalize/path.js";
 import type { Call, Example } from "../report/schema.js";
 import type { Shape } from "../types.js";
 import { byName, credentialPlaceholder } from "./names.js";
 import { Rng } from "./random.js";
 import { hasAlternatives, hasOptional, synth, type SynthCtx, type Variant } from "./synth.js";
 
-const PLACEHOLDER_RE = /\{([^}]+)\}/g;
-
 type Dyn = Call["dynamic"][number];
 
 function shapeFor(call: Call, where: Dyn["where"], name: string): Shape | undefined {
-  return call.dynamic.find((d) => d.where === where && d.name === name)?.shape as Shape | undefined;
+  return call.dynamic.find((d) => d.where === where && d.name === name)?.shape;
 }
 
 function scalar(v: unknown): string {
   if (v === null || v === undefined) return "";
-  if (typeof v === "object") return Array.isArray(v) ? v.map(scalar).join(",") : JSON.stringify(v);
-  return String(v);
+  if (Array.isArray(v)) return v.map(scalar).join(",");
+  if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") return String(v);
+  return JSON.stringify(v) ?? "";
 }
 
 const PATHLIKE_RE = /^(endpoint|path|route|resource|url|uri|href|link|action|operation|suffix|segment|rest)$|(Path|Endpoint|Route|Resource)$/;
@@ -54,7 +54,7 @@ function hostPart(call: Call): string {
 
 function queryValues(call: Call, ctx: SynthCtx): Record<string, string> {
   const out: Record<string, string> = {};
-  const qs = call.queryShape as Shape | undefined;
+  const qs = call.queryShape;
   if (!qs || qs.type !== "object") return out;
   const keys = ctx.variant === "minimal" && qs.required.length > 0 ? qs.required : Object.keys(qs.properties);
   for (const k of keys) {
@@ -116,7 +116,7 @@ function exampleMethod(call: Call, hasBody: boolean): string {
 function buildOne(call: Call, variant: Variant): Example {
   const ctx: SynthCtx = { rng: new Rng(`${call.id}:${variant}`), variant };
   const query = queryValues(call, ctx);
-  const bodyShape = call.body as Shape | undefined;
+  const bodyShape = call.body;
   const opaque = bodyShape && (bodyShape.type === "dynamic" || bodyShape.type === "unknown") && call.bodyEncoding === "json";
   const synthesized = opaque ? {} : bodyShape ? synth(bodyShape, "body", ctx) : undefined;
   const body = synthesized === null ? undefined : synthesized;
@@ -139,11 +139,10 @@ function sameRequest(a: Example, b: Example): boolean {
 
 /** Concrete example requests for a call: minimal first, a "full" one when optional parts exist, an "alt" for enum / union branches. */
 export function buildExamples(call: Call, max = 3): Example[] {
-  const body = call.body as Shape | undefined;
-  const query = call.queryShape as Shape | undefined;
+  const { body, queryShape: query } = call;
   const variants: Variant[] = ["minimal"];
   if (hasOptional(body) || hasOptional(query)) variants.push("full");
-  if (hasAlternatives(body) || hasAlternatives(query) || call.dynamic.some((d) => d.where === "path" && hasAlternatives(d.shape as Shape | undefined))) variants.push("alt");
+  if (hasAlternatives(body) || hasAlternatives(query) || call.dynamic.some((d) => d.where === "path" && hasAlternatives(d.shape))) variants.push("alt");
   const out: Example[] = [];
   for (const v of variants) {
     const ex = buildOne(call, v);

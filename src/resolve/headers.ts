@@ -1,7 +1,7 @@
 import { Node, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { propertyKey, toObjectLiteral } from "../detect/options.js";
-import { looksSecret } from "../report/redact.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { propertyKey, propertyValue, toObjectLiteral } from "../ast/object.js";
+import { isCredentialHeader, looksSecret } from "../secrets.js";
 import type { AuthScheme, EvalCtx } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { typeToShape } from "./type-shape.js";
@@ -15,7 +15,6 @@ export interface HeadersResult {
 }
 
 const APIKEY_HEADERS = new Set(["x-api-key", "api-key", "apikey", "x-auth-token", "x-token", "api_key", "x-access-token", "x-goog-api-key", "anthropic-api-key"]);
-const CREDENTIAL_RE = /^(authorization|proxy-authorization|cookie|set-cookie)$|token|key|secret|password|credential|session|signature/;
 
 function schemeFromAuthValue(value: Expression | undefined, ctx: EvalCtx): AuthScheme {
   if (!value) return "unknown";
@@ -49,13 +48,12 @@ function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: numbe
       out.known = false;
       continue;
     }
-    const value = Node.isPropertyAssignment(member) ? member.getInitializer() : Node.isShorthandPropertyAssignment(member) ? member.getNameNode() : undefined;
-    pushName(out, key, value, ctx);
+    pushName(out, key, propertyValue(member), ctx);
   }
 }
 
 function staticValue(lower: string, value: Expression | undefined, ctx: EvalCtx): string | null {
-  if (!value || CREDENTIAL_RE.test(lower)) return null;
+  if (!value || isCredentialHeader(lower)) return null;
   const text = staticText(evaluate(value, ctx));
   if (text === undefined || looksSecret(text)) return null;
   return text;
@@ -76,7 +74,7 @@ export function resolveHeaders(expr: Expression | undefined, ctx: EvalCtx = {}):
   const out: HeadersResult = { names: [], values: {}, authScheme: "none", known: true };
   if (!expr) return out;
   let u = unwrap(expr);
-  if (Node.isNewExpression(u) && u.getExpression().getText() === "Headers") {
+  if (Node.isNewExpression(u) && constructedName(u) === "Headers") {
     const arg = u.getArguments()[0] as Expression | undefined;
     if (!arg) return { names: [], values: {}, authScheme: "unknown", known: false };
     u = arg;

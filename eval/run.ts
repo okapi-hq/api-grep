@@ -20,7 +20,8 @@ function clone(repo: RepoSpec): string {
   const dir = path.join(reposDir, repo.name);
   if (!existsSync(dir)) {
     process.stderr.write(`cloning ${repo.url}\n`);
-    execFileSync("git", ["clone", "--depth", "1", "--quiet", repo.url, dir], { stdio: "inherit" });
+    if (!/^https:\/\//.test(repo.url) || path.basename(repo.name) !== repo.name) throw new Error(`refusing repo entry ${repo.name}: ${repo.url}`);
+    execFileSync("git", ["clone", "--depth", "1", "--quiet", "--", repo.url, dir], { stdio: "inherit" });
   }
   return dir;
 }
