@@ -32,7 +32,7 @@ describe("isInside", () => {
 describe("readConfigFile", () => {
   let dir: string;
   beforeEach(() => {
-    dir = fs.mkdtempSync(path.join(os.tmpdir(), "apicalls-files-"));
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "api-grep-files-"));
   });
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -71,7 +71,7 @@ describe("readConfigFile", () => {
 describe("readConfigFile and symlinks", () => {
   let dir: string;
   beforeEach(() => {
-    dir = fs.mkdtempSync(path.join(os.tmpdir(), "apicalls-files-"));
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "api-grep-files-"));
   });
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -87,7 +87,7 @@ describe("readConfigFile and symlinks", () => {
   });
 
   it.skipIf(process.platform === "win32")("refuses a symlink that leads out of the root", () => {
-    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "apicalls-outside-"));
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "api-grep-outside-"));
     const repo = path.join(dir, "repo");
     fs.mkdirSync(repo);
     fs.writeFileSync(path.join(outside, ".env"), "API_URL=https://internal.example");

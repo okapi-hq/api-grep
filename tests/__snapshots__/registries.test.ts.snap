@@ -685,8 +685,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "withDynamic": 10,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -896,8 +896,8 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "withDynamic": 3,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -1867,7 +1867,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "withDynamic": 5,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { normalizePypi, pythonManifests } from "../../src/lang/python/manifests.js";
 
 function repo(files: Record<string, string>): string {
-  const dir = mkdtempSync(path.join(tmpdir(), "apicalls-py-"));
+  const dir = mkdtempSync(path.join(tmpdir(), "api-grep-py-"));
   for (const [name, text] of Object.entries(files)) {
     mkdirSync(path.dirname(path.join(dir, name)), { recursive: true });
     writeFileSync(path.join(dir, name), text);

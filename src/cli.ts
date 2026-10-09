@@ -11,7 +11,9 @@ import { printable } from "./report/printable.js";
 import type { Language } from "./report/schema.js";
 import { toTable } from "./report/table.js";
 import { scan } from "./scan.js";
-import pkg from "../package.json" with { type: "json" };
+import { serve } from "./server/index.js";
+import { unpackCommand } from "./server/unpack.js";
+import { toolVersion } from "./version.js";
 
 interface ScanFlags {
   language?: string[];
@@ -42,6 +44,12 @@ function languages(values: string[] | undefined): Language[] | undefined {
 function count(value: string): number {
   const n = Number(value);
   if (!/^\d+$/.test(value.trim()) || !Number.isSafeInteger(n)) throw new InvalidArgumentError("expected a whole number (0 or more).");
+  return n;
+}
+
+function port(value: string): number {
+  const n = count(value);
+  if (n > 65535) throw new InvalidArgumentError("expected a port from 0 to 65535.");
   return n;
 }
 
@@ -82,7 +90,7 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
 }
 
 export function buildProgram(): Command {
-  const program = new Command().name("apicalls").description(`Outbound API call extractor for ${LANGUAGE_IDS.join(", ")} code`).version(pkg.version);
+  const program = new Command().name("api-grep").description(`Outbound API call extractor for ${LANGUAGE_IDS.join(", ")} code`).version(toolVersion());
   program
     .command("scan")
     .argument("<dir>", "repository or package directory")
@@ -112,28 +120,41 @@ export function buildProgram(): Command {
     .action(() => {
       process.stdout.write(`${JSON.stringify(PROVIDERS, null, 2)}\n`);
     });
+  program
+    .command("serve")
+    .description("scan archives over HTTP: POST a .tar.gz to /v1/scan and get the JSON report (see the README)")
+    .option("--host <address>", "address to listen on (default: API_GREP_HOST or 127.0.0.1)")
+    .option("--port <n>", "port to listen on, 0 for any free one (default: API_GREP_PORT, PORT or 8080)", port)
+    .action((flags: { host?: string; port?: number }) => serve(flags, process.argv[1]!));
+  // the server's own step: stdin to a directory, the archive checked as `serve` describes
+  program.command("unpack", { hidden: true }).argument("<dir>").action(unpackCommand);
   return program;
 }
 
 /**
  * Large monorepos need several GB of heap (ts-morph keeps every source file and type alive), more than node's
- * default or a global NODE_OPTIONS cap usually allows. Re-run once with `--max-old-space-size=<APICALLS_HEAP_MB>`
- * (default 8192; set it to 0 to opt out) unless the flag is already on the command line.
+ * default or a global NODE_OPTIONS cap usually allows. Re-run once with `--max-old-space-size=<API_GREP_HEAP_MB>`
+ * (default 8192; set it to 0 to opt out) unless the flag is already on the command line. Only `scan` needs it:
+ * `serve` runs each scan in its own process with that heap.
  */
 function respawnWithHeap(): boolean {
-  const heapMb = Number(process.env.APICALLS_HEAP_MB ?? 8192);
-  if (process.env.APICALLS_NO_RESPAWN || !(heapMb > 0) || process.execArgv.some((a) => a.includes("max-old-space-size"))) return false;
+  if (process.argv.slice(2).find((a) => !a.startsWith("-")) !== "scan") return false;
+  const heapMb = Number(process.env.API_GREP_HEAP_MB ?? 8192);
+  if (process.env.API_GREP_NO_RESPAWN || !(heapMb > 0) || process.execArgv.some((a) => a.includes("max-old-space-size"))) return false;
   const r = spawnSync(process.execPath, [`--max-old-space-size=${heapMb}`, ...process.execArgv, ...process.argv.slice(1)], {
     stdio: "inherit",
-    env: { ...process.env, APICALLS_NO_RESPAWN: "1" },
+    env: { ...process.env, API_GREP_NO_RESPAWN: "1" },
   });
   if (r.error) process.stderr.write(`cannot restart with a larger heap: ${r.error.message}\n`);
   process.exitCode = r.status ?? 1;
   return true;
 }
 
-const isMain = process.argv[1] && /(?:^|[\\/])(?:cli\.(?:ts|js|mjs)|apicalls)$/.test(process.argv[1]);
+const isMain = process.argv[1] && /(?:^|[\\/])(?:cli\.(?:ts|js|mjs)|api-grep)$/.test(process.argv[1]);
 if (isMain && !respawnWithHeap()) {
+  // a child of `serve` ends at its deadline by itself, even if the server could not kill it
+  const deadline = Number(process.env.API_GREP_DEADLINE_MS);
+  if (deadline > 0) setTimeout(() => process.exit(124), deadline).unref();
   buildProgram()
     .parseAsync(process.argv)
     .catch((err: unknown) => {

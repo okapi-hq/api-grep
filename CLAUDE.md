@@ -6,7 +6,7 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 
 ## What this is
 
-`apicalls` (repository `api-grep`) statically lists the outbound HTTP and SDK calls of a repository: provider, method,
+`api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, confidence. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python and PHP (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
@@ -15,6 +15,7 @@ path template, body / query / header shapes, auth scheme, confidence. Supported 
 ```sh
 pnpm install
 pnpm dev scan <dir> [--json] [--language python,php]   # CLI from source
+pnpm dev serve [--port 8080]                           # HTTP server from source (README "HTTP server")
 pnpm test                    # vitest: fixture snapshots, recall check, unit tests
 pnpm test:e2e                # builds dist/ and runs the CLI as a subprocess (incl. hostile-repository cases)
 pnpm vitest run -u           # update snapshots after an intended change, then review the diff
@@ -24,6 +25,7 @@ pnpm build                   # tsup -> dist/, copies tree-sitter grammars to dis
 pnpm gen:schema              # regenerate schema/report.v1.json after a report schema change (bump SCHEMA_VERSION)
 pnpm gen:support             # regenerate docs/sdk-support.md after a registry / providers.json change
 pnpm gen:stripe-ports        # regenerate ported Stripe registries from src/detect/registry/stripe.json
+docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) -t api-grep .   # the image (serve by default)
 ```
 
 Run lint, typecheck, test and test:e2e before declaring work done; CI runs the same.
@@ -42,6 +44,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`.
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template}.ts`.
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`).
+- `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
+  request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
+  `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
+  (`run-scan.ts`). `src/version.ts`: the version plus `+<API_GREP_BUILD>`.
 - The report is a versioned contract (`src/report/schema.ts`, `schema/report.v1.json`): new fields or enum values bump
   the minor of `SCHEMA_VERSION`, breaking changes the major. Each call's language is `location.language`.
 
@@ -62,6 +68,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
   Composer package in `src/lang/php/namespaces.json`.
+- The server's archives are hostile input too: never write anything but regular files and directories, never log a
+  path, a query value or anything from an archive, and never pass the server's environment to a scan.
 - Comments explain why, briefly; match the surrounding code.
 
 ## Where work is tracked

@@ -159,8 +159,8 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "withDynamic": 1,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -417,8 +417,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "withDynamic": 3,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -621,8 +621,8 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "withDynamic": 2,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -794,8 +794,8 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "withDynamic": 0,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -1071,7 +1071,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     "withDynamic": 2,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;

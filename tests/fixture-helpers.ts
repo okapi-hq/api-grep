@@ -11,6 +11,8 @@ export async function scanFixture(name: string, opts: Partial<ScanOptions> = {})
   const report = await scan({ dir: path.join(FIXTURES, name), exclude: ["*/**"], ...opts });
   const json = JSON.parse(toJson(report)) as Report;
   json.stats.durationMs = 0;
+  // the release and the build would change every snapshot
+  json.version = "<version>";
   delete json.commit;
   return json;
 }

@@ -1,0 +1,90 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: build and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TOKEN: smoke-test-token-0123456789
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - id: commit
+        run: echo "short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: api-grep:test
+          build-args: API_GREP_COMMIT=${{ steps.commit.outputs.short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test
+        env:
+          COMMIT: ${{ steps.commit.outputs.short }}
+        run: |
+          docker run -d --name api-grep -p 8080:8080 -e API_GREP_TOKEN="$TOKEN" api-grep:test
+          for _ in $(seq 1 30); do curl -fsS localhost:8080/v1/health && break; sleep 1; done
+          tar -czf - -C tests/fixtures gotky \
+            | curl -fsS -H "authorization: Bearer $TOKEN" -H "content-type: application/gzip" --data-binary @- localhost:8080/v1/scan \
+            | jq -e --arg v "+$COMMIT" '.tool == "api-grep" and (.version | endswith($v)) and (.calls | length) > 0'
+          docker run --rm -v "$PWD/tests/fixtures/gotky:/repo:ro" api-grep:test scan /repo --json | jq -e '(.calls | length) > 0'
+          docker logs api-grep
+
+  # Only main and v* tags publish: a pull request or another branch never writes an image.
+  publish:
+    name: publish to GHCR
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - id: commit
+        run: echo "short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: API_GREP_COMMIT=${{ steps.commit.outputs.short }}
+          cache-from: type=gha

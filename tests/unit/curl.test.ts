@@ -29,7 +29,7 @@ const call = (over: Partial<Call> = {}): Call => ({
 const report = (calls: Call[]): Report => ({
   $schema: "https://example.com/schema.json",
   schemaVersion: "1.0.0",
-  tool: "apicalls",
+  tool: "api-grep",
   version: "0.0.0",
   calls,
   stats: { filesScanned: 1, callsFound: calls.length, byLanguage: {}, byClient: {}, byProvider: {}, byHostKind: {}, withBodyShape: 0, withDynamic: 0, withFindings: 0, redacted: 0, durationMs: 0 },

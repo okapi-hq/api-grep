@@ -12,7 +12,7 @@ function writeJson(dir: string, content: unknown): void {
 let root: string;
 let app: string;
 beforeEach(() => {
-  root = fs.mkdtempSync(path.join(os.tmpdir(), "apicalls-pkg-"));
+  root = fs.mkdtempSync(path.join(os.tmpdir(), "api-grep-pkg-"));
   app = path.join(root, "packages", "app");
   writeJson(root, { dependencies: { stripe: "^14.0.0" }, devDependencies: { vitest: "^4.0.0" } });
   writeJson(app, { dependencies: { axios: "^1.7.0" }, devDependencies: { axios: "^0.27.0", openai: "^5.0.0" } });

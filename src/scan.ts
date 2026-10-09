@@ -11,7 +11,7 @@ import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Language, type Report, type
 import { DiagnosticsCollector } from "./report/diagnostics.js";
 import { splitValid } from "./report/valid.js";
 import { applySpecs } from "./validate/index.js";
-import pkg from "../package.json" with { type: "json" };
+import { toolVersion } from "./version.js";
 
 export interface ScanOptions {
   dir: string;
@@ -130,8 +130,8 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   return {
     $schema: SCHEMA_URL,
     schemaVersion: SCHEMA_VERSION,
-    tool: "apicalls",
-    version: pkg.version,
+    tool: "api-grep",
+    version: toolVersion(),
     repo: opts.repo,
     commit: await headCommit(rootDir),
     calls,

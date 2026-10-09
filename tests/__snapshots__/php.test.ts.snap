@@ -469,8 +469,8 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "withDynamic": 4,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -815,8 +815,8 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "withDynamic": 4,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -1104,8 +1104,8 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "withDynamic": 3,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -2663,8 +2663,8 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     "withDynamic": 14,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -3077,8 +3077,8 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
     "withDynamic": 4,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -3366,7 +3366,7 @@ exports[`php: curl, streams, PSR-18, WordPress > reads curl options, stream cont
     "withDynamic": 3,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;

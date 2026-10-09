@@ -90,7 +90,7 @@ function markdown(rows: Row[], commits: Map<string, string | undefined>): string
   const total = (k: keyof Row): number => ok.reduce((a, r) => a + Number(r[k]), 0);
   const commitList = rows.map((r) => `- ${r.repo}: ${commits.get(r.repo) ?? "?"}`).join("\n");
   return [
-    `# apicalls eval run — ${new Date().toISOString().slice(0, 10)}`,
+    `# api-grep eval run — ${new Date().toISOString().slice(0, 10)}`,
     "",
     `Shallow clones, no \`node_modules\` installed in the targets (types of third-party packages are therefore unresolved; SDK detection relies on imports). Per-repo JSON reports are in \`eval/out/<repo>.json\`.`,
     "",
@@ -118,7 +118,7 @@ async function main(): Promise<void> {
     process.stdout.write(`${line(row)}\n`);
   }
   writeFileSync(path.join(outDir, "summary.txt"), `${rows.map(line).join("\n")}\n`);
-  const resultsFile = process.env.APICALLS_RESULTS ?? path.join(here, "results.md");
+  const resultsFile = process.env.API_GREP_RESULTS ?? path.join(here, "results.md");
   writeFileSync(resultsFile, markdown(rows, commits));
   process.stdout.write(`wrote ${path.relative(process.cwd(), resultsFile)}\n`);
 }
@@ -128,7 +128,7 @@ async function runOne(repo: RepoSpec, commits: Map<string, string | undefined>):
     const root = clone(repo);
     const dir = repo.subdir ? path.join(root, repo.subdir) : root;
     if (!existsSync(dir)) throw new Error(`subdir not found: ${repo.subdir}`);
-    const specs = process.env.APICALLS_SPECS;
+    const specs = process.env.API_GREP_SPECS;
     const report = await scan({ dir, repo: repo.name, specs, validate: !!specs });
     commits.set(repo.name, report.commit);
     writeFileSync(path.join(outDir, `${repo.name}.json`), toJson(report));

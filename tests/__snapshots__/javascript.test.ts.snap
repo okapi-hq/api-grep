@@ -392,8 +392,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     "withDynamic": 1,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -837,8 +837,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     "withDynamic": 4,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;
 
@@ -1251,7 +1251,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     "withDynamic": 4,
     "withFindings": 0,
   },
-  "tool": "apicalls",
-  "version": "0.1.0",
+  "tool": "api-grep",
+  "version": "<version>",
 }
 `;

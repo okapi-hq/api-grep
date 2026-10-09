@@ -1,5 +1,5 @@
 /**
- * Writes schema/report.v1.json, the JSON Schema of `apicalls scan --json`, from src/report/schema.ts.
+ * Writes schema/report.v1.json, the JSON Schema of `api-grep scan --json`, from src/report/schema.ts.
  * `tests/schema.test.ts` fails when the committed file is out of date.
  *
  * Run: pnpm gen:schema

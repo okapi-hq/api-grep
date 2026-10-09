@@ -53,7 +53,7 @@
     "stats"
   ],
   "title": "api-grep report",
-  "description": "Outbound HTTP and SDK calls found in a codebase by `apicalls scan --json`.",
+  "description": "Outbound HTTP and SDK calls found in a codebase by `api-grep scan --json`.",
   "definitions": {
     "Call": {
       "type": "object",
@@ -95,7 +95,7 @@
         },
         "provider": {
           "type": "string",
-          "description": "Provider id from `apicalls providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."
+          "description": "Provider id from `api-grep providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."
         },
         "providerSource": {
           "description": "sdk: the SDK registry. host: a known host. env-name: only the env var's name.",

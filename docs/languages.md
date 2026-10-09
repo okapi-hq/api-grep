@@ -1,6 +1,6 @@
 # Languages
 
-`apicalls` started as a TypeScript scanner. This document describes how it reads several languages, what each one
+`api-grep` started as a TypeScript scanner. This document describes how it reads several languages, what each one
 supports, and how to add the next one. The SDKs each language supports are listed in
 [`sdk-support.md`](sdk-support.md) (generated).
 
@@ -15,7 +15,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 ## Goals
 
 - **One report for a whole repository.** A repository often holds a TypeScript front end and a Python or PHP back end.
-  `apicalls scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
+  `api-grep scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
   `ecosystem` (`npm`, `pypi`, `composer`), so the same package name in two ecosystems (`openai`) is two rows.

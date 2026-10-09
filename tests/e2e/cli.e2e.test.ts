@@ -33,7 +33,7 @@ describe("scan output", () => {
     const { run, report } = scanJson(gotky);
     expect(run.status).toBe(0);
     expect(schemaErrors(report)).toEqual([]);
-    expect(report).toMatchObject({ tool: "apicalls", version: pkg.version, repo: "gotky", diagnostics: { complete: true } });
+    expect(report).toMatchObject({ tool: "api-grep", version: pkg.version, repo: "gotky", diagnostics: { complete: true } });
     expect(report.calls.map((c) => `${c.location.file}:${c.location.line} ${c.method} ${c.host}${c.pathTemplate}`)).toContain("ky.ts:9 GET api.cal.com/v1/bookings");
   });
 
@@ -96,13 +96,13 @@ describe("exit codes and errors", () => {
     }
   });
 
-  it("re-runs itself with the heap APICALLS_HEAP_MB asks for, and keeps the exit code", () => {
-    const respawn = { APICALLS_NO_RESPAWN: "" };
-    const r = cli(["scan", path.join(FIXTURES, "robustness", "bad-specifier"), "--json"], { env: { ...respawn, APICALLS_HEAP_MB: "1024" } });
+  it("re-runs itself with the heap API_GREP_HEAP_MB asks for, and keeps the exit code", () => {
+    const respawn = { API_GREP_NO_RESPAWN: "" };
+    const r = cli(["scan", path.join(FIXTURES, "robustness", "bad-specifier"), "--json"], { env: { ...respawn, API_GREP_HEAP_MB: "1024" } });
     expect(r.status).toBe(2);
     expect(JSON.parse(r.stdout)).toMatchObject({ diagnostics: { complete: false } });
     // node cannot start in a 1 MB heap: only the re-run child dies of it
-    expect(cli(["scan", gotky, "--json"], { env: { ...respawn, APICALLS_HEAP_MB: "1" } }).status).not.toBe(0);
-    expect(cli(["scan", gotky, "--json"], { env: { APICALLS_HEAP_MB: "1" } }).status).toBe(0);
+    expect(cli(["scan", gotky, "--json"], { env: { ...respawn, API_GREP_HEAP_MB: "1" } }).status).not.toBe(0);
+    expect(cli(["scan", gotky, "--json"], { env: { API_GREP_HEAP_MB: "1" } }).status).toBe(0);
   });
 });
