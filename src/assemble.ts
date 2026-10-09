@@ -2,8 +2,10 @@ import { createHash } from "node:crypto";
 import { bodySourceOf, score } from "./confidence.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import type { Call, ClientKind } from "./report/schema.js";
-import type { AuthScheme, DynamicPart, Shape, UrlShape } from "./types.js";
 import type { BodyResult } from "./resolve/body.js";
+import { isNullable } from "./resolve/type-shape.js";
+import { withoutCredentialLiterals } from "./secrets.js";
+import type { AuthScheme, DynamicPart, Shape, UrlShape } from "./types.js";
 
 /** A call resolved by a language front end: everything the report needs, before provider and confidence. */
 export interface ResolvedCall {
@@ -30,11 +32,8 @@ function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; qu
   const properties = { ...url.queryShape, ...q.shape };
   const query = [...new Set([...url.query, ...q.names])];
   if (query.length === 0) return { query };
-  const required = query.filter((k) => {
-    const s = properties[k];
-    return !(s && s.type === "union" && s.anyOf.some((x) => x.type === "null"));
-  });
-  return { query, queryShape: { type: "object", properties, required } };
+  const required = query.filter((k) => !(properties[k] && isNullable(properties[k])));
+  return { query, queryShape: withoutCredentialLiterals({ type: "object", properties, required }) };
 }
 
 /**
@@ -86,7 +85,7 @@ export function assembleCall(r: ResolvedCall): Call {
     headers: r.headers.names,
     headerValues: r.headers.values,
     authScheme: r.headers.authScheme,
-    body: r.body.shape,
+    body: withoutCredentialLiterals(r.body.shape),
     bodyFromType: r.body.fromType,
     bodyEncoding: r.body.shape ? r.body.encoding : "none",
     dynamic: r.dynamic,

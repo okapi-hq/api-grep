@@ -1,4 +1,5 @@
 import { ts, type Node, type Type } from "ts-morph";
+import { isSafeKey } from "../record-keys.js";
 import type { Shape } from "../types.js";
 
 const MAX_DEPTH = 5;
@@ -22,7 +23,8 @@ function typeId(t: Type): string {
 }
 
 function literalShape(t: Type): Shape | undefined {
-  if (t.isStringLiteral()) return { type: "string", enum: [String(t.getLiteralValue())] };
+  const value = t.getLiteralValue();
+  if (t.isStringLiteral() && typeof value === "string") return { type: "string", enum: [value] };
   if (t.isNumberLiteral()) return { type: "number", enum: [Number(t.getLiteralValue())] };
   if (t.isBooleanLiteral()) return { type: "boolean", enum: [t.getText() === "true"] };
   return undefined;
@@ -35,6 +37,11 @@ function primitiveShape(t: Type): Shape | undefined {
   if (t.isNull()) return { type: "null" };
   if (t.isEnumLiteral() || t.isEnum()) return { type: "string" };
   return undefined;
+}
+
+/** `T | null`: the value may be sent as null (an optional query or body field, not a required one). */
+export function isNullable(s: Shape): boolean {
+  return s.type === "union" && s.anyOf.some((x) => x.type === "null");
 }
 
 export function mergeLiterals(shapes: Shape[]): Shape | undefined {
@@ -94,7 +101,7 @@ function objectShape(t: Type, node: Node, depth: number, visited: Set<string>): 
   const required: string[] = [];
   const props = t.getProperties();
   for (const prop of props.slice(0, MAX_PROPS)) {
-    if (prop.getName().startsWith("__@")) continue;
+    if (prop.getName().startsWith("__@") || !isSafeKey(prop.getName())) continue;
     const pt = prop.getTypeAtLocation(node);
     if (pt.getCallSignatures().length > 0) continue;
     const sub = typeToShape(pt, node, depth + 1, visited);

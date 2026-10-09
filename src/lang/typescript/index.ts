@@ -1,47 +1,26 @@
-import type { Node, SourceFile } from "ts-morph";
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import { ts, type Node, type SourceFile } from "ts-morph";
 import { buildCall, type BuildCtx } from "../../build-call.js";
 import { detectFile } from "../../detect/index.js";
 import { defaultRegistry, type Registry } from "../../detect/registry/index.js";
 import { selectChanged } from "../../git.js";
-import { loadProject, TS_EXTENSIONS, tsFiles, unreadable } from "../../project.js";
+import { relativePosix } from "../../files.js";
+import { PackageJsonReader } from "../../package-json.js";
+import { loadProject, TS_EXTENSIONS, tsFiles, type Loaded } from "../../project.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call } from "../../report/schema.js";
 import type { RawCall } from "../../types.js";
 import { expandWrappers } from "../../wrappers/detect.js";
-import { errorText, relPath } from "../files.js";
+import { errorText } from "../files.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { sdkCoverage } from "./coverage.js";
 
-function sdkVersionLookup(rootDir: string): BuildCtx["sdkVersion"] {
-  const cache = new Map<string, Record<string, string>>();
-  const depsOf = (dir: string): Record<string, string> => {
-    const hit = cache.get(dir);
-    if (hit) return hit;
-    let deps: Record<string, string> = {};
-    const file = path.join(dir, "package.json");
-    if (existsSync(file)) {
-      try {
-        const json = JSON.parse(readFileSync(file, "utf8")) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
-        deps = { ...(json.devDependencies ?? {}), ...(json.dependencies ?? {}) };
-      } catch {
-        deps = {};
-      }
-    }
-    cache.set(dir, deps);
-    return deps;
-  };
-  return (file, pkgName) => {
-    let dir = path.dirname(file);
-    for (let i = 0; i < 8; i++) {
-      const v = depsOf(dir)[pkgName];
-      if (v) return v;
-      if (dir === rootDir || path.dirname(dir) === dir) break;
-      dir = path.dirname(dir);
-    }
-    return depsOf(rootDir)[pkgName];
-  };
+/** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
+function parseProblem(sf: SourceFile): string | undefined {
+  const syntax = sf.getProject().getProgram().compilerObject.getSyntacticDiagnostics(sf.compilerNode)[0];
+  if (syntax) return ts.flattenDiagnosticMessageText(syntax.messageText, " ");
+  const decls = [...sf.getImportDeclarations(), ...sf.getExportDeclarations()];
+  const bad = decls.some((d) => d.compilerNode.moduleSpecifier !== undefined && !ts.isStringLiteral(d.compilerNode.moduleSpecifier));
+  return bad ? "Expected the module specifier to be a string literal." : undefined;
 }
 
 function lineOf(node: Node): number {
@@ -58,9 +37,9 @@ function detectAll(files: SourceFile[], registry: Registry, input: LanguageScanI
   const raws: RawCall[] = [];
   const scanned: SourceFile[] = [];
   for (const sf of files) {
-    const file = relPath(input.rootDir, sf.getFilePath());
+    const file = relativePosix(input.rootDir, sf.getFilePath());
     try {
-      const problem = unreadable(sf);
+      const problem = parseProblem(sf);
       if (problem) {
         input.diag.skip({ file, reason: "parse-error", detail: problem });
         continue;
@@ -83,27 +62,41 @@ function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): C
     try {
       calls.push(buildCall(raw, ctx));
     } catch (err) {
-      diag.drop({ file: relPath(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
+      diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
     }
   }
   return calls;
 }
 
-async function scanTypeScript(input: LanguageScanInput): Promise<LanguageScanResult | undefined> {
+/** The files this scan covers; what it leaves out (unreadable, or removed by the options) goes to diagnostics. */
+function filesInScope(loaded: Loaded, input: LanguageScanInput): { files: SourceFile[]; seen: number } {
+  const parseError = (u: Loaded["unreadable"][number]): void => input.diag.skip({ file: u.file, reason: "parse-error", detail: u.detail });
+  if (input.changed) {
+    const changed = input.changed;
+    const unreadable = loaded.unreadable.filter((u) => changed.has(u.path));
+    unreadable.forEach(parseError);
+    const files = selectChanged(loaded.files, changed);
+    return { files, seen: files.length + unreadable.length };
+  }
+  loaded.unreadable.forEach(parseError);
+  for (const l of loaded.leftOut) input.diag.skip(l);
+  return { files: loaded.files, seen: loaded.files.length + loaded.leftOut.length + loaded.unreadable.length };
+}
+
+function scanTypeScript(input: LanguageScanInput): LanguageScanResult | undefined {
   const { rootDir, opts, diag } = input;
   // a directory without TypeScript (a Python repository) never pays for a ts-morph Project
   if (tsFiles(rootDir, undefined).length === 0) return undefined;
   const registry = opts.registry ?? defaultRegistry();
   const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude });
-  let files = loaded.files;
-  if (input.changed) files = selectChanged(files, input.changed);
-  else for (const l of loaded.leftOut) diag.skip(l);
+  const { files, seen } = filesInScope(loaded, input);
   const { raws, scanned } = detectAll(files, registry, input);
-  const calls = buildAll(raws, { rootDir, envHints: loaded.envHints, sdkVersion: sdkVersionLookup(rootDir) }, diag);
-  const filesSeen = input.changed ? files.length : files.length + loaded.leftOut.length;
+  const packages = new PackageJsonReader(rootDir);
+  const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: (file, name) => packages.versionOf(file, name) };
+  const calls = buildAll(raws, ctx, diag);
   // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-  const coverage = input.changed ? [] : sdkCoverage(rootDir, scanned, calls, registry).sdks;
-  return { calls, filesSeen, filesScanned: scanned.length, coverage };
+  const coverage = input.changed ? [] : sdkCoverage(rootDir, scanned, calls, registry, packages).sdks;
+  return { calls, filesSeen: seen, filesScanned: scanned.length, coverage };
 }
 
-export const typescript: LanguageFrontEnd = { id: "typescript", ecosystem: "npm", extensions: TS_EXTENSIONS, scan: scanTypeScript };
+export const typescript: LanguageFrontEnd = { id: "typescript", ecosystem: "npm", extensions: TS_EXTENSIONS, scan: (input) => Promise.resolve(scanTypeScript(input)) };

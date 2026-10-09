@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -25,7 +25,7 @@ describe("python manifests", () => {
       "requirements/prod.txt": "openai>=1.40\n",
     });
     const m = pythonManifests();
-    expect([...m.declared(new Set([dir]))].sort()).toEqual(["openai", "requests", "sentry-sdk", "stripe"]);
+    expect([...m.declared(new Set([dir]), dir)].sort()).toEqual(["openai", "requests", "sentry-sdk", "stripe"]);
     expect(m.version(path.join(dir, "app.py"), "stripe", dir)).toBe("9.1.0");
     expect(m.version(path.join(dir, "app.py"), "sentry_sdk", dir)).toBe("~=2.0");
   });
@@ -36,16 +36,23 @@ describe("python manifests", () => {
     const pipfile = repo({ Pipfile: '[packages]\ntwilio = "==9.0.0"\nresend = "*"\n' });
     const setup = repo({ "setup.cfg": "[options]\ninstall_requires =\n    posthog>=3\n    slack-sdk\n", "setup.py": 'setup(install_requires=["groq>=0.9"])\n' });
     const m = pythonManifests();
-    expect([...m.declared(new Set([pep621]))].sort()).toEqual(["anthropic", "httpx"]);
-    expect([...m.declared(new Set([poetry]))].sort()).toEqual(["boto3", "supabase"]);
+    expect([...m.declared(new Set([pep621]), pep621)].sort()).toEqual(["anthropic", "httpx"]);
+    expect([...m.declared(new Set([poetry]), poetry)].sort()).toEqual(["boto3", "supabase"]);
     expect(m.version(path.join(poetry, "a.py"), "boto3", poetry)).toBe("1.34");
-    expect([...m.declared(new Set([pipfile]))].sort()).toEqual(["resend", "twilio"]);
+    expect([...m.declared(new Set([pipfile]), pipfile)].sort()).toEqual(["resend", "twilio"]);
     expect(m.version(path.join(pipfile, "a.py"), "twilio", pipfile)).toBe("9.0.0");
-    expect([...m.declared(new Set([setup]))].sort()).toEqual(["groq", "posthog", "slack-sdk"]);
+    expect([...m.declared(new Set([setup]), setup)].sort()).toEqual(["groq", "posthog", "slack-sdk"]);
   });
 
   it("declares nothing for a manifest that does not parse", () => {
     const dir = repo({ "pyproject.toml": "[project\ndependencies = [" });
-    expect(pythonManifests().declared(new Set([dir])).size).toBe(0);
+    expect(pythonManifests().declared(new Set([dir]), dir).size).toBe(0);
+  });
+
+  it("does not read a manifest that links outside the scanned directory", () => {
+    const outside = repo({ "requirements.txt": "stripe==9.1.0\n" });
+    const dir = repo({});
+    symlinkSync(path.join(outside, "requirements.txt"), path.join(dir, "requirements.txt"));
+    expect(pythonManifests().declared(new Set([dir]), dir).size).toBe(0);
   });
 });

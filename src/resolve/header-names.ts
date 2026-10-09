@@ -1,4 +1,4 @@
-import { looksSecret } from "../report/redact.js";
+import { isCredentialHeader, looksSecret } from "../secrets.js";
 import type { AuthScheme, Part } from "../types.js";
 import { staticText } from "./parts.js";
 
@@ -11,7 +11,6 @@ export interface HeadersResult {
 }
 
 export const APIKEY_HEADERS = new Set(["x-api-key", "api-key", "apikey", "x-auth-token", "x-token", "api_key", "x-access-token", "x-goog-api-key", "anthropic-api-key"]);
-const CREDENTIAL_RE = /^(authorization|proxy-authorization|cookie|set-cookie)$|token|key|secret|password|credential|session|signature/;
 
 /** `Bearer ...` / `Basic ...` / `token ...` at the start of an Authorization value. */
 export function schemeFromAuthValue(value: Part[] | undefined): AuthScheme {
@@ -24,7 +23,7 @@ export function schemeFromAuthValue(value: Part[] | undefined): AuthScheme {
 }
 
 function staticValue(lower: string, value: Part[] | undefined): string | null {
-  if (!value || CREDENTIAL_RE.test(lower)) return null;
+  if (!value || isCredentialHeader(lower)) return null;
   const text = staticText(value);
   if (text === undefined || looksSecret(text)) return null;
   return text;

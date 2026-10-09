@@ -1,4 +1,5 @@
-import { z } from "zod/v4";
+import { z } from "zod";
+import type { Shape } from "../types.js";
 import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
 
 /**
@@ -22,7 +23,7 @@ export const ClientSchema = z
       "How the request is sent. TypeScript: fetch, axios, got, ky, node-http. Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. Any language: sdk (a registry), framework (a framework helper).",
   });
 
-export const ShapeSchema: z.ZodType<unknown> = z
+export const ShapeSchema: z.ZodType<Shape> = z
   .lazy(() =>
     z.union([
       z.object({

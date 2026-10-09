@@ -15,7 +15,7 @@ export default defineConfig({
   sourcemap: true,
   banner: { js: "#!/usr/bin/env node" },
   splitting: false,
-  onSuccess: async () => {
+  onSuccess: () => {
     const require = createRequire(import.meta.url);
     mkdirSync("dist/grammars", { recursive: true });
     for (const name of GRAMMARS) {

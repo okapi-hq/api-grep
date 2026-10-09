@@ -16,6 +16,7 @@ planned next (see the plan in `docs/languages.md`). It must stay static: no netw
 pnpm install
 pnpm dev scan <dir> [--json] [--language python]   # CLI from source
 pnpm test                    # vitest: fixture snapshots, recall check, unit tests
+pnpm test:e2e                # builds dist/ and runs the CLI as a subprocess (incl. hostile-repository cases)
 pnpm vitest run -u           # update snapshots after an intended change, then review the diff
 pnpm lint                    # zero warnings; max 300 lines per file, 50 per function
 pnpm typecheck
@@ -25,7 +26,7 @@ pnpm gen:support             # regenerate docs/sdk-support.md after a registry /
 pnpm gen:stripe-ports        # regenerate ported Stripe registries from src/detect/registry/stripe.json
 ```
 
-Run lint, typecheck, test and build before declaring work done; CI runs the same.
+Run lint, typecheck, test and test:e2e before declaring work done; CI runs the same.
 
 ## Architecture in one screen
 
@@ -50,6 +51,9 @@ Run lint, typecheck, test and build before declaring work done; CI runs the same
 - Snapshots are part of the review: never update them blindly.
 - A per-file failure is a diagnostic (`diagnostics.skipped` / `droppedCalls`), never a crash.
 - `provider` never contains a template (`{...}`).
+- The scanned repository is hostile input: files are listed through `src/lang/files.ts` (symlinks must stay inside the
+  scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), keys from the
+  code go through `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.

@@ -1,6 +1,6 @@
 import { Node, type Expression } from "ts-morph";
-import { unwrap } from "../detect/callee.js";
-import { propertyKey, toObjectLiteral } from "../detect/options.js";
+import { constructedName, unwrap } from "../ast/expr.js";
+import { propertyKey, propertyValue, toObjectLiteral } from "../ast/object.js";
 import type { EvalCtx } from "../types.js";
 import { evaluate } from "./evaluate.js";
 import { addHeader, type HeadersResult } from "./header-names.js";
@@ -30,8 +30,7 @@ function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: numbe
       out.known = false;
       continue;
     }
-    const value = Node.isPropertyAssignment(member) ? member.getInitializer() : Node.isShorthandPropertyAssignment(member) ? member.getNameNode() : undefined;
-    pushName(out, key, value, ctx);
+    pushName(out, key, propertyValue(member), ctx);
   }
 }
 
@@ -44,7 +43,7 @@ export function resolveHeaders(expr: Expression | undefined, ctx: EvalCtx = {}):
   const out: HeadersResult = { names: [], values: {}, authScheme: "none", known: true };
   if (!expr) return out;
   let u = unwrap(expr);
-  if (Node.isNewExpression(u) && u.getExpression().getText() === "Headers") {
+  if (Node.isNewExpression(u) && constructedName(u) === "Headers") {
     const arg = u.getArguments()[0] as Expression | undefined;
     if (!arg) return { names: [], values: {}, authScheme: "unknown", known: false };
     u = arg;

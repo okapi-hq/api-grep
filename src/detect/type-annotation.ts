@@ -1,5 +1,5 @@
 import { Node, SyntaxKind, type TypeNode } from "ts-morph";
-import { identifierOrigin } from "./origin.js";
+import { identifierOrigin } from "../ast/origin.js";
 
 const WRAPPERS = new Set(["ReturnType", "Awaited", "NonNullable", "Readonly"]);
 

@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
 import { coverageRows, manifestDirs } from "../../coverage.js";
+import { relativePosix } from "../../files.js";
 import { sdkPackages } from "../../normalize/provider.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
-import { errorText, languageFiles, leftOutFiles, readEnvHints, relPath } from "../files.js";
+import { errorText, languageFiles, leftOutFiles, readEnvHints } from "../files.js";
 import { parserFor, syntaxError } from "../tree-sitter.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { buildIrCall, type BuildIrCtx } from "./build.js";
@@ -23,7 +24,7 @@ async function lowerAll(lang: IrLanguage, files: string[], scanned: Set<string>,
   const modules: ModuleModel[] = [];
   try {
     for (const file of files) {
-      const rel = relPath(rootDir, file);
+      const rel = relativePosix(rootDir, file);
       try {
         const tree = parser.parse(readFileSync(file, "utf8"));
         if (!tree) throw new Error("the parser returned no tree");
@@ -65,7 +66,7 @@ interface Detected {
 function detectAll(modules: ModuleModel[], ctx: IrCtx, input: LanguageScanInput): Detected {
   const out: Detected = { raws: [], scanned: [] };
   for (const mod of modules) {
-    const file = relPath(input.rootDir, mod.file);
+    const file = relativePosix(input.rootDir, mod.file);
     try {
       const candidates: Candidate[] = [];
       const unfollowed: IrUnfollowed[] = [];
@@ -92,7 +93,7 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
     try {
       calls.push(buildIrCall(raw, ctx));
     } catch (err) {
-      diag.drop({ file: relPath(ctx.rootDir, raw.fn.module.file), line: raw.call.pos.line, reason: "internal-error", detail: errorText(err) });
+      diag.drop({ file: relativePosix(ctx.rootDir, raw.fn.module.file), line: raw.call.pos.line, reason: "internal-error", detail: errorText(err) });
     }
   }
   return calls;
@@ -101,7 +102,7 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
 /** SDK coverage of the language's ecosystem: the packages its manifests declare and its files import. */
 function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: ModuleModel[], calls: Call[]): SdkCoverage[] {
   const known = sdkPackages(lang.ecosystem);
-  const declaredNames = lang.manifests.declared(manifestDirs(rootDir, files));
+  const declaredNames = lang.manifests.declared(manifestDirs(rootDir, files), rootDir);
   const declared = new Set([...known.keys()].filter((p) => declaredNames.has(lang.normalizePackage(p))));
   const roots = [...known.keys()].map((pkg) => ({ pkg, roots: lang.importRoots(pkg).map((r) => r.split(".")) }));
   const sites = new Map<string, number>();

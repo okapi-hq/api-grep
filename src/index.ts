@@ -1,5 +1,8 @@
 export { scan, computeStats, type ScanOptions } from "./scan.js";
-export { toJson } from "./report/json.js";
+// `scan` returns the raw report: pass it through `finalizeReport` (or `toJson`) before `toTable` / `toCurl`, which
+// print what they are given and are where redaction would otherwise be skipped.
+export { finalizeReport, toJson } from "./report/json.js";
+export { toCurl } from "./report/curl.js";
 export { toTable } from "./report/table.js";
 export {
   ReportSchema,
@@ -27,7 +30,8 @@ export { resolveUrl, partsToUrlShape } from "./resolve/url.js";
 export { resolveBody, shapeOf } from "./resolve/body.js";
 export { resolveHeaders } from "./resolve/headers.js";
 export { score, type Evidence } from "./confidence.js";
-export { redact, looksSecret } from "./report/redact.js";
+export { redact } from "./report/redact.js";
+export { looksSecret, isCredentialKey, isCredentialHeader } from "./secrets.js";
 export { checkShape } from "./validate/check.js";
 export { matchOperation } from "./validate/match.js";
 export { SpecStore } from "./validate/spec-loader.js";

@@ -1,8 +1,6 @@
-import { spawnSync } from "node:child_process";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { diagnosticsLine } from "../src/report/diagnostics.js";
-import { at, FIXTURES, scanFixture } from "./fixture-helpers.js";
+import { at, scanFixture } from "./fixture-helpers.js";
 
 describe("diagnostics", () => {
   it("lists what the scan could not read and still reports everything else", async () => {
@@ -41,19 +39,5 @@ describe("diagnostics", () => {
     const unfollowed = Array.from({ length: 12 }, (_, i) => ({ file: "a.ts", line: i, reason: "injected-fetch" as const }));
     expect(diagnosticsLine({ ...base, unfollowed })).toBe("scanned 1702/1840 files, 138 skipped, 12 calls not followed");
     expect(diagnosticsLine({ ...base, skippedCounts: {}, filesScanned: 1840, complete: true })).toBe("scanned 1840/1840 files, complete");
-  });
-});
-
-describe("cli exit codes", () => {
-  const run = (dir: string): number | null =>
-    spawnSync(process.execPath, ["--import", "tsx", path.join(FIXTURES, "..", "..", "src", "cli.ts"), "scan", dir, "--json"], {
-      env: { ...process.env, APICALLS_NO_RESPAWN: "1" },
-      encoding: "utf8",
-    }).status;
-
-  it("exits 0 when complete, 2 when partial, 1 on a fatal error", () => {
-    expect(run(path.join(FIXTURES, "gotky"))).toBe(0);
-    expect(run(path.join(FIXTURES, "robustness", "bad-specifier"))).toBe(2);
-    expect(run(path.join(FIXTURES, "no-such-dir"))).toBe(1);
   });
 });

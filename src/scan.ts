@@ -33,10 +33,11 @@ export interface ScanOptions {
   onWarning?: (message: string) => void;
 }
 
+/** Occurrences per key, most frequent first. A Map: keys come from the scanned code (`constructor` is a provider name). */
 function count<T>(items: T[], key: (t: T) => string): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const it of items) out[key(it)] = (out[key(it)] ?? 0) + 1;
-  return Object.fromEntries(Object.entries(out).sort((a, b) => b[1] - a[1]));
+  const out = new Map<string, number>();
+  for (const it of items) out.set(key(it), (out.get(key(it)) ?? 0) + 1);
+  return Object.fromEntries([...out].sort((a, b) => b[1] - a[1]));
 }
 
 export function computeStats(calls: Call[], filesScanned: number, durationMs: number): Stats {
@@ -47,7 +48,7 @@ export function computeStats(calls: Call[], filesScanned: number, durationMs: nu
     byClient: count(calls, (c) => c.client),
     byProvider: count(calls, (c) => c.provider),
     byHostKind: count(calls, (c) => c.hostKind),
-    withBodyShape: calls.filter((c) => c.body && (c.body as { type: string }).type !== "dynamic" && (c.body as { type: string }).type !== "unknown").length,
+    withBodyShape: calls.filter((c) => c.body && c.body.type !== "dynamic" && c.body.type !== "unknown").length,
     withDynamic: calls.filter((c) => c.dynamic.length > 0).length,
     withFindings: calls.filter((c) => c.findings.length > 0).length,
     redacted: 0,
@@ -102,7 +103,7 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
   const found = await scanLanguages(rootDir, opts, diag, changed);
   const built = sortCalls(found.calls);
-  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate });
+  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate, onWarning: opts.onWarning });
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
   return {

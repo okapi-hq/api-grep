@@ -89,7 +89,7 @@ export interface ClientSpec {
 /** Manifests of the language's ecosystem: what a repository declares and at which version. */
 export interface Manifests {
   /** Packages declared in the manifests of these directories, as `normalizePackage` writes them. */
-  declared(dirs: Set<string>): Set<string>;
+  declared(dirs: Set<string>, rootDir: string): Set<string>;
   version(file: string, pkg: string, rootDir: string): string | undefined;
 }
 
