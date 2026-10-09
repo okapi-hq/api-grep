@@ -16,7 +16,7 @@ export interface EvalCtx {
   envHints?: Record<string, string>;
 }
 
-export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "sdk" | "framework";
+export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "sdk" | "framework";
 
 export interface InstanceInfo {
   /** "call" for axios.create(cfg) / got.extend(cfg), "new" for new Stripe(key). */
@@ -52,6 +52,8 @@ export interface RawCall {
   queryExpr?: Expression;
   headersExpr?: Expression;
   instanceHeadersExpr?: Expression;
+  /** Headers set one by one (`xhr.setRequestHeader(name, value)`). */
+  headerPairs?: [Expression, Expression][];
   /** Options object present but not resolvable to a literal (method/body may be wrong). */
   optionsOpaque?: boolean;
   nodeOpts?: { scheme: string; hostExpr?: Expression; portExpr?: Expression; pathExpr?: Expression };

@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "index.html", "line": 9, "provider": "formspree"},
+    {"file": "index.html", "line": 33, "provider": "supabase"},
+    {"file": "index.html", "line": 38, "provider": "github"},
+    {"file": "index.html", "line": 43, "provider": "open-meteo"}
+  ]
+}

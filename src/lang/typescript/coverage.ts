@@ -8,9 +8,9 @@ import { PackageJsonReader } from "../../package-json.js";
 import type { Call, Coverage } from "../../report/schema.js";
 
 /** `dependencies` and `peerDependencies` of every package.json between the scanned files and the scanned directory. */
-function declaredPackages(rootDir: string, files: SourceFile[], packages: PackageJsonReader): Set<string> {
+function declaredPackages(rootDir: string, files: string[], packages: PackageJsonReader): Set<string> {
   const out = new Set<string>();
-  for (const dir of manifestDirs(rootDir, files.map((sf) => sf.getFilePath()))) {
+  for (const dir of manifestDirs(rootDir, files)) {
     const json = packages.read(dir);
     for (const name of [...Object.keys(json.dependencies ?? {}), ...Object.keys(json.peerDependencies ?? {})]) out.add(name);
   }
@@ -36,11 +36,20 @@ function importedPackages(sf: SourceFile): Set<string> {
   return new Set(specs.map(packageFromSpecifier).filter((p): p is string => !!p));
 }
 
-/** SDK coverage of the npm packages a TypeScript repo declares and imports. */
-export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, packageJsons = new PackageJsonReader(rootDir)): Coverage {
+/** An HTML page and the npm packages it loads from a CDN (`<script src="https://cdn.jsdelivr.net/npm/axios">`). */
+export interface PageImports {
+  file: string;
+  packages: string[];
+}
+
+/** SDK coverage of the npm packages a TypeScript / JavaScript repo declares and imports (HTML pages through CDN scripts). */
+export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, pages: PageImports[] = [], packageJsons = new PackageJsonReader(rootDir)): Coverage {
   const known = sdkPackages("npm");
   const sites = new Map<string, number>();
-  for (const sf of files) for (const pkg of importedPackages(sf)) if (known.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
+  const imports = new Map<string, Set<string>>();
+  for (const sf of files) imports.set(sf.getFilePath(), importedPackages(sf));
+  for (const p of pages) imports.set(p.file, new Set([...(imports.get(p.file) ?? []), ...p.packages]));
+  for (const pkgs of imports.values()) for (const pkg of pkgs) if (known.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   const supported = (pkg: string): boolean => !!registry.byPackage(pkg) || AI_SDK_PACKAGES.has(pkg);
-  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, files, packageJsons), sites, calls, supported }) };
+  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, [...imports.keys()], packageJsons), sites, calls, supported }) };
 }

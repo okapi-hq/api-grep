@@ -8,11 +8,11 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript (npm) | 54 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `AI SDK`, `n8n / activepieces helpers` |
+| TypeScript / JavaScript (npm) | 54 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
 | Python (PyPI) | 21 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
 
-| provider | TypeScript (npm) | Python (PyPI) | PHP (Composer) |
+| provider | TypeScript / JavaScript (npm) | Python (PyPI) | PHP (Composer) |
 |---|---|---|---|
 | Stripe | **`stripe`** | **`stripe`** | **`stripe/stripe-php`**, `laravel/cashier`, `cartalyst/stripe` |
 | OpenAI | **`openai`**, **`@ai-sdk/openai`**, `@langchain/openai` | **`openai`**, `openai-agents`, `langchain-openai`, `llama-index-llms-openai` | **`openai-php/client`**, **`openai-php/laravel`**, **`openai-php/symfony`**, `orhanerday/open-ai`, `symfony/ai-open-ai-platform` |
@@ -86,3 +86,4 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Bugsnag | `@bugsnag/js` | `bugsnag` | `bugsnag/bugsnag`, `bugsnag/bugsnag-laravel`, `bugsnag/bugsnag-symfony` |
 | ngrok | `@ngrok/ngrok` | `ngrok-api` |  |
 | Open-Meteo |  | `openmeteo-requests` |  |
+| Mailchimp | `@mailchimp/mailchimp_marketing` | `mailchimp-marketing` | `mailchimp/marketing` |

@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/5",
+  "calls": [
+    {"file": "app.js", "line": 4, "provider": "icanhazdadjoke.com"},
+    {"file": "app.js", "line": 10, "provider": "convertkit"},
+    {"file": "app.js", "line": 28, "provider": "cloudinary"},
+    {"file": "app.js", "line": 32, "provider": "tmdb"},
+    {"file": "widget.jsx", "line": 6, "provider": "github"}
+  ]
+}

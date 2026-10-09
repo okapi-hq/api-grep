@@ -29,6 +29,18 @@ export function constructorAssignment(cls: ClassLike, propName: string): Express
   return undefined;
 }
 
+/** Values assigned to `this.<propName>`: in the constructor first, then in the other methods. */
+export function fieldAssignments(cls: ClassLike, propName: string): Expression[] {
+  const bodies = [...cls.getConstructors(), ...cls.getMethods(), ...cls.getSetAccessors()];
+  return bodies.flatMap((b) =>
+    b.getDescendantsOfKind(SyntaxKind.BinaryExpression).flatMap((bin) => {
+      const left = bin.getLeft();
+      const isField = bin.getOperatorToken().getKind() === SyntaxKind.EqualsToken && Node.isPropertyAccessExpression(left) && Node.isThisExpression(left.getExpression()) && left.getName() === propName;
+      return isField ? [bin.getRight()] : [];
+    }),
+  );
+}
+
 /** Initializer of `this.<prop>`: property initializer or `this.prop = ...` in the constructor. */
 export function classPropertyInitializer(at: Node, propName: string): Expression | undefined {
   const cls = enclosingClass(at);

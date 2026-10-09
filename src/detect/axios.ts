@@ -1,5 +1,6 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import type { Callee, EvalCtx, RawCall } from "../types.js";
+import { isStringLike, unwrap } from "../ast/expr.js";
 import { getProp, toObjectLiteral } from "../ast/object.js";
 import { exportedChain, factoryOptions, isNamedImport } from "./callee.js";
 
@@ -48,12 +49,25 @@ function fromVerb(node: CallExpression, verb: string, args: Expression[], callee
   };
 }
 
+/** A string (`"https://..."`, `BASE + id`, a `string` variable) or a `URL` as the first argument. */
+function urlFirst(arg: Expression): boolean {
+  if (isStringLike(arg)) return true;
+  try {
+    const t = unwrap(arg).getType();
+    return t.isString() || t.isStringLiteral() || t.isTemplateLiteral() || t.getSymbol()?.getName() === "URL";
+  } catch {
+    return false;
+  }
+}
+
 export function detectAxios(node: CallExpression | NewExpression, callee: Callee, ctx: EvalCtx = {}): RawCall | null {
   if (!Node.isCallExpression(node) || callee.package !== "axios") return null;
   const ch = exportedChain(callee);
   const args = node.getArguments() as Expression[];
   if (ch.length === 0 || (ch.length === 1 && ch[0] === "request")) {
     if (!callee.instance && ch.length === 0 && isNamedImport(callee)) return null;
+    // `axios(url, config)`: the URL first, the config second
+    if (ch.length === 0 && args[0] && !toObjectLiteral(args[0], ctx) && urlFirst(args[0])) return { ...fromConfig(node, args[1], callee, ctx), urlExpr: args[0] };
     return fromConfig(node, args[0], callee, ctx);
   }
   if (ch.length === 1 && VERBS.has(ch[0]!)) return fromVerb(node, ch[0]!, args, callee, ctx);

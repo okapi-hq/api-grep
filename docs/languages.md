@@ -7,6 +7,8 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | language | status | parser | SDK ecosystem | manifests |
 |---|---|---|---|---|
 | TypeScript | supported | ts-morph (TypeScript type checker) | npm | `package.json` |
+| JavaScript | supported | the same type checker (`allowJs`) | npm | `package.json` |
+| HTML | supported | inline scripts through the type checker, forms read directly | npm (CDN scripts) | `package.json` |
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
 
@@ -45,11 +47,22 @@ Call[] ──▶ specs ─▶ examples ─▶ schema check ─▶ redaction ─�
   classification), `header-names.ts`, `shape-utils.ts`, `sdk-template.ts` (registry paths, `inlinePathLiterals`,
   `basePath`, code-given base URLs) and `src/coverage.ts`.
 
-### TypeScript
+### TypeScript, JavaScript and HTML
 
-The original pipeline (`src/detect`, `src/resolve`, `src/wrappers`) is the TypeScript front end, wrapped by
-`src/lang/typescript/`. It reads code through the type checker, so callees are identified by declaration and bodies by
-their declared types.
+The original pipeline (`src/detect`, `src/resolve`, `src/wrappers`) is the front end of the type checker, wrapped by
+`src/lang/typescript/`. It reads code through the TypeScript checker, so callees are identified by declaration and
+bodies by their declared types. The same front end reads three languages:
+
+- **TypeScript** (`.ts`, `.tsx`, `.mts`, `.cts`).
+- **JavaScript** (`.js`, `.jsx`, `.mjs`, `.cjs`) with `allowJs`: the checker follows CommonJS (`require`,
+  `module.exports`) and infers types, so the TypeScript detectors apply as they are. jQuery and `XMLHttpRequest`
+  detectors serve both languages; globals of script-tag libraries (`axios`, `$`, `supabase`) map to their packages.
+  `jsconfig.json` is read like `tsconfig.json`; minified, bundled and vendored files are out of scope.
+- **HTML** (`.html`, `.htm`): `src/lang/html/extract.ts` turns a page into one JavaScript text of the same size, its
+  inline scripts in place and everything else blank, added to the project under the page's own path, so a call's line
+  and column are the page's. Server-side template tags are rewritten to JavaScript of the same length
+  (`src/lang/html/templates.ts`). Forms with an action URL become calls directly (`src/lang/html/forms.ts`), and
+  `<script src>` URLs from a CDN count as imports of their npm package.
 
 ### Tree-sitter languages: the IR engine
 
@@ -162,13 +175,30 @@ arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, double-quoted, heredoc and
 - Laravel facades are matched by their class (`Illuminate\Support\Facades\Http`, or `Http` without a namespace);
   a facade alias registered under another name is not.
 
+## JavaScript and HTML
+
+**Detected:** everything the TypeScript front end detects (fetch, axios, got, ky, node http, SDK registries, the AI
+SDK, framework helpers), plus jQuery (`$.ajax`, `$.get`, `$.getJSON`, `$.post`) and `XMLHttpRequest`
+(`open` + `setRequestHeader` + `send`); in HTML pages, inline scripts and `<form action>` submissions.
+
+**Resolved:** as in TypeScript, plus CommonJS exports (`const { BASE } = require("./config")`,
+`config.base` with `module.exports = {...}`), `require("stripe")(key)`, fields assigned in any method
+(`this._stripe = new Stripe(key)` in `configure()`), and in HTML, template tags as dynamic values.
+
+**Out of scope by default:** `*.min.js`, `*.bundle.js`, `*.chunk.js`, files with a line over 2,000 characters in their
+first 8 KB, `vendor/`, `bower_components/`, `coverage/`, `.nuxt/`, `.output/`, `.svelte-kit/`, test and spec files.
+
+**Limitations:** Vue / Svelte single-file components and other template formats are not read; event-handler
+attributes (`onclick="..."`) are not; a form whose action is a template tag is skipped (its target is the app's own
+route); `{% url %}` / `url_for` values in scripts stay unknown hosts.
+
 ## How the open issues apply to each language
 
-| issue | TypeScript | Python | PHP |
+| issue | TypeScript / JavaScript / HTML | Python | PHP |
 |---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same |
-| #5 regression fixtures and recall | done | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check |
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` |

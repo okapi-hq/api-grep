@@ -12,6 +12,8 @@ body:
       label: Language
       options:
         - TypeScript
+        - JavaScript
+        - HTML
         - Python
         - PHP
     validations:

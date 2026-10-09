@@ -23,7 +23,7 @@
     {"id": "emailjs", "name": "EmailJS", "hosts": ["api.emailjs.com"], "packages": {"npm": ["@emailjs/browser", "@emailjs/nodejs"]}, "category": "email"},
     {"id": "notion", "name": "Notion", "hosts": ["api.notion.com"], "packages": {"npm": ["@notionhq/client"], "pypi": ["notion-client"], "composer": ["brd6/notion-sdk-php"]}, "category": "productivity"},
     {"id": "linear", "name": "Linear", "hosts": ["api.linear.app"], "packages": {"npm": ["@linear/sdk"]}, "category": "productivity"},
-    {"id": "hubspot", "name": "HubSpot", "hosts": ["api.hubapi.com"], "packages": {"npm": ["@hubspot/api-client"], "pypi": ["hubspot-api-client"], "composer": ["hubspot/api-client"]}, "category": "crm"},
+    {"id": "hubspot", "name": "HubSpot", "hosts": ["api.hubapi.com", "api.hsforms.com", "forms.hubspot.com"], "packages": {"npm": ["@hubspot/api-client"], "pypi": ["hubspot-api-client"], "composer": ["hubspot/api-client"]}, "category": "crm"},
     {"id": "salesforce", "name": "Salesforce", "hosts": [".salesforce.com"], "packages": {"npm": ["jsforce"], "pypi": ["simple-salesforce"], "composer": ["omniphx/forrest"]}, "category": "crm"},
     {"id": "vercel", "name": "Vercel", "hosts": ["api.vercel.com"], "packages": {"npm": ["@vercel/sdk"]}, "category": "cloud"},
     {"id": "cloudflare", "name": "Cloudflare", "hosts": ["api.cloudflare.com"], "packages": {"npm": ["cloudflare"], "pypi": ["cloudflare"], "composer": ["cloudflare/sdk"]}, "category": "cloud"},
@@ -87,6 +87,13 @@
     {"id": "npm", "name": "npm registry", "hosts": ["registry.npmjs.org"], "category": "dev"},
     {"id": "ngrok", "name": "ngrok", "hosts": ["api.ngrok.com"], "packages": {"npm": ["@ngrok/ngrok"], "pypi": ["ngrok-api"]}, "category": "dev"},
     {"id": "exchangerate", "name": "exchangerate.host", "hosts": ["api.exchangerate.host"], "category": "data"},
-    {"id": "open-meteo", "name": "Open-Meteo", "hosts": ["api.open-meteo.com", ".open-meteo.com"], "packages": {"pypi": ["openmeteo-requests"]}, "category": "data"}
+    {"id": "open-meteo", "name": "Open-Meteo", "hosts": ["api.open-meteo.com", ".open-meteo.com"], "packages": {"pypi": ["openmeteo-requests"]}, "category": "data"},
+    {"id": "formspree", "name": "Formspree", "hosts": ["formspree.io"], "category": "forms"},
+    {"id": "getform", "name": "Getform", "hosts": ["getform.io"], "category": "forms"},
+    {"id": "web3forms", "name": "Web3Forms", "hosts": ["api.web3forms.com"], "category": "forms"},
+    {"id": "formsubmit", "name": "FormSubmit", "hosts": ["formsubmit.co"], "category": "forms"},
+    {"id": "mailchimp", "name": "Mailchimp", "hosts": [".list-manage.com", ".api.mailchimp.com"], "packages": {"npm": ["@mailchimp/mailchimp_marketing"], "pypi": ["mailchimp-marketing"], "composer": ["mailchimp/marketing"]}, "category": "email"},
+    {"id": "convertkit", "name": "Kit (ConvertKit)", "hosts": ["api.convertkit.com", "app.convertkit.com", "api.kit.com"], "category": "email"},
+    {"id": "tmdb", "name": "The Movie Database", "hosts": ["api.themoviedb.org"], "category": "data"}
   ]
 }

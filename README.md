@@ -4,14 +4,15 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
 
-**Find every outbound HTTP and SDK call in a TypeScript, Python or PHP codebase, without running it.**
+**Find every outbound HTTP and SDK call in a TypeScript, JavaScript, Python, PHP or HTML codebase, without running it.**
 
 Point `apicalls` at a repository and it lists every call the code makes to an external API:
 provider, method, path template, the *shape* of the payload (names and types, never values),
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
-TypeScript through the TypeScript type checker, and Python and PHP through tree-sitter; a repository
-that mixes languages gets one report that says which language each call comes from. No AI, no
-network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
+TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
+checker, and Python and PHP through tree-sitter; a repository that mixes languages gets one report
+that says which language each call comes from. No AI, no network, no runtime. How each language is
+read: [docs/languages.md](docs/languages.md).
 
 Use it to:
 
@@ -109,7 +110,7 @@ above, with `--examples 1`, shown as YAML with one comment per field and the sec
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.2.0            # report format version; readers check the major
+schemaVersion: 1.3.0            # report format version; readers check the major
 tool: apicalls
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -120,8 +121,8 @@ calls:                          # one entry per call, sorted by file, line, colu
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
       col: 10
-      language: typescript      # typescript | javascript | python | php
-    client: sdk                 # fetch | axios | got | ky | node-http (TypeScript), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
+      language: typescript      # typescript | javascript | html | python | php
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `apicalls providers` id, or internal | env:<NAME> | unknown
     providerSource: sdk         # sdk | host | env-name
@@ -200,9 +201,9 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, �
   `report.v1.json` stays.
 
 Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
-and `diagnostics.languages` files per language. The TypeScript front end reports `typescript`, the
-Python one `python`, the PHP one `php`; `javascript` is reserved, so reports from every language
-share one format. Coverage rows name their package `ecosystem` (`npm`, `pypi`, `composer`).
+and `diagnostics.languages` files per language: `typescript`, `javascript`, `html` (inline scripts
+and forms, at their line in the page), `python` and `php` share one format. Coverage rows name their
+package `ecosystem` (`npm`, `pypi`, `composer`).
 
 ## Usage
 
@@ -219,7 +220,7 @@ apicalls scan <dir> --language python                 # one language only
 
 | option | description |
 |---|---|
-| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `python`, `php` (default: every language with files in scope) |
+| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `javascript`, `html`, `python`, `php` (default: every language with files in scope) |
 | `--json` | print the JSON report on stdout instead of the table |
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
@@ -247,7 +248,12 @@ validation) before `toTable` or `toCurl`. See
 
 Which SDKs have a registry in which language: [docs/sdk-support.md](docs/sdk-support.md).
 
-### TypeScript
+### TypeScript and JavaScript
+
+JavaScript (`.js`, `.jsx`, `.mjs`, `.cjs`) is read by the same type checker as TypeScript, so
+everything below applies to both, with CommonJS (`require`, `module.exports`, `require("stripe")(key)`)
+and `jsconfig.json` path aliases. Minified, bundled and vendored files are build output and are
+not scanned.
 
 | client | patterns |
 |---|---|
@@ -257,6 +263,8 @@ Which SDKs have a registry in which language: [docs/sdk-support.md](docs/sdk-sup
 | node http | `https.request(opts)`, `https.get(url)` |
 | SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
+| jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
+| XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
 | frameworks | options-object helpers: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
 
 Callees are identified by declaration through the type checker, never by name: a shadowed
@@ -275,6 +283,23 @@ A client constructed with its own base URL (`new OpenAI({ baseURL: "https://open
 `new PostHog(key, { host })`, `new ConvexHttpClient(url)`) sends its calls there, and the provider
 follows the URL when it names another known service (OpenRouter, Groq, `localhost:11434` for
 Ollama). MCP clients get the server URL from the HTTP transport built in the same file.
+
+Libraries loaded with a `<script>` tag are used as globals the checker cannot see: `axios`, `$` /
+`jQuery`, `supabase`, `Sentry` and `posthog` are read as their npm packages. Imports from a CDN
+(`https://esm.sh/stripe`, `https://cdn.jsdelivr.net/npm/...`) and Deno `npm:` specifiers name their
+package too.
+
+### HTML
+
+| source | what is reported |
+|---|---|
+| inline `<script>` | everything in the TypeScript / JavaScript table, at its line and column in the page; JSON, templates and import maps are skipped, old `<!-- //-->` wrappers are read |
+| `<form action>` | a request to the action URL with its method; the named fields are the body (`multipart` / `form` from `enctype`) or, for a GET, the query; `email` / `number` / `hidden` fields are typed |
+| `<script src>` from a CDN | an import of the npm package, for the SDK coverage |
+
+Server-side template tags in scripts (Jinja / Django `{{ x }}`, `{% url %}`, EJS `<%= %>`, PHP
+`<?= ?>`) are read as dynamic values: `fetch("{{ api_url }}/items")` is `{api_url}/items`. Forms
+whose action is a template, an anchor or a `mailto:` are not requests.
 
 ### Python
 
@@ -314,8 +339,9 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 ## How it works
 
 The pipeline is `detect → resolve → normalize → validate → score → emit`. Detection and resolution
-are per language (TypeScript through the type checker, Python through tree-sitter and a shared
-engine, see [docs/languages.md](docs/languages.md)); everything after that is shared, so a call is
+are per language (TypeScript, JavaScript and HTML scripts through the type checker, Python and PHP
+through tree-sitter and a shared engine, see [docs/languages.md](docs/languages.md)); everything
+after that is shared, so a call is
 described, scored and checked the same way whatever its language. The rules below are given for
 TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and `.format()`,
 `os.getenv("X", "https://...")`, `os.environ[...]`, dataclass / TypedDict / pydantic bodies).
@@ -474,6 +500,9 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as clients are listed as
   `injected-client`; Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
+- HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
+  event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
+  globals, scripts of different pages do not.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
 - Spec matching treats id-looking literal segments as parameters.
 

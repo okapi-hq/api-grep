@@ -17,14 +17,14 @@ interface Column {
 function typescriptColumn(): Column {
   const registry = defaultRegistry();
   return {
-    title: "TypeScript (npm)",
+    title: "TypeScript / JavaScript (npm)",
     ecosystem: "npm",
     methods: (pkg) => {
       const e = registry.byPackage(pkg);
       if (e) return Object.keys(e.methods ?? {}).length + Object.keys(e.commands ?? {}).length;
       return AI_SDK_PACKAGES.has(pkg) ? 1 : 0;
     },
-    clients: ["fetch", "axios", "got", "ky", "node http/https", "AI SDK", "n8n / activepieces helpers"],
+    clients: ["fetch", "axios", "got", "ky", "node http/https", "jQuery", "XMLHttpRequest", "AI SDK", "n8n / activepieces helpers", "HTML forms"],
   };
 }
 
