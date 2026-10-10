@@ -1,14 +1,16 @@
-import { markConst, partsToTemplate, staticText } from "../../resolve/parts.js";
+import { hasStaticHost, markConst, partsToTemplate, pickBranch, replaceInParts, staticText } from "../../resolve/parts.js";
 import type { DynamicOrigin, Part, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { braceParts, printfParts, type FormatArgs } from "./format.js";
-import type { Arg, CallExpr, Expr, FunctionDef } from "./model.js";
-import { bindingOfPath, classField, lookup, moduleMember, type Binding } from "./project.js";
-import { withSubst, type IrCtx, type Subst } from "./raw.js";
+import { instanceField } from "./instance.js";
+import { argFor, type Arg, type CallExpr, type Expr, type FunctionDef } from "./model.js";
+import { bindingOfPath, classField, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
+import { withSelf, withSubst, type IrCtx, type Subst } from "./raw.js";
 import { scalarShape } from "./types.js";
 import { dictOf, dictValue } from "./values.js";
 
-const MAX_DEPTH = 6;
+/** Steps followed to resolve one value (a name's value, a wrapper argument, a field): enough for four wrappers. */
+const MAX_DEPTH = 10;
 
 /** `$user_id` reads as `{user_id}`: PHP variables lose their sigil in placeholders. */
 const bare = (name: string): string => name.replace(/^\$/, "");
@@ -66,8 +68,8 @@ function evalBinding(b: Binding, e: Expr & { k: "name" }, fn: FunctionDef, ctx: 
 
 function evalAttr(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
   if (e.obj.k === "this" && fn.cls) {
-    // `self.base_url` set in the constructor (or a class attribute / property default)
-    for (const f of classField(fn.cls, e.name, ctx.idx)) {
+    // `self.base_url` set in the constructor (or a class attribute / property default), on the object's own class first
+    for (const f of classField(receiverClass(fn, ctx.self, ctx.idx)!, e.name, ctx.idx)) {
       const parts = evaluate(f.value, f.fn, ctx, depth + 1);
       if (parts.some((p) => p.kind !== "dynamic")) return markConst(parts);
     }
@@ -75,6 +77,8 @@ function evalAttr(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: n
   }
   const member = memberValue(e, fn, ctx, depth);
   if (member) return member;
+  const field = instanceField(e.obj, e.name, fn, ctx);
+  if (field) return evaluate(field.expr, field.fn, field.ctx, depth + 1);
   const objParam = e.obj.k === "name" && lookup(e.obj.name, fn, e.pos.offset, ctx.idx).kind === "param";
   return dyn(e, objParam ? "param" : "unknown");
 }
@@ -114,6 +118,16 @@ function evalFormat(e: Expr & { k: "format" }, fn: FunctionDef, ctx: IrCtx, dept
   return e.style === "printf" ? printfParts(template, args) : braceParts(template, args);
 }
 
+/** `HOSTS[region]` with an unknown key: the first entry with a literal host, the best static guess (as for a conditional). */
+function tableGuess(e: Expr & { k: "index" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] | undefined {
+  const dict = dictOf(e.obj, fn, ctx);
+  for (const en of dict?.entries ?? []) {
+    const parts = en.spread ? undefined : evaluate(en.value, dict!.fn, ctx, depth + 1);
+    if (parts && hasStaticHost(parts)) return markConst(parts);
+  }
+  return undefined;
+}
+
 /** `a or "https://host"`: an env var on the left wins (it can override) and keeps the literal right side as its default. */
 function evalDefault(left: Expr, right: Expr, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
   const l = evaluate(left, fn, ctx, depth + 1);
@@ -121,7 +135,8 @@ function evalDefault(left: Expr, right: Expr, fn: FunctionDef, ctx: IrCtx, depth
   const env = l.findIndex((p) => p.kind === "env");
   // `$url ?? ''`: an empty default says nothing, the left side stays
   if (env < 0 && staticText(r) === "") return l;
-  if (env < 0) return staticText(l) !== undefined && l.length > 0 && left.k !== "null" ? l : r;
+  // `url or "https://..."` with `url = ""`: an empty string is falsy, the right side runs
+  if (env < 0) return staticText(l) && left.k !== "null" ? l : r;
   const fallback = staticText(r);
   if (fallback === undefined) return l;
   return l.map((p, i) => (i === env && p.kind === "env" ? { ...p, fallback } : p));
@@ -139,11 +154,8 @@ export function evaluate(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Part[
       return e.parts.flatMap((p) => evaluate(p, fn, ctx, depth + 1));
     case "or":
       return evalDefault(e.left, e.right, fn, ctx, depth);
-    case "cond": {
-      const a = evaluate(e.then, fn, ctx, depth + 1);
-      const b = evaluate(e.else, fn, ctx, depth + 1);
-      return staticText(a) !== undefined && staticText(b) !== undefined ? markConst(a) : dyn(e, "unknown");
-    }
+    case "cond":
+      return pickBranch(evaluate(e.then, fn, ctx, depth + 1), evaluate(e.else, fn, ctx, depth + 1)) ?? dyn(e, "unknown");
     case "format":
       return evalFormat(e, fn, ctx, depth);
     case "env": {
@@ -156,7 +168,7 @@ export function evaluate(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Part[
       return evalAttr(e, fn, ctx, depth);
     case "index": {
       const v = dictValue(e, fn, ctx);
-      return v ? markConst(evaluate(v.expr, v.fn, ctx, depth + 1)) : dyn(e, "unknown");
+      return v ? markConst(evaluate(v.expr, v.fn, ctx, depth + 1)) : (tableGuess(e, fn, ctx, depth) ?? dyn(e, "unknown"));
     }
     case "call":
       return evalCall(e, fn, ctx, depth);
@@ -205,7 +217,25 @@ function evalCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): P
     const joined = urljoinParts(call, fn, ctx, depth);
     if (joined) return joined;
   }
-  return helperResult(call, fn, ctx, depth) ?? dyn(call, "call");
+  return replaceParts(call, name, fn, ctx, depth) ?? helperResult(call, fn, ctx, depth) ?? dyn(call, "call");
+}
+
+/**
+ * `s.replace("{id}", v)` (Python), `str_replace('{id}', $v, $s)` (PHP): the literal swapped in the static text. A regex
+ * (`re.sub`, `preg_replace`) is never run on the scanned code's behalf: the subject stays as it is.
+ */
+function replaceParts(call: CallExpr, name: string | undefined, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] | undefined {
+  const [a, b, c] = call.args.map((x) => (x.name || x.spread ? undefined : x.value));
+  if (name === "replace" && call.fn.k === "attr" && a && b) return literalReplace(call.fn.obj, a, b, fn, ctx, depth);
+  if (name === "str_replace" && a && b && c) return literalReplace(c, a, b, fn, ctx, depth);
+  const regex = name === "preg_replace" || (name === "sub" && call.fn.k === "attr" && call.fn.obj.k === "name" && call.fn.obj.name === "re");
+  return regex && c ? evaluate(c, fn, ctx, depth + 1) : undefined;
+}
+
+function literalReplace(subject: Expr, needle: Expr, replacement: Expr, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] | undefined {
+  const text = staticText(evaluate(needle, fn, ctx, depth + 1));
+  if (!text) return undefined;
+  return replaceInParts(evaluate(subject, fn, ctx, depth + 1), text, evaluate(replacement, fn, ctx, depth + 1), true);
 }
 
 /** What a project URL helper returns (`api_url("sendMessage")`), when that says more than the call itself. */
@@ -215,11 +245,12 @@ function helperResult(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
   const helper = target.root.fn;
   if (helper.returns.length !== 1) return undefined;
   const subst: Subst = new Map();
-  const positional = call.args.filter((a) => !a.name && !a.spread);
   for (const p of helper.params) {
-    const arg = call.args.find((a) => a.name === p.name) ?? positional[p.index];
+    const arg = argFor(call, p);
     if (arg) subst.set(p, { expr: arg.value, fn });
   }
-  const parts = evaluate(helper.returns[0]!, helper, withSubst(ctx, subst), depth + 1);
+  // `$this->getEndpoint()`: the helper runs on the same object, whose class may override what it reads
+  const self = call.fn.k === "attr" && call.fn.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : undefined;
+  const parts = evaluate(helper.returns[0]!, helper, withSelf(withSubst(ctx, subst), self), depth + 1);
   return parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")) ? parts : undefined;
 }

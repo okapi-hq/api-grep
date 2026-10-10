@@ -8,6 +8,8 @@ import type { Unfollowed } from "../detect/unfollowed.js";
 import type { RawCall, SdkMatch, Subst } from "../types.js";
 
 const MAX_INNER = 3;
+/** Wrappers between a call site and its HTTP call. */
+const MAX_WRAPPERS = 4;
 
 function wrapperName(fn: FunctionLike): string {
   if (Node.isFunctionDeclaration(fn) || Node.isMethodDeclaration(fn)) {
@@ -69,7 +71,7 @@ function substitutionFor(fn: FunctionLike, call: CallExpression, shift: number):
 interface Caches {
   bodies: Map<Node, DetectResult>;
   direct: Map<Node, RawCall[]>;
-  nested: Map<Node, Expansion[]>;
+  chains: Map<Node, Expansion[]>;
 }
 
 /** An HTTP call reached through wrappers: the substitutions of the inner wrappers it went through, and their names. */
@@ -110,38 +112,41 @@ function innerWrappers(fn: FunctionLike, registry: Registry, caches: Caches): { 
   });
 }
 
-/** Second hop: when `fn` has no HTTP call of its own, the calls of the wrappers it calls, substituted at that inner call. */
-function nestedCalls(fn: FunctionLike, registry: Registry, caches: Caches): Expansion[] {
-  let nested = caches.nested.get(fn);
-  if (!nested) {
-    caches.nested.set(fn, []);
-    nested = innerWrappers(fn, registry, caches)
-      .flatMap(({ call, g, shift }) => directCalls(g, registry, caches).map((raw) => ({ raw, subst: substitutionFor(g, call, shift), via: [wrapperName(g)] })))
-      .slice(0, MAX_INNER);
-    caches.nested.set(fn, nested);
-  }
-  return nested;
-}
-
+/**
+ * The HTTP calls reached through `fn`: its own, else those of the wrappers it calls with its parameters, substituted at
+ * each inner call, at most `MAX_WRAPPERS - 1` wrappers after `fn`. The result does not depend on who calls `fn`, so it
+ * is cached; a wrapper reached again while it is being expanded (recursion) adds nothing.
+ */
 function expansionsOf(fn: FunctionLike, registry: Registry, caches: Caches): Expansion[] {
   const direct = directCalls(fn, registry, caches);
   if (direct.length > 0) return direct.map((raw) => ({ raw, subst: new Map(), via: [] }));
-  return nestedCalls(fn, registry, caches);
+  let chains = caches.chains.get(fn);
+  if (!chains) {
+    caches.chains.set(fn, []);
+    chains = innerWrappers(fn, registry, caches)
+      .flatMap(({ call, g, shift }) =>
+        expansionsOf(g, registry, caches).map((e) => ({ raw: e.raw, subst: new Map([...e.subst, ...substitutionFor(g, call, shift)]), via: [wrapperName(g), ...e.via] })),
+      )
+      .filter((e) => e.via.length < MAX_WRAPPERS)
+      .slice(0, MAX_INNER);
+    caches.chains.set(fn, chains);
+  }
+  return chains;
 }
 
-/** A wrapper three or more hops away from its HTTP call: named so the call site can be listed as not followed. */
+/** The first wrapper of a chain longer than `MAX_WRAPPERS`, named so the call site can be listed as not followed. */
 function deeperWrapper(fn: FunctionLike, registry: Registry, caches: Caches): string | undefined {
-  const hit = innerWrappers(fn, registry, caches).find(({ g }) => directCalls(g, registry, caches).length === 0 && nestedCalls(g, registry, caches).length > 0);
+  const hit = innerWrappers(fn, registry, caches).find(({ g }) => expansionsOf(g, registry, caches).length > 0);
   return hit ? wrapperName(hit.g) : undefined;
 }
 
 /**
- * Expands wrappers at their call sites, up to two hops (`latest()` -> `tlsFetch(url)` -> `doFetch(url)` -> `fetch`):
- * calls to local functions whose body makes an HTTP call, or calls a wrapper that does, with their parameters. Deeper
- * chains come back as `wrapper-depth`.
+ * Expands wrappers at their call sites, up to `MAX_WRAPPERS` deep (`page()` -> `proxy()` -> `client()` -> `send()` ->
+ * `fetch`): calls to local functions whose body makes an HTTP call, or calls a wrapper that does, with their
+ * parameters. Longer chains come back as `wrapper-depth`.
  */
 export function expandWrappers(candidates: WrapperCandidate[], registry: Registry): { calls: RawCall[]; unfollowed: Unfollowed[] } {
-  const caches: Caches = { bodies: new Map(), direct: new Map(), nested: new Map() };
+  const caches: Caches = { bodies: new Map(), direct: new Map(), chains: new Map() };
   const out: RawCall[] = [];
   const unfollowed: Unfollowed[] = [];
   for (const cand of candidates) {

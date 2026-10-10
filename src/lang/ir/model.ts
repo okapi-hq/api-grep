@@ -178,6 +178,12 @@ export function exprText(e: Expr): string {
   }
 }
 
+/** The argument a call passes for `p`: by keyword (a PHP named argument has no `$`), else by position. */
+export function argFor(call: CallExpr, p: Param): Arg | undefined {
+  const name = p.name.replace(/^\$/, "");
+  return call.args.find((a) => a.name === name) ?? call.args.filter((a) => !a.name && !a.spread)[p.index];
+}
+
 /** Direct sub-expressions, for walks over an expression tree. */
 export function children(e: Expr): Expr[] {
   switch (e.k) {

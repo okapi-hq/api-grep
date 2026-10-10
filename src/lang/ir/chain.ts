@@ -1,5 +1,5 @@
-import type { CallExpr, ClassDef, Expr, FunctionDef, ModuleModel } from "./model.js";
-import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, type Binding } from "./project.js";
+import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel } from "./model.js";
+import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
 import { dictValue } from "./values.js";
 
@@ -130,8 +130,8 @@ export function attach(c: Chain, call: CallExpr, fn: FunctionDef, subst: Subst |
 function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
   const subst: Subst = new Map();
   target.params.forEach((p) => {
-    const arg = call.args.find((a) => a.name === p.name) ?? call.args.filter((a) => !a.name)[p.index];
-    if (arg && !arg.spread) subst.set(p, { expr: arg.value, fn });
+    const arg = argFor(call, p);
+    if (arg) subst.set(p, { expr: arg.value, fn });
   });
   const inner = withSubst(ctx, subst);
   for (const ret of target.returns) {
@@ -159,8 +159,10 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
       return bindingChain(lookup(e.name, fn, e.pos.offset, ctx.idx), e.name, ctx, depth);
     case "qname":
       return bindingChain(bindingOfPath(e.path, ctx.idx), e.path.join("."), ctx, depth);
-    case "this":
-      return fn.cls ? { root: { kind: "instance", cls: fn.cls }, segs: [] } : UNKNOWN;
+    case "this": {
+      const cls = receiverClass(fn, ctx.self, ctx.idx);
+      return cls ? { root: { kind: "instance", cls }, segs: [] } : UNKNOWN;
+    }
     case "fnref":
       return { root: { kind: "function", fn: e.fn }, segs: [] };
     // members and calls are structure (bounded by the expression); only lookups count against the depth

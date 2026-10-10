@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "projects.ts", "line": 2, "provider": "internal"},
+    {"file": "projects.ts", "line": 6, "provider": "internal"},
+    {"file": "projects.ts", "line": 11, "provider": "env:BILLING_API_URL"}
+  ]
+}

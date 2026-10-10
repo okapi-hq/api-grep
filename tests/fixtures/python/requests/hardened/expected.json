@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "notify.py", "line": 5, "provider": "hooks.example-chat.com"}
+  ]
+}

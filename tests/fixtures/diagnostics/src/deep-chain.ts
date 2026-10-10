@@ -3,11 +3,19 @@ async function doFetch(url: string, init?: RequestInit) {
   return res.json();
 }
 
-function tlsFetch(url: string) {
-  return doFetch(url, { headers: { "x-client": "probe" } });
+function retrying(url: string) {
+  return doFetch(url, { headers: { "x-retry": "1" } });
 }
 
-// three hops from fetch: beyond what wrappers expand, so listed as not followed
+function signed(url: string) {
+  return retrying(url);
+}
+
+function tlsFetch(url: string) {
+  return signed(url);
+}
+
+// five wrappers from fetch: beyond what wrappers expand, so listed as not followed
 export function probe(url: string) {
   return tlsFetch(url);
 }

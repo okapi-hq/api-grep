@@ -1,18 +1,23 @@
-import { Node, SyntaxKind, type Expression } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type ElementAccessExpression, type Expression, type PropertyAccessExpression, type VariableDeclaration } from "ts-morph";
 import { classPropertyInitializer } from "../ast/class.js";
 import { constructedName, unwrap } from "../ast/expr.js";
-import { bindingElementValue, declarationsOf, getProp, paramSubstitution } from "../ast/object.js";
+import { isFunctionLike } from "../ast/function.js";
+import { bindingElementValue, declarationsOf, getProp, paramSubstitution, propertyValue, toObjectLiteral } from "../ast/object.js";
 import { identifierOrigin } from "../ast/origin.js";
 import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
 import { localReturn } from "./local-return.js";
-import { markConst, partsToTemplate, staticText } from "./parts.js";
+import { hasStaticHost, markConst, partsToTemplate, pickBranch, replaceInParts, staticText } from "./parts.js";
 import { typeToShape } from "./type-shape.js";
 
 export { partsToTemplate, staticText } from "./parts.js";
 
-const MAX_DEPTH = 5;
-const PASSTHROUGH_CALLS = new Set(["encodeURIComponent", "encodeURI", "String", "toString", "trim", "toLowerCase", "toUpperCase"]);
+/**
+ * Steps followed to resolve one value: a variable's initializer, a wrapper parameter's argument, a property, a helper's
+ * return. A `+` chain and template spans cost nothing: a URL four wrappers away from its literal still resolves.
+ */
+const MAX_DEPTH = 10;
+const PASSTHROUGH_CALLS = new Set(["encodeURIComponent", "encodeURI", "String", "toString", "trim", "trimEnd", "trimStart", "toLowerCase", "toUpperCase"]);
 
 function dynamicName(e: Expression): string {
   const u = unwrap(e);
@@ -79,7 +84,8 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     if (Node.isVariableDeclaration(decl)) {
       const init = decl.getInitializer();
       if (init) return renameSingleDynamic(markConst(evaluate(init, ctx, depth + 1)), u);
-      return dyn(u, "unknown");
+      const values = assignedValues(decl).map((v) => evaluate(v, ctx, depth + 1));
+      return values.find(hasStaticHost) ?? dyn(u, "unknown");
     }
     if (Node.isEnumMember(decl)) {
       const v = decl.getValue();
@@ -90,6 +96,17 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   }
   const exported = commonJsExport(u, ctx, depth);
   return exported ?? typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+/** `let url; if (full) url = path; else url = \`https://...${path}\`;`: the values assigned to a variable declared bare. */
+function assignedValues(decl: VariableDeclaration): Expression[] {
+  const scope = decl.getFirstAncestor((a) => isFunctionLike(a)) ?? decl.getSourceFile();
+  const name = decl.getName();
+  return scope.getDescendantsOfKind(SyntaxKind.BinaryExpression).flatMap((b) => {
+    const left = b.getLeft();
+    const own = b.getOperatorToken().getKind() === SyntaxKind.EqualsToken && Node.isIdentifier(left) && left.getText() === name && declarationsOf(left)[0] === decl;
+    return own ? [b.getRight()] : [];
+  });
 }
 
 /** `config` in `config.base` is a module: `const config = require("./config")`. */
@@ -157,14 +174,35 @@ function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] 
     return typeLiteral(u) ?? dyn(u, "unknown");
   }
   if (Node.isPropertyAccessExpression(u)) {
-    const inner = getProp(u.getExpression(), u.getName(), ctx, depth + 1);
+    // the object hops (spreads, arguments) have a budget of their own: an object passed down two wrappers still resolves
+    const inner = getProp(u.getExpression(), u.getName(), ctx);
     if (inner) return markConst(evaluate(inner, ctx, depth + 1));
     const objDecl = Node.isIdentifier(u.getExpression()) ? u.getExpression().getSymbol()?.getDeclarations()[0] : undefined;
     if (objDecl && Node.isParameterDeclaration(objDecl)) return typeLiteral(u) ?? dyn(u, "param");
     const exported = fromRequiredModule(u.getExpression()) ? commonJsExport(u, ctx, depth) : undefined;
     if (exported) return exported;
   }
+  if (Node.isElementAccessExpression(u)) {
+    const entry = evalElementAccess(u, ctx, depth);
+    if (entry) return entry;
+  }
   return typeLiteral(u) ?? dyn(u, "unknown");
+}
+
+/** `PRESETS["openai"]` reads that entry; `HOSTS[region]` with an unknown key the first entry with a literal host. */
+function evalElementAccess(u: ElementAccessExpression, ctx: EvalCtx, depth: number): Part[] | undefined {
+  const arg = u.getArgumentExpression();
+  const key = arg && (Node.isStringLiteral(arg) || Node.isNoSubstitutionTemplateLiteral(arg)) ? arg.getLiteralValue() : undefined;
+  if (key !== undefined) {
+    const inner = getProp(u.getExpression(), key, ctx);
+    return inner ? markConst(evaluate(inner, ctx, depth + 1)) : undefined;
+  }
+  for (const member of toObjectLiteral(u.getExpression(), ctx)?.getProperties() ?? []) {
+    const value = propertyValue(member);
+    const parts = value ? evaluate(value, ctx, depth + 1) : undefined;
+    if (parts && hasStaticHost(parts)) return markConst(parts);
+  }
+  return undefined;
 }
 
 function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
@@ -185,22 +223,46 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
       return arr.getElements().flatMap((el, i) => [...(i ? [{ kind: "static", text: s } as Part] : []), ...evaluate(el, ctx, depth + 1)]);
     }
   }
+  if ((name === "replace" || name === "replaceAll") && Node.isPropertyAccessExpression(callee)) {
+    const replaced = evalReplace(u, callee, ctx, depth);
+    if (replaced) return replaced;
+  }
   return helperResult(u, ctx, depth) ?? typeLiteral(u) ?? dyn(u, "call");
 }
 
-/** What a local URL helper returns, when that says more than the call itself (some static text or an env var). */
+/**
+ * `s.replace("{basin}", basin)` / `.replaceAll(...)`: a literal pattern is swapped in the static text. A regex is never run
+ * on the scanned code's behalf: the string stays as it is (trimming a trailing slash does not move the host).
+ */
+function evalReplace(u: CallExpression, callee: PropertyAccessExpression, ctx: EvalCtx, depth: number): Part[] | undefined {
+  const [pattern, replacement] = u.getArguments() as Expression[];
+  if (!pattern || !replacement) return undefined;
+  const p = unwrap(pattern);
+  const literal = Node.isStringLiteral(p) || Node.isNoSubstitutionTemplateLiteral(p);
+  if (!literal && !Node.isRegularExpressionLiteral(p)) return undefined;
+  const receiver = evaluate(callee.getExpression(), ctx, depth + 1);
+  if (!literal) return receiver;
+  return replaceInParts(receiver, p.getLiteralValue(), evaluate(replacement, ctx, depth + 1), callee.getName() === "replaceAll");
+}
+
+/**
+ * What a project URL helper returns, when that says more than the call itself (some static text or an env var). Of
+ * several returns (`if (eu) return EU_URL; return URL;`), the first with a literal host, as for a conditional.
+ */
 function helperResult(u: Expression, ctx: EvalCtx, depth: number): Part[] | undefined {
   const local = localReturn(u, ctx);
   if (!local) return undefined;
-  const parts = evaluate(local.expr, local.ctx, depth + 1);
-  return parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")) ? parts : undefined;
+  const results = local.exprs
+    .map((e) => evaluate(e, local.ctx, depth + 1))
+    .filter((parts) => parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")));
+  return results.find(hasStaticHost) ?? results[0];
 }
 
 function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   if (!Node.isTemplateExpression(u)) return [];
   const parts: Part[] = [{ kind: "static", text: u.getHead().getLiteralText() }];
   for (const span of u.getTemplateSpans()) {
-    parts.push(...evaluate(span.getExpression(), ctx, depth + 1));
+    parts.push(...evaluate(span.getExpression(), ctx, depth));
     parts.push({ kind: "static", text: span.getLiteral().getLiteralText() });
   }
   return parts;
@@ -208,16 +270,28 @@ function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
 
 /**
  * `a ?? "https://host"` / `a || ...`: an env var on the left wins (it can override) but keeps the literal right side
- * as its default host; any other left side gives way to the right side.
+ * as its default host; a left side known statically (`method ?? "GET"` given "POST" through a wrapper) is what runs;
+ * an empty default (`id ?? ""`) says nothing, the left side stays; any other left side gives way to the right side.
  */
 function evalDefault(left: Expression, right: Expression, ctx: EvalCtx, depth: number): Part[] {
   const l = evaluate(left, ctx, depth + 1);
   const r = evaluate(right, ctx, depth + 1);
   const env = l.findIndex((p) => p.kind === "env");
-  if (env < 0) return r;
+  if (env < 0) return staticText(l) || staticText(r) === "" ? l : r;
   const fallback = staticText(r);
   if (fallback === undefined) return l;
   return l.map((p, i) => (i === env && p.kind === "env" ? { ...p, fallback } : p));
+}
+
+/** The operands of `a + b + c`, left to right, read in a loop: a long concatenation is not a deep recursion. */
+function plusOperands(u: Expression): Expression[] {
+  const right: Expression[] = [];
+  let cur = u;
+  while (Node.isBinaryExpression(cur) && cur.getOperatorToken().getKind() === SyntaxKind.PlusToken) {
+    right.push(cur.getRight());
+    cur = unwrap(cur.getLeft());
+  }
+  return [cur, ...right.reverse()];
 }
 
 /** Evaluates a string-ish expression into static / env / dynamic parts. */
@@ -229,7 +303,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   if (Node.isTemplateExpression(u)) return evalTemplate(u, ctx, depth);
   if (Node.isBinaryExpression(u)) {
     const op = u.getOperatorToken().getKind();
-    if (op === SyntaxKind.PlusToken) return [...evaluate(u.getLeft(), ctx, depth + 1), ...evaluate(u.getRight(), ctx, depth + 1)];
+    if (op === SyntaxKind.PlusToken) return plusOperands(u).flatMap((o) => evaluate(o, ctx, depth));
     if (op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken) return evalDefault(u.getLeft(), u.getRight(), ctx, depth);
     return dyn(u, "unknown");
   }
@@ -237,11 +311,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   if (Node.isPropertyAccessExpression(u) || Node.isElementAccessExpression(u)) return evalPropertyAccess(u, ctx, depth);
   if (Node.isCallExpression(u)) return evalCall(u, ctx, depth);
   if (constructedName(u) === "URL") return evalNewUrl(u, ctx, depth);
-  if (Node.isConditionalExpression(u)) {
-    const a = evaluate(u.getWhenTrue(), ctx, depth + 1);
-    const b = evaluate(u.getWhenFalse(), ctx, depth + 1);
-    return staticText(a) !== undefined && staticText(b) !== undefined ? markConst(a) : dyn(u, "unknown");
-  }
+  if (Node.isConditionalExpression(u)) return pickBranch(evaluate(u.getWhenTrue(), ctx, depth + 1), evaluate(u.getWhenFalse(), ctx, depth + 1)) ?? dyn(u, "unknown");
   return dyn(u, "unknown");
 }
 

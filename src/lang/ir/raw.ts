@@ -1,7 +1,7 @@
 import type { ClientKind } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding } from "../../types.js";
 import type { IrMethodSpec, IrRegistryEntry, OptionRole, Scoped } from "./language.js";
-import type { CallExpr, FunctionDef, Param } from "./model.js";
+import type { CallExpr, ClassDef, FunctionDef, Param } from "./model.js";
 import type { ProjectIndex } from "./project.js";
 
 /** Wrapper expansion: a wrapper's parameters stand for the caller's arguments. */
@@ -11,6 +11,13 @@ export interface IrCtx {
   idx: ProjectIndex;
   subst?: Subst;
   envHints?: Record<string, string>;
+  /** The class of the object a method runs on, when it extends the method's own (`self`, `$this`, `static::` bind late). */
+  self?: ClassDef;
+}
+
+/** The context for code running on an object of class `cls`. */
+export function withSelf(ctx: IrCtx, cls: ClassDef | undefined): IrCtx {
+  return cls && cls !== ctx.self ? { ...ctx, self: cls } : ctx;
 }
 
 export type DetectCtx = IrCtx;
@@ -55,6 +62,8 @@ export interface IrRaw {
   optionsOpaque?: boolean;
   via?: string;
   subst?: Subst;
+  /** The class of the object a wrapper ran on (`self._get(...)` in a subclass): what `self` reads binds to it. */
+  self?: ClassDef;
   /** Expressions the request is built from: a wrapper is a function whose parameters flow into them. */
   inputs: Scoped[];
 }

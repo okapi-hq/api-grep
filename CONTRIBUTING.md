@@ -39,7 +39,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 | `src/detect/` | TypeScript: finds call sites: fetch, axios, got/ky, node http, SDKs, framework helpers (`DETECTORS`, tried in order) |
 | `src/detect/registry/` | TypeScript: JSON registries mapping SDK member chains to endpoints |
 | `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
-| `src/wrappers/` | TypeScript: expansion of local HTTP wrapper functions (two hops) |
+| `src/wrappers/` | TypeScript: expansion of local HTTP wrapper functions (up to four deep) |
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/validate/` | OpenAPI spec loading, operation matching and shape checks |
 | `src/examples/` | synthesized example requests |

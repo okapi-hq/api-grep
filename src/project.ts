@@ -18,7 +18,7 @@ export const EXTENSIONS: Record<CheckerLanguage, string[]> = {
 
 export const TS_EXTENSIONS = EXTENSIONS.typescript;
 
-const TEST_FILES = ["ts", "tsx", "js", "jsx", "mjs", "cjs"].flatMap((ext) => [`**/*.test.${ext}`, `**/*.spec.${ext}`]);
+const TEST_FILES = ["ts", "tsx", "js", "jsx", "mjs", "cjs"].flatMap((ext) => [`**/*.test.${ext}`, `**/*.spec.${ext}`, `**/*.e2e-spec.${ext}`]);
 
 export const DEFAULT_EXCLUDES = [
   ...SHARED_EXCLUDES,
@@ -26,6 +26,7 @@ export const DEFAULT_EXCLUDES = [
   ...TEST_FILES,
   "**/__mocks__/**",
   "**/__tests__/**",
+  "**/__testfixtures__/**",
   "**/*.d.ts",
   // bundled, minified and vendored JavaScript is build output, not the repository's code
   "**/*.min.js",

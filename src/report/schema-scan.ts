@@ -35,7 +35,7 @@ export const UnfollowedCallSchema = z
     reason: z
       .enum(["injected-fetch", "injected-client", "wrapper-depth"])
       .describe(
-        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a wrapper three or more hops from its HTTP call.",
+        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call.",
       ),
     expr: z.string().optional().describe("The callee expression, for injected-fetch and injected-client."),
     via: z.string().optional().describe("The wrapper called, for wrapper-depth."),

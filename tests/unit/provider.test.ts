@@ -40,6 +40,13 @@ describe("providers.json", () => {
     expect(providerForHost("API.Stripe.com:443")).toBe("stripe");
     expect(providerForHost("{hostname}.stripe.com")).toBeUndefined();
   });
+
+  it("matches a templated subdomain against the providers listed by suffix only", () => {
+    expect(providerForHost("{instance}.my.salesforce.com")).toBe("salesforce");
+    expect(providerForHost("{bucket}.s3.amazonaws.com")).toBe("aws");
+    expect(providerForHost("{tenant}.example-helpdesk.com")).toBeUndefined();
+    expect(providerForHost("api.{region}.example.com")).toBeUndefined();
+  });
 });
 
 describe("providerFromEnvName", () => {

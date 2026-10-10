@@ -48,6 +48,8 @@ exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 
 exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
 
+exports[`regression fixtures > negatives/test-files 1`] = `[]`;
+
 exports[`regression fixtures > php/negatives 1`] = `[]`;
 
 exports[`regression fixtures > php/resolve/class-base-url 1`] = `
@@ -78,6 +80,19 @@ exports[`regression fixtures > php/resolve/helper-url 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/resolve/late-binding 1`] = `
+[
+  "ChatTransport.php:11 api.example-chat.com POST /v2/bot/message/push",
+]
+`;
+
+exports[`regression fixtures > php/resolve/string-replace 1`] = `
+[
+  "Billing.php:6 api.example-billing.com GET /v1/invoices/{id}",
+  "Billing.php:12 api.example-billing.com GET /health",
+]
+`;
+
 exports[`regression fixtures > php/sdk/firebase 1`] = `
 [
   "Users.php:20 firebase POST /v1/accounts:signUp",
@@ -94,6 +109,16 @@ exports[`regression fixtures > php/sdk/sentry 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/wrappers/constructed-argument 1`] = `
+[
+  "Upstream.php:23 unknown DYNAMIC /{path}",
+  "Upstream.php:29 unknown GET /",
+  "Upstream.php:32 api.example-weather.com GET /v1/forecast (wrapper:callUpstream)",
+  "Upstream.php:33 api.example-weather.com POST /v1/plans (wrapper:callUpstream)",
+  "Upstream.php:34 api.example-status.com GET /v1/jobs (wrapper:fetchStatus)",
+]
+`;
+
 exports[`regression fixtures > php/wrappers/injected-client 1`] = `[]`;
 
 exports[`regression fixtures > php/wrappers/two-hop 1`] = `
@@ -101,16 +126,42 @@ exports[`regression fixtures > php/wrappers/two-hop 1`] = `
   "signed.php:7 unknown POST /",
   "signed.php:12 mixpanel POST /{path} (wrapper:do_fetch)",
   "signed.php:17 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
+  "signed.php:22 mixpanel POST /track (wrapper:tracked>signed_fetch>do_fetch)",
+]
+`;
+
+exports[`regression fixtures > python/httpx/httpx2 1`] = `
+[
+  "weather.py:8 api.example-weather.com GET /forecast",
+  "weather.py:13 api.example-weather.com GET /alerts",
 ]
 `;
 
 exports[`regression fixtures > python/negatives 1`] = `[]`;
+
+exports[`regression fixtures > python/requests/hardened 1`] = `
+[
+  "notify.py:5 hooks.example-chat.com POST /notify",
+]
+`;
+
+exports[`regression fixtures > python/resolve/branches 1`] = `
+[
+  "vault.py:9 api.example-vault.com GET /items",
+]
+`;
 
 exports[`regression fixtures > python/resolve/class-base-url 1`] = `
 [
   "gladia.py:10 gladia POST /v2/upload",
   "gladia.py:20 elevenlabs GET /v1/voices",
   "gladia.py:23 elevenlabs GET /v1/models",
+]
+`;
+
+exports[`regression fixtures > python/resolve/empty-default 1`] = `
+[
+  "charts.py:6 charts.example.com GET /top",
 ]
 `;
 
@@ -132,6 +183,28 @@ exports[`regression fixtures > python/resolve/helper-url 1`] = `
 [
   "telegram.py:16 telegram POST /bot{TELEGRAM_TOKEN}/sendMessage",
   "telegram.py:20 meta-graph GET /v19.0/{page_id}/feed",
+]
+`;
+
+exports[`regression fixtures > python/resolve/host-table 1`] = `
+[
+  "mailer.py:15 api.example-mailer.com POST /v3/messages",
+  "mailer.py:18 aws POST /",
+]
+`;
+
+exports[`regression fixtures > python/resolve/late-binding 1`] = `
+[
+  "api.py:8 internal GET /{path}",
+  "api.py:18 billing.example.com GET /v2/invoices (wrapper:BaseAPI._get)",
+  "api.py:21 billing.example.com POST /v2/refunds",
+]
+`;
+
+exports[`regression fixtures > python/resolve/string-replace 1`] = `
+[
+  "maps.py:9 api.example-maps.com GET /v2/{region}/tiles/{z}",
+  "maps.py:14 api.example-maps.com GET /status",
 ]
 `;
 
@@ -168,6 +241,35 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/urllib/urlretrieve 1`] = `
+[
+  "maps.py:5 cdn.example-weather.com GET /maps/{name}.png",
+]
+`;
+
+exports[`regression fixtures > python/wrappers/constructed-argument 1`] = `
+[
+  "endpoint.py:11 unknown DYNAMIC /",
+  "endpoint.py:15 api.example-status.com GET /v1/status (wrapper:call)",
+  "endpoint.py:19 api.example-status.com POST /v1/jobs/{job}/restart (wrapper:call)",
+  "upstream.py:17 unknown DYNAMIC /{path}",
+  "upstream.py:21 unknown DYNAMIC /{path} (wrapper:call_upstream)",
+  "upstream.py:25 api.example-weather.com GET /v1/forecast (wrapper:call_upstream)",
+  "upstream.py:29 api.example-weather.com POST /v1/plans (wrapper:with_trace>call_upstream)",
+]
+`;
+
+exports[`regression fixtures > python/wrappers/deep-chain 1`] = `
+[
+  "catalog.py:8 unknown DYNAMIC /",
+  "catalog.py:12 unknown DYNAMIC / (wrapper:send)",
+  "catalog.py:16 api.example-catalog.com DYNAMIC /v2{path} (wrapper:signed>send)",
+  "catalog.py:20 api.example-catalog.com GET /v2{path} (wrapper:catalog>signed>send)",
+  "catalog.py:24 api.example-catalog.com GET /v2/products (wrapper:proxy>catalog>signed>send)",
+  "catalog.py:28 api.example-catalog.com POST /v2/products/{product_id}/archive (wrapper:proxy>catalog>signed>send)",
+]
+`;
+
 exports[`regression fixtures > python/wrappers/injected-client 1`] = `
 [
   "provider.py:13 mistral GET /v1/models",
@@ -179,6 +281,24 @@ exports[`regression fixtures > python/wrappers/two-hop 1`] = `
   "signed.py:5 unknown POST /",
   "signed.py:9 mixpanel POST /{path} (wrapper:do_fetch)",
   "signed.py:13 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
+  "signed.py:17 mixpanel POST /track (wrapper:tracked>signed_fetch>do_fetch)",
+]
+`;
+
+exports[`regression fixtures > resolve/branches 1`] = `
+[
+  "mail.ts:7 api.eu.example-mail.com POST /api/v1/transmissions",
+  "mail.ts:11 api.example-mail.com GET /v2{path}",
+  "mail.ts:21 api.example-charge.com POST /v2{path}",
+  "vault.ts:11 api.example-vault.com GET /items",
+  "vault.ts:23 api.example-vault.com GET /v1/secrets/{name}",
+]
+`;
+
+exports[`regression fixtures > resolve/branches-relative 1`] = `
+[
+  "client.ts:3 unknown GET /",
+  "client.ts:7 api.example-host.com GET /v1/items",
 ]
 `;
 
@@ -187,6 +307,27 @@ exports[`regression fixtures > resolve/class-base-url 1`] = `
   "gladia.ts:9 gladia POST /v2/upload",
   "gladia.ts:17 elevenlabs POST /v1/text-to-speech/{voiceId}",
   "gladia.ts:22 elevenlabs GET /v1/voices",
+]
+`;
+
+exports[`regression fixtures > resolve/class-getter 1`] = `
+[
+  "crm.ts:9 api.example-crm.com GET /v1/deals",
+]
+`;
+
+exports[`regression fixtures > resolve/config-objects 1`] = `
+[
+  "client.ts:4 license.example-forms.com POST /api/v1/check",
+  "client.ts:8 api.example-mail.com GET /v1/contacts",
+]
+`;
+
+exports[`regression fixtures > resolve/env-base-path 1`] = `
+[
+  "projects.ts:2 internal GET /api/projects",
+  "projects.ts:6 internal GET /api/projects/{project}/members",
+  "projects.ts:11 env:BILLING_API_URL GET /v1/invoices",
 ]
 `;
 
@@ -214,6 +355,27 @@ exports[`regression fixtures > resolve/helper-url 1`] = `
 ]
 `;
 
+exports[`regression fixtures > resolve/host-table 1`] = `
+[
+  "mailer.ts:7 api.example-mailer.com POST /v3/messages",
+  "mailer.ts:11 api.eu.example-mailer.com POST /v3/messages",
+]
+`;
+
+exports[`regression fixtures > resolve/imported-helper 1`] = `
+[
+  "deals.ts:4 api.example-crm.com GET /v2/deals/{id}",
+]
+`;
+
+exports[`regression fixtures > resolve/object-method 1`] = `
+[
+  "invoices.ts:4 api.example-books.com GET /v3/invoices",
+  "invoices.ts:8 oauth.example-books.com POST /realms/{realm}/token",
+  "invoices.ts:13 api.example-voice.com POST /call",
+]
+`;
+
 exports[`regression fixtures > resolve/placeholders 1`] = `
 [
   "hosts.ts:1 unknown GET /status",
@@ -221,6 +383,22 @@ exports[`regression fixtures > resolve/placeholders 1`] = `
   "hosts.ts:3 internal GET /api/items",
   "hosts.ts:4 env:REPLIT_CONNECTORS_HOSTNAME GET /api/v2/connection",
   "hosts.ts:5 unknown GET /api/v1/events",
+]
+`;
+
+exports[`regression fixtures > resolve/string-replace 1`] = `
+[
+  "client.ts:7 api.example-git.com POST /app/installations/{id}/access_tokens",
+  "client.ts:11 api.example-crm.com GET /users/{id}/profile",
+  "client.ts:15 example-stream.dev GET /v1/streams/{stream}/records",
+]
+`;
+
+exports[`regression fixtures > resolve/templated-subdomain 1`] = `
+[
+  "tenants.ts:2 salesforce GET /services/data/v60.0/sobjects/Account/{id}",
+  "tenants.ts:6 aws GET /{key}",
+  "tenants.ts:11 example-helpdesk.com GET /api/v2/tickets.json",
 ]
 `;
 
@@ -381,9 +559,31 @@ exports[`regression fixtures > sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > wrappers/deep-chain 1`] = `
+[
+  "catalog.ts:6 unknown GET /{path}",
+  "catalog.ts:11 api.example-catalog.com GET /v2{path} (wrapper:send)",
+  "catalog.ts:15 api.example-catalog.com GET /v2{path} (wrapper:catalog>send)",
+  "catalog.ts:19 api.example-catalog.com GET /v2/shops/{shop}{path} (wrapper:proxy>catalog>send)",
+  "catalog.ts:22 api.example-catalog.com GET /v2/shops/{shop}/products (wrapper:scoped>proxy>catalog>send)",
+  "catalog.ts:24 api.example-catalog.com POST /v2/shops/{shop}/products/{id}/archive (wrapper:scoped>proxy>catalog>send)",
+]
+`;
+
 exports[`regression fixtures > wrappers/injected-fetch 1`] = `
 [
   "pricing.ts:7 api.example-rates.com GET /v2/prices/latest",
+]
+`;
+
+exports[`regression fixtures > wrappers/object-argument 1`] = `
+[
+  "upstream.ts:5 unknown GET /{path}",
+  "upstream.ts:10 unknown GET /{path} (wrapper:callUpstream)",
+  "upstream.ts:15 api.example-weather.com GET /v1/forecast (wrapper:proxyUpstream>callUpstream)",
+  "upstream.ts:17 api.example-weather.com POST /v1/plans (wrapper:proxyUpstream>callUpstream)",
+  "upstream.ts:20 api.example-weather.com GET /v1/stations/{id}/reports/{getFullYear}/summary",
+  "upstream.ts:22 api.example-weather.com GET /v1/stations/{station}/history (wrapper:proxyUpstream>callUpstream)",
 ]
 `;
 

@@ -10634,16 +10634,24 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 7,
+    "filesSeen": 9,
     "languages": {
       "typescript": {
         "filesScanned": 5,
-        "filesSeen": 7,
+        "filesSeen": 9,
       },
     },
     "skipped": [
       {
+        "file": "deep-chain/catalog.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "injected-fetch/pricing.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "object-argument/upstream.ts",
         "reason": "excluded",
       },
       {
@@ -10652,7 +10660,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 2,
+      "excluded": 4,
     },
     "unfollowed": [],
   },

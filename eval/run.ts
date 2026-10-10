@@ -3,13 +3,15 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { toJson } from "../src/report/json.js";
-import type { Report } from "../src/report/schema.js";
+import type { Language, Report } from "../src/report/schema.js";
 import { scan } from "../src/scan.js";
 
 interface RepoSpec {
   name: string;
   url: string;
   subdir?: string;
+  /** Scan this language only (a Python or PHP repository also ships JavaScript). */
+  language?: Language;
 }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -129,7 +131,7 @@ async function runOne(repo: RepoSpec, commits: Map<string, string | undefined>):
     const dir = repo.subdir ? path.join(root, repo.subdir) : root;
     if (!existsSync(dir)) throw new Error(`subdir not found: ${repo.subdir}`);
     const specs = process.env.API_GREP_SPECS;
-    const report = await scan({ dir, repo: repo.name, specs, validate: !!specs });
+    const report = await scan({ dir, repo: repo.name, specs, validate: !!specs, ...(repo.language ? { languages: [repo.language] } : {}) });
     commits.set(repo.name, report.commit);
     writeFileSync(path.join(outDir, `${repo.name}.json`), toJson(report));
     return summarize(repo, report);

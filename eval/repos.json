@@ -18,5 +18,18 @@
   { "name": "infisical", "url": "https://github.com/Infisical/infisical.git", "subdir": "backend" },
   { "name": "activepieces", "url": "https://github.com/activepieces/activepieces.git", "subdir": "packages/pieces/community" },
   { "name": "openstatus", "url": "https://github.com/openstatusHQ/openstatus.git", "subdir": "apps/web" },
-  { "name": "directus", "url": "https://github.com/directus/directus.git", "subdir": "api" }
+  { "name": "directus", "url": "https://github.com/directus/directus.git", "subdir": "api" },
+  { "name": "thealgorithms-python", "url": "https://github.com/TheAlgorithms/Python.git", "subdir": "web_programming", "language": "python" },
+  { "name": "gpt-researcher", "url": "https://github.com/assafelovic/gpt-researcher.git", "language": "python" },
+  { "name": "redash", "url": "https://github.com/getredash/redash.git", "language": "python" },
+  { "name": "apprise", "url": "https://github.com/caronc/apprise.git", "language": "python" },
+  { "name": "llm", "url": "https://github.com/simonw/llm.git", "language": "python" },
+  { "name": "saleor", "url": "https://github.com/saleor/saleor.git", "subdir": "saleor", "language": "python" },
+  { "name": "socialite", "url": "https://github.com/laravel/socialite.git", "language": "php" },
+  { "name": "koel", "url": "https://github.com/koel/koel.git", "language": "php" },
+  { "name": "coolify", "url": "https://github.com/coollabsio/coolify.git", "language": "php" },
+  { "name": "rss-bridge", "url": "https://github.com/RSS-Bridge/rss-bridge.git", "language": "php" },
+  { "name": "symfony-notifier", "url": "https://github.com/symfony/symfony.git", "subdir": "src/Symfony/Component/Notifier", "language": "php" },
+  { "name": "wordpress", "url": "https://github.com/WordPress/WordPress.git", "language": "php" },
+  { "name": "firefly-iii", "url": "https://github.com/firefly-iii/firefly-iii.git", "language": "php" }
 ]

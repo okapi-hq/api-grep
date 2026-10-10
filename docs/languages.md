@@ -83,11 +83,11 @@ The engine (`src/lang/ir/`) then works on that model only:
 |---|---|
 | `project.ts` | index of every file of the language; name lookup (locals by position, parameters, closures, module globals, imports, project modules, classes, base classes) |
 | `chain.ts` | what a callee is: `self.client.chat.completions.create` becomes `[openai, OpenAI(), chat, completions, create()]`, following variables, fields, typed parameters (`client: OpenAI`), factories (`def get_client(): return OpenAI()`), `with ... as`, `or` defaults and external base classes |
-| `evaluate.ts`, `format.ts` | string values as static / env / dynamic parts, like the TypeScript evaluator: constants across files, env defaults, `self.base_url` set in the constructor, parameter defaults, URL helpers and lambdas |
+| `evaluate.ts`, `format.ts` | string values as static / env / dynamic parts, like the TypeScript evaluator: constants across files, env defaults, `self.base_url` set in the constructor, parameter defaults, URL helpers and lambdas, fields of objects built in the project (`instance.ts`), literal `.replace()` |
 | `shape.ts`, `types.ts`, `request.ts` | body, query and header shapes: dict literals and spreads, serializers (`json.dumps`, `urlencode`), declared types (dataclass, TypedDict, pydantic models) |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
-| `detect.ts`, `wrappers.ts` | detection per function, two-hop wrapper expansion, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
+| `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `build.ts`, `scan.ts` | report `Call`s, the scan driver (per-file errors are diagnostics, never fatal) and SDK coverage |
 
 A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, `src/lang/php/`):
@@ -119,18 +119,22 @@ use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 
 ## Python
 
-**Detected:** `requests` (functions and `Session`), `httpx` (functions, `Client` / `AsyncClient` with `base_url`),
-`aiohttp` (`ClientSession`, positional or keyword base URL), `urllib.request` (`urlopen(url, data)`,
-`urlopen(Request(url, data, headers, method=...))`), `urllib3` (`PoolManager().request`), and the SDKs in
+**Detected:** `requests` (functions and `Session`; `requests_hardened` `Manager().send_request`), `httpx` and `httpx2`
+(functions, `Client` / `AsyncClient` with `base_url`), `aiohttp` (`ClientSession`, positional or keyword base URL),
+`urllib.request` (`urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))`, `urlretrieve`), `urllib3`
+(`PoolManager().request`), and the SDKs in
 [`sdk-support.md`](sdk-support.md) (OpenAI and Azure OpenAI, Anthropic and its Bedrock / Vertex clients, Google Gen AI,
 Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3 and Bedrock runtime,
 Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex).
 
 **Resolved:** f-strings, `+`, `%`, `.format()`, `"/".join([...])`, `urljoin`, `os.getenv("X", default)`,
 `os.environ["X"]` / `.get`, python-decouple `config()` and django-environ `env()`, module constants (also imported from
-project modules, relative imports and `src/` layouts), class attributes, `self.x` set in any method, parameter defaults,
+project modules, relative imports and `src/` layouts), class attributes, `self.x` set in any method (the subclass's own
+first when a base class method runs on it), parameter defaults,
 `x or "https://..."` defaults, URL helpers (`def api_url(m): return f"..."`, lambdas), local annotations
-(`db: Client = ctx.db`). Bodies come from dict literals, `**spreads`, `dict(...)`, `json.dumps`, `urlencode`,
+(`db: Client = ctx.db`), fields of objects built in the project and passed down (`Call(base="https://...")` for a
+dataclass, NamedTuple or pydantic model, `self.url` set in `__init__`, `replace(call, ...)`), literal `.replace()` and
+`re.sub` (the pattern is never run). Bodies come from dict literals, `**spreads`, `dict(...)`, `json.dumps`, `urlencode`,
 `.model_dump()`, and declared dataclass / TypedDict / pydantic types.
 
 **Out of scope by default:** `tests/`, `test/`, `test_*.py`, `*_test.py`, `conftest.py`, virtualenvs (`.venv`, `venv`,
@@ -158,9 +162,12 @@ openai-php, Anthropic, Gemini, AWS S3 and Bedrock runtime, Twilio, kreait Fireba
 Resend, PostHog, SendGrid, Mailgun, jolicode Slack).
 
 **Resolved:** namespaces and `use` (classes, `use function`, `use const`, groups, aliases), fully qualified names,
-`self::` / `static::` / `parent::`, class constants and static properties, `define()` and `const` (visible from every
+`self::` / `static::` / `parent::` (`static::` and `$this` bind late, to the subclass a base method runs on), class
+constants and static properties, `define()` and `const` (visible from every
 file), promoted constructor properties, typed properties and parameters, `$this->x` set in any method, closures and
-arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
+arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, `str_replace` / `preg_replace` (the pattern is never run),
+fields of objects built in the project (`new Call(base: '...')`, promoted or set in the constructor), named
+arguments, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
 `getenv()`, `$_ENV`, `$_SERVER`, and Laravel `config('file.key')` / `Config::get(...)` read from `config/<file>.php`.
 
 **Out of scope by default:** `vendor/`, `tests/`, `Tests/`, `test/`, `*Test.php`, `storage/`, `bootstrap/cache/`,
@@ -186,7 +193,8 @@ SDK, framework helpers), plus jQuery (`$.ajax`, `$.get`, `$.getJSON`, `$.post`) 
 (`this._stripe = new Stripe(key)` in `configure()`), and in HTML, template tags as dynamic values.
 
 **Out of scope by default:** `*.min.js`, `*.bundle.js`, `*.chunk.js`, files with a line over 2,000 characters in their
-first 8 KB, `vendor/`, `bower_components/`, `coverage/`, `.nuxt/`, `.output/`, `.svelte-kit/`, test and spec files.
+first 8 KB, `vendor/`, `bower_components/`, `coverage/`, `.nuxt/`, `.output/`, `.svelte-kit/`, test and spec files
+(`*.test.ts`, `*.spec.ts`, `*.e2e-spec.ts`, `__tests__/`, `__mocks__/`, `__testfixtures__/`).
 
 **Limitations:** Vue / Svelte single-file components and other template formats are not read; event-handler
 attributes (`onclick="..."`) are not; a form whose action is a template tag is skipped (its target is the app's own

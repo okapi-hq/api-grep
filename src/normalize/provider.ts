@@ -35,10 +35,17 @@ for (const p of PROVIDERS) {
 }
 SUFFIXES.sort((a, b) => b[0].length - a[0].length);
 
-/** Provider of a host: an exact host first, then the longest matching suffix (`maps.googleapis.com` before `.googleapis.com`). */
+/**
+ * Provider of a host: an exact host first, then the longest matching suffix (`maps.googleapis.com` before
+ * `.googleapis.com`). A templated subdomain (`{instance}.my.salesforce.com`) matches the providers listed by suffix.
+ */
 export function providerForHost(host: string | undefined): string | undefined {
-  if (!host || host.includes("{")) return undefined;
+  if (!host) return undefined;
   const h = host.toLowerCase().replace(/:\d+$/, "");
+  if (h.includes("{")) {
+    const tail = h.slice(h.lastIndexOf("}") + 1);
+    return tail.startsWith(".") ? SUFFIXES.find(([suffix]) => tail.endsWith(suffix))?.[1] : undefined;
+  }
   return EXACT.get(h) ?? SUFFIXES.find(([suffix]) => h.endsWith(suffix))?.[1];
 }
 
@@ -73,9 +80,18 @@ export interface ResolvedProvider {
   source?: ProviderSource;
 }
 
+/** `{subdomain}.zendesk.com`: a customer's subdomain of a vendor's domain names that vendor (`zendesk.com`). */
+function vendorDomain(host: string | undefined): string | undefined {
+  if (!host?.includes("{")) return undefined;
+  const tail = host.slice(host.lastIndexOf("}") + 1).replace(/:\d+$/, "").toLowerCase();
+  const domain = tail.startsWith(".") ? tail.slice(1) : "";
+  return domain.split(".").length >= 2 && HOST_RE.test(domain) && isSafeKey(domain) ? domain : undefined;
+}
+
 /**
  * Provider of a call. Never a raw template: a host that still holds a placeholder (`{hostname}:443`) gives `internal`
- * (localhost), the provider named by its env var, `env:<NAME>` or `unknown`.
+ * (localhost), the provider named by its env var, the vendor's domain of a templated subdomain, `env:<NAME>` or
+ * `unknown`.
  */
 export function resolveProvider(input: ProviderInput): ResolvedProvider {
   if (input.sdkProvider) return { provider: input.sdkProvider, source: "sdk" };
@@ -88,6 +104,8 @@ export function resolveProvider(input: ProviderInput): ResolvedProvider {
   const byName = providerFromEnvName(envName);
   if (byName) return { provider: byName, source: "env-name" };
   if (input.host && HOST_RE.test(input.host) && isSafeKey(input.host)) return { provider: input.host };
+  const vendor = vendorDomain(input.host);
+  if (vendor) return { provider: vendor };
   if (envName) return { provider: `env:${envName}` };
   return { provider: "unknown" };
 }

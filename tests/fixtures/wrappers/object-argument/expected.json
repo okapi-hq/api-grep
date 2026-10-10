@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "upstream.ts", "line": 5, "provider": "unknown"},
+    {"file": "upstream.ts", "line": 10, "provider": "unknown"},
+    {"file": "upstream.ts", "line": 15, "provider": "api.example-weather.com"},
+    {"file": "upstream.ts", "line": 17, "provider": "api.example-weather.com"},
+    {"file": "upstream.ts", "line": 20, "provider": "api.example-weather.com"},
+    {"file": "upstream.ts", "line": 22, "provider": "api.example-weather.com"}
+  ]
+}

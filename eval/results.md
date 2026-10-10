@@ -1,31 +1,44 @@
-# api-grep eval run — 2026-09-10
+# api-grep eval run — 2026-10-09
 
 Shallow clones, no `node_modules` installed in the targets (types of third-party packages are therefore unresolved; SDK detection relies on imports). Per-repo JSON reports are in `eval/out/<repo>.json`.
 
-| repo | scanned dir | files | calls | conf ≥ 0.7 | sdk | with body | with dynamic | time | top providers |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| dub | apps/web | 2420 | 424 | 110 | 110 | 197 | 365 | 8.9s | internal=133 stripe=104 unknown=59 vercel=30 api.us-east.tinybird.co=23 slack=13 google=12 api.partnerstack.com=7 |
-| cal.com | packages/app-store | 822 | 244 | 42 | 42 | 134 | 214 | 2.7s | unknown=46 stripe=42 api.daily.co=24 open.feishu.cn=19 open.larksuite.com=19 internal=12 calendar.zoho.{server_location}=10 microsoft=9 |
-| n8n | packages/nodes-base | 3576 | 5406 | 0 | 0 | 4269 | 4537 | 9.9s | unknown=1505 google=509 internal=444 hubspot=329 api.clickup.com=160 api.harvestapp.com=92 notion=91 api.pipedrive.com=86 |
-| twenty | packages/twenty-server | 8454 | 79 | 33 | 33 | 48 | 74 | 17s | aws=33 unknown=29 github=7 resend=4 internal=3 models.dev=2 api.oneleet.com=1 |
-| supabase | apps/studio | 3979 | 110 | 0 | 0 | 38 | 99 | 14.4s | unknown=82 env:SUPABASE_URL=7 github=5 env:NEXT_PUBLIC_API_DOMAIN=4 internal=2 supabase=2 api.incident.io=2 www.cloudflare.com=1 |
-| formbricks | apps/web | 1841 | 134 | 6 | 6 | 61 | 113 | 6.7s | internal=69 unknown=15 airtable=11 api.brevo.com=8 stripe=6 notion=5 slack=5 airtable.com=3 |
-| documenso | packages/lib | 559 | 26 | 6 | 6 | 15 | 25 | 4.6s | unknown=18 aws=5 stripe=1 challenges.cloudflare.com=1 license.documenso.com=1 |
-| trigger.dev | apps/webapp | 1968 | 92 | 8 | 8 | 58 | 90 | 11.9s | unknown=46 internal=16 vercel=4 api.attio.com=4 aws=4 {posthog_assets_host}=3 a.s2.dev=3 slack=2 |
-| teable | apps/nestjs-backend | 1134 | 584 | 15 | 15 | 319 | 422 | 16.7s | internal=311 unknown=237 aws=15 google=5 airtable=4 access-checker.teable.ai=3 airtable.com=2 challenges.cloudflare.com=2 |
-| medusa | packages/modules/providers | 66 | 27 | 23 | 23 | 16 | 25 | 0.9s | stripe=16 aws=7 github=3 google=1 |
-| vercel-ai | packages | 2459 | 247 | 0 | 0 | 155 | 240 | 7s | unknown=214 ai-gateway.vercel.sh=11 api.x.ai=7 internal=5 localhost:=4 queue.fal.run=2 google=2 {expr}=1 |
-| novu | packages/providers | 130 | 55 | 1 | 1 | 48 | 25 | 0.9s | unknown=14 internal=9 smba.trafficmanager.net=5 slack=4 api.sendblue.co=1 telegram=1 graph.facebook.com=1 mailgun=1 |
-| outline | plugins | 190 | 19 | 0 | 0 | 2 | 18 | 2.2s | unknown=16 slack=2 microsoft=1 |
-| hoppscotch | packages/hoppscotch-backend | 191 | 0 | 0 | 0 | 0 | 0 | 0.8s |  |
-| immich | server | 499 | 11 | 0 | 0 | 0 | 11 | 2.3s | unknown=11 |
-| nocodb | packages/nocodb | 1241 | 42 | 3 | 3 | 18 | 34 | 8.3s | unknown=21 localhost:{env:port}=5 telemetry.nocodb.com=5 aws=3 airtable.com=2 localhost:=2 product-feed.nocodb.com=2 github=1 |
-| infisical | backend | 3683 | 1551 | 18 | 18 | 642 | 1422 | 28.3s | unknown=820 microsoft=66 vercel=66 internal=55 google=49 cloudflare=41 api.render.com=25 github=23 |
-| activepieces | packages/pieces/community | 9795 | 8416 | 85 | 85 | 3649 | 7419 | 19.2s | unknown=2715 google=139 api.clickup.com=109 github=104 api.crmworkspace.com=95 api.convertkit.com=87 api.zoo.dev=81 proxy.whatsscale.com=77 |
-| openstatus | apps/web | 153 | 27 | 0 | 0 | 7 | 24 | 0.8s | unknown=17 internal=5 checker.openstatus.dev=2 env:SLACK_FEEDBACK_WEBHOOK_URL=1 api.openstatus.dev=1 github=1 |
-| directus | api | 832 | 13 | 0 | 0 | 6 | 11 | 3.3s | unknown=9 google-ai=2 anthropic=1 openai=1 |
+| repo | scanned dir | files | calls | conf ≥ 0.7 | sdk | with body | with dynamic | unresolved provider | time | coverage | top providers |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
+| dub | apps/web | 3460 | 696 | 192 | 192 | 320 | 610 | 96 | 16.9s | 2 not followed | internal=214 stripe=174 unknown=96 vercel=60 api.us-east.tinybird.co=23 slack=19 google=19 api-ssl.bitly.com=15 |
+| cal.com | packages/app-store | 730 | 316 | 51 | 51 | 172 | 277 | 77 | 3.9s | 1 not followed | unknown=60 stripe=50 api.daily.co=41 microsoft=29 open.feishu.cn=22 open.larksuite.com=22 env:CALCOM_CREDENTIAL_SYNC_ENDPOINT=17 internal=12 |
+| n8n | packages/nodes-base | 3585 | 6174 | 0 | 0 | 4885 | 4964 | 1411 | 25.1s | complete | unknown=1411 internal=625 google=442 microsoft=260 hubspot=202 api.pipedrive.com=145 sandbox-quickbooks.api.intuit.com=106 notion=102 |
+| twenty | packages/twenty-server | 8477 | 116 | 48 | 48 | 57 | 101 | 44 | 26.7s | 6 not followed | unknown=44 aws=39 github=15 resend=10 internal=3 models.dev=2 sentry=2 api.oneleet.com=1 |
+| supabase | apps/studio | 3992 | 233 | 44 | 53 | 77 | 173 | 107 | 18s | 1 not followed | env:PLATFORM_PG_META_URL=57 unknown=49 internal=48 supabase=33 sentry=28 github=7 supabase.com=3 api.incident.io=2 |
+| formbricks | apps/web | 2144 | 258 | 46 | 46 | 91 | 210 | 21 | 10s | complete | internal=109 airtable=23 posthog=21 unknown=21 sentry=13 brevo=12 stripe=12 google=9 |
+| documenso | packages/lib | 559 | 31 | 11 | 11 | 18 | 25 | 12 | 3s | complete | unknown=12 internal=6 aws=5 posthog=3 google-vertex=2 stripe=1 challenges.cloudflare.com=1 license.documenso.com=1 |
+| trigger.dev | apps/webapp | 1973 | 153 | 37 | 37 | 75 | 127 | 70 | 15.2s | complete | unknown=68 internal=33 b.s2.dev=14 posthog=5 slack=4 vercel=4 api.attio.com=4 a.s2.dev=4 |
+| teable | apps/nestjs-backend | 958 | 136 | 37 | 37 | 47 | 111 | 31 | 35.6s | complete | unknown=30 airtable=29 internal=28 aws=15 sentry=8 openai=8 google=5 access-checker.teable.ai=4 |
+| medusa | packages/modules/providers | 82 | 30 | 26 | 26 | 19 | 28 | 0 | 1.2s | complete | stripe=16 aws=7 posthog=3 github=3 google=1 |
+| vercel-ai | packages | 2400 | 284 | 6 | 6 | 159 | 270 | 236 | 9.3s | 9 not followed | unknown=235 internal=18 xai=14 vercel-ai-gateway=11 google=3 fal=2 env:TOOL_RELAY_URL=1 |
+| novu | packages/providers | 131 | 59 | 3 | 3 | 51 | 24 | 10 | 0.8s | complete | unknown=10 internal=9 slack=6 smba.trafficmanager.net=5 resend=2 api.eu.sparkpost.com=2 api.io.italia.it=2 api.sendblue.co=1 |
+| outline | plugins | 170 | 80 | 5 | 5 | 7 | 73 | 65 | 2.4s | complete | unknown=65 github=5 microsoft=4 discord=3 slack=3 |
+| hoppscotch | packages/hoppscotch-backend | 193 | 1 | 1 | 1 | 1 | 1 | 0 | 1.6s | complete | posthog=1 |
+| immich | server | 502 | 10 | 0 | 0 | 0 | 10 | 10 | 6.6s | complete | unknown=10 |
+| nocodb | packages/nocodb | 1218 | 52 | 7 | 7 | 20 | 41 | 20 | 29.6s | complete | unknown=19 internal=8 airtable.com=7 telemetry.nocodb.com=5 aws=3 sentry=2 twilio=2 product-feed.nocodb.com=2 |
+| infisical | backend | 3688 | 2121 | 50 | 50 | 970 | 1898 | 868 | 38.7s | 1 not followed | unknown=868 microsoft=147 internal=118 google=80 vercel=77 gitlab.com=72 github=54 id.heroku.com=42 |
+| activepieces | packages/pieces/community | 9795 | 10179 | 134 | 134 | 4314 | 8714 | 2448 | 21.9s | complete | unknown=2448 google=275 github=153 api.clickup.com=140 api.bexio.com=135 proxy.whatsscale.com=126 stripe=114 api.crmworkspace.com=101 |
+| openstatus | apps/web | 249 | 45 | 2 | 2 | 20 | 41 | 26 | 1.1s | complete | unknown=26 internal=11 checker.openstatus.dev=2 sentry=2 formbricks.com=1 slack=1 api.openstatus.dev=1 github=1 |
+| directus | api | 833 | 24 | 2 | 2 | 15 | 16 | 15 | 15.5s | complete | unknown=15 anthropic=3 google-ai=3 openai=3 |
+| thealgorithms-python | web_programming | 36 | 82 | 0 | 0 | 3 | 50 | 12 | 0s | complete | unknown=12 ww7.gogoanime2.org=6 www.google.com=5 github=4 api.carbonintensity.org.uk=3 api.coingecko.com=3 firebase=3 api.nasa.gov=3 |
+| gpt-researcher | . | 217 | 57 | 11 | 11 | 35 | 55 | 9 | 0.4s | 3 not followed | api.typesafe.ai=12 openai=11 unknown=7 modelslab.com=5 eutils.ncbi.nlm.nih.gov=4 fastcrw.com=2 api.tavily.com=2 api.bing.microsoft.com=1 |
+| redash | . | 198 | 99 | 0 | 0 | 18 | 84 | 80 | 0.3s | complete | unknown=78 google=4 cloud-api.yandex.net=4 api-metrica.yandex.com=4 env:REDASH_JWT_AUTH_PUBLIC_CERTS_URL=2 internal=2 version.redash.io=2 api.chatwork.com=1 |
+| apprise | . | 252 | 333 | 0 | 0 | 237 | 314 | 133 | 1.2s | 1 not followed | unknown=133 api.simplepu.sh=8 api.twist.com=8 microsoft=7 discord=6 oauth.reddit.com=6 aws=6 slack=6 |
+| llm | . | 21 | 30 | 16 | 16 | 15 | 28 | 13 | 0.2s | complete | openai=17 unknown=13 |
+| saleor | saleor | 2614 | 75 | 19 | 19 | 18 | 74 | 55 | 2.8s | 12 not followed | unknown=55 stripe=19 usage-telemetry.saleor.io=1 |
+| socialite | . | 33 | 33 | 0 | 0 | 0 | 4 | 4 | 0.1s | complete | api.linkedin.com=6 unknown=4 api.bitbucket.org=3 meta-graph=3 google=3 slack=3 api.twitter.com=3 github=2 |
+| koel | . | 1173 | 51 | 0 | 0 | 2 | 49 | 47 | 0.6s | 12 not followed | unknown=47 api.dropboxapi.com=2 internal=1 github=1 |
+| coolify | . | 1470 | 130 | 56 | 56 | 42 | 100 | 23 | 3.1s | 1 skipped | stripe=54 cloudflare=19 unknown=18 api.vultr.com=7 api.hetzner.cloud=6 env:VERSIONS_URL=4 cdn.coollabs.io=4 api.digitalocean.com=4 |
+| rss-bridge | . | 618 | 5 | 0 | 0 | 0 | 5 | 3 | 0.9s | complete | unknown=3 touch.facebook.com=2 |
+| symfony-notifier | src/Symfony/Component/Notifier | 404 | 116 | 0 | 0 | 53 | 98 | 13 | 0.3s | complete | unknown=13 internal=11 upload.twitter.com=8 graph.instagram.com=6 graph.threads.net=6 discord=2 meta-graph=2 google=2 |
+| wordpress | . | 1853 | 4 | 0 | 0 | 0 | 4 | 4 | 5.9s | 2 skipped | unknown=4 |
+| firefly-iii | . | 1348 | 5 | 0 | 0 | 0 | 4 | 1 | 1.7s | complete | ff3exchangerates.z6.web.core.windows.net=2 github=1 hibp=1 unknown=1 |
 
-**Totals over 20 repos:** 43992 files scanned, 17507 calls found, 350 at confidence ≥ 0.7, 350 via SDK registries, 9682 with a body shape, 15168 with at least one dynamic part, 167s total scan time.
+**Totals over 33 repos:** 55376 files scanned, 22018 calls found, 804 at confidence ≥ 0.7, 813 via SDK registries, 11741 with a body shape, 18583 with at least one dynamic part, 301s total scan time.
 
 ## Commits scanned
 
@@ -49,58 +62,45 @@ Shallow clones, no `node_modules` installed in the targets (types of third-party
 - activepieces: 38416c450408bd414ad3b285fe1d616c77fb74ee
 - openstatus: e89b614b7b838e4831699c5789cd68f17fa8fbd6
 - directus: a5da59da94bb33c8d644df93a21403eca4c1a4e7
+- thealgorithms-python: 215c1f0710f610aaf5ebaeab04edacec3f5308cd
+- gpt-researcher: 0957c301ed06c2a5857b834358c7227c739041d4
+- redash: e170795256ae028930e4760192e5dc3f59bb420c
+- apprise: f746ec5659da5d59cfd75db49ad57bd75c4acdd2
+- llm: 05d7ae7dedc524b024ab463b063854e7c43fee01
+- saleor: 782a751f622c4a047798ce7084b7c66c0877ec6f
+- socialite: fa0181ee6204ca28a55cd67145fadd631ac209cf
+- koel: a2e5973bf843a64003ae31393d05c4be8ce1468b
+- coolify: a963f95612ad8d449dc3797b657bc889fca48ac8
+- rss-bridge: 7f5cedf1b71eac177510234219aeca185e63d04e
+- symfony-notifier: e42875f20222a93cfef6ef4da26ca02a8a7d91f4
+- wordpress: 3310b5ccad24f88b53396fbd01bdc4224d9fc5b2
+- firefly-iii: e141960f4e8e8d7145a59e326ae4595d741e65b1
 
-## Example requests
+## Findings from this run (2026-10-09)
 
-Each call now carries synthesized `examples` (`--curl` renders them). "resolved url" counts calls whose first
-example has no `{placeholder}` left in the URL (an unresolved host such as `https://{baseUrl}/…` or `{env:API_URL}`).
+Compared with main on the same clones and commits: the 20 TypeScript repositories, and the 6 Python and 7 PHP ones
+added in this run, each scanned in its own language.
 
-| repo | calls | examples | calls with >1 example | resolved url | with body | via framework helper |
-|---|---:|---:|---:|---:|---:|---:|
-| activepieces | 8416 | 8924 | 423 | 5317 (63%) | 5301 | 8235 |
-| n8n | 5406 | 5554 | 142 | 3627 (67%) | 4801 | 5399 |
-| infisical | 1551 | 1741 | 150 | 677 (44%) | 643 | 0 |
-| teable | 584 | 625 | 41 | 330 (57%) | 323 | 0 |
-| dub | 424 | 482 | 48 | 358 (84%) | 223 | 0 |
-| vercel-ai | 247 | 374 | 83 | 31 (13%) | 173 | 232 |
-| cal.com | 244 | 265 | 17 | 178 (73%) | 134 | 0 |
-| formbricks | 134 | 151 | 13 | 119 (89%) | 65 | 0 |
-| supabase | 110 | 124 | 9 | 15 (14%) | 42 | 0 |
-| trigger.dev | 92 | 113 | 16 | 37 (40%) | 62 | 0 |
-| twenty | 79 | 85 | 6 | 17 (22%) | 52 | 0 |
-| novu | 55 | 59 | 2 | 39 (71%) | 49 | 0 |
-| nocodb | 42 | 45 | 3 | 13 (31%) | 18 | 0 |
-| others (7 repos) | 123 | 133 | 6 | 39 | 57 | 0 |
+| | calls | resolved provider | unresolved | not followed |
+|---|---:|---:|---:|---:|
+| TypeScript (20 repos) | 20528 → 20998 | 12471 → 15431 | 8057 → 5567 | 729 → 20 |
+| Python and PHP (13 repos) | 830 → 1020 | 409 → 623 | 421 → 397 | 23 → 28 |
 
-**Totals:** 17507 calls, 18675 examples, 10797 calls (62%) with a fully resolved example URL, 11943 with a body.
+- **Deeper wrappers.** Call sites are followed through four wrappers instead of two, and the evaluation budget counts
+  lookups only (a `+` chain, template spans and object hops no longer use it up): 709 TypeScript call sites that were
+  listed as not followed are calls now.
+- **Where URLs are built.** Imported config objects and helpers, object methods (`common.getApiUrl()`), helpers with
+  several returns or called as `fn.call(this)`, `let` variables assigned in branches, conditionals and URL tables
+  with one literal host, and literal `.replace()`: activepieces resolves 1740 more calls, n8n 1057, infisical 370.
+- **Customer subdomains.** `{instance}.my.salesforce.com` is `salesforce`; `{subdomain}.zendesk.com`, with no provider
+  entry, is `zendesk.com`.
+- **Late binding.** `static::HOST`, `$this` and `self` read the subclass a base method runs on: the Symfony notifier
+  bridges go from 2 to 103 resolved calls, instead of resolving to the base class's `localhost`.
+- **Python clients.** `httpx2` (TheAlgorithms, llm) and `requests_hardened` (saleor) are detected.
+- **Test code.** NestJS `*.e2e-spec.ts` (teable) and codemod `__testfixtures__/` (vercel/ai) are out of scope by
+  default, which removes about 700 calls.
 
-## Findings from this run (2026-09-10)
-
-Compared with the 2026-09-09 run (3641 calls): 17507 calls, same 20 repos and commits.
-
-- **Framework helpers closed the biggest recall gap.** `src/detect/registry/frameworks.json` describes
-  options-object helpers (n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`,
-  activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` and friends). n8n went from 7 to 5406 calls,
-  activepieces from 181 to 8416, vercel/ai from 15 to 247.
-- **Wrapper expansion follows `fn.call(this, …)`.** n8n nodes call their `GenericFunctions` wrappers that way;
-  4942 of the n8n calls and 4880 of the activepieces calls are reported at the node call site with the
-  caller's method / resource / body substituted. Two bugs surfaced and were fixed: a TypeScript `this`
-  parameter was counted as a real parameter (shifting every argument by one), and `const { body, ...rest } =
-  options` inside a wrapper did not resolve back to the caller's object.
-- **Bodies that collapsed to a string.** `` `delete_condition=${x}` `` with a form content type, `body ?
-  JSON.stringify(body) : undefined`, `new URLSearchParams({...}).toString()` and `qs.stringify(obj)` are now
-  unwrapped into object shapes (dub went from 4 string-shaped bodies to 2).
-- **Enum members from uninstalled packages.** `HttpMethod.POST` / `AuthenticationType.BEARER_TOKEN` read as
-  their member name when the enum's package has no types installed, which fixes activepieces methods and auth.
-- **Memory.** 9.8k-file activepieces needs ~2.8 GB of heap; the CLI now re-runs itself with
-  `--max-old-space-size=8192` (`API_GREP_HEAP_MB` overrides) and `pnpm eval` passes the flag explicitly.
-
-Where example URLs are still unresolved (38% overall):
-
-- **Config-carried hosts**: vercel/ai (`this.config.url({ path })`, path kept, base dynamic), supabase studio
-  (`API_URL` from a workspace package), twenty and trigger.dev (`this.baseUrl` set from injected config).
-  Resolving these needs either workspace package linking or a "constructor argument" hop.
-- **n8n / activepieces credentials**: `${credentials.domain}` / `${auth.baseUrl}` hosts are user-provided by
-  design and stay `{baseUrl}`-style placeholders; the path and body are still concrete.
-
-Precision has not been measured yet: `pnpm eval:score sample <repo> 100` produces the labeling sheet.
+Still unresolved: hosts the user configures (n8n credentials, activepieces `auth.props.baseUrl`), config injected
+into classes by factories (vercel/ai), PHP clients behind a service locator and an interface (rss-bridge), Laravel
+`Http::macro` and dynamic verbs (coolify), Saloon connectors (koel), and WordPress core's own `wp_remote_*`, which
+shadows the client table.

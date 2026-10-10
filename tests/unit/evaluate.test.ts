@@ -45,9 +45,13 @@ describe("evaluate", () => {
 });
 
 describe("evaluate conditionals", () => {
-  it("takes the first branch when both branches are static, else dynamic", () => {
-    const sf = sourceOf('const prod = process.env.NODE_ENV === "production"; const a = prod ? "https://api.x.com" : "https://sandbox.x.com"; declare const h: string; const b = prod ? h : "https://x.com";');
+  it("takes the first branch when both are static, else the one with a literal host, else dynamic", () => {
+    const sf = sourceOf(
+      'const prod = process.env.NODE_ENV === "production"; const a = prod ? "https://api.x.com" : "https://sandbox.x.com"; declare const h: string; declare const p: string; const b = prod ? h : "https://x.com"; const c = prod ? h : p; const d = p ? ":" + p : "";',
+    );
     expect(staticText(evaluate(initializerOf(sf, "a")))).toBe("https://api.x.com");
-    expect(evaluate(initializerOf(sf, "b"))[0]?.kind).toBe("dynamic");
+    expect(staticText(evaluate(initializerOf(sf, "b")))).toBe("https://x.com");
+    expect(evaluate(initializerOf(sf, "c"))[0]?.kind).toBe("dynamic");
+    expect(staticText(evaluate(initializerOf(sf, "d")))).toBe("");
   });
 });

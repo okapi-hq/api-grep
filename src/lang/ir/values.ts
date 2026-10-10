@@ -1,6 +1,6 @@
 import type { Scoped } from "./language.js";
 import type { Entry, Expr, FunctionDef } from "./model.js";
-import { classField, lookup } from "./project.js";
+import { classField, lookup, receiverClass } from "./project.js";
 import type { IrCtx } from "./raw.js";
 
 const MAX_DEPTH = 8;
@@ -20,7 +20,7 @@ export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
     }
   }
   if (e.k === "attr" && e.obj.k === "this" && fn.cls) {
-    const values = classField(fn.cls, e.name, ctx.idx);
+    const values = classField(receiverClass(fn, ctx.self, ctx.idx)!, e.name, ctx.idx);
     if (values.length === 1) return deref(values[0]!.value, values[0]!.fn, ctx, depth + 1);
   }
   if (e.k === "call") {

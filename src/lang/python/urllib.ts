@@ -21,16 +21,17 @@ function requestObject(arg: Scoped, ctx: IrCtx): Seg | undefined {
 }
 
 /**
- * `urllib.request.urlopen(url, data)` and `urlopen(Request(url, data=..., headers=..., method=...))`. Without a method,
- * urllib sends a POST when there is data, a GET otherwise.
+ * `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data=..., headers=..., method=...))` and
+ * `urlretrieve(url, filename)`. Without a method, urllib sends a POST when there is data, a GET otherwise.
  */
 export function detectUrllib(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain): IrRaw | undefined {
-  if (!isUrllib(chain, "urlopen")) return undefined;
+  const retrieve = isUrllib(chain, "urlretrieve");
+  if (!retrieve && !isUrllib(chain, "urlopen")) return undefined;
   const open = chain.segs[chain.segs.length - 1]!;
   const first = argOf(open, 0, "url");
-  const req = first ? requestObject(first, ctx) : undefined;
+  const req = first && !retrieve ? requestObject(first, ctx) : undefined;
   const url = req ? argOf(req, 0, "url") : first;
-  const body = (req ? argOf(req, 1, "data") : undefined) ?? argOf(open, 1, "data");
+  const body = (req ? argOf(req, 1, "data") : undefined) ?? argOf(open, retrieve ? 3 : 1, "data");
   const method = req ? argOf(req, undefined, "method") : undefined;
   const headers = req ? argOf(req, 2, "headers") : undefined;
   return {

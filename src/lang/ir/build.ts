@@ -8,7 +8,7 @@ import type { AuthScheme, BodyEncoding, DynamicPart, Part, UrlShape } from "../.
 import { argAt, argOf, propOf } from "./args.js";
 import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
-import { withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
+import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
 
 export interface BuildIrCtx extends IrCtx {
@@ -98,7 +98,7 @@ function authOf(raw: IrRaw, fromHeaders: AuthScheme): AuthScheme {
 
 /** Resolves a detected call into the report's Call record. */
 export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
-  const ctx = withSubst(base, raw.subst);
+  const ctx = withSelf(withSubst(base, raw.subst), raw.self);
   const dynamic: DynamicPart[] = [];
   const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
   const method = target?.method ?? resolveMethod(raw, ctx, dynamic);

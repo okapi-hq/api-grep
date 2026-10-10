@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "mail.ts", "line": 7, "provider": "api.eu.example-mail.com"},
+    {"file": "mail.ts", "line": 11, "provider": "api.example-mail.com"},
+    {"file": "mail.ts", "line": 21, "provider": "api.example-charge.com"},
+    {"file": "vault.ts", "line": 11, "provider": "api.example-vault.com"},
+    {"file": "vault.ts", "line": 23, "provider": "api.example-vault.com"}
+  ]
+}

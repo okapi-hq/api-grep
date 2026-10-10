@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/8",
+  "calls": [
+    {"file": "mailer.py", "line": 15, "provider": "api.example-mailer.com"},
+    {"file": "mailer.py", "line": 18, "provider": "aws"}
+  ]
+}
