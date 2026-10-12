@@ -72,6 +72,10 @@ describe("exampleToCurl body", () => {
     expect(exampleToCurl(ex({ method: "POST", body: { a: 1 }, bodyEncoding: "raw" }))).toContain(`--data-raw '{"a":1}'`);
   });
 
+  it("sends XML with --data-raw", () => {
+    expect(exampleToCurl(ex({ method: "POST", body: "<Ping/>", bodyEncoding: "xml" }))).toContain("--data-raw '<Ping/>'");
+  });
+
   it("sends multipart fields with --form-string so @ is never a file", () => {
     const out = exampleToCurl(ex({ method: "POST", body: { file: "@/etc/passwd", meta: { a: 1 } }, bodyEncoding: "multipart" }));
     expect(out).toContain("--form-string 'file=@/etc/passwd'");

@@ -92,7 +92,9 @@ export const ShapeSchema: z.ZodType<Shape> = z
     description: "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
   });
 
-const EncodingSchema = z.enum(["json", "form", "multipart", "raw", "none"]);
+const EncodingSchema = z
+  .enum(["json", "form", "multipart", "raw", "xml", "none"])
+  .describe("How the body is encoded: json, form (urlencoded), multipart, raw (bytes or text), xml (an XML document, SOAP envelopes included), or none.");
 
 export const BODY_SOURCES = ["literal", "type", "unknown", "none"] as const;
 export type BodySource = (typeof BODY_SOURCES)[number];

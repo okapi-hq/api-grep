@@ -461,7 +461,7 @@ operation?: {
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries #54, bound diagnostic #55, AST documents and arguments #56 |
-| SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
+| SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
 ### JSON-RPC (#34)
 
@@ -529,6 +529,46 @@ document with the `graphql` package's parser (no schema, no network):
 - **Not covered**: client libraries that take the endpoint from their configuration (Apollo, urql, graphql-request,
   Relay, Shopify clients, Python `gql` / `sgqlc`, #54); codegen documents written as an AST object and literal
   arguments of selected fields (#56).
+
+### SOAP and action-style APIs (#36)
+
+**XML bodies.** A string body that is an XML document (a declaration or an element first, markup last) is
+`bodyEncoding: "xml"`, in every language, whether the string is a literal, a template, a `format()` / f-string /
+heredoc / concatenation, or a variable holding one (`src/resolve/xml-shape.ts`). Its shape is its element structure:
+an object holding the root element, whose value holds the child elements, down to the leaves' text (a literal is a
+one-value enum, a computed part a `string` with the part's name as `hint` and a `dynamic` entry). A repeated element
+is an array; attributes and namespace declarations are left out; a computed element name sets `dynamicKeys`.
+A body built by an XML library is `xml` with its value unread: `XMLSerializer.serializeToString`, `ET.tostring`,
+`xmltodict.unparse` (its dict is the shape), minidom `toxml()`, PHP `asXML()` / `saveXML()`. A body the scan cannot
+read (a parameter, a call) sent with an XML content type (`text/xml`, `application/xml`, `application/*+xml`) is
+`xml` too; a body read as an object or an array keeps its encoding. Example requests write the shape back as XML
+(`application/xml`, curl `--data-raw`).
+
+The document comes from the scanned repository: the reader in `xml-shape.ts` is a small tokenizer, not an XML
+library. It never reads a DTD (`<!DOCTYPE ...>` is skipped, its entities are never expanded; only the five predefined
+entities and character references are decoded), stops at 64 KiB, 500 elements and depth 32, and reads anything
+malformed as a plain `string` body, still `xml`.
+
+**SOAP** (`src/operation/soap.ts`). A request is SOAP when it sends a `SOAPAction` header, a SOAP 1.2 content type
+(`application/soap+xml`), or an XML body whose root is an `Envelope` (any prefix). The operation's `name`:
+
+- the `SOAPAction` value's last segment (`http://example.com/Svc/Track`, `urn:example:Track`, `Svc#Track` give
+  `Track`), `from: "header"`; a helper that takes the action gets each caller's (wrapper expansion), and the request
+  inside the helper lists them as `alternatives`;
+- else the `action=` parameter of a SOAP 1.2 content type, also `from: "header"`;
+- else the local name of the first element inside the envelope's `Body` (`CancelShipment`), `from: "body"`;
+- else `name: null`, `dynamic: true`.
+
+**Action-style APIs** (`src/operation/action.ts`). Which parameter names the operation is data: the provider's
+`operationParam` in `src/normalize/providers.json` (`aws`: `Action`, `flickr`: `method`). A call to such a provider
+with that parameter in its query (URL or a `params` object) gets `operation: { protocol: "action", name, from:
+"query" }`; in a form body, `from: "body"`. A branch gives `alternatives`, a computed value `dynamic`. A provider
+without `operationParam`, or a call without the parameter (an S3 REST call), has no operation. Adding a provider is
+one line in `providers.json`.
+
+**Not covered:** SOAP client libraries that build the envelope from a WSDL (PHP `SoapClient`, Python zeep, node-soap,
+JAX-WS / Spring-WS) send no request the scan sees; they are #58, which needs a decision on their `client` value. The
+endpoint a WSDL declares is never read.
 
 ## SDK clients passed as untyped parameters (#37)
 
@@ -636,7 +676,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`; SOAP not yet (#36) | JSON-RPC and GraphQL from the body shape | same as Python | same engine; no JSON-RPC or GraphQL fixture until the HTTP clients (#32) |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`; SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same as Python | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 

@@ -4,6 +4,7 @@ import { bindingElementValue, declarationsOf, importedVariable, paramSubstitutio
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { stringShapeOf } from "./string-template.js";
+import { xmlBody } from "./xml-shape.js";
 import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
 import { importedDocument, isDocumentExpression } from "./graphql-source.js";
@@ -220,6 +221,8 @@ function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?
     const callee = u.getExpression().getText().replace(/\s/g, "");
     if (callee === "JSON.stringify") return { inner: u.getArguments()[0] as Expression | undefined, encoding: "json" };
     if (FORM_STRINGIFY_RE.test(callee)) return { inner: u.getArguments()[0] as Expression | undefined, encoding: "form" };
+    // `new XMLSerializer().serializeToString(doc)`: an XML document built with the DOM, its text unread
+    if (callee.endsWith(".serializeToString")) return { inner: u, encoding: "xml" };
   }
   if (Node.isNewExpression(u)) {
     const name = constructedName(u);
@@ -258,12 +261,18 @@ export function resolveBody(expr: Expression | undefined, ctx: EvalCtx = {}, def
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u) || Node.isTemplateExpression(u)) {
     const parsed = parseJsonString(u, ctx);
     if (parsed) return { shape: parsed, encoding: "json", dynamic: [], fromLiteral: true };
-    const form = formStringShape(evaluate(u, ctx));
+    const parts = evaluate(u, ctx);
+    const xml = xmlBody(parts);
+    if (xml) return { ...xml, encoding: "xml", fromLiteral: true };
+    const form = formStringShape(parts);
     if (form) return { shape: form, encoding: "form", dynamic: [], fromLiteral: true };
     return { shape: { type: "string" }, encoding: "raw", dynamic: [], fromLiteral: true };
   }
   const dynamic: DynamicPart[] = [];
   const r = shapeOf(inner, ctx, 0, dynamic);
+  // a string held by a variable or a parameter (`body: envelope`): an XML document is read like a literal one
+  const xml = r.shape.type === "string" ? xmlBody(evaluate(u, ctx)) : undefined;
+  if (xml) return { ...xml, encoding: "xml", fromLiteral: true };
   let shape = r.shape;
   if (keys && keys.length > 0 && shape.type === "object") {
     const extra = keysToShape(keys);

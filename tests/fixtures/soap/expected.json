@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/36",
+  "calls": [
+    {"file": "carrier.ts", "line": 5, "provider": "ws.example-carrier.com", "operation": "Track"},
+    {"file": "carrier.ts", "line": 14, "provider": "ws.example-carrier.com", "operation": "CancelShipment"},
+    {"file": "carrier.ts", "line": 28, "provider": "ws.example-carrier.com", "operation": "GetRates"},
+    {"file": "carrier.ts", "line": 37, "provider": "orders.example-shop.com"},
+    {"file": "carrier.ts", "line": 46, "provider": "feeds.example-shop.com"},
+    {"file": "carrier.ts", "line": 51, "provider": "feeds.example-shop.com"},
+    {"file": "carrier.ts", "line": 59, "provider": "ws.example-carrier.com", "operation": "SchedulePickup"},
+    {"file": "carrier.ts", "line": 60, "provider": "ws.example-carrier.com", "operation": "PickupStatus"}
+  ]
+}

@@ -6,6 +6,7 @@ import { operationsOf } from "./operation/index.js";
 import type { BodySource, Call, ClientFrom, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
+import { isXmlContentType } from "./resolve/xml-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
 import type { AuthScheme, DynamicPart, Shape, UrlShape } from "./types.js";
 
@@ -147,10 +148,22 @@ export function assembleCall(r: ResolvedCall): Call {
 }
 
 /**
+ * A body sent with an XML content type (`text/xml`, `application/soap+xml`) is XML, whatever value carries it (a
+ * variable the scan cannot read, a builder's output). A body read as an object or an array keeps its encoding.
+ */
+function withXmlEncoding(r: ResolvedCall): ResolvedCall {
+  const { shape, encoding } = r.body;
+  if (encoding === "xml" || encoding === "multipart" || encoding === "none" || !isXmlContentType(r.headers.values["content-type"])) return r;
+  if (!shape || shape.type === "object" || shape.type === "array") return r;
+  return { ...r, body: { ...r.body, encoding: "xml" } };
+}
+
+/**
  * The report's calls for one resolved request: one per operation it sends (each method of a JSON-RPC batch), or one
  * when it names none. An operation the front end set itself is kept as it is.
  */
-export function assembleCalls(r: ResolvedCall): Call[] {
+export function assembleCalls(resolved: ResolvedCall): Call[] {
+  const r = withXmlEncoding(resolved);
   const ops = r.operation ? [r.operation] : operationsOf(r);
   return ops.length === 0 ? [assembleCall(r)] : ops.map((operation) => assembleCall({ ...r, operation }));
 }
