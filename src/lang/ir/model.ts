@@ -1,5 +1,5 @@
 /**
- * Language-neutral model of a source file, for languages read through tree-sitter (Python, PHP, ...). A front end
+ * Language-neutral model of a source file, for languages read through tree-sitter (Python, PHP, Kotlin). A front end
  * lowers its syntax tree into these expressions and scopes; detection and resolution only ever see this model, so a new
  * language needs a lowering, its client and SDK tables, and nothing else.
  */
@@ -95,6 +95,13 @@ export interface Branch {
   group?: { id: number; size: number };
 }
 
+/** A JVM annotation (`@GET("users/{id}")`, `@Query("page")`): its class as written, resolved like a name, and its arguments. */
+export interface Annotation {
+  type: Expr;
+  args: Arg[];
+  pos: Pos;
+}
+
 export interface Param {
   name: string;
   index: number;
@@ -102,6 +109,7 @@ export interface Param {
   /** Annotation / declared type, as an expression (`httpx.AsyncClient`, `Optional[OpenAI]`, `StripeClient`). */
   type?: Expr;
   kind: "normal" | "varargs" | "kwargs";
+  annotations?: Annotation[];
 }
 
 export interface FunctionDef {
@@ -122,6 +130,7 @@ export interface FunctionDef {
   isStatic?: boolean;
   /** Offsets of blocks that may not run (branches, loop bodies, handlers), for the keys a dict gets there. */
   branches?: Branch[];
+  annotations?: Annotation[];
 }
 
 export interface ClassDef {
@@ -147,11 +156,13 @@ export interface ImportRef {
 export interface ModuleModel {
   /** Absolute path. */
   file: string;
-  /** Python: dotted module name from the scanned root (`app.services.billing`); PHP: the namespace. */
+  /** Python: dotted module name from the scanned root (`app.services.billing`); PHP: the namespace; Kotlin: the package. */
   name: string;
   imports: Map<string, ImportRef>;
   /** Every import path, for the SDK coverage (`openai`, `google.genai`, `Stripe.StripeClient`). */
   importPaths: string[][];
+  /** Packages imported whole (Kotlin `import com.example.api.*`): their project declarations are names here. */
+  wildcards?: string[][];
   /** Module-level code as a function without parameters. */
   top: FunctionDef;
   functions: Map<string, FunctionDef>;

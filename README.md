@@ -11,8 +11,9 @@ provider, method, path template, the *shape* of the payload (names and types, ne
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
 checker, and Python and PHP through tree-sitter; a repository that mixes languages gets one report
-that says which language each call comes from. No AI, no network, no runtime. How each language is
-read: [docs/languages.md](docs/languages.md).
+that says which language each call comes from. Kotlin is parsed and its Gradle and Maven manifests
+are read, so the report lists the JVM SDKs a project uses; its HTTP clients and SDK calls come next.
+No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
 
@@ -117,7 +118,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.7.0            # report format version; readers check the major
+schemaVersion: 1.8.0            # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -128,7 +129,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
       col: 10
-      language: typescript      # typescript | javascript | html | python | php
+      language: typescript      # typescript | javascript | html | python | php | kotlin
     client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
@@ -251,8 +252,8 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, �
 
 Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
 and `diagnostics.languages` files per language: `typescript`, `javascript`, `html` (inline scripts
-and forms, at their line in the page), `python` and `php` share one format. Coverage rows name their
-package `ecosystem` (`npm`, `pypi`, `composer`).
+and forms, at their line in the page), `python`, `php` and `kotlin` share one format. Coverage rows
+name their package `ecosystem` (`npm`, `pypi`, `composer`, `maven`).
 
 ## Usage
 
@@ -269,7 +270,7 @@ api-grep serve --port 8080                            # HTTP server, see below
 
 | option | description |
 |---|---|
-| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `javascript`, `html`, `python`, `php` (default: every language with files in scope) |
+| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `javascript`, `html`, `python`, `php`, `kotlin` (default: every language with files in scope) |
 | `--json` | print the JSON report on stdout instead of the table |
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
@@ -437,6 +438,23 @@ Names resolve through namespaces and `use` (classes, functions, constants), `sel
 class constants, `define()` / `const`, promoted and typed properties, `$this->x` set in any
 method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` and `$_SERVER`.
 
+### Kotlin
+
+Kotlin files (`.kt`, `.kts`) are parsed and lowered into the shared engine, and the Gradle and Maven
+manifests are read; no HTTP client or SDK call is detected yet (Retrofit, OkHttp, Ktor, Spring,
+Feign and the JVM SDKs are the next steps). A Kotlin repository therefore reports its files in
+`diagnostics.languages` and its SDKs in `coverage.sdks` (`ecosystem: "maven"`), with no calls.
+
+Already resolved for the clients to come: string templates, `+`, `buildString`, `String.format`,
+`const val` and other top-level properties (also from other files of the package and through
+imports), `object` and `companion object` members, constructor properties, `by lazy`, getters,
+`init` blocks, parameter defaults and named arguments, `System.getenv("X") ?: "default"`,
+`System.getProperty`, Android `BuildConfig.X` (with the literal of `buildConfigField` in the
+module's Gradle file as its default) and Spring `@Value("\${x:default}")`. Data classes give body
+shapes, with `@SerializedName`, `@Json(name = ...)`, `@SerialName` and `@JsonProperty` names.
+Gradle build scripts (`*.gradle.kts`), `buildSrc/`, `build-logic/` and test source sets are out of
+scope.
+
 ## How it works
 
 The pipeline is `detect → resolve → normalize → validate → score → emit`. Detection and resolution
@@ -568,8 +586,11 @@ ecosystem) that a covered manifest declares or a scanned file imports gets a row
 `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621 and Poetry), `Pipfile`,
 `setup.cfg` and `setup.py` for PyPI (import names that differ from the package, like
 `google-genai` / `google.genai`, are in [`src/lang/python/modules.json`](src/lang/python/modules.json)),
-and the `require` of `composer.json` for Composer (namespaces per package in
-[`src/lang/php/namespaces.json`](src/lang/php/namespaces.json)):
+the `require` of `composer.json` for Composer (namespaces per package in
+[`src/lang/php/namespaces.json`](src/lang/php/namespaces.json)), and for Maven the dependencies of
+Gradle build scripts (Kotlin and Groovy DSL, version catalog accessors, test configurations aside)
+and of `pom.xml` (test scope aside), as `group:artifact` (package roots that differ from the group in
+[`src/lang/jvm/packages.json`](src/lang/jvm/packages.json)):
 
 ```json
 { "package": "@notionhq/client", "ecosystem": "npm", "provider": "notion", "supported": false,
@@ -601,6 +622,10 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as clients are listed as
   `injected-client`; Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
+- Kotlin: no HTTP client or SDK call is detected yet, only the files and the SDK coverage. The
+  Kotlin grammar marks a class body closed on its member's line (`companion object { const val
+  X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
+  Java is not read yet ([docs/languages.md](docs/languages.md#kotlin)).
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
