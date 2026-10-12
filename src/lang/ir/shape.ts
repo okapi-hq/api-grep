@@ -3,6 +3,7 @@ import { unionOf } from "../../resolve/shape-utils.js";
 import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
+import { fluentMap } from "./fluent.js";
 import type { CallExpr, Entry, Expr, FunctionDef } from "./model.js";
 import { argFor, exprText } from "./model.js";
 import { classField, lookup } from "./project.js";
@@ -174,6 +175,8 @@ export function shapeOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, dynamic
   if (depth > MAX_DEPTH) return { shape: { type: "unknown" }, fromLiteral: false };
   const lit = literalShape(e, fn, ctx);
   if (lit) return { shape: lit, fromLiteral: true };
+  const built = fluentMap(e, fn, ctx);
+  if (built) return shapeOf(built.expr, built.fn, ctx, depth + 1, dynamic);
   switch (e.k) {
     case "dict":
       return { shape: dictShape(e.entries, fn, ctx, depth, dynamic), fromLiteral: true };
@@ -185,6 +188,8 @@ export function shapeOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, dynamic
       return callShape(e, fn, ctx, depth, dynamic);
     case "env":
       return envShape(e.name, e.fallback, fn, ctx);
+    case "scoped":
+      return shapeOf(e.expr, e.fn, ctx, depth + 1, dynamic);
     case "or":
     case "cond": {
       const [a, b] = e.k === "or" ? [e.left, e.right] : [e.then, e.else];

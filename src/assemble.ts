@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
-import type { BodySource, Call, ClientKind, Operation } from "./report/schema.js";
+import type { BodySource, Call, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
@@ -33,6 +33,8 @@ export interface ResolvedCall {
   routeByModel?: boolean;
   /** The operation when the URL does not name it (JSON-RPC `method`, GraphQL document, SOAP action, `Action=`). */
   operation?: Operation;
+  /** Query parameters and headers the client adds to every request (interceptors, client defaults). */
+  clientParts?: ClientPart[];
 }
 
 function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; queryShape?: Shape } {
@@ -132,6 +134,7 @@ export function assembleCall(r: ResolvedCall): Call {
     bodySource: bodySourceOf(r.body),
     examples: [],
     ...(model ? { model: route ? unprefixed(model) : model } : {}),
+    ...(r.clientParts?.length ? { clientParts: r.clientParts } : {}),
   };
   return route ? { ...call, ...route } : call;
 }

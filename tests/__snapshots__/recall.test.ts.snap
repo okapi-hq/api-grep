@@ -34,7 +34,66 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/feign 1`] = `
+[
+  "Clients.kt:23 api.example-orders.com GET /v2/orders/{id}",
+  "Clients.kt:26 api.example-orders.com POST /v2/orders",
+  "Clients.kt:29 api.example-orders.com DELETE /v2/orders/{id}",
+  "Clients.kt:32 api.example-orders.com GET /v2/orders",
+  "Clients.kt:38 github GET /repos/{owner}/{repo}/issues",
+  "Clients.kt:41 github POST /repos/{owner}/{repo}/issues",
+]
+`;
+
+exports[`regression fixtures > kotlin/java-http 1`] = `
+[
+  "Notifier.kt:16 api.example-alerts.com POST /v1/items",
+  "Notifier.kt:25 pagerduty GET /incidents",
+  "Notifier.kt:32 pagerduty PUT /incidents/{id}",
+  "Notifier.kt:38 pagerduty POST /v2/enqueue",
+  "Notifier.kt:47 api.example-alerts.com GET /v1/status",
+]
+`;
+
+exports[`regression fixtures > kotlin/ktor 1`] = `
+[
+  "Catalog.kt:22 api.example-catalog.com GET /v1/items",
+  "Catalog.kt:28 api.example-catalog.com POST /v1/items",
+  "Catalog.kt:30 api.example-catalog.com GET /v1/categories",
+  "Catalog.kt:48 notion GET /v1/pages/{id}",
+  "Catalog.kt:50 notion POST /v1/search",
+  "Catalog.kt:56 notion DELETE /v1/blocks/{id}",
+]
+`;
+
 exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
+
+exports[`regression fixtures > kotlin/okhttp 1`] = `
+[
+  "Balances.kt:22 rpc.example.com POST /",
+  "Interceptors.kt:30 open-meteo GET /v1/forecast",
+  "Interceptors.kt:37 github GET /user/repos",
+  "Interceptors.kt:44 github PUT /user/starred/{owner}/{repo}",
+  "Messages.kt:20 mailgun POST /v3/mg.example.com/messages",
+  "Messages.kt:25 cloudinary POST /v1_1/demo/image/upload",
+  "Messages.kt:35 unsplash GET /search/photos (wrapper:Messages.execute)",
+  "Messages.kt:41 cloudinary DELETE /v1_1/demo/resources/image/upload/{id} (wrapper:Messages.execute)",
+  "Messages.kt:44 unknown GET /",
+]
+`;
+
+exports[`regression fixtures > kotlin/spring 1`] = `
+[
+  "Payments.kt:17 api.example-shop.com GET /v1/items/{id}",
+  "Payments.kt:23 api.example-shop.com POST /v1/items",
+  "Payments.kt:29 stripe POST /v1/refunds",
+  "Payments.kt:37 api.example-shop.com GET /v1/search",
+  "Payments.kt:40 api.example-shop.com GET /v1/items",
+  "Payments.kt:49 stripe GET /v1/charges",
+  "Payments.kt:51 stripe POST /v1/charges/{id}/capture",
+  "Payments.kt:61 api.example-shop.com GET /v1/status",
+]
+`;
 
 exports[`regression fixtures > multi-provider-site 1`] = `
 [

@@ -167,6 +167,8 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
     }
     case "fnref":
       return { root: { kind: "function", fn: e.fn }, segs: [] };
+    case "scoped":
+      return valueChain(e.expr, e.fn, ctx, depth + 1);
     // members and calls are structure (bounded by the expression); only lookups count against the depth
     case "attr":
       return member(valueChain(e.obj, fn, ctx, depth), e.name, ctx, depth);

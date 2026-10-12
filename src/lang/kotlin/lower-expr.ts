@@ -215,9 +215,10 @@ function lowerCompound(n: SyntaxNode, st: KtState): Expr {
     case "annotated_lambda":
     case "anonymous_function":
       return { k: "fnref", fn: hook("lambda")(n, st).fn };
-    case "object_literal":
-      hook("objectLiteral")(n, st);
-      return unknown(n);
+    case "object_literal": {
+      const only = hook("objectLiteral")(n, st);
+      return only ? { k: "fnref", fn: only } : unknown(n);
+    }
     case "return_expression": {
       const label = field(n, "label");
       const value = named(n).find((c) => c.id !== label?.id);

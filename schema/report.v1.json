@@ -231,6 +231,13 @@
         "model": {
           "description": "The model the request names (LLM and other AI APIs); absent when it names none.",
           "$ref": "#/definitions/Model"
+        },
+        "clientParts": {
+          "description": "Which of `query` and `headers` the client adds rather than the call (an interceptor, a client default); absent when none.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ClientPart"
+          }
         }
       },
       "required": [
@@ -316,10 +323,16 @@
         "psr-18",
         "php-stream",
         "wordpress",
+        "okhttp",
+        "java-http",
+        "ktor",
+        "spring-rest",
+        "spring-webclient",
+        "feign",
         "sdk",
         "framework"
       ],
-      "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper)."
+      "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method). Any language: sdk (a registry), framework (a framework helper)."
     },
     "Operation": {
       "type": "object",
@@ -681,6 +694,36 @@
         "from"
       ],
       "description": "The model a call names, as far as the code tells statically."
+    },
+    "ClientPart": {
+      "type": "object",
+      "properties": {
+        "where": {
+          "type": "string",
+          "enum": [
+            "query",
+            "header"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Query parameter name, or header name in lower case, as listed in `query` / `headers`."
+        },
+        "from": {
+          "type": "string",
+          "enum": [
+            "interceptor",
+            "default"
+          ],
+          "description": "interceptor: an interceptor of the client (OkHttp `addInterceptor`). default: a default the client is built with (Ktor `defaultRequest`, Spring `defaultHeader`)."
+        }
+      },
+      "required": [
+        "where",
+        "name",
+        "from"
+      ],
+      "description": "A query parameter or header the client adds to every request it sends, rather than the call itself."
     },
     "Stats": {
       "type": "object",

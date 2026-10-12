@@ -8,9 +8,11 @@ import type { AuthScheme, BodyEncoding, DynamicPart, Part, UrlShape } from "../.
 import { argAt, argOf, propOf } from "./args.js";
 import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
+import { resolvePairs } from "./pairs.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
 import { shapeOf } from "./shape.js";
+import { deref } from "./values.js";
 
 export interface BuildIrCtx extends IrCtx {
   rootDir: string;
@@ -37,9 +39,20 @@ function resolveUrl(url: Scoped | undefined, base: Scoped | undefined, ctx: IrCt
   return partsToUrlShape(joinParts(baseParts, pathParts), { envHints: ctx.envHints });
 }
 
+const HTTP_METHOD = /^(?:get|post|put|patch|delete|head|options|trace)$/i;
+
+/** `HttpMethod.POST` (Spring), `HttpMethod.Post` (Ktor), `HTTPMethod.POST`: an enum constant named after the method. */
+function methodConstant(s: Scoped, ctx: IrCtx): string | undefined {
+  const d = deref(s.expr, s.fn, ctx).expr;
+  const name = d.k === "attr" ? d.name : d.k === "qname" ? d.path[d.path.length - 1] : undefined;
+  return name && HTTP_METHOD.test(name) ? name.toUpperCase() : undefined;
+}
+
 function resolveMethod(raw: IrRaw, ctx: IrCtx, dynamic: DynamicPart[]): string {
   if (raw.impliedMethod) return raw.impliedMethod.toUpperCase();
   if (!raw.method) return "GET";
+  const constant = methodConstant(raw.method, ctx);
+  if (constant) return constant;
   const parts = urlParts(raw.method, ctx);
   const text = staticText(parts);
   if (text !== undefined) return text.toUpperCase() || "GET";
@@ -111,8 +124,10 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveIrQuery(raw.query, ctx);
+  const headers = raw.sdk ? { names: [], values: {}, authScheme: "none" as AuthScheme, known: true } : resolveIrHeaders(raw.headers, ctx);
+  const pairs = raw.sdk ? undefined : resolvePairs(raw.pairs, ctx, headers, q);
   dynamic.push(...q.dynamic);
-  const headers = raw.sdk ? { names: [], values: {}, authScheme: "none" as AuthScheme } : resolveIrHeaders(raw.headers, ctx);
+  const fromHeaders = headers.authScheme === "none" && pairs?.queryAuth ? pairs.queryAuth : headers.authScheme;
   const file = raw.fn.module.file;
   const sdk = raw.sdk;
   return assembleCall({
@@ -123,12 +138,13 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
     method,
     dynamic,
     body,
-    headers: { names: headers.names, values: headers.values, authScheme: authOf(raw, headers.authScheme) },
+    headers: { names: headers.names, values: headers.values, authScheme: authOf(raw, fromHeaders) },
     query: { names: q.names, shape: q.shape },
     via: raw.via,
     codeBaseUrl: !!raw.baseUrl,
     optionsOpaque: raw.optionsOpaque,
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     routeByModel: sdk?.entry.routeByModel,
+    clientParts: pairs?.clientParts,
   });
 }

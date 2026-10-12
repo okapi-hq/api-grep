@@ -119,6 +119,8 @@ function newClass(n: SyntaxNode, st: KtState, register: boolean): ClassDef {
   const outer = st.cls?.def;
   const qname = outer ? `${outer.qname}.${name}` : st.mod.name ? `${st.mod.name}.${name}` : name;
   const cls: ClassDef = { name, qname, bases: [], methods: new Map(), fields: new Map(), fieldTypes: new Map(), annotations: [], module: st.mod };
+  const anns = modifiersOf(named(n).find((c) => c.type === "modifiers"), st).annotations;
+  if (anns.length > 0) cls.classAnnotations = anns;
   const specs = named(named(n).find((c) => c.type === "delegation_specifiers") ?? n).filter((c) => c.type === "delegation_specifier");
   for (const s of specs) {
     const target = named(s).find((c) => c.type === "constructor_invocation" || c.type === "explicit_delegation") ?? s;

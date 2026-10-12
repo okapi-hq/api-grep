@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/32",
+  "calls": [
+    {"file": "Balances.kt", "line": 22, "provider": "rpc.example.com"},
+    {"file": "Interceptors.kt", "line": 30, "provider": "open-meteo"},
+    {"file": "Interceptors.kt", "line": 37, "provider": "github"},
+    {"file": "Interceptors.kt", "line": 44, "provider": "github"},
+    {"file": "Messages.kt", "line": 20, "provider": "mailgun"},
+    {"file": "Messages.kt", "line": 25, "provider": "cloudinary"},
+    {"file": "Messages.kt", "line": 35, "provider": "unsplash"},
+    {"file": "Messages.kt", "line": 41, "provider": "cloudinary"}
+  ]
+}

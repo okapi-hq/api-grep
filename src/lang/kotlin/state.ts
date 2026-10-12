@@ -32,7 +32,8 @@ export interface Hooks {
   lambda(n: SyntaxNode, st: KtState): Lambda;
   /** A statement or block (an `if` / `when` branch, a `try` body), and the value of its last expression. */
   statement(n: SyntaxNode, st: KtState): Expr;
-  objectLiteral(n: SyntaxNode, st: KtState): void;
+  /** An anonymous object; the function it stands for when it has only one. */
+  objectLiteral(n: SyntaxNode, st: KtState): FunctionDef | undefined;
   /** A class, interface or `object` declaration; `top` registers it in the module. */
   classDecl(n: SyntaxNode, st: KtState, top: boolean): void;
 }
