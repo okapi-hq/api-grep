@@ -2,9 +2,7 @@ import { copyFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { defineConfig } from "tsup";
-
-/** Tree-sitter grammars (WebAssembly) the tree-sitter languages parse with, shipped next to the bundle. */
-const GRAMMARS = ["python", "php"];
+import { GRAMMARS } from "./src/lang/grammars.js";
 
 export default defineConfig({
   entry: ["src/cli.ts", "src/index.ts"],
@@ -18,9 +16,9 @@ export default defineConfig({
   onSuccess: () => {
     const require = createRequire(import.meta.url);
     mkdirSync("dist/grammars", { recursive: true });
-    for (const name of GRAMMARS) {
+    for (const [name, pkg] of Object.entries(GRAMMARS)) {
       const file = `tree-sitter-${name}.wasm`;
-      copyFileSync(require.resolve(`tree-sitter-${name}/${file}`), path.join("dist/grammars", file));
+      copyFileSync(require.resolve(`${pkg}/${file}`), path.join("dist/grammars", file));
     }
   },
 });
