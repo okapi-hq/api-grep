@@ -1,3 +1,4 @@
+import { isSafeKey } from "../../record-keys.js";
 import { staticText } from "../../resolve/parts.js";
 import { unionOf } from "../../resolve/shape-utils.js";
 import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
@@ -58,13 +59,14 @@ function originOf(s: Shape): string {
 
 type Acc = { properties: Record<string, Shape>; required: string[]; dynamicKeys: boolean };
 
-function mergeSpread(acc: Acc, spread: Shape): void {
+/** A spread made on some paths only (`optional`) adds its keys without requiring them. */
+function mergeSpread(acc: Acc, spread: Shape, optional = false): void {
   if (spread.type !== "object") {
     acc.dynamicKeys = true;
     return;
   }
   Object.assign(acc.properties, spread.properties);
-  for (const r of spread.required) if (!acc.required.includes(r)) acc.required.push(r);
+  if (!optional) for (const r of spread.required) if (!acc.required.includes(r)) acc.required.push(r);
   if (spread.dynamicKeys) acc.dynamicKeys = true;
 }
 
@@ -78,18 +80,19 @@ export function dictShape(entries: Entry[], fn: FunctionDef, ctx: IrCtx, depth: 
   for (const en of entries) {
     if (en.spread) {
       const r = shapeOf(en.value, fn, ctx, depth + 1, dynamic);
-      mergeSpread(acc, r.shape);
+      mergeSpread(acc, r.shape, en.optional);
       if (r.shape.type === "dynamic" || r.shape.type === "unknown") dynamic.push({ where: "body", name: `...${exprText(en.value).slice(0, 40)}`, origin: originOf(r.shape) });
       continue;
     }
     const key = staticKey(en.key, fn, ctx);
-    if (key === undefined) {
+    if (key === undefined || !isSafeKey(key)) {
       acc.dynamicKeys = true;
       continue;
     }
     const r = shapeOf(en.value, fn, ctx, depth + 1, dynamic);
     acc.properties[key] = r.shape;
-    if (!(r.shape.type === "union" && r.shape.anyOf.some((s) => s.type === "null") && !r.fromLiteral)) acc.required.push(key);
+    const nullable = r.shape.type === "union" && r.shape.anyOf.some((s) => s.type === "null") && !r.fromLiteral;
+    if (!nullable && !en.optional && !acc.required.includes(key)) acc.required.push(key);
     if (!r.fromLiteral) dynamic.push({ where: "body", name: key, origin: r.origin ?? originOf(r.shape) });
   }
   return { type: "object", properties: acc.properties, required: acc.required, ...(acc.dynamicKeys ? { dynamicKeys: true } : {}) };

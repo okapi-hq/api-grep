@@ -86,6 +86,14 @@ exports[`regression fixtures > php/resolve/late-binding 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/resolve/mutated-params 1`] = `
+[
+  "Assistant.php:18 openai POST /v1/chat/completions",
+  "Assistant.php:31 openai POST /v1/chat/completions",
+  "Assistant.php:39 api.example-shop.com POST /v1/orders",
+]
+`;
+
 exports[`regression fixtures > php/resolve/string-replace 1`] = `
 [
   "Billing.php:6 api.example-billing.com GET /v1/invoices/{id}",
@@ -229,6 +237,20 @@ exports[`regression fixtures > python/resolve/late-binding 1`] = `
   "api.py:8 internal GET /{path}",
   "api.py:18 billing.example.com GET /v2/invoices (wrapper:BaseAPI._get)",
   "api.py:21 billing.example.com POST /v2/refunds",
+]
+`;
+
+exports[`regression fixtures > python/resolve/mutated-kwargs 1`] = `
+[
+  "branches.py:13 openai POST /v1/chat/completions",
+  "branches.py:23 openai POST /v1/chat/completions",
+  "forms.py:11 openai POST /v1/chat/completions",
+  "forms.py:18 openai POST /v1/chat/completions",
+  "forms.py:28 openai POST /v1/chat/completions",
+  "forms.py:37 openai POST /v1/chat/completions",
+  "forms.py:42 openai POST /v1/chat/completions",
+  "forms.py:50 api.example-shop.com POST /v1/orders",
+  "forms.py:57 openai POST /v1/chat/completions",
 ]
 `;
 
@@ -396,6 +418,17 @@ exports[`regression fixtures > resolve/host-table 1`] = `
 exports[`regression fixtures > resolve/imported-helper 1`] = `
 [
   "deals.ts:4 api.example-crm.com GET /v2/deals/{id}",
+]
+`;
+
+exports[`regression fixtures > resolve/mutated-params 1`] = `
+[
+  "order.js:5 api.example-shop.com POST /v1/orders",
+  "params.ts:9 openai POST /v1/chat/completions",
+  "params.ts:19 openai POST /v1/chat/completions",
+  "params.ts:27 openai POST /v1/chat/completions",
+  "params.ts:32 openai POST /v1/chat/completions",
+  "params.ts:45 openai POST /v1/chat/completions",
 ]
 `;
 

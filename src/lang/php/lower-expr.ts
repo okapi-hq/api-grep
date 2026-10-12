@@ -1,5 +1,6 @@
 import type { Arg, CallExpr, Entry, Expr, FunctionDef, ModuleModel } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { arrayMerge } from "./edits.js";
 import { classPath, constRef, functionRef, posOf, type PhpState } from "./names.js";
 
 export function newFunction(name: string, mod: ModuleModel, n: SyntaxNode, extra: Partial<FunctionDef> = {}): FunctionDef {
@@ -75,7 +76,7 @@ function lowerArgs(n: SyntaxNode | undefined, st: PhpState): Arg[] {
 
 const literalKey = (a: Arg | undefined): string | undefined => (a && a.value.k === "str" ? a.value.v : undefined);
 
-/** `getenv('X')`, Laravel / Symfony `env('X', 'default')`, `sprintf(...)`; anything else is a call. */
+/** `getenv('X')`, Laravel / Symfony `env('X', 'default')`, `sprintf(...)`, `array_merge(...)`; anything else is a call. */
 function special(name: string, args: Arg[]): Expr | undefined {
   const lower = name.toLowerCase();
   if (lower === "getenv" || lower === "env") {
@@ -85,6 +86,7 @@ function special(name: string, args: Arg[]): Expr | undefined {
     return { k: "env", name: env, ...(fallback && fallback.k !== "null" ? { fallback } : {}) };
   }
   if (lower === "sprintf" && args[0] && !args[0].spread) return { k: "format", style: "printf", template: args[0].value, args: args.slice(1) };
+  if (lower === "array_merge") return arrayMerge(args);
   return undefined;
 }
 

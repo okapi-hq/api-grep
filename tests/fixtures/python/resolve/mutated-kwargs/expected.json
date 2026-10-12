@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/38",
+  "calls": [
+    {"file": "branches.py", "line": 13, "provider": "openai"},
+    {"file": "branches.py", "line": 23, "provider": "openai"},
+    {"file": "forms.py", "line": 11, "provider": "openai"},
+    {"file": "forms.py", "line": 18, "provider": "openai"},
+    {"file": "forms.py", "line": 28, "provider": "openai"},
+    {"file": "forms.py", "line": 37, "provider": "openai"},
+    {"file": "forms.py", "line": 42, "provider": "openai"},
+    {"file": "forms.py", "line": 50, "provider": "api.example-shop.com"},
+    {"file": "forms.py", "line": 57, "provider": "openai"}
+  ]
+}

@@ -453,7 +453,8 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   placeholders and are listed under `dynamic` with their origin (`param`, `call`, `env`,
   `unknown`).
 - **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
-  flagged; anything else goes through the checker's declared type. `JSON.stringify`,
+  flagged, keys set or deleted later in the same function kept (optional when set in a branch,
+  [#38](docs/languages.md#keys-added-after-a-dict-is-built-38)); anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
 - **Provider**: from the SDK registry, else the host through
