@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
-import type { BodySource, Call, ClientKind } from "./report/schema.js";
+import type { BodySource, Call, ClientKind, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
@@ -31,6 +31,8 @@ export interface ResolvedCall {
   model?: Shape;
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): host and path follow it. */
   routeByModel?: boolean;
+  /** The operation when the URL does not name it (JSON-RPC `method`, GraphQL document, SOAP action, `Action=`). */
+  operation?: Operation;
 }
 
 function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; queryShape?: Shape } {
@@ -61,9 +63,13 @@ export function bodySourceOf(body: BodyResult): BodySource {
   return "literal";
 }
 
-/** Hash of where the call is; the n-th other request made from the same place (through a wrapper) adds `#n`. */
-export function callId(loc: Call["location"], n = 0): string {
-  const key = `${loc.file}:${loc.line}:${loc.col}${n > 0 ? `#${n}` : ""}`;
+/**
+ * Hash of where the call is and of the operation it names (two JSON-RPC methods sent from one helper are two
+ * endpoints); the n-th other request made from the same place (through a wrapper) adds `#n`. A call with no operation
+ * name hashes its place only, so its id stays what it was before operations were reported.
+ */
+export function callId(loc: Call["location"], n = 0, operation?: string | null): string {
+  const key = `${loc.file}:${loc.line}:${loc.col}${n > 0 ? `#${n}` : ""}${operation ? ` ${operation}` : ""}`;
   return createHash("sha1").update(key).digest("hex").slice(0, 12);
 }
 
@@ -97,7 +103,7 @@ export function assembleCall(r: ResolvedCall): Call {
   const model = modelFact(r);
   const route = routed(r, model);
   const call: Call = {
-    id: callId(loc),
+    id: callId(loc, 0, r.operation?.name),
     location: loc,
     client: r.client,
     sdk: r.sdk ? { package: r.sdk.package, version: r.sdk.version, chain: r.sdk.chain } : undefined,
@@ -111,6 +117,7 @@ export function assembleCall(r: ResolvedCall): Call {
     pathTemplate: r.url.pathTemplate,
     urlTemplate: r.url.raw,
     operationId: r.sdk?.operationId,
+    operation: r.operation,
     query: q.query,
     queryShape: q.queryShape,
     headers: r.headers.names,
