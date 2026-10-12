@@ -4,6 +4,7 @@ import { detectHttp } from "./http.js";
 import type { CallExpr, Expr, FunctionDef } from "./model.js";
 import { exprText } from "./model.js";
 import type { IrCtx, IrRaw } from "./raw.js";
+import { receiverCalls, receiverExpr } from "./receiver.js";
 import { detectSdk } from "./sdk.js";
 
 export interface Candidate {
@@ -89,6 +90,12 @@ export function detectIn(fn: FunctionDef, ctx: IrCtx): IrDetected {
     }
     if (chain.root.kind === "function" && chain.segs.length === 0) {
       out.candidates.push({ call, fn, target: chain.root.fn });
+      continue;
+    }
+    const receiver = receiverCalls(call, fn, chain, ctx, detectCall);
+    if (receiver) {
+      out.calls.push(...receiver.raws);
+      if (receiver.unknown) out.unfollowed.push({ call, fn, reason: "receiver-unknown", expr: receiverExpr(call) });
       continue;
     }
     const u = unfollowedCall(call, fn, chain);

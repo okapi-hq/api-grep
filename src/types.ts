@@ -71,6 +71,8 @@ export interface RawCall {
   subst?: Subst;
   /** The model when the request carries it outside the body (`openai("gpt-4o")` in an AI SDK call, an agent's model). */
   modelExpr?: Expression;
+  /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
+  clientFrom?: "caller" | "manifest";
 }
 
 export interface MethodSpec {

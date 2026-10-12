@@ -54,6 +54,19 @@ exports[`regression fixtures > negatives/test-files 1`] = `[]`;
 
 exports[`regression fixtures > php/negatives 1`] = `[]`;
 
+exports[`regression fixtures > php/receiver/manifest 1`] = `
+[
+  "Tagger.php:9 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > php/receiver/one-caller 1`] = `
+[
+  "Ask.php:9 openai POST /v1/chat/completions",
+  "Ask.php:15 openai POST /v1/chat/completions (wrapper:ask)",
+]
+`;
+
 exports[`regression fixtures > php/resolve/class-base-url 1`] = `
 [
   "Gladia.php:18 gladia POST /v2/upload",
@@ -195,6 +208,44 @@ exports[`regression fixtures > python/models 1`] = `
 `;
 
 exports[`regression fixtures > python/negatives 1`] = `[]`;
+
+exports[`regression fixtures > python/receiver/ambiguous 1`] = `[]`;
+
+exports[`regression fixtures > python/receiver/constructor 1`] = `
+[
+  "bot.py:9 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > python/receiver/different-clients 1`] = `
+[
+  "translate.py:5 openai POST /v1/chat/completions",
+  "translate.py:5 groq POST /openai/v1/chat/completions",
+  "translate.py:12 openai POST /v1/chat/completions (wrapper:translate)",
+  "translate.py:17 groq POST /openai/v1/chat/completions (wrapper:translate)",
+]
+`;
+
+exports[`regression fixtures > python/receiver/manifest 1`] = `
+[
+  "tagging.py:2 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > python/receiver/one-caller 1`] = `
+[
+  "app.py:5 anthropic POST /v1/messages",
+  "app.py:14 anthropic POST /v1/messages (wrapper:ask)",
+]
+`;
+
+exports[`regression fixtures > python/receiver/same-client 1`] = `
+[
+  "helpers.py:2 openai POST /v1/chat/completions",
+  "jobs.py:8 openai POST /v1/chat/completions (wrapper:summarize)",
+  "jobs.py:12 openai POST /v1/chat/completions (wrapper:summarize)",
+]
+`;
 
 exports[`regression fixtures > python/requests/hardened 1`] = `
 [
@@ -657,6 +708,38 @@ exports[`regression fixtures > sdk/posthog 1`] = `
   "server.ts:7 posthog POST /flags",
   "web.ts:5 posthog POST /e",
   "web.ts:7 posthog POST /e",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/ambiguous 1`] = `[]`;
+
+exports[`regression fixtures > sdk/receiver/different-clients 1`] = `
+[
+  "translate.ts:4 openai POST /v1/chat/completions",
+  "translate.ts:4 groq POST /openai/v1/chat/completions",
+  "translate.ts:7 openai POST /v1/chat/completions (wrapper:translate)",
+  "translate.ts:11 groq POST /openai/v1/chat/completions (wrapper:translate)",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/manifest 1`] = `
+[
+  "tagging.ts:2 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/one-caller 1`] = `
+[
+  "chat.ts:6 openai POST /v1/chat/completions",
+  "chat.ts:9 openai POST /v1/chat/completions (wrapper:withUntyped)",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/same-client 1`] = `
+[
+  "helpers.ts:2 openai POST /v1/chat/completions",
+  "jobs.ts:6 openai POST /v1/chat/completions (wrapper:summarize)",
+  "jobs.ts:10 openai POST /v1/chat/completions (wrapper:summarize)",
 ]
 `;
 

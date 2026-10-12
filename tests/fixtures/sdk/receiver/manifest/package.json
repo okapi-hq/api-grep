@@ -1,0 +1,7 @@
+{
+  "name": "tagging",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0",
+    "axios": "^1.7.0"
+  }
+}

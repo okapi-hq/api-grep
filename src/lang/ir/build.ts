@@ -131,5 +131,6 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
     optionsOpaque: raw.optionsOpaque,
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     routeByModel: sdk?.entry.routeByModel,
+    clientFrom: raw.clientFrom,
   });
 }

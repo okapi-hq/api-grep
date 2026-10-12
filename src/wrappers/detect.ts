@@ -3,6 +3,7 @@ import { type FunctionLike } from "../ast/function.js";
 import { declarationsOf } from "../ast/object.js";
 import { callShift, wrapperFunction } from "../detect/callee.js";
 import { detectFile, detectNode, type DetectResult, type WrapperCandidate } from "../detect/index.js";
+import type { ReceiverResolver } from "../detect/receiver.js";
 import type { Registry } from "../detect/registry/index.js";
 import type { Unfollowed } from "../detect/unfollowed.js";
 import type { RawCall, SdkMatch, Subst } from "../types.js";
@@ -69,6 +70,7 @@ function substitutionFor(fn: FunctionLike, call: CallExpression, shift: number):
 }
 
 interface Caches {
+  receivers?: ReceiverResolver;
   bodies: Map<Node, DetectResult>;
   direct: Map<Node, RawCall[]>;
   chains: Map<Node, Expansion[]>;
@@ -84,7 +86,7 @@ interface Expansion {
 function bodyOf(fn: FunctionLike, registry: Registry, caches: Caches): DetectResult {
   let found = caches.bodies.get(fn);
   if (!found) {
-    found = detectFile(fn.getSourceFile(), registry, fn.getBody?.() ?? fn);
+    found = detectFile(fn.getSourceFile(), registry, fn.getBody?.() ?? fn, caches.receivers);
     caches.bodies.set(fn, found);
   }
   return found;
@@ -145,8 +147,8 @@ function deeperWrapper(fn: FunctionLike, registry: Registry, caches: Caches): st
  * `fetch`): calls to local functions whose body makes an HTTP call, or calls a wrapper that does, with their
  * parameters. Longer chains come back as `wrapper-depth`.
  */
-export function expandWrappers(candidates: WrapperCandidate[], registry: Registry): { calls: RawCall[]; unfollowed: Unfollowed[] } {
-  const caches: Caches = { bodies: new Map(), direct: new Map(), chains: new Map() };
+export function expandWrappers(candidates: WrapperCandidate[], registry: Registry, receivers?: ReceiverResolver): { calls: RawCall[]; unfollowed: Unfollowed[] } {
+  const caches: Caches = { receivers, bodies: new Map(), direct: new Map(), chains: new Map() };
   const out: RawCall[] = [];
   const unfollowed: Unfollowed[] = [];
   for (const cand of candidates) {

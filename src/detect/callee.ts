@@ -184,6 +184,14 @@ function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
   return { chain: mc.chain, localDecl: decl && Node.isParameterDeclaration(decl) ? undefined : decl };
 }
 
+/** What `mc` calls when its root stands for `value`: a caller's argument for an untyped parameter (`ask(client)`). */
+export function calleeThrough(value: Expression, mc: Chain): Callee {
+  const u = unwrap(value);
+  if (Node.isCallExpression(u) || Node.isNewExpression(u)) return instanceCallee(u, mc.chain, 1);
+  const inner = memberChain(u);
+  return calleeFromChain({ root: inner.root, nodes: [...inner.nodes, ...mc.nodes.slice(1)], chain: [...inner.chain, ...mc.chain] }, 1);
+}
+
 /** `fn.call(this, ...args)` invokes `fn` with the arguments shifted by one. */
 export function callShift(callee: Callee): number {
   return callee.chain.length === 1 && callee.chain[0] === "call" && isFunctionLike(callee.localDecl) ? 1 : 0;

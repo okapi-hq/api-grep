@@ -59,6 +59,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
   APIs). Front ends set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. Schema,
   batch decision and per-protocol status (#34 to #36) in `docs/languages.md`.
+- SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
+  callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
+  else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden

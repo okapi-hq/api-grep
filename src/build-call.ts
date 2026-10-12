@@ -100,5 +100,6 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
     optionsOpaque: raw.optionsOpaque,
     model: raw.modelExpr ? shapeOf(raw.modelExpr, ctx).shape : undefined,
     routeByModel: sdk?.routeByModel,
+    clientFrom: raw.clientFrom,
   });
 }
