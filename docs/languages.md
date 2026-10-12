@@ -317,12 +317,13 @@ operation?: {
 - **Where it is read.** `assembleCalls` (`src/assemble.ts`) asks each protocol of `src/operation/index.ts`, one module
   per protocol, for the operations of the resolved request (method, URL, body shape, headers, query), so every
   language gets them from what it already resolves; a front end that knows better sets `ResolvedCall.operation`
-  itself and is kept as it is. SDK calls are left out: their registry names the endpoint.
+  itself and is kept as it is. SDK calls are left out (their registry names the endpoint), except a method whose
+  registry entry names the argument holding a GraphQL document (`documentArg`).
 
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
-| GraphQL (document: type, name, fields) | #35 | not started |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries #54, bound diagnostic #55, AST documents and arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
 
 ### JSON-RPC (#34)
@@ -347,6 +348,47 @@ one-value enum:
 - **Not covered**: RPC client libraries that hide the envelope (`@solana/web3.js`, viem, ethers, web3.py,
   solana-py) map a client method to an RPC method and need registries of their own (#52); JSON builders that are not
   literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP clients (#32).
+
+### GraphQL (#35)
+
+`src/operation/graphql.ts` reads the request every front end resolved; `src/operation/graphql-document.ts` parses the
+document with the `graphql` package's parser (no schema, no network):
+
+- **A request** is GraphQL when it sends a document that parses with an operation in it: `query` in a JSON body
+  object, the body itself with `Content-Type: application/graphql`, or `?query=` in the URL. `{ query: "red shoes" }`
+  is not one, nor `{ query: { match } }`. A `query` the scan cannot read (a parameter) is GraphQL when the envelope
+  says so: `variables`, `operationName` or `extensions` beside it, or `graphql` in the path; it gets `name: null`
+  (or the literal `operationName`), `dynamic: true` when unnamed. A persisted query (`extensions.persistedQuery` and
+  no document) is named by its `operationName`, if any. `from` is `document` when the name was read from the
+  document, `body` / `query` when it is `operationName`.
+- **The name** is the operation's name; an anonymous operation is named by its root fields, sorted and joined with a
+  comma (`{ shop { name } locations { id } }` is `locations,shop`). **`type`** is `query`, `mutation` or
+  `subscription`.
+- **`fields`** are the leaf paths from the root, aliases resolved to the field name, fragment spreads and inline
+  fragments inlined (no type condition in the path), deduplicated and sorted. A spread of a fragment the document does
+  not define keeps the field it sits on (`order { ...Elsewhere }` gives `order`).
+- **One call per operation.** A JSON array of envelopes is a batch (`batch: true`, the same operation twice once). A
+  document of several operations runs the one `operationName` names; with no literal `operationName`, and when a
+  branch or a helper's callers give several documents, each operation is a call of its own at that location, without
+  `batch`. This differs from JSON-RPC's `alternatives`: each GraphQL operation has its own `type` and `fields`.
+- **Where documents come from** (TypeScript / JavaScript, `src/resolve/graphql-source.ts`): string and template
+  literals, `gql` / `graphql` tagged templates with their `${Fragment}` interpolations, `graphql("...", [Fragment])`
+  calls (gql.tada, the codegen client preset), and `.graphql` / `.gql` files imported by a relative path (`import Doc
+  from "./doc.graphql"`, a named import keeps that operation, `require`), with graphql-tag/loader's `#import` lines
+  followed four files deep. An imported file is read only inside the scanned directory, symlinks resolved, like a
+  config file. Python and PHP read documents in strings, f-strings, concatenations and heredocs through the shared
+  engine.
+- **SDKs**: a TypeScript registry method names the argument holding the document with `documentArg` (Octokit
+  `graphql(query, variables)` and `graphql({ query })`, also from `@octokit/graphql`). No Python or PHP registry
+  has a GraphQL method yet.
+- **Bounds.** The document comes from a hostile repository: 100,000 characters, 50,000 parser tokens, 32 levels of
+  selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
+  code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
+  once each. Past a bound `fields` is left out (not cut short) and `name` / `type` come from the document's header
+  when it has one; a diagnostic for this needs a schema change (#55).
+- **Not covered**: client libraries that take the endpoint from their configuration (Apollo, urql, graphql-request,
+  Relay, Shopify clients, Python `gql` / `sgqlc`, #54); codegen documents written as an AST object and literal
+  arguments of selected fields (#56).
 
 ## SDK clients passed as untyped parameters (#37)
 
@@ -454,7 +496,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries with #33 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) from the body shape, GraphQL and SOAP not yet (#35, #36) | same | same | same engine; no JSON-RPC fixture until the HTTP clients (#32) |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`; SOAP not yet (#36) | JSON-RPC and GraphQL from the body shape | same as Python | same engine; no JSON-RPC or GraphQL fixture until the HTTP clients (#32) |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); no client fixture until #31 / #32 |
 

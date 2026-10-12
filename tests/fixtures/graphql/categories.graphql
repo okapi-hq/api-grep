@@ -1,0 +1,14 @@
+#import "./category-fields.graphql"
+
+query GetCategory($id: ID!) {
+  category(id: $id) {
+    ...CategoryFields
+    itemCount
+  }
+}
+
+mutation RenameCategory($id: ID!, $name: String!) {
+  renameCategory(id: $id, name: $name) {
+    id
+  }
+}

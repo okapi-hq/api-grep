@@ -1074,6 +1074,12 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
         "line": 34,
       },
       "method": "POST",
+      "operation": {
+        "dynamic": true,
+        "from": "body",
+        "name": null,
+        "protocol": "graphql",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",
@@ -2797,7 +2803,7 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
       "headers": [],
       "host": "api.linear.app",
       "hostKind": "const",
-      "id": "f31db8402022",
+      "id": "7e6d4fbeb905",
       "location": {
         "col": 16,
         "file": "Pages.php",
@@ -2805,6 +2811,16 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
         "line": 25,
       },
       "method": "POST",
+      "operation": {
+        "dynamic": false,
+        "fields": [
+          "viewer.id",
+        ],
+        "from": "document",
+        "name": "viewer",
+        "protocol": "graphql",
+        "type": "query",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",

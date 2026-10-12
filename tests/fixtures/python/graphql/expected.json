@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/35",
+  "calls": [
+    {"file": "tracker.py", "line": 22, "provider": "api.example-tracker.dev", "operation": "ListTickets"},
+    {"file": "tracker.py", "line": 27, "provider": "api.example-tracker.dev", "operation": "CloseTicket"},
+    {"file": "tracker.py", "line": 31, "provider": "api.example-tracker.dev", "operation": "viewer"},
+    {"file": "tracker.py", "line": 39, "provider": "api.example-tracker.dev", "operation": "TeamNames"},
+    {"file": "tracker.py", "line": 43, "provider": "api.example-tracker.dev", "operation": "SavedView"}
+  ]
+}

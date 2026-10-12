@@ -32,6 +32,8 @@ export interface ResolvedCall {
   model?: Shape;
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): host and path follow it. */
   routeByModel?: boolean;
+  /** A GraphQL document an SDK method takes apart from its body (Octokit `graphql(query, variables)`). */
+  document?: Shape;
   /** The operation when the URL does not name it (JSON-RPC `method`, GraphQL document, SOAP action, `Action=`). */
   operation?: Operation;
   /** The SDK client is an untyped parameter: found through the callers, or the one declared SDK with that method. */

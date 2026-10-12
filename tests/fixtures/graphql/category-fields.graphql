@@ -1,0 +1,5 @@
+fragment CategoryFields on Category {
+  id
+  name
+  parent { id }
+}
