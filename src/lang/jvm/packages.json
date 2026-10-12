@@ -25,6 +25,7 @@
     "com.google.android.gms:play-services-maps": ["com.google.android.gms.maps"],
     "com.google.api-client:google-api-client": ["com.google.api.client"],
     "com.google.cloud:google-cloud-aiplatform": ["com.google.cloud.aiplatform"],
+    "com.google.cloud:google-cloud-firestore": ["com.google.cloud.firestore"],
     "com.google.cloud:google-cloud-vertexai": ["com.google.cloud.vertexai"],
     "com.google.firebase:firebase-admin": ["com.google.firebase"],
     "com.google.firebase:firebase-ai": ["com.google.firebase.ai"],

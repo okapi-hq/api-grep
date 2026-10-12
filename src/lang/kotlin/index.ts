@@ -3,6 +3,8 @@ import type { IrLanguage } from "../ir/language.js";
 import { irLanguage } from "../ir/scan.js";
 import { jvmManifests, normalizeMaven } from "../jvm/manifests.js";
 import { jvmImportRoots } from "../jvm/packages.js";
+import { JVM_REGISTRY } from "../jvm/registry/index.js";
+import { builderValue } from "../ir/builders.js";
 import { lowerKotlin } from "./lower.js";
 import { semicolonsBeforeBraces } from "./repair.js";
 
@@ -35,9 +37,11 @@ export const kotlinLanguage: IrLanguage = {
   sharedGlobals: false,
   packageScope: true,
   typedParams: true,
-  // no HTTP client or SDK is read yet: Kotlin files are parsed and lowered, and the coverage lists their SDKs
-  registry: [],
+  registry: JVM_REGISTRY,
+  // no HTTP client table yet (#31, #32)
   clients: [],
+  // `X.builder().a(1).build()` of an SDK's parameter class: the dict of the fields it sets
+  resolveCall: builderValue,
   passthrough: {
     functions: new Set(["URL", "URI", "encode", "requireNotNull", "checkNotNull"]),
     methods: new Set(["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "toHttpUrl", "toHttpUrlOrNull", "toUri", "toURI", "toURL", "orEmpty"]),

@@ -135,9 +135,15 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   for (const mod of scanned) {
     const hit = new Set<string>();
     for (const p of mod.importPaths) {
-      // `Sentry\Laravel\Integration` is sentry/sentry-laravel's, not sentry/sentry's: the longest root wins
-      let best: { pkg: string; length: number } | undefined;
-      for (const r of roots) for (const root of r.roots) if (root.every((s, i) => p[i] === s) && root.length > (best?.length ?? 0)) best = { pkg: r.pkg, length: root.length };
+      // `Sentry\Laravel\Integration` is sentry/sentry-laravel's, not sentry/sentry's: the longest root wins, a declared
+      // package's first (firebase-admin's `com.google.firebase.auth` is not the undeclared Android firebase-auth's)
+      let best: { pkg: string; rank: number } | undefined;
+      for (const r of roots) {
+        for (const root of r.roots) {
+          const rank = root.length + (declared.has(r.pkg) ? 1000 : 0);
+          if (root.every((s, i) => p[i] === s) && rank > (best?.rank ?? 0)) best = { pkg: r.pkg, rank };
+        }
+      }
       if (best) hit.add(best.pkg);
     }
     for (const pkg of hit) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);

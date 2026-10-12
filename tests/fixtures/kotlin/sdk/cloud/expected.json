@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/33",
+  "skipped": [],
+  "calls": [
+    { "file": "Accounts.kt", "line": 12, "provider": "firebase" },
+    { "file": "Accounts.kt", "line": 14, "provider": "firebase" },
+    { "file": "Accounts.kt", "line": 16, "provider": "firebase" },
+    { "file": "Accounts.kt", "line": 18, "provider": "firebase" },
+    { "file": "Accounts.kt", "line": 26, "provider": "firebase" },
+    { "file": "Storage.kt", "line": 19, "provider": "aws" },
+    { "file": "Storage.kt", "line": 22, "provider": "aws" },
+    { "file": "Storage.kt", "line": 27, "provider": "aws" },
+    { "file": "Storage.kt", "line": 30, "provider": "aws" }
+  ]
+}

@@ -9,8 +9,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python and PHP; Kotlin is parsed and its Gradle / Maven manifests read, its clients come
-with #31-#33, Java with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
+(inline scripts and forms), Python and PHP; Kotlin for its SDK calls (JVM registries, #33) and Gradle / Maven manifests, its
+HTTP clients with #31 / #32, Java with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -45,7 +45,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
-  values are in `src/lang/jvm/`, shared with Java later.
+  values are in `src/lang/jvm/`, shared with Java later, and so are the JVM SDK registries (`src/lang/jvm/registry/`):
+  parameters given as builders (`X.builder().a(1).build()`) read as dicts through the language's `resolveCall`
+  (`src/lang/ir/builders.ts`, rules in each registry's `setters`).
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template}.ts`.
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
@@ -84,7 +86,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), keys from the
   code go through `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
-  `src/lang/php/registry/` (format: `IrRegistryEntry` in `src/lang/ir/language.ts`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
+  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in
+  `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
   Composer package in `src/lang/php/namespaces.json`; Java / Kotlin package roots of a Maven `group:artifact` that are
@@ -98,5 +101,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - Issues #3 to #8 (recall, diagnostics, fixtures, provider roadmap, coverage, provider resolution) apply to every
   language; `docs/languages.md` has a table of how each is covered in TypeScript, Python and PHP.
 - Kotlin: #29 (parsing, lowering, manifests) is done; Retrofit #31, OkHttp / `java.net.http` / Ktor / Spring / Feign
-  #32, JVM SDK registries #33, Java #43.
+  #32, Java #43. JVM SDK registries #33 are done (OpenAI, Anthropic, Stripe, AWS S3 / Bedrock Runtime, Gen AI,
+  Firebase, Twilio, Slack, Sentry, PostHog); other AWS services and the AWS SDK for Kotlin #49, other JVM SDKs and
+  builder forms #50.
 - Next language candidates (Go, Ruby, Java, C#) and what each needs are listed at the end of `docs/languages.md`.

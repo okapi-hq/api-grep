@@ -11,8 +11,9 @@ provider, method, path template, the *shape* of the payload (names and types, ne
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
 checker, and Python and PHP through tree-sitter; a repository that mixes languages gets one report
-that says which language each call comes from. Kotlin is parsed and its Gradle and Maven manifests
-are read, so the report lists the JVM SDKs a project uses; its HTTP clients and SDK calls come next.
+that says which language each call comes from. Kotlin is read the same way for its SDK calls
+(OpenAI, Anthropic, Stripe, AWS, Firebase and others), with its Gradle and Maven manifests; its
+HTTP clients come next.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
@@ -452,11 +453,15 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 ### Kotlin
 
 Kotlin files (`.kt`, `.kts`) are parsed and lowered into the shared engine, and the Gradle and Maven
-manifests are read; no HTTP client or SDK call is detected yet (Retrofit, OkHttp, Ktor, Spring,
-Feign and the JVM SDKs are the next steps). A Kotlin repository therefore reports its files in
-`diagnostics.languages` and its SDKs in `coverage.sdks` (`ecosystem: "maven"`), with no calls.
+manifests are read. SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`,
+shared with Java later): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x
+S3 and Bedrock Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and
+PostHog ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+(`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
+in steps or filled by a lambda) are read as the request body, and enum constants as the model ids
+they stand for. HTTP clients (Retrofit, OkHttp, Ktor, Spring, Feign) are the next step.
 
-Already resolved for the clients to come: string templates, `+`, `buildString`, `String.format`,
+Also resolved: string templates, `+`, `buildString`, `String.format`,
 `const val` and other top-level properties (also from other files of the package and through
 imports), `object` and `companion object` members, constructor properties, `by lazy`, getters,
 `init` blocks, parameter defaults and named arguments, `System.getenv("X") ?: "default"`,
@@ -634,7 +639,7 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: no HTTP client or SDK call is detected yet, only the files and the SDK coverage. The
+- Kotlin: SDK calls are detected, HTTP clients not yet. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java is not read yet ([docs/languages.md](docs/languages.md#kotlin)).

@@ -1,0 +1,41 @@
+{
+  "$comment": "Firestore from the JVM, one set of keys for three clients (`variants`, each an entry of its own package): google-cloud-firestore (`FirestoreOptions.getDefaultInstance().service`, a `Firestore` parameter), firebase-admin (`FirestoreClient.getFirestore()`) and the Android SDK (`FirebaseFirestore.getInstance()`, `Firebase.firestore`). `collection(...)`, `document(...)` and the query calls narrow the request; `{path}` joins the arguments of `collection` and `document`. Firestore speaks gRPC; the paths are the REST equivalents, as in the Python registries.",
+  "provider": "firebase",
+  "host": "firestore.googleapis.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (keys of the Python Firestore registries under the Java and Android SDKs' names)",
+  "builders": ["firestore", "service", "getService", "collection", "document", "collectionGroup", "where*", "orderBy", "limit", "limitToLast", "offset", "startAt", "startAfter", "endAt", "endBefore", "select", "findNearest"],
+  "variants": [
+    {
+      "package": "com.google.cloud:google-cloud-firestore",
+      "imports": ["com.google.cloud.firestore.Firestore", "com.google.cloud.firestore.FirestoreOptions"],
+      "instance": { "names": ["getDefaultInstance", "newBuilder", "Firestore"], "build": "build" }
+    },
+    {
+      "package": "com.google.firebase:firebase-admin",
+      "imports": ["com.google.firebase.cloud.FirestoreClient"],
+      "instance": { "names": ["getFirestore"] }
+    },
+    {
+      "package": "com.google.firebase:firebase-firestore",
+      "aliases": ["com.google.firebase:firebase-firestore-ktx"],
+      "imports": ["com.google.firebase.firestore.FirebaseFirestore", "com.google.firebase.Firebase", "com.google.firebase.ktx.Firebase"],
+      "instance": { "names": ["getInstance", "FirebaseFirestore"] }
+    }
+  ],
+  "methods": {
+    "get": {"method":"GET","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"}},
+    "addSnapshotListener": {"method":"GET","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"}},
+    "listDocuments": {"method":"GET","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"}},
+    "set": {"method":"PATCH","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"},"bodyArg":0},
+    "update": {"method":"PATCH","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"},"bodyArg":0},
+    "create": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"},"bodyArg":0},
+    "add": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"},"bodyArg":0},
+    "delete": {"method":"DELETE","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}","params":{"path":"chain:collection,document"}},
+    "count.get": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery","params":{"path":"chain:collection,document"}},
+    "getAll": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents:batchGet"},
+    "batch.commit": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents:commit"},
+    "listCollections": {"method":"POST","path":"/v1/projects/{projectId}/databases/(default)/documents:listCollectionIds"}
+  }
+}

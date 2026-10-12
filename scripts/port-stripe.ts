@@ -128,6 +128,55 @@ function php(): IrRegistryEntry {
   };
 }
 
+const JAVA_STATIC = new Set(["create", "retrieve", "list", "search"]);
+/** StripeClient services that are sub-services in Java (`client.customers().paymentMethods().list(id)`). */
+const JAVA_VERBS: Record<string, string> = { del: "delete", listPaymentMethods: "paymentMethods.list", listLineItems: "lineItems.list", createUsageRecord: "usageRecords.create", retrieveUpcoming: "upcoming" };
+
+/** `checkout.sessions` -> `checkout.Session` (`com.stripe.model.checkout.Session`), `billingPortal.sessions` -> `billingportal.Session`. */
+function javaClass(service: string): string {
+  const parts = service.split(".");
+  const last = parts.pop()!;
+  return [...parts.map((p) => p.toLowerCase()), CLASSES[last] ?? pascal(last.replace(/s$/, ""))].join(".");
+}
+
+/**
+ * stripe-java: StripeClient services (`client.customers().update(id, params)`, also under `client.v1()`), the static API
+ * of the model classes (`Customer.create(params)`, `Customer.retrieve(id)`), and the operations of a retrieved object
+ * (`Customer.retrieve(id).update(params)`, or `customer.update(params)` on a typed `Customer`).
+ */
+function java(): IrRegistryEntry {
+  const methods: Record<string, IrMethodSpec> = {};
+  const statics: Record<string, IrMethodSpec> = {};
+  for (const [key, spec] of Object.entries(ts.methods ?? {})) {
+    const parts = key.split(".");
+    const verb = parts.pop()!;
+    const service = parts.join(".");
+    methods[[...parts, JAVA_VERBS[verb] ?? verb].join(".")] = spec;
+    if (service === "oauth") statics[`OAuth.${verb}`] = spec;
+    else if (JAVA_STATIC.has(verb)) statics[`${javaClass(service)}.${verb}`] = spec;
+    else if (spec.pathArgs?.length === 1 && !JAVA_VERBS[verb]?.includes(".")) {
+      const javaVerb = JAVA_VERBS[verb] ?? verb;
+      const op = instanceOp(spec);
+      statics[`${javaClass(service)}.retrieve.${javaVerb}`] = op;
+      statics[`${javaClass(service)}.${javaVerb}`] = { ...op, params: undefined };
+    }
+  }
+  return {
+    $comment:
+      "stripe-java (also used from Kotlin): parameters are builders of `com.stripe.param` (`CustomerCreateParams.builder().setEmail(e).build()`), read as the form fields they set (`setX` -> `x`, `addX` -> the list `xs`, `putMetadata` -> `metadata`); enum constants are their snake_case values. `{id}` of an operation on a typed model object (`customer.update(params)`) is not known.",
+    package: "com.stripe:stripe-java",
+    imports: ["com.stripe.model", "com.stripe.net", "com.stripe.StripeClient"],
+    provider: ts.provider,
+    host: ts.host,
+    auth: ts.auth,
+    generatedFrom: "scripts/port-stripe.ts from src/detect/registry/stripe.json",
+    instance: { names: ["StripeClient", "builder"], build: "build" },
+    builders: ["v1"],
+    setters: { packages: ["com.stripe.param"], case: "snake", prefixes: ["set", "add", "put"], fields: { addExpand: "expand", addAllExpand: "expand", putExtraParam: "", putAllExtraParam: "" }, constants: { "*": "snake" } },
+    methods: { ...methods, ...statics },
+  } as IrRegistryEntry;
+}
+
 function write(file: string, entry: IrRegistryEntry): void {
   const { methods, ...head } = entry;
   const lines = Object.entries(methods).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`);
@@ -138,3 +187,4 @@ function write(file: string, entry: IrRegistryEntry): void {
 
 write("src/lang/python/registry/stripe.json", python());
 write("src/lang/php/registry/stripe-php.json", php());
+write("src/lang/jvm/registry/stripe-java.json", java());

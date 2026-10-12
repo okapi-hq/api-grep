@@ -13,12 +13,17 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
 describe("kotlin: an Android project", () => {
   it("reads every source file, leaves build scripts and tests out, and compares the Maven SDKs with the calls", async () => {
     const r = await scanFixture("kotlin/android", { exclude: [] });
-    // no HTTP client or SDK registry is read yet
-    expect(r.calls).toEqual([]);
+    // the SDK calls; the Retrofit interface and OkHttp come with #31 / #32
+    expect(r.calls.map((c) => [c.location.file, c.location.line, c.provider, c.method, c.pathTemplate])).toEqual([
+      ["app/src/main/java/com/example/forecast/data/ForecastRepository.kt", 16, "firebase", "POST", "/v1/projects/{projectId}/databases/(default)/documents/places"],
+      ["core/src/main/kotlin/com/example/core/Analytics.kt", 13, "posthog", "POST", "/batch"],
+    ]);
+    // a data class written to Firestore gives the body
+    expect(r.calls[0]!.body).toMatchObject({ properties: { place_name: { type: "string" }, lat: { type: "number" } }, fromType: "SavedPlace" });
     expect(r.diagnostics).toMatchObject({ filesSeen: 6, filesScanned: 6, skipped: [], unfollowed: [], languages: { kotlin: { filesSeen: 6, filesScanned: 6 } }, complete: true });
     expect(r.coverage?.sdks.map((s) => [s.package, s.ecosystem, s.provider, s.status, s.importSites])).toEqual([
-      ["com.google.firebase:firebase-firestore", "maven", "firebase", "unsupported", 1],
-      ["com.posthog:posthog", "maven", "posthog", "unsupported", 1],
+      ["com.google.firebase:firebase-firestore", "maven", "firebase", "ok", 1],
+      ["com.posthog:posthog", "maven", "posthog", "ok", 1],
       ["com.stripe:stripe-android", "maven", "stripe", "unsupported", 1],
       ["io.sentry:sentry-android", "maven", "sentry", "declared-not-imported", 0],
     ]);

@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/33",
+  "skipped": [],
+  "calls": [
+    { "file": "Billing.kt", "line": 17, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 20, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 21, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 31, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 35, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 45, "provider": "stripe" },
+    { "file": "Billing.kt", "line": 47, "provider": "stripe" }
+  ]
+}

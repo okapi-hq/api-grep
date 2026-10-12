@@ -36,6 +36,63 @@ exports[`regression fixtures > javascript/node 1`] = `
 
 exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
 
+exports[`regression fixtures > kotlin/sdk/cloud 1`] = `
+[
+  "Accounts.kt:12 firebase GET /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "Accounts.kt:14 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "Accounts.kt:16 firebase GET /v1/projects/{projectId}/databases/(default)/documents/events",
+  "Accounts.kt:18 firebase POST /v1/projects/{projectId}/accounts:lookup",
+  "Accounts.kt:26 firebase POST /v1/projects/{projectId}/messages:send",
+  "Storage.kt:19 aws PUT /{Bucket}/{Key}",
+  "Storage.kt:22 aws GET /{Bucket}/{Key}",
+  "Storage.kt:27 aws GET /{Bucket}",
+  "Storage.kt:30 aws GET /",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/llm 1`] = `
+[
+  "Ask.kt:10 openai POST /v1/chat/completions",
+  "Ask.kt:14 openai POST /v1/chat/completions (wrapper:Ask.ask)",
+  "Assistant.kt:15 anthropic POST /v1/messages",
+  "Assistant.kt:24 anthropic POST /v1/messages",
+  "Assistant.kt:27 anthropic POST /v1/messages/count_tokens",
+  "Assistant.kt:38 anthropic GET /v1/models",
+  "Chat.kt:14 openai POST /v1/chat/completions",
+  "Chat.kt:23 openai POST /v1/responses",
+  "Chat.kt:25 openai POST /v1/embeddings",
+  "Chat.kt:27 openai GET /v1/files/{file_id}",
+  "Models.kt:16 google-ai POST /v1beta/models/gemini-2.0-flash:generateContent",
+  "Models.kt:18 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+  "Models.kt:21 aws-bedrock POST /model/{modelId}/converse",
+  "Models.kt:23 aws-bedrock POST /model/{modelId}/converse",
+  "Models.kt:30 aws-bedrock POST /model/{modelId}/invoke",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/messaging 1`] = `
+[
+  "Notifier.kt:23 twilio POST /2010-04-01/Accounts/{AccountSid}/Messages.json",
+  "Notifier.kt:25 sentry POST /api/{projectId}/envelope",
+  "Notifier.kt:29 twilio POST /v2/Services/{ServiceSid}/Verifications",
+  "Notifier.kt:32 slack POST /api/chat.postMessage",
+  "Notifier.kt:33 posthog POST /batch",
+  "Notifier.kt:36 slack POST /api/chat.postMessage",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/payments 1`] = `
+[
+  "Billing.kt:17 stripe POST /v1/customers",
+  "Billing.kt:20 stripe GET /v1/customers/{customer}",
+  "Billing.kt:21 stripe POST /v1/customers/{customer}",
+  "Billing.kt:31 stripe POST /v1/payment_intents",
+  "Billing.kt:35 stripe POST /v1/checkout/sessions",
+  "Billing.kt:45 stripe POST /v1/payment_intents/{intent}/cancel",
+  "Billing.kt:47 stripe GET /v1/customers",
+]
+`;
+
 exports[`regression fixtures > multi-provider-site 1`] = `
 [
   "models.ts:11 unknown GET /models",

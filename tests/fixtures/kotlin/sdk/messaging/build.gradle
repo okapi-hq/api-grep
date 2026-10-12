@@ -1,0 +1,10 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+}
+
+dependencies {
+    implementation 'com.twilio.sdk:twilio:10.6.0'
+    implementation 'com.slack.api:slack-api-client:1.45.3'
+    implementation 'io.sentry:sentry:8.13.0'
+    implementation 'com.posthog.java:posthog:1.2.0'
+}

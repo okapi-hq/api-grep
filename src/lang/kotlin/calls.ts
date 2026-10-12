@@ -101,7 +101,13 @@ function scoped(fn: Expr, lambda: Lambda | undefined, pos: Pos): Expr | undefine
   return fn.k === "name" && RESULT_OF_LAMBDA.has(fn.name) ? invoke : undefined;
 }
 
+/** `URI.create(url)` (an SDK's `endpointOverride`, a base URL): the URL itself. */
+function uri(fn: Expr, args: Arg[]): Expr | undefined {
+  const callee = pathOf(fn);
+  return callee === "URI.create" || callee === "java.net.URI.create" ? positional(args)[0]?.value : undefined;
+}
+
 /** The value a call stands for when it is one of the forms above; undefined for any other call. */
 export function special(fn: Expr, args: Arg[], lambda: Lambda | undefined, pos: Pos): Expr | undefined {
-  return configRead(fn, args) ?? format(fn, args) ?? built(fn, lambda) ?? collection(fn, args, pos) ?? scoped(fn, lambda, pos);
+  return configRead(fn, args) ?? format(fn, args) ?? built(fn, lambda) ?? collection(fn, args, pos) ?? scoped(fn, lambda, pos) ?? uri(fn, args);
 }

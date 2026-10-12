@@ -15,6 +15,11 @@ android {
     }
 }
 
+dependencies {
+    implementation("com.stripe:stripe-java:29.5.0")
+    implementation("software.amazon.awssdk:s3:2.33.0")
+}
+
 tasks.register("publishDocs") {
     doLast {
         uri("https://docs.example.org/upload").toURL().openStream().close()
