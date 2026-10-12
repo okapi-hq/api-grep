@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.6.0";
+export const SCHEMA_VERSION = "1.7.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -162,6 +162,14 @@ export const OperationSchema = z
   })
   .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL." });
 
+export const ClientFromSchema = z
+  .enum(["caller", "manifest"])
+  .meta({
+    id: "ClientFrom",
+    description:
+      "Where the SDK client of a call made on an untyped parameter (`def ask(client, prompt)`, `c: any`) was found. caller: the argument the function's callers in the repository pass, one call per distinct client. manifest: no caller passes a known client, and exactly one SDK the manifests declare has that method.",
+  });
+
 export const CallSchema = z
   .object({
     id: z
@@ -208,6 +216,7 @@ export const CallSchema = z
       .describe("Where the body shape came from: an object literal in the code, a declared type (TypeScript type, Python or PHP class), a value that could not be read, or no body."),
     examples: z.array(ExampleSchema).default([]),
     model: ModelSchema.optional().describe("The model the request names (LLM and other AI APIs); absent when it names none."),
+    clientFrom: ClientFromSchema.optional().describe("Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client."),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
 
@@ -246,6 +255,7 @@ export const ReportSchema = z
 
 export type Language = z.infer<typeof LanguageSchema>;
 export type ClientKind = z.infer<typeof ClientSchema>;
+export type ClientFrom = z.infer<typeof ClientFromSchema>;
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
 export type Operation = z.infer<typeof OperationSchema>;

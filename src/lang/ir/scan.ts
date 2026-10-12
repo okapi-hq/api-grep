@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import { coverageRows, manifestDirs } from "../../coverage.js";
 import { relativePosix } from "../../files.js";
 import { sdkPackages } from "../../normalize/provider.js";
@@ -99,6 +100,17 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
   return calls;
 }
 
+/** Packages declared by the manifests between a file and the scanned directory, read once per directory. */
+function declaredNear(lang: IrLanguage, rootDir: string): (file: string) => Set<string> {
+  const memo = new Map<string, Set<string>>();
+  return (file) => {
+    const dir = path.dirname(file);
+    let out = memo.get(dir);
+    if (!out) memo.set(dir, (out = lang.manifests.declared(manifestDirs(rootDir, [file]), rootDir)));
+    return out;
+  };
+}
+
 /** SDK coverage of the language's ecosystem: the packages its manifests declare and its files import. */
 function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: ModuleModel[], calls: Call[]): SdkCoverage[] {
   const known = sdkPackages(lang.ecosystem);
@@ -134,6 +146,7 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   if (!input.changed) for (const l of leftOut) diag.skip(l);
   const ctx: BuildIrCtx = {
     idx,
+    declared: declaredNear(lang, rootDir),
     envHints: readEnvHints(rootDir),
     rootDir,
     language: lang.id,

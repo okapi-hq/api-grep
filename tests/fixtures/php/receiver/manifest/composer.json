@@ -1,0 +1,6 @@
+{
+  "name": "acme/tagger",
+  "require": {
+    "anthropic-ai/sdk": "^0.3"
+  }
+}

@@ -33,11 +33,11 @@ export const UnfollowedCallSchema = z
     file: z.string(),
     line: z.number(),
     reason: z
-      .enum(["injected-fetch", "injected-client", "wrapper-depth"])
+      .enum(["injected-fetch", "injected-client", "wrapper-depth", "receiver-unknown"])
       .describe(
-        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call.",
+        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have.",
       ),
-    expr: z.string().optional().describe("The callee expression, for injected-fetch and injected-client."),
+    expr: z.string().optional().describe("The callee expression, for injected-fetch, injected-client and receiver-unknown."),
     via: z.string().optional().describe("The wrapper called, for wrapper-depth."),
   })
   .meta({ id: "UnfollowedCall", description: "A call site the scan saw but could not follow to a request." });

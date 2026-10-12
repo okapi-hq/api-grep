@@ -8,7 +8,7 @@ import { PackageJsonReader } from "../../package-json.js";
 import type { Call, Coverage } from "../../report/schema.js";
 
 /** `dependencies` and `peerDependencies` of every package.json between the scanned files and the scanned directory. */
-function declaredPackages(rootDir: string, files: string[], packages: PackageJsonReader): Set<string> {
+export function declaredPackages(rootDir: string, files: string[], packages: PackageJsonReader): Set<string> {
   const out = new Set<string>();
   for (const dir of manifestDirs(rootDir, files)) {
     const json = packages.read(dir);

@@ -88,6 +88,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
+| `receiver.ts` | SDK calls on untyped parameters: the clients callers pass, else the one declared SDK, else `receiver-unknown` (#37) |
 | `build.ts`, `scan.ts` | report `Call`s, the scan driver (per-file errors are diagnostics, never fatal) and SDK coverage |
 
 A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, `src/lang/php/`):
@@ -142,8 +143,9 @@ dataclass, NamedTuple or pydantic model, `self.url` set in `__init__`, `replace(
 
 **Limitations:**
 
-- No type inference beyond annotations: an untyped parameter used as a client (`def run(session): session.post(url)`)
-  is listed in `diagnostics.unfollowed` as `injected-client`.
+- No type inference beyond annotations: an untyped parameter used as an HTTP client (`def run(session):
+  session.post(url)`) is listed in `diagnostics.unfollowed` as `injected-client`. An untyped parameter used as an SDK
+  client is followed to its callers ([below](#sdk-clients-passed-as-untyped-parameters-37)).
 - SDK methods passed as callbacks (`retry(stripe.Customer.create, email=...)`) are not followed; the SDK shows as
   `imported-no-calls` in coverage.
 - `getattr(client, name)(...)`, `**kwargs` forwarded through several layers, and module-level configuration
@@ -175,8 +177,9 @@ arguments, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
 
 **Limitations:**
 
-- Untyped properties and parameters used as clients (`$this->client->post(...)` with an untyped `$client`) are listed
-  as `injected-client`.
+- Untyped properties and parameters used as HTTP clients (`$this->client->post(...)` with an untyped `$client`) are
+  listed as `injected-client`. SDK clients passed as untyped parameters (`function ask($client, $prompt)`) are followed
+  as in Python ([below](#sdk-clients-passed-as-untyped-parameters-37)).
 - Saloon connectors, Laravel `Mail` / `Storage` / notification drivers, AWS command objects (`getCommand`, `execute`),
   `$sdk->createClient('s3')` and PostHog's `init()` host are not followed; SDK coverage shows such packages.
 - Laravel facades are matched by their class (`Illuminate\Support\Facades\Http`, or `Http` without a namespace);
@@ -253,6 +256,44 @@ operation?: {
 | GraphQL (document: type, name, fields) | #35 | not started |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
 
+## SDK clients passed as untyped parameters (#37)
+
+A helper that takes the client as an argument (`def ask(client, prompt): client.messages.create(...)`,
+`function withUntyped(c: any, prompt)`, `function ask($client, $prompt)`) has no type that names the SDK. When the
+receiver of a call is a parameter with no usable type (none, `any` or `unknown`) and the members after it form a
+registry method of two members or more (`messages.create`, `chat.completions.create`), the scan:
+
+1. **Follows the callers**, one level up: every call to the function in the repository (a Python / PHP constructor's
+   callers too, for a client stored on `self` / `$this` by `__init__` / `__construct`), with the parameter bound to the
+   argument at its position. Callers that pass a known SDK client give the call with that client, one call per distinct
+   client (registry entry and base URL given in the code): OpenAI and an OpenAI-compatible client with another
+   `base_url` are two calls at the same location, each with its own provider, host and id. `clientFrom: "caller"`.
+2. **Falls back to the manifests** when no caller passes a known client (an exported library function, a callback, a
+   caller passing its own untyped parameter): if exactly one SDK package the manifests between the file and the scanned
+   directory declare has that method, the call uses it (its first registry entry: `Anthropic`, not
+   `AnthropicBedrock`). `clientFrom: "manifest"`.
+3. **Otherwise** lists the call in `diagnostics.unfollowed` with reason `receiver-unknown` and the callee expression,
+   instead of dropping it.
+
+Decisions:
+
+- The call is reported where the SDK method is called, inside the helper; the helper's other parameters stay dynamic
+  there. A caller whose other arguments flow into the request also gets the call through wrapper expansion
+  (`via: wrapper:ask`), as with a typed parameter; that call needs no `clientFrom` since its client is the caller's own.
+- The issue suggested lowering a `confidence` on manifest matches. The report states facts and has no score, so the
+  fact is `clientFrom` and the weighing is left to the consumer.
+- One member after the parameter (`session.post(url)`) stays an HTTP client verb (`injected-client`): many objects
+  have a `get` or a `post`, few have a `chat.completions.create`.
+- Bounds: 50 callers per function, 4 distinct clients per call. Callers are only followed one level; a client passed
+  through two helpers is found at the outer call site by wrapper expansion and inside the inner helper through the
+  manifests.
+
+| language | status |
+|---|---|
+| Python | callers (functions, methods, constructors), manifests, `receiver-unknown` |
+| PHP | same engine, same behaviour (`tests/fixtures/php/receiver/`) |
+| TypeScript / JavaScript | callers (functions, arrow functions, methods) in the scanned files, `package.json` manifests, `receiver-unknown`; a client stored on `this` by a constructor parameter is not followed yet |
+
 ## How the open issues apply to each language
 
 | issue | TypeScript / JavaScript / HTML | Python | PHP |
@@ -264,6 +305,7 @@ operation?: {
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` |
 | #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same |
+| #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python |
 
 ## Adding a language
 

@@ -1,0 +1,6 @@
+{
+  "name": "acme/assistant",
+  "require": {
+    "openai-php/client": "^0.10"
+  }
+}

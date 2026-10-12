@@ -231,6 +231,10 @@
         "model": {
           "description": "The model the request names (LLM and other AI APIs); absent when it names none.",
           "$ref": "#/definitions/Model"
+        },
+        "clientFrom": {
+          "description": "Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client.",
+          "$ref": "#/definitions/ClientFrom"
         }
       },
       "required": [
@@ -681,6 +685,14 @@
       ],
       "description": "The model a call names, as far as the code tells statically."
     },
+    "ClientFrom": {
+      "type": "string",
+      "enum": [
+        "caller",
+        "manifest"
+      ],
+      "description": "Where the SDK client of a call made on an untyped parameter (`def ask(client, prompt)`, `c: any`) was found. caller: the argument the function's callers in the repository pass, one call per distinct client. manifest: no caller passes a known client, and exactly one SDK the manifests declare has that method."
+    },
     "Stats": {
       "type": "object",
       "properties": {
@@ -907,12 +919,13 @@
           "enum": [
             "injected-fetch",
             "injected-client",
-            "wrapper-depth"
+            "wrapper-depth",
+            "receiver-unknown"
           ],
-          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call."
+          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have."
         },
         "expr": {
-          "description": "The callee expression, for injected-fetch and injected-client.",
+          "description": "The callee expression, for injected-fetch, injected-client and receiver-unknown.",
           "type": "string"
         },
         "via": {

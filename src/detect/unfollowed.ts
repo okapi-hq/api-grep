@@ -6,7 +6,7 @@ import { isFunctionLike } from "../ast/function.js";
 /** A call the scanner saw but could not follow to an HTTP client. */
 export interface Unfollowed {
   node: CallExpression;
-  reason: "injected-fetch" | "wrapper-depth";
+  reason: "injected-fetch" | "wrapper-depth" | "receiver-unknown";
   expr?: string;
   via?: string;
 }
