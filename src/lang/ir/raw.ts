@@ -13,6 +13,8 @@ export interface IrCtx {
   envHints?: Record<string, string>;
   /** The class of the object a method runs on, when it extends the method's own (`self`, `$this`, `static::` bind late). */
   self?: ClassDef;
+  /** Reading a caller's argument for a parameter's values (`param-values.ts`): its own parameters are not followed up. */
+  callerLevel?: boolean;
 }
 
 /** The context for code running on an object of class `cls`. */

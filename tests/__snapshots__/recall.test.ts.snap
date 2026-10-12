@@ -96,6 +96,22 @@ exports[`regression fixtures > php/resolve/mutated-params 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/resolve/param-defaults 1`] = `
+[
+  "Assistant.php:13 openai POST /v1/chat/completions",
+  "Assistant.php:18 openai POST /v1/chat/completions",
+  "Assistant.php:23 openai POST /v1/chat/completions",
+  "Assistant.php:28 api.example-weather.com GET /v2/forecast",
+  "Assistant.php:33 openai POST /v1/chat/completions (wrapper:Assistant.translate)",
+  "Assistant.php:34 openai POST /v1/chat/completions (wrapper:Assistant.translate)",
+  "Assistant.php:39 openai POST /v1/chat/completions (wrapper:Assistant.classify)",
+  "Assistant.php:40 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:41 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:42 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:43 openai POST /v1/chat/completions (wrapper:Assistant.classify)",
+]
+`;
+
 exports[`regression fixtures > php/resolve/string-replace 1`] = `
 [
   "Billing.php:6 api.example-billing.com GET /v1/invoices/{id}",
@@ -253,6 +269,27 @@ exports[`regression fixtures > python/resolve/mutated-kwargs 1`] = `
   "forms.py:42 openai POST /v1/chat/completions",
   "forms.py:50 api.example-shop.com POST /v1/orders",
   "forms.py:57 openai POST /v1/chat/completions",
+]
+`;
+
+exports[`regression fixtures > python/resolve/param-defaults 1`] = `
+[
+  "assistant.py:7 openai POST /v1/chat/completions",
+  "assistant.py:11 openai POST /v1/chat/completions",
+  "assistant.py:15 openai POST /v1/chat/completions",
+  "assistant.py:19 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.py:20 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.py:24 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.py:25 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.py:32 openai POST /v1/chat/completions",
+  "assistant.py:35 openai POST /v1/chat/completions (wrapper:Writer.draft)",
+  "forecast.py:7 api.example-weather.com GET /v2/forecast",
+  "forecast.py:11 api.example-weather.com GET /v2/forecast",
+  "forecast.py:15 api.example-weather.com GET /v2/forecast",
+  "forecast.py:19 api.example-weather.com GET /v2/forecast (wrapper:forecast_pinned)",
+  "forecast.py:20 api.example-weather.com GET /v2/forecast (wrapper:forecast_pinned)",
+  "forecast.py:24 api.example-weather.com GET /v2/forecast (wrapper:forecast_any)",
+  "forecast.py:25 api.example-weather.com GET /v2/forecast (wrapper:forecast_any)",
 ]
 `;
 
@@ -439,6 +476,27 @@ exports[`regression fixtures > resolve/object-method 1`] = `
   "invoices.ts:4 api.example-books.com GET /v3/invoices",
   "invoices.ts:8 oauth.example-books.com POST /realms/{realm}/token",
   "invoices.ts:13 api.example-voice.com POST /call",
+]
+`;
+
+exports[`regression fixtures > resolve/param-defaults 1`] = `
+[
+  "assistant.ts:6 openai POST /v1/chat/completions",
+  "assistant.ts:10 openai POST /v1/chat/completions",
+  "assistant.ts:14 openai POST /v1/chat/completions",
+  "assistant.ts:18 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.ts:19 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.ts:23 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.ts:24 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.ts:31 openai POST /v1/chat/completions",
+  "assistant.ts:35 openai POST /v1/chat/completions (wrapper:Writer.draft)",
+  "forecast.ts:4 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:8 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:12 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:16 api.example-weather.com GET /v2/forecast (wrapper:forecastPinned)",
+  "forecast.ts:17 api.example-weather.com GET /v2/forecast (wrapper:forecastPinned)",
+  "forecast.ts:21 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
+  "forecast.ts:22 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
 ]
 `;
 

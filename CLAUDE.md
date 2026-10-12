@@ -50,6 +50,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
   them to the shape (`src/resolve/object-edits.ts`, `edited-shape.ts`). Rules in `docs/languages.md`.
+- A parameter's values (#39): a body value, model or header that is an unsubstituted parameter reads the literals its
+  callers pass (one level) and its default; callers come from `src/lang/ir/param-values.ts` (IR) and
+  `src/resolve/param-values.ts` (TypeScript references), merged by `src/resolve/param-shape.ts`; several header values
+  go to `Call.headerAlternatives`.
 - `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
   the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action

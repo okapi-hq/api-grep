@@ -118,7 +118,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.7.0            # report format version; readers check the major
+schemaVersion: 1.8.0            # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -194,7 +194,10 @@ A call to a model API also carries `model`: the model names the code gives, read
 (`ChatOpenAI(model=...)`, `Agent("openai:gpt-4o")`), the body (`model`, `modelId`) or the path
 (`/v1beta/models/gemini-2.0-flash:generateContent`). Names behind constants, env var defaults
 (`os.getenv("MODEL", "gpt-4o")`, `process.env.MODEL ?? "gpt-4o"`), settings classes, function returns and
-branches are followed; `dynamic` says some branch could not be read.
+branches are followed, and so is a parameter of the enclosing function: the literals its callers pass and its default
+([#39](docs/languages.md#a-parameters-values-39)); `dynamic` says some branch could not be read. Body values and
+header values read parameters the same way; a header that can take several values lists them in
+`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`).
 
 ```yaml
     model:
@@ -472,7 +475,8 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `unknown`).
 - **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
   flagged, keys set or deleted later in the same function kept (optional when set in a branch,
-  [#38](docs/languages.md#keys-added-after-a-dict-is-built-38)); anything else goes through the checker's declared type. `JSON.stringify`,
+  [#38](docs/languages.md#keys-added-after-a-dict-is-built-38)), a parameter read as the literals its callers pass
+  and its default ([#39](docs/languages.md#a-parameters-values-39)); anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
 - **Provider**: from the SDK registry, else the host through

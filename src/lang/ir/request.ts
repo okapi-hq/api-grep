@@ -7,6 +7,7 @@ import { evaluate } from "./evaluate.js";
 import type { OptionRole, Scoped } from "./language.js";
 import type { Expr, FunctionDef } from "./model.js";
 import type { IrCtx } from "./raw.js";
+import { paramAlternatives } from "./param-values.js";
 import { shapeOf } from "./shape.js";
 import { dictOf, deref, staticKey } from "./values.js";
 
@@ -121,7 +122,7 @@ function collectHeaders(s: Scoped, ctx: IrCtx, out: HeadersResult, depth: number
       out.known = false;
       continue;
     }
-    addHeader(out, key, evaluate(en.value, dict.fn, ctx));
+    addHeader(out, key, evaluate(en.value, dict.fn, ctx), paramAlternatives(en.value, dict.fn, ctx));
   }
 }
 
