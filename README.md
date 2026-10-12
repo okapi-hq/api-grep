@@ -119,7 +119,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.8.0            # report format version; readers check the major
+schemaVersion: 1.10.0           # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -197,7 +197,10 @@ A call to a model API also carries `model`: the model names the code gives, read
 (`ChatOpenAI(model=...)`, `Agent("openai:gpt-4o")`), the body (`model`, `modelId`) or the path
 (`/v1beta/models/gemini-2.0-flash:generateContent`). Names behind constants, env var defaults
 (`os.getenv("MODEL", "gpt-4o")`, `process.env.MODEL ?? "gpt-4o"`), settings classes, function returns and
-branches are followed; `dynamic` says some branch could not be read.
+branches are followed, and so is a parameter of the enclosing function: the literals its callers pass and its default
+([#39](docs/languages.md#a-parameters-values-39)); `dynamic` says some branch could not be read. Body values and
+header values read parameters the same way; a header that can take several values lists them in
+`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`).
 
 ```yaml
     model:
@@ -233,6 +236,17 @@ calls. The field is in the format; no protocol is detected yet: JSON-RPC
 operations together (a JSON-RPC batch array) gives one call per operation at the same location, each with
 `batch: true`. `operationId` is unrelated: the OpenAPI id of an SDK method. The reasons are in
 [docs/languages.md](docs/languages.md#operations-the-url-does-not-name-30).
+
+An SDK call made on an untyped parameter (`def ask(client, prompt): client.messages.create(...)`,
+`(c: any) => c.chat.completions.create(...)`) carries `clientFrom`, which says where its client was found:
+
+```yaml
+    clientFrom: caller           # caller: what the function's callers pass (one call per distinct client)
+                                 # manifest: no caller passes a known client; the one declared SDK with that method
+```
+
+A call whose client neither the callers nor the manifests settle is listed in `diagnostics.unfollowed` as
+`receiver-unknown`. Details in [docs/languages.md](docs/languages.md#sdk-clients-passed-as-untyped-parameters-37).
 
 ### Contract
 
@@ -483,7 +497,9 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   placeholders and are listed under `dynamic` with their origin (`param`, `call`, `env`,
   `unknown`).
 - **Body**: object literals first (literal values become `enum`), spreads merged, computed keys
-  flagged; anything else goes through the checker's declared type. `JSON.stringify`,
+  flagged, keys set or deleted later in the same function kept (optional when set in a branch,
+  [#38](docs/languages.md#keys-added-after-a-dict-is-built-38)), a parameter read as the literals its callers pass
+  and its default ([#39](docs/languages.md#a-parameters-values-39)); anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
 - **Provider**: from the SDK registry, else the host through
@@ -575,7 +591,8 @@ A scanned repository is treated as hostile input:
   made the resolver throw (`internal-error`). The rest of the report is still written.
 - `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
   an HTTP client object received without a type that names it (`injected-client`: `self.session.post(url)`),
-  and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
+  an SDK method called on an untyped parameter whose client no caller and no single declared SDK settles
+  (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
@@ -622,12 +639,12 @@ package. `--changed-since` scans have no coverage section.
 - `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
   a `window.fetch = ...` override are not requests and are not reported.
 - SDK detection only covers the packages with a registry ([docs/sdk-support.md](docs/sdk-support.md)).
-- Python has no type checker: a client received as an untyped parameter is listed as
-  `injected-client`, and SDK methods passed as callbacks (`retry(stripe.Customer.create, ...)`),
+- Python has no type checker: an HTTP client received as an untyped parameter is listed as
+  `injected-client` (an SDK client is followed to its callers, `clientFrom`), and SDK methods passed as callbacks (`retry(stripe.Customer.create, ...)`),
   `getattr` calls and module-level configuration (`openai.base_url = ...`) are not followed. See
   [docs/languages.md](docs/languages.md#python) for the full list.
-- PHP has no type checker either: untyped properties and parameters used as clients are listed as
-  `injected-client`; Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
+- PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
+  `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: Retrofit and the JVM SDKs are not read yet; a client injected by a DI framework (Hilt,
   Spring) is known by its type only, so its interceptors and base URL are not followed (#46). The

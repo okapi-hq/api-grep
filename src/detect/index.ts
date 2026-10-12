@@ -9,6 +9,7 @@ import { detectGotKy } from "./got-ky.js";
 import { detectJquery } from "./jquery.js";
 import { detectNodeHttp } from "./node-http.js";
 import type { Registry } from "./registry/index.js";
+import { receiverOf, substitutedReceiver, type ReceiverResolver } from "./receiver.js";
 import { detectSdk } from "./sdk.js";
 import { unfollowedFetch, type Unfollowed } from "./unfollowed.js";
 import { detectXhr } from "./xhr.js";
@@ -50,11 +51,13 @@ export function detectNode(node: CallExpression | NewExpression, registry: Regis
     const raw = detect(node, callee, registry, ctx);
     if (raw) return { raw, callee };
   }
-  return { raw: null, callee };
+  // a wrapper expansion binds an untyped client parameter to the caller's argument
+  const viaArg = ctx.subst && Node.isCallExpression(node) ? substitutedReceiver(node, callee, registry, ctx.subst) : null;
+  return { raw: viaArg, callee };
 }
 
-/** Runs every detector over each call / new expression of a file. */
-export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf): DetectResult {
+/** Runs every detector over each call / new expression of a file; `receivers` follows SDK clients given as untyped parameters. */
+export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf, receivers?: ReceiverResolver): DetectResult {
   const calls: RawCall[] = [];
   const candidates: WrapperCandidate[] = [];
   const unfollowed: Unfollowed[] = [];
@@ -66,11 +69,19 @@ export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf):
       continue;
     }
     if (!Node.isCallExpression(node)) continue;
-    if (wrapperFunction(callee)) candidates.push({ node, callee });
-    else {
-      const u = unfollowedFetch(node, callee);
-      if (u) unfollowed.push(u);
+    if (wrapperFunction(callee)) {
+      candidates.push({ node, callee });
+      continue;
     }
+    const receiver = receivers ? receiverOf(node, callee, registry) : undefined;
+    if (receiver) {
+      const r = receivers!.resolve(node, receiver);
+      calls.push(...r.raws);
+      if (r.unknown) unfollowed.push({ node, reason: "receiver-unknown", expr: node.getExpression().getText().replace(/\s+/g, "").slice(0, 80) });
+      continue;
+    }
+    const u = unfollowedFetch(node, callee);
+    if (u) unfollowed.push(u);
   }
   return { calls, candidates, unfollowed };
 }

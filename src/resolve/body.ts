@@ -4,7 +4,9 @@ import { bindingElementValue, declarationsOf, importedVariable, paramSubstitutio
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { collectAppendedKeys } from "./appended.js";
+import { withEdits } from "./edited-shape.js";
 import { localReturn } from "./local-return.js";
+import { paramShape } from "./param-values.js";
 import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
 import { isNullable, typeToShape } from "./type-shape.js";
 
@@ -114,8 +116,12 @@ function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: Dy
   if (imported) return shapeOf(imported, ctx, depth + 1, dynamic);
   for (const decl of declarationsOf(u)) {
     const sub = paramSubstitution(decl, ctx);
-    if (sub.isParam) return sub.expr ? shapeOf(sub.expr, ctx, depth + 1, dynamic) : fromChecker(u, "param", u.getText());
-    if (Node.isVariableDeclaration(decl) && decl.getInitializer()) return shapeOf(decl.getInitializer()!, ctx, depth + 1, dynamic);
+    // the callers' own dynamic parts belong to them, not to this request
+    if (sub.isParam) return sub.expr ? shapeOf(sub.expr, ctx, depth + 1, dynamic) : paramShape(decl, ctx, (e, c) => shapeOf(e, c, depth + 1), fromChecker(u, "param", u.getText()));
+    if (Node.isVariableDeclaration(decl) && decl.getInitializer()) {
+      const r = shapeOf(decl.getInitializer()!, ctx, depth + 1, dynamic);
+      return { ...r, shape: withEdits(r.shape, decl, u, (e) => shapeOf(e, ctx, depth + 1, dynamic), dynamic) };
+    }
     const bound = bindingElementValue(decl, ctx);
     if (bound) return shapeOf(bound, ctx, depth + 1, dynamic);
   }

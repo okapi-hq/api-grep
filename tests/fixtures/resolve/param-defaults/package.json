@@ -1,0 +1,8 @@
+{
+  "name": "param-defaults-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "openai": "5.11.0"
+  }
+}

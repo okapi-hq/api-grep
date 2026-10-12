@@ -1,4 +1,4 @@
-import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel } from "./model.js";
+import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
 import { dictValue } from "./values.js";
@@ -12,7 +12,7 @@ export type Root =
   | { kind: "class"; cls: ClassDef }
   | { kind: "module"; mod: ModuleModel }
   /** An untyped parameter: whatever the caller passes. */
-  | { kind: "param"; name: string }
+  | { kind: "param"; name: string; param?: Param; fn?: FunctionDef }
   /** `self.x` with no known value or type. */
   | { kind: "field"; name: string }
   /** A name defined nowhere in the project: a builtin (`open`, `curl_init`). */
@@ -42,7 +42,7 @@ function bindingChain(b: Binding, name: string, ctx: IrCtx, depth: number): Chai
       const typed = b.param.type ? typeChain(b.param.type, b.fn, ctx, depth + 1) : UNKNOWN;
       if (resolved(typed)) return typed;
       // `cache: MutableMap<...>` in a typed language: a value the type names, not a client received from outside
-      return b.param.type && ctx.idx.lang.typedParams ? UNKNOWN : { root: { kind: "param", name }, segs: [] };
+      return b.param.type && ctx.idx.lang.typedParams ? UNKNOWN : { root: { kind: "param", name, param: b.param, fn: b.fn }, segs: [] };
     }
     case "value": {
       const c = valueChain(b.assign.value, b.fn, ctx, depth + 1);

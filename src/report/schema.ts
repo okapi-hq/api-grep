@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.8.0";
+export const SCHEMA_VERSION = "1.10.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -178,6 +178,14 @@ export const ClientPartSchema = z
   })
   .meta({ id: "ClientPart", description: "A query parameter or header the client adds to every request it sends, rather than the call itself." });
 
+export const ClientFromSchema = z
+  .enum(["caller", "manifest"])
+  .meta({
+    id: "ClientFrom",
+    description:
+      "Where the SDK client of a call made on an untyped parameter (`def ask(client, prompt)`, `c: any`) was found. caller: the argument the function's callers in the repository pass, one call per distinct client. manifest: no caller passes a known client, and exactly one SDK the manifests declare has that method.",
+  });
+
 export const CallSchema = z
   .object({
     id: z
@@ -210,6 +218,12 @@ export const CallSchema = z
     queryShape: ShapeSchema.optional(),
     headers: z.array(z.string()).describe("Header names, lower case."),
     headerValues: z.record(z.string(), z.string().nullable()).default({}).describe("Literal header values; null for credentials and dynamic values."),
+    headerAlternatives: z
+      .record(z.string(), z.array(z.string()))
+      .optional()
+      .describe(
+        "Headers that can take several values, each with every literal value the code gives (a parameter's default and the arguments its callers pass). `headerValues` holds the first one, or null when some value cannot be read.",
+      ),
     authScheme: z.enum(["bearer", "apikey", "basic", "none", "unknown"]),
     body: ShapeSchema.optional(),
     bodyFromType: z.string().optional().describe("TypeScript type the body was read from."),
@@ -228,6 +242,7 @@ export const CallSchema = z
       .array(ClientPartSchema)
       .optional()
       .describe("Which of `query` and `headers` the client adds rather than the call (an interceptor, a client default); absent when none."),
+    clientFrom: ClientFromSchema.optional().describe("Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client."),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
 
@@ -266,6 +281,7 @@ export const ReportSchema = z
 
 export type Language = z.infer<typeof LanguageSchema>;
 export type ClientKind = z.infer<typeof ClientSchema>;
+export type ClientFrom = z.infer<typeof ClientFromSchema>;
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
 export type Operation = z.infer<typeof OperationSchema>;

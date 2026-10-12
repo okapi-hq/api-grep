@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/39",
+  "calls": [
+    {"file": "Assistant.php", "line": 13, "provider": "openai"},
+    {"file": "Assistant.php", "line": 18, "provider": "openai"},
+    {"file": "Assistant.php", "line": 23, "provider": "openai"},
+    {"file": "Assistant.php", "line": 28, "provider": "api.example-weather.com"}
+  ]
+}

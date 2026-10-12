@@ -1,0 +1,2262 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge and unset 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "max_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.2,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Linen compass quiet island haven onyx.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 64,
+            "max_tokens": 64,
+            "messages": [
+              {
+                "content": "Summit prairie glacier glacier willow umber.",
+                "role": "user",
+              },
+              {
+                "content": "Island umber koala quill horizon amber.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0.2,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "31ec95d75b7f",
+      "location": {
+        "col": 12,
+        "file": "Assistant.php",
+        "language": "php",
+        "line": 18,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "openai-php/client",
+        "version": "^0.10",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              128,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1",
+            ],
+            "type": "string",
+          },
+          "user": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "messages",
+          "model",
+          "max_tokens",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "user",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 128,
+            "messages": [
+              {
+                "content": "Glacier cedar echo indigo birch fjord.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_tokens": 128,
+            "messages": [
+              {
+                "content": "Cedar meadow nectar juniper yarrow copper.",
+                "role": "user",
+              },
+              {
+                "content": "Island walnut fable inlet onyx ember.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1",
+            "user": "delta dune",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "d7e161a2f10a",
+      "location": {
+        "col": 12,
+        "file": "Assistant.php",
+        "language": "php",
+        "line": 31,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "openai-php/client",
+        "version": "^0.10",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "item": {
+            "type": "string",
+          },
+          "quantity": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "item",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "guzzle",
+      "dynamic": [
+        {
+          "name": "item",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "item": "meadow marble",
+            "quantity": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "40f1e409b144",
+      "location": {
+        "col": 12,
+        "file": "Assistant.php",
+        "language": "php",
+        "line": 39,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/orders",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/orders",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "composer",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai-php/client",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "php": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.10.0",
+  "stats": {
+    "byClient": {
+      "guzzle": 1,
+      "sdk": 2,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "php": 3,
+    },
+    "byProvider": {
+      "api.example-shop.com": 1,
+      "openai": 2,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`edited request arguments: python > keeps keys set in branches, optional unless every branch sets them 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "max_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.2,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Hollow canyon horizon cedar willow summit.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 64,
+            "max_tokens": 64,
+            "messages": [
+              {
+                "content": "Walnut jetty orbit saffron atlas river.",
+                "role": "user",
+              },
+              {
+                "content": "Horizon haven prairie sable opal verdant.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0.2,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "1f036cd2e5f1",
+      "location": {
+        "col": 12,
+        "file": "branches.py",
+        "language": "python",
+        "line": 13,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+              "o3",
+            ],
+            "type": "string",
+          },
+          "n": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "messages",
+          "model",
+          "n",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Pebble jasper dune summit kestrel fable.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "n": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Jetty birch velvet canyon glacier quill.",
+                "role": "user",
+              },
+            ],
+            "model": "o3",
+            "n": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "80fcfc6fad55",
+      "location": {
+        "col": 12,
+        "file": "branches.py",
+        "language": "python",
+        "line": 23,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+          "o3",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "messages",
+          "model",
+          "max_tokens",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 64,
+            "messages": [
+              {
+                "content": "Mosaic canyon amber pebble marble compass.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "7125afd35f70",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 11,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1",
+            ],
+            "type": "string",
+          },
+          "seed": {
+            "enum": [
+              7,
+            ],
+            "type": "integer",
+          },
+          "temperature": {
+            "enum": [
+              0.1,
+            ],
+            "type": "number",
+          },
+          "top_p": {
+            "enum": [
+              0.9,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "messages",
+          "model",
+          "seed",
+          "temperature",
+          "top_p",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Valley fable marble raven willow copper.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1",
+            "seed": 7,
+            "temperature": 0.1,
+            "top_p": 0.9,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "7ef23addac5b",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 18,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              128,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1-mini",
+            ],
+            "type": "string",
+          },
+          "stream": {
+            "enum": [
+              false,
+            ],
+            "type": "boolean",
+          },
+          "user": {
+            "hint": "user",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "max_tokens",
+          "stream",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "user",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 128,
+            "messages": [
+              {
+                "content": "Kestrel timber valley pebble umber prairie.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1-mini",
+            "stream": false,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_tokens": 128,
+            "messages": [
+              {
+                "content": "Opal verdant compass linen prairie haven.",
+                "role": "user",
+              },
+              {
+                "content": "Verdant maple haven harbor copper yonder.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1-mini",
+            "stream": false,
+            "user": "koala amber",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "d06028242e9a",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 28,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.3,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Birch prairie onyx tundra saffron wander.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Mosaic delta copper copper zephyr ultra.",
+                "role": "user",
+              },
+              {
+                "content": "Maple cedar summit pebble lantern falcon.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o",
+            "temperature": 0.3,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "1f81e3a78802",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 37,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "...kwargs",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "bbca9a0e5815",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 42,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "item": {
+            "hint": "item_id",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "priority": {
+            "enum": [
+              "high",
+            ],
+            "type": "string",
+          },
+          "quantity": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "item",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "requests",
+      "dynamic": [
+        {
+          "name": "item",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "item": "vn0wdstf",
+            "quantity": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "item": "pxpenysg",
+            "priority": "high",
+            "quantity": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "c2d242a3eb59",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 50,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/orders",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/orders",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "origin": "param",
+                  "type": "dynamic",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Lagoon echo opal indigo beacon sable.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "f423d022f0a1",
+      "location": {
+        "col": 12,
+        "file": "forms.py",
+        "language": "python",
+        "line": 57,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "1.99.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 8,
+        "declared": true,
+        "ecosystem": "pypi",
+        "importSites": 2,
+        "imported": true,
+        "package": "openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "python": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.10.0",
+  "stats": {
+    "byClient": {
+      "requests": 1,
+      "sdk": 8,
+    },
+    "byHostKind": {
+      "literal": 9,
+    },
+    "byLanguage": {
+      "python": 9,
+    },
+    "byProvider": {
+      "api.example-shop.com": 1,
+      "openai": 8,
+    },
+    "callsFound": 9,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 9,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`edited request arguments: typescript and javascript > reads property assignments, Object.assign and delete before the call 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "item": {
+            "hint": "item",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "priority": {
+            "enum": [
+              "high",
+            ],
+            "type": "string",
+          },
+          "quantity": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "item",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "fetch",
+      "dynamic": [
+        {
+          "name": "item",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "item": "willow quiet",
+            "quantity": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "item": "zephyr quartz",
+            "priority": "high",
+            "quantity": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "b64dbb4e8108",
+      "location": {
+        "col": 10,
+        "file": "order.js",
+        "language": "javascript",
+        "line": 5,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/orders",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/orders",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "max_tokens": {
+            "enum": [
+              64,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Harbor zenith ridge opal amber umber.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 64,
+            "max_tokens": 64,
+            "messages": [
+              {
+                "content": "Anchor quill raven horizon beacon verdant.",
+                "role": "user",
+              },
+              {
+                "content": "Atlas summit indigo hollow saffron zephyr.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "360af0b2c223",
+      "location": {
+        "col": 10,
+        "file": "params.ts",
+        "language": "typescript",
+        "line": 9,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+              "o3",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "messages",
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Summit fable birch meadow meadow juniper.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Hollow sable timber horizon nectar opal.",
+                "role": "user",
+              },
+            ],
+            "model": "o3",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "a45a8f59024e",
+      "location": {
+        "col": 10,
+        "file": "params.ts",
+        "language": "typescript",
+        "line": 19,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+          "o3",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1",
+            ],
+            "type": "string",
+          },
+          "seed": {
+            "enum": [
+              7,
+            ],
+            "type": "integer",
+          },
+          "user": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "messages",
+          "seed",
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "user",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Canyon estuary zephyr jetty verdant atlas.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1",
+            "seed": 7,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Glacier timber linen xenon atlas meadow.",
+                "role": "user",
+              },
+              {
+                "content": "Onyx timber ridge zephyr yonder zenith.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1",
+            "seed": 7,
+            "user": "willow lagoon",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "07143d6d3349",
+      "location": {
+        "col": 10,
+        "file": "params.ts",
+        "language": "typescript",
+        "line": 27,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Indigo umber harbor compass estuary glacier.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "cc1f147610c2",
+      "location": {
+        "col": 22,
+        "file": "params.ts",
+        "language": "typescript",
+        "line": 32,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Valley pebble hollow kestrel dune lagoon.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "db9c33e34fe0",
+      "location": {
+        "col": 10,
+        "file": "params.ts",
+        "language": "typescript",
+        "line": 45,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 5,
+        "declared": true,
+        "ecosystem": "npm",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "javascript": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+      "typescript": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.10.0",
+  "stats": {
+    "byClient": {
+      "fetch": 1,
+      "sdk": 5,
+    },
+    "byHostKind": {
+      "literal": 6,
+    },
+    "byLanguage": {
+      "javascript": 1,
+      "typescript": 5,
+    },
+    "byProvider": {
+      "api.example-shop.com": 1,
+      "openai": 5,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 6,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

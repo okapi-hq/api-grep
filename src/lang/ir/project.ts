@@ -1,3 +1,4 @@
+import { editedAssign, editedParam, editedUnbound } from "./edits.js";
 import type { IrLanguage } from "./language.js";
 import type { Assign, ClassDef, Expr, FunctionDef, ModuleModel, Param } from "./model.js";
 
@@ -116,7 +117,7 @@ export function lastAssign(assigns: Assign[], target: string, at: number | undef
   let before: Assign | undefined;
   let first: Assign | undefined;
   for (const a of assigns) {
-    if (a.target !== target) continue;
+    if (a.target !== target || a.edit) continue;
     first ??= a;
     if (at === undefined || a.offset < at) before = a;
   }
@@ -128,7 +129,7 @@ const MAX_REEXPORTS = 6;
 /** A variable, function or class the module itself declares at top level. */
 function ownMember(mod: ModuleModel, name: string): Binding | undefined {
   const a = lastAssign(mod.top.assigns, name, undefined);
-  if (a) return { kind: "value", assign: a, fn: mod.top };
+  if (a) return { kind: "value", assign: editedAssign(mod.top, a, undefined), fn: mod.top };
   const fn = mod.functions.get(name);
   if (fn) return { kind: "function", fn };
   const cls = mod.classes.get(name);
@@ -187,15 +188,20 @@ export function lookup(name: string, fn: FunctionDef, at: number | undefined, id
   const local = lastAssign(fn.assigns, name, at);
   const param = fn.params.find((p) => p.name === name);
   // a parameter reassigned only later (`$url = $response->getHeader(...)` in a loop) is still the parameter here
-  if (param && (!local || (at !== undefined && local.offset >= at))) return { kind: "param", fn, param };
-  if (local) return { kind: "value", assign: local, fn };
+  if (param && (!local || (at !== undefined && local.offset >= at))) {
+    const edited = editedParam(fn, param, at);
+    return edited ? { kind: "value", assign: edited, fn } : { kind: "param", fn, param };
+  }
+  if (local) return { kind: "value", assign: editedAssign(fn, local, at), fn };
   if (visibleInParent(fn, name)) return lookup(name, fn.parent!, fn.pos.offset, idx);
   const mod = fn.module;
   if (fn === mod.top || idx.lang.moduleVarsVisible || !name.startsWith("$")) {
     const b = moduleMember(mod, name, idx);
     if (b.kind !== "none") return b;
   }
-  return name.startsWith("$") ? { kind: "none" } : idx.global(name);
+  const b = name.startsWith("$") ? ({ kind: "none" } as const) : idx.global(name);
+  const unbound = b.kind === "none" ? editedUnbound(fn, name, at) : undefined;
+  return unbound ? { kind: "value", assign: unbound, fn } : b;
 }
 
 /** The field `name` of a class or its project base classes: its values, with the method each is assigned in. */

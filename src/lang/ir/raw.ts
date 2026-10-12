@@ -1,4 +1,4 @@
-import type { ClientKind } from "../../report/schema.js";
+import type { ClientFrom, ClientKind } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding } from "../../types.js";
 import type { IrMethodSpec, IrRegistryEntry, OptionRole, Scoped } from "./language.js";
 import type { CallExpr, ClassDef, FunctionDef, Param } from "./model.js";
@@ -13,6 +13,10 @@ export interface IrCtx {
   envHints?: Record<string, string>;
   /** The class of the object a method runs on, when it extends the method's own (`self`, `$this`, `static::` bind late). */
   self?: ClassDef;
+  /** Packages the manifests of a file's directories declare, as `normalizePackage` writes them. */
+  declared?: (file: string) => Set<string>;
+  /** Reading a caller's argument for a parameter's values (`param-values.ts`): its own parameters are not followed up. */
+  callerLevel?: boolean;
 }
 
 /** The context for code running on an object of class `cls`. */
@@ -87,6 +91,8 @@ export interface IrRaw {
   inputs: Scoped[];
   /** The model when it is not a body property (an agent's, a routed library's). */
   model?: Scoped;
+  /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
+  clientFrom?: ClientFrom;
 }
 
 export function withSubst(ctx: IrCtx, subst: Subst | undefined): IrCtx {

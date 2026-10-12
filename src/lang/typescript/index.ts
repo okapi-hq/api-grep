@@ -2,6 +2,7 @@ import path from "node:path";
 import { ts, type Node, type SourceFile } from "ts-morph";
 import { buildCall, type BuildCtx } from "../../build-call.js";
 import { detectFile } from "../../detect/index.js";
+import { ReceiverResolver } from "../../detect/receiver.js";
 import { defaultRegistry, type Registry } from "../../detect/registry/index.js";
 import { selectChanged } from "../../git.js";
 import { relativePosix } from "../../files.js";
@@ -15,7 +16,7 @@ import { expandWrappers } from "../../wrappers/detect.js";
 import { errorText } from "../files.js";
 import { formCall } from "../html/forms.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
-import { sdkCoverage } from "./coverage.js";
+import { declaredPackages, sdkCoverage } from "./coverage.js";
 
 /** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
 function parseProblem(sf: SourceFile): string | undefined {
@@ -30,15 +31,27 @@ function lineOf(node: Node): number {
   return node.getSourceFile().getLineAndColumnAtPos(node.getStart()).line;
 }
 
+/** npm packages declared by the package.json files between a file and the scanned directory, read once per directory. */
+function declaredNear(rootDir: string, packages: PackageJsonReader): (file: string) => Set<string> {
+  const memo = new Map<string, Set<string>>();
+  return (file) => {
+    const dir = path.dirname(file);
+    let out = memo.get(dir);
+    if (!out) memo.set(dir, (out = declaredPackages(rootDir, [file], packages)));
+    return out;
+  };
+}
+
 interface Detected {
   raws: RawCall[];
   scanned: SourceFile[];
 }
 
 /** Runs every detector on each file; a file that cannot be read or makes a detector throw is skipped, not fatal. */
-function detectAll(files: SourceFile[], registry: Registry, input: LanguageScanInput): Detected {
+function detectAll(files: SourceFile[], registry: Registry, input: LanguageScanInput, packages: PackageJsonReader): Detected {
   const raws: RawCall[] = [];
   const scanned: SourceFile[] = [];
+  const receivers = new ReceiverResolver(files, registry, declaredNear(input.rootDir, packages));
   for (const sf of files) {
     const file = relativePosix(input.rootDir, sf.getFilePath());
     try {
@@ -47,8 +60,8 @@ function detectAll(files: SourceFile[], registry: Registry, input: LanguageScanI
         input.diag.skip({ file, reason: "parse-error", detail: problem });
         continue;
       }
-      const { calls, candidates, unfollowed } = detectFile(sf, registry);
-      const expanded = input.opts.wrappers !== false ? expandWrappers(candidates, registry) : { calls: [], unfollowed: [] };
+      const { calls, candidates, unfollowed } = detectFile(sf, registry, sf, receivers);
+      const expanded = input.opts.wrappers !== false ? expandWrappers(candidates, registry, receivers) : { calls: [], unfollowed: [] };
       raws.push(...calls, ...expanded.calls);
       for (const u of [...unfollowed, ...expanded.unfollowed]) input.diag.unfollow({ file, line: lineOf(u.node), reason: u.reason, expr: u.expr, via: u.via });
       scanned.push(sf);
@@ -128,9 +141,9 @@ function scanTypeScript(input: LanguageScanInput): LanguageScanResult | undefine
   const registry = opts.registry ?? defaultRegistry();
   const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude, languages });
   const { files, pages, seen } = filesInScope(loaded, input);
-  const { raws, scanned } = detectAll(files, registry, input);
-  const scannedPaths = new Set(scanned.map((sf) => sf.getFilePath() as string));
   const packages = new PackageJsonReader(rootDir);
+  const { raws, scanned } = detectAll(files, registry, input, packages);
+  const scannedPaths = new Set(scanned.map((sf) => sf.getFilePath() as string));
   const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: (file, name) => packages.versionOf(file, name) };
   const calls = [...buildAll(raws, ctx, diag), ...formCalls(loaded, pages, scannedPaths, rootDir)];
   const plainPages = pages.filter((p) => !loaded.html.get(p)!.script);

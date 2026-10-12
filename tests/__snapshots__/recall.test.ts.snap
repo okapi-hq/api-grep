@@ -113,6 +113,19 @@ exports[`regression fixtures > negatives/test-files 1`] = `[]`;
 
 exports[`regression fixtures > php/negatives 1`] = `[]`;
 
+exports[`regression fixtures > php/receiver/manifest 1`] = `
+[
+  "Tagger.php:9 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > php/receiver/one-caller 1`] = `
+[
+  "Ask.php:9 openai POST /v1/chat/completions",
+  "Ask.php:15 openai POST /v1/chat/completions (wrapper:ask)",
+]
+`;
+
 exports[`regression fixtures > php/resolve/class-base-url 1`] = `
 [
   "Gladia.php:18 gladia POST /v2/upload",
@@ -144,6 +157,30 @@ exports[`regression fixtures > php/resolve/helper-url 1`] = `
 exports[`regression fixtures > php/resolve/late-binding 1`] = `
 [
   "ChatTransport.php:11 api.example-chat.com POST /v2/bot/message/push",
+]
+`;
+
+exports[`regression fixtures > php/resolve/mutated-params 1`] = `
+[
+  "Assistant.php:18 openai POST /v1/chat/completions",
+  "Assistant.php:31 openai POST /v1/chat/completions",
+  "Assistant.php:39 api.example-shop.com POST /v1/orders",
+]
+`;
+
+exports[`regression fixtures > php/resolve/param-defaults 1`] = `
+[
+  "Assistant.php:13 openai POST /v1/chat/completions",
+  "Assistant.php:18 openai POST /v1/chat/completions",
+  "Assistant.php:23 openai POST /v1/chat/completions",
+  "Assistant.php:28 api.example-weather.com GET /v2/forecast",
+  "Assistant.php:33 openai POST /v1/chat/completions (wrapper:Assistant.translate)",
+  "Assistant.php:34 openai POST /v1/chat/completions (wrapper:Assistant.translate)",
+  "Assistant.php:39 openai POST /v1/chat/completions (wrapper:Assistant.classify)",
+  "Assistant.php:40 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:41 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:42 api.example-weather.com GET /v2/forecast (wrapper:Assistant.forecast)",
+  "Assistant.php:43 openai POST /v1/chat/completions (wrapper:Assistant.classify)",
 ]
 `;
 
@@ -231,6 +268,44 @@ exports[`regression fixtures > python/models 1`] = `
 
 exports[`regression fixtures > python/negatives 1`] = `[]`;
 
+exports[`regression fixtures > python/receiver/ambiguous 1`] = `[]`;
+
+exports[`regression fixtures > python/receiver/constructor 1`] = `
+[
+  "bot.py:9 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > python/receiver/different-clients 1`] = `
+[
+  "translate.py:5 openai POST /v1/chat/completions",
+  "translate.py:5 groq POST /openai/v1/chat/completions",
+  "translate.py:12 openai POST /v1/chat/completions (wrapper:translate)",
+  "translate.py:17 groq POST /openai/v1/chat/completions (wrapper:translate)",
+]
+`;
+
+exports[`regression fixtures > python/receiver/manifest 1`] = `
+[
+  "tagging.py:2 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > python/receiver/one-caller 1`] = `
+[
+  "app.py:5 anthropic POST /v1/messages",
+  "app.py:14 anthropic POST /v1/messages (wrapper:ask)",
+]
+`;
+
+exports[`regression fixtures > python/receiver/same-client 1`] = `
+[
+  "helpers.py:2 openai POST /v1/chat/completions",
+  "jobs.py:8 openai POST /v1/chat/completions (wrapper:summarize)",
+  "jobs.py:12 openai POST /v1/chat/completions (wrapper:summarize)",
+]
+`;
+
 exports[`regression fixtures > python/requests/hardened 1`] = `
 [
   "notify.py:5 hooks.example-chat.com POST /notify",
@@ -290,6 +365,41 @@ exports[`regression fixtures > python/resolve/late-binding 1`] = `
   "api.py:8 internal GET /{path}",
   "api.py:18 billing.example.com GET /v2/invoices (wrapper:BaseAPI._get)",
   "api.py:21 billing.example.com POST /v2/refunds",
+]
+`;
+
+exports[`regression fixtures > python/resolve/mutated-kwargs 1`] = `
+[
+  "branches.py:13 openai POST /v1/chat/completions",
+  "branches.py:23 openai POST /v1/chat/completions",
+  "forms.py:11 openai POST /v1/chat/completions",
+  "forms.py:18 openai POST /v1/chat/completions",
+  "forms.py:28 openai POST /v1/chat/completions",
+  "forms.py:37 openai POST /v1/chat/completions",
+  "forms.py:42 openai POST /v1/chat/completions",
+  "forms.py:50 api.example-shop.com POST /v1/orders",
+  "forms.py:57 openai POST /v1/chat/completions",
+]
+`;
+
+exports[`regression fixtures > python/resolve/param-defaults 1`] = `
+[
+  "assistant.py:7 openai POST /v1/chat/completions",
+  "assistant.py:11 openai POST /v1/chat/completions",
+  "assistant.py:15 openai POST /v1/chat/completions",
+  "assistant.py:19 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.py:20 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.py:24 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.py:25 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.py:32 openai POST /v1/chat/completions",
+  "assistant.py:35 openai POST /v1/chat/completions (wrapper:Writer.draft)",
+  "forecast.py:7 api.example-weather.com GET /v2/forecast",
+  "forecast.py:11 api.example-weather.com GET /v2/forecast",
+  "forecast.py:15 api.example-weather.com GET /v2/forecast",
+  "forecast.py:19 api.example-weather.com GET /v2/forecast (wrapper:forecast_pinned)",
+  "forecast.py:20 api.example-weather.com GET /v2/forecast (wrapper:forecast_pinned)",
+  "forecast.py:24 api.example-weather.com GET /v2/forecast (wrapper:forecast_any)",
+  "forecast.py:25 api.example-weather.com GET /v2/forecast (wrapper:forecast_any)",
 ]
 `;
 
@@ -460,11 +570,43 @@ exports[`regression fixtures > resolve/imported-helper 1`] = `
 ]
 `;
 
+exports[`regression fixtures > resolve/mutated-params 1`] = `
+[
+  "order.js:5 api.example-shop.com POST /v1/orders",
+  "params.ts:9 openai POST /v1/chat/completions",
+  "params.ts:19 openai POST /v1/chat/completions",
+  "params.ts:27 openai POST /v1/chat/completions",
+  "params.ts:32 openai POST /v1/chat/completions",
+  "params.ts:45 openai POST /v1/chat/completions",
+]
+`;
+
 exports[`regression fixtures > resolve/object-method 1`] = `
 [
   "invoices.ts:4 api.example-books.com GET /v3/invoices",
   "invoices.ts:8 oauth.example-books.com POST /realms/{realm}/token",
   "invoices.ts:13 api.example-voice.com POST /call",
+]
+`;
+
+exports[`regression fixtures > resolve/param-defaults 1`] = `
+[
+  "assistant.ts:6 openai POST /v1/chat/completions",
+  "assistant.ts:10 openai POST /v1/chat/completions",
+  "assistant.ts:14 openai POST /v1/chat/completions",
+  "assistant.ts:18 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.ts:19 openai POST /v1/chat/completions (wrapper:translate)",
+  "assistant.ts:23 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.ts:24 openai POST /v1/chat/completions (wrapper:classify)",
+  "assistant.ts:31 openai POST /v1/chat/completions",
+  "assistant.ts:35 openai POST /v1/chat/completions (wrapper:Writer.draft)",
+  "forecast.ts:4 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:8 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:12 api.example-weather.com GET /v2/forecast",
+  "forecast.ts:16 api.example-weather.com GET /v2/forecast (wrapper:forecastPinned)",
+  "forecast.ts:17 api.example-weather.com GET /v2/forecast (wrapper:forecastPinned)",
+  "forecast.ts:21 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
+  "forecast.ts:22 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
 ]
 `;
 
@@ -625,6 +767,38 @@ exports[`regression fixtures > sdk/posthog 1`] = `
   "server.ts:7 posthog POST /flags",
   "web.ts:5 posthog POST /e",
   "web.ts:7 posthog POST /e",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/ambiguous 1`] = `[]`;
+
+exports[`regression fixtures > sdk/receiver/different-clients 1`] = `
+[
+  "translate.ts:4 openai POST /v1/chat/completions",
+  "translate.ts:4 groq POST /openai/v1/chat/completions",
+  "translate.ts:7 openai POST /v1/chat/completions (wrapper:translate)",
+  "translate.ts:11 groq POST /openai/v1/chat/completions (wrapper:translate)",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/manifest 1`] = `
+[
+  "tagging.ts:2 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/one-caller 1`] = `
+[
+  "chat.ts:6 openai POST /v1/chat/completions",
+  "chat.ts:9 openai POST /v1/chat/completions (wrapper:withUntyped)",
+]
+`;
+
+exports[`regression fixtures > sdk/receiver/same-client 1`] = `
+[
+  "helpers.ts:2 openai POST /v1/chat/completions",
+  "jobs.ts:6 openai POST /v1/chat/completions (wrapper:summarize)",
+  "jobs.ts:10 openai POST /v1/chat/completions (wrapper:summarize)",
 ]
 `;
 

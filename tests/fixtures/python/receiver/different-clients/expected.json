@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/37",
+  "calls": [
+    {"file": "translate.py", "line": 5, "provider": "openai"},
+    {"file": "translate.py", "line": 5, "provider": "groq"},
+    {"file": "translate.py", "line": 12, "provider": "openai"},
+    {"file": "translate.py", "line": 17, "provider": "groq"}
+  ]
+}

@@ -805,7 +805,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1230,7 +1230,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2051,7 +2051,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3031,7 +3031,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3652,7 +3652,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4076,7 +4076,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4240,7 +4240,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4367,7 +4367,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9545,11 +9545,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 36,
+    "filesSeen": 42,
     "languages": {
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 36,
+        "filesSeen": 42,
       },
     },
     "skipped": [
@@ -9665,13 +9665,37 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "file": "convex/_generated/api.ts",
         "reason": "excluded",
       },
+      {
+        "file": "receiver/ambiguous/reply.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "receiver/different-clients/translate.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "receiver/manifest/tagging.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "receiver/one-caller/chat.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "receiver/same-client/helpers.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "receiver/same-client/jobs.ts",
+        "reason": "excluded",
+      },
     ],
     "skippedCounts": {
-      "excluded": 28,
+      "excluded": 34,
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -10638,7 +10662,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.8.0",
+  "schemaVersion": "1.10.0",
   "stats": {
     "byClient": {
       "axios": 2,

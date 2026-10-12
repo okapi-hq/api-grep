@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/37",
+  "calls": [
+    {"file": "tagging.ts", "line": 2, "provider": "anthropic"}
+  ]
+}

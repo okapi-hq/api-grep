@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/37",
+  "calls": [
+    {"file": "bot.py", "line": 9, "provider": "anthropic"}
+  ]
+}

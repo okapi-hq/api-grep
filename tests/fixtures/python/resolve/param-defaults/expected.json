@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/39",
+  "calls": [
+    {"file": "assistant.py", "line": 7, "provider": "openai"},
+    {"file": "assistant.py", "line": 11, "provider": "openai"},
+    {"file": "assistant.py", "line": 15, "provider": "openai"},
+    {"file": "assistant.py", "line": 32, "provider": "openai"},
+    {"file": "forecast.py", "line": 7, "provider": "api.example-weather.com"},
+    {"file": "forecast.py", "line": 11, "provider": "api.example-weather.com"},
+    {"file": "forecast.py", "line": 15, "provider": "api.example-weather.com"}
+  ]
+}

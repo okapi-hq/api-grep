@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
-import type { BodySource, Call, ClientKind, ClientPart, Operation } from "./report/schema.js";
+import type { BodySource, Call, ClientFrom, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
@@ -20,7 +20,7 @@ export interface ResolvedCall {
   /** Every dynamic part (method, URL, body, query), in report order. */
   dynamic: DynamicPart[];
   body: BodyResult;
-  headers: { names: string[]; values: Record<string, string | null>; authScheme: AuthScheme };
+  headers: { names: string[]; values: Record<string, string | null>; alternatives?: Record<string, string[]>; authScheme: AuthScheme };
   query: { names: string[]; shape: Record<string, Shape> };
   via?: string;
   /** The code gives the SDK client its own base URL (`new OpenAI({ baseURL })`, `OpenAI(base_url=...)`). */
@@ -35,6 +35,8 @@ export interface ResolvedCall {
   operation?: Operation;
   /** Query parameters and headers the client adds to every request (interceptors, client defaults). */
   clientParts?: ClientPart[];
+  /** The SDK client is an untyped parameter: found through the callers, or the one declared SDK with that method. */
+  clientFrom?: ClientFrom;
 }
 
 function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; queryShape?: Shape } {
@@ -124,6 +126,7 @@ export function assembleCall(r: ResolvedCall): Call {
     queryShape: q.queryShape,
     headers: r.headers.names,
     headerValues: r.headers.values,
+    ...(r.headers.alternatives && Object.keys(r.headers.alternatives).length > 0 ? { headerAlternatives: r.headers.alternatives } : {}),
     authScheme: r.headers.authScheme,
     body: withoutCredentialLiterals(r.body.shape),
     bodyFromType: r.body.fromType,
@@ -135,6 +138,7 @@ export function assembleCall(r: ResolvedCall): Call {
     examples: [],
     ...(model ? { model: route ? unprefixed(model) : model } : {}),
     ...(r.clientParts?.length ? { clientParts: r.clientParts } : {}),
+    ...(r.clientFrom ? { clientFrom: r.clientFrom } : {}),
   };
   return route ? { ...call, ...route } : call;
 }

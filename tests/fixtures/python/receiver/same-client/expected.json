@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/37",
+  "calls": [
+    {"file": "helpers.py", "line": 2, "provider": "openai"},
+    {"file": "jobs.py", "line": 8, "provider": "openai"},
+    {"file": "jobs.py", "line": 12, "provider": "openai"}
+  ]
+}

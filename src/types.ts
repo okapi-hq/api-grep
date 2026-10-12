@@ -14,6 +14,8 @@ export type Subst = Map<ParameterDeclaration, Expression>;
 export interface EvalCtx {
   subst?: Subst;
   envHints?: Record<string, string>;
+  /** Reading a caller's argument for a parameter's values (`resolve/param-values.ts`): its own parameters are not followed up. */
+  callerLevel?: boolean;
 }
 
 export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "sdk" | "framework";
@@ -69,6 +71,8 @@ export interface RawCall {
   subst?: Subst;
   /** The model when the request carries it outside the body (`openai("gpt-4o")` in an AI SDK call, an agent's model). */
   modelExpr?: Expression;
+  /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
+  clientFrom?: "caller" | "manifest";
 }
 
 export interface MethodSpec {

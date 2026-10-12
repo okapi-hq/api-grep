@@ -1,6 +1,7 @@
 import { assembleCall } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
 import type { Call, Language } from "../../report/schema.js";
+import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
@@ -124,7 +125,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveIrQuery(raw.query, ctx);
-  const headers = raw.sdk ? { names: [], values: {}, authScheme: "none" as AuthScheme, known: true } : resolveIrHeaders(raw.headers, ctx);
+  const headers: HeadersResult = raw.sdk ? { names: [], values: {}, authScheme: "none", known: true } : resolveIrHeaders(raw.headers, ctx);
   const pairs = raw.sdk ? undefined : resolvePairs(raw.pairs, ctx, headers, q);
   dynamic.push(...q.dynamic);
   const fromHeaders = headers.authScheme === "none" && pairs?.queryAuth ? pairs.queryAuth : headers.authScheme;
@@ -138,7 +139,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
     method,
     dynamic,
     body,
-    headers: { names: headers.names, values: headers.values, authScheme: authOf(raw, fromHeaders) },
+    headers: { names: headers.names, values: headers.values, alternatives: headers.alternatives, authScheme: authOf(raw, fromHeaders) },
     query: { names: q.names, shape: q.shape },
     via: raw.via,
     codeBaseUrl: !!raw.baseUrl,
@@ -146,5 +147,6 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
+    clientFrom: raw.clientFrom,
   });
 }
