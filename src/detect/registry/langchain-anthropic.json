@@ -1,0 +1,19 @@
+{
+  "package": "@langchain/anthropic",
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (@langchain/anthropic: ChatAnthropic)",
+  "commands": {
+    "ChatAnthropic": {
+      "method": "POST",
+      "path": "/v1/messages",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "anthropicApiUrl",
+        "clientOptions.baseURL"
+      ]
+    }
+  }
+}

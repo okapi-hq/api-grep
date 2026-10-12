@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { modelOf, type ModelFact } from "./model/fact.js";
+import { routeOf, routePath, splitModel } from "./model/route.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import type { BodySource, Call, ClientKind } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
@@ -25,6 +27,10 @@ export interface ResolvedCall {
   codeBaseUrl?: boolean;
   /** Options present but not readable as an object literal: method, headers or body may be missing. */
   optionsOpaque?: boolean;
+  /** The model value when the request carries it outside the body (`openai("gpt-4o")`, an agent's `model`). */
+  model?: Shape;
+  /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): host and path follow it. */
+  routeByModel?: boolean;
 }
 
 function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; queryShape?: Shape } {
@@ -61,12 +67,36 @@ export function callId(loc: Call["location"], n = 0): string {
   return createHash("sha1").update(key).digest("hex").slice(0, 12);
 }
 
+function modelFact(r: ResolvedCall): ModelFact | undefined {
+  return modelOf({ model: r.model, body: r.body.shape, pathTemplate: r.url.pathTemplate, dynamic: r.dynamic });
+}
+
+/** A routed call's model names as the provider receives them: `anthropic/claude-sonnet-4` is `claude-sonnet-4`. */
+function unprefixed(model: ModelFact): ModelFact {
+  return { ...model, values: [...new Set(model.values.map((v) => splitModel(v).model))] };
+}
+
+/**
+ * A call whose library routes by model name goes where its first name routes (`anthropic/claude-sonnet-4` to
+ * api.anthropic.com/v1/messages); with no name it can route, its provider stays unknown.
+ */
+function routed(r: ResolvedCall, model: ModelFact | undefined): Pick<Call, "provider" | "host" | "hostKind" | "pathTemplate" | "urlTemplate"> | undefined {
+  if (!r.routeByModel || r.codeBaseUrl) return undefined;
+  const name = model?.values[0];
+  const route = name ? routeOf(name) : undefined;
+  if (!route) return { provider: "unknown", host: undefined, hostKind: "unknown", pathTemplate: r.url.pathTemplate, urlTemplate: r.url.raw };
+  const path = (routePath(route, r.sdk?.operationId) ?? r.url.pathTemplate).replace("{model}", encodeURIComponent(splitModel(name!).model));
+  return { provider: route.provider, host: route.host, hostKind: "literal", pathTemplate: path, urlTemplate: `https://${route.host}${path}` };
+}
+
 /** The report's Call record: provider and id are decided here, the same way for every language. */
 export function assembleCall(r: ResolvedCall): Call {
   const { provider } = providerOf(r);
   const q = queryOf(r.url, r.query);
   const loc = r.location;
-  return {
+  const model = modelFact(r);
+  const route = routed(r, model);
+  const call: Call = {
     id: callId(loc),
     location: loc,
     client: r.client,
@@ -94,5 +124,7 @@ export function assembleCall(r: ResolvedCall): Call {
     optionsOpaque: !!r.optionsOpaque,
     bodySource: bodySourceOf(r.body),
     examples: [],
+    ...(model ? { model: route ? unprefixed(model) : model } : {}),
   };
+  return route ? { ...call, ...route } : call;
 }

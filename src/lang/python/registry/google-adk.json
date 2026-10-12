@@ -1,0 +1,47 @@
+{
+  "$comment": "Google ADK: `Agent(model=\"gemini-2.0-flash\")` sends Gemini requests with that model.",
+  "package": "google-adk",
+  "imports": [
+    "google.adk.agents",
+    "google.adk"
+  ],
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (google-adk: Agent, LlmAgent)",
+  "inlinePathLiterals": true,
+  "methods": {
+    "Agent": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "modelKw": "model",
+      "params": {
+        "model": "kw:model"
+      }
+    },
+    "LlmAgent": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "modelKw": "model",
+      "params": {
+        "model": "kw:model"
+      }
+    },
+    "agents.Agent": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "modelKw": "model",
+      "params": {
+        "model": "kw:model"
+      }
+    },
+    "agents.LlmAgent": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "modelKw": "model",
+      "params": {
+        "model": "kw:model"
+      }
+    }
+  }
+}

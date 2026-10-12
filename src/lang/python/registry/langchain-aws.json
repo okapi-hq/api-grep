@@ -1,0 +1,32 @@
+{
+  "$comment": "langchain-aws: Bedrock Runtime, the model id in the path (`ChatBedrockConverse(model=...)`, `ChatBedrock(model_id=...)`).",
+  "package": "langchain-aws",
+  "imports": [
+    "langchain_aws"
+  ],
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (langchain-aws: ChatBedrockConverse, ChatBedrock)",
+  "inlinePathLiterals": true,
+  "methods": {
+    "ChatBedrockConverse": {
+      "method": "POST",
+      "path": "/model/{model}/converse",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {
+        "model": "kw:model"
+      }
+    },
+    "ChatBedrock": {
+      "method": "POST",
+      "path": "/model/{model_id}/invoke",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {
+        "model_id": "kw:model_id"
+      }
+    }
+  }
+}

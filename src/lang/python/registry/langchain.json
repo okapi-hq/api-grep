@@ -1,0 +1,27 @@
+{
+  "$comment": "langchain's `init_chat_model(\"openai:gpt-4o\")` picks the provider from the model name (or its family); the request goes where it routes.",
+  "package": "langchain",
+  "imports": [
+    "langchain.chat_models",
+    "langchain"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (langchain: init_chat_model)",
+  "routeByModel": true,
+  "methods": {
+    "init_chat_model": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model"
+    },
+    "chat_models.init_chat_model": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model"
+    }
+  }
+}

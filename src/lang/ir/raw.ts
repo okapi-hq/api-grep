@@ -66,6 +66,8 @@ export interface IrRaw {
   self?: ClassDef;
   /** Expressions the request is built from: a wrapper is a function whose parameters flow into them. */
   inputs: Scoped[];
+  /** The model when it is not a body property (an agent's, a routed library's). */
+  model?: Scoped;
 }
 
 export function withSubst(ctx: IrCtx, subst: Subst | undefined): IrCtx {

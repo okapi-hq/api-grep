@@ -15,6 +15,7 @@ export interface AiSdkProvider {
 }
 
 const FUNCTIONS = new Set(data.functions);
+const AGENTS = new Map<string, string[]>(Object.entries(data.agents));
 const PROVIDERS = new Map<string, AiSdkProvider>((data.providers as unknown as AiSdkProvider[]).map((p) => [p.package, p]));
 const GATEWAY = data.gateway as unknown as AiSdkProvider;
 const MAX_DEPTH = 4;
@@ -52,15 +53,26 @@ function resolveModel(expr: Expression, depth = 0): Model | undefined {
   return { entry, member, modelId: u.getArguments()[0] as Expression | undefined, baseUrl };
 }
 
+/** `generateText({ model })` from `ai`, or `new Agent({ model })` from an agent library built on it. */
+function aiSdkSite(node: CallExpression | NewExpression, callee: Callee): { fn: string; agent: boolean } | undefined {
+  const fn = exportedChain(callee).join(".");
+  if (Node.isCallExpression(node) && callee.package === "ai" && FUNCTIONS.has(fn)) return { fn, agent: false };
+  if (Node.isNewExpression(node) && callee.package && AGENTS.get(callee.package)?.includes(fn)) return { fn, agent: true };
+  return undefined;
+}
+
 /** `generateText({ model, prompt })` and friends from `ai`: one request to the model's provider. */
 export function detectAiSdk(node: CallExpression | NewExpression, callee: Callee): RawCall | null {
-  if (!Node.isCallExpression(node) || callee.package !== "ai") return null;
-  const fn = exportedChain(callee).join(".");
-  if (!FUNCTIONS.has(fn)) return null;
+  const site = aiSdkSite(node, callee);
+  if (!site) return null;
+  const { fn } = site;
   const modelExpr = getProp(node.getArguments()[0] as Expression | undefined, "model");
   const model = modelExpr ? resolveModel(modelExpr) : undefined;
+  // an agent's string model (`"openai/gpt-4o"`) goes through the agent library's router, which picks the provider by name
+  const routeByModel = site.agent && model?.entry === GATEWAY;
+  const unknown: AiSdkProvider = { ...GATEWAY, provider: "unknown", host: "{provider}", paths: { "": "/" } };
   // a model the scan cannot trace: still one LLM request, to a provider it cannot name
-  const entry = model?.entry ?? { ...GATEWAY, provider: "unknown", host: "{provider}", paths: { "": "/" } };
+  const entry = routeByModel ? { ...unknown, provider: "llm-router" } : (model?.entry ?? unknown);
   const path = entry.paths[model?.member ?? ""] ?? entry.paths[""]!;
   return {
     node,
@@ -75,7 +87,9 @@ export function detectAiSdk(node: CallExpression | NewExpression, callee: Callee
       args: model?.modelId ? [model.modelId] : [],
       inlinePath: true,
       basePath: entry.basePath,
+      routeByModel,
     },
     baseUrlExpr: model?.baseUrl,
+    modelExpr: model?.modelId,
   };
 }

@@ -1,0 +1,21 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "direct.ts", "line": 11, "provider": "openai"},
+    {"file": "direct.ts", "line": 12, "provider": "openai"},
+    {"file": "direct.ts", "line": 13, "provider": "openai"},
+    {"file": "direct.ts", "line": 14, "provider": "openai"},
+    {"file": "direct.ts", "line": 15, "provider": "groq"},
+    {"file": "direct.ts", "line": 16, "provider": "mistral"},
+    {"file": "direct.ts", "line": 17, "provider": "ollama"},
+    {"file": "frameworks.ts", "line": 9, "provider": "openai"},
+    {"file": "frameworks.ts", "line": 10, "provider": "openai"},
+    {"file": "frameworks.ts", "line": 11, "provider": "anthropic"},
+    {"file": "frameworks.ts", "line": 12, "provider": "google-ai"},
+    {"file": "frameworks.ts", "line": 13, "provider": "ollama"},
+    {"file": "frameworks.ts", "line": 14, "provider": "anthropic"},
+    {"file": "frameworks.ts", "line": 15, "provider": "openai"},
+    {"file": "frameworks.ts", "line": 16, "provider": "openai"},
+    {"file": "frameworks.ts", "line": 17, "provider": "google-ai"}
+  ]
+}

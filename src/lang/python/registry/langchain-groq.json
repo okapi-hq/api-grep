@@ -1,0 +1,23 @@
+{
+  "$comment": "langchain-groq: `ChatGroq(model=...)` sends OpenAI-compatible chat requests to Groq.",
+  "package": "langchain-groq",
+  "imports": [
+    "langchain_groq"
+  ],
+  "provider": "groq",
+  "host": "api.groq.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (langchain-groq: ChatGroq)",
+  "methods": {
+    "ChatGroq": {
+      "method": "POST",
+      "path": "/openai/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "groq_api_base"
+      ]
+    }
+  }
+}

@@ -21,6 +21,18 @@ import slack from "./slack.json" with { type: "json" };
 import stripe from "./stripe.json" with { type: "json" };
 import supabase from "./supabase.json" with { type: "json" };
 import twilio from "./twilio.json" with { type: "json" };
+import langchainOpenai from "./langchain-openai.json" with { type: "json" };
+import langchainAnthropic from "./langchain-anthropic.json" with { type: "json" };
+import langchainGoogleGenai from "./langchain-google-genai.json" with { type: "json" };
+import langchainGroq from "./langchain-groq.json" with { type: "json" };
+import langchainMistralai from "./langchain-mistralai.json" with { type: "json" };
+import langchainOllama from "./langchain-ollama.json" with { type: "json" };
+import langchainAws from "./langchain-aws.json" with { type: "json" };
+import langchain from "./langchain.json" with { type: "json" };
+import openaiAgents from "./openai-agents.json" with { type: "json" };
+import groqSdk from "./groq-sdk.json" with { type: "json" };
+import mistralai from "./mistralai.json" with { type: "json" };
+import ollama from "./ollama.json" with { type: "json" };
 
 export class Registry {
   private byPkg = new Map<string, RegistryEntry>();
@@ -51,5 +63,7 @@ export class Registry {
 export function defaultRegistry(): Registry {
   const entries: unknown[] = [stripe, openai, octokit, slack, twilio, awsS3, awsV2, supabase, firebase, sentry, anthropic, googleGenAi, googleGenerativeAi];
   entries.push(resend, revenuecat, lemonsqueezy, posthogJs, posthogNode, convex, awsBedrock, mcp);
+  // model clients and agents
+  entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

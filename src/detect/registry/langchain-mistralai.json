@@ -1,0 +1,29 @@
+{
+  "package": "@langchain/mistralai",
+  "provider": "mistral",
+  "host": "api.mistral.ai",
+  "auth": "bearer",
+  "generatedFrom": "manual (@langchain/mistralai: ChatMistralAI, MistralAIEmbeddings)",
+  "commands": {
+    "ChatMistralAI": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "serverURL",
+        "endpoint"
+      ]
+    },
+    "MistralAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "serverURL",
+        "endpoint"
+      ]
+    }
+  }
+}

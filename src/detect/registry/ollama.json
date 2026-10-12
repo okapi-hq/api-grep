@@ -1,0 +1,37 @@
+{
+  "package": "ollama",
+  "provider": "ollama",
+  "host": "localhost:11434",
+  "auth": "none",
+  "generatedFrom": "manual (ollama-js)",
+  "instance": {
+    "names": [
+      "Ollama"
+    ],
+    "urlArg": {
+      "Ollama": "0.host"
+    }
+  },
+  "methods": {
+    "chat": {
+      "method": "POST",
+      "path": "/api/chat",
+      "bodyArg": 0
+    },
+    "generate": {
+      "method": "POST",
+      "path": "/api/generate",
+      "bodyArg": 0
+    },
+    "embed": {
+      "method": "POST",
+      "path": "/api/embed",
+      "bodyArg": 0
+    },
+    "embeddings": {
+      "method": "POST",
+      "path": "/api/embeddings",
+      "bodyArg": 0
+    }
+  }
+}

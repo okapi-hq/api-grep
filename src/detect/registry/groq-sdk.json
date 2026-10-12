@@ -1,0 +1,39 @@
+{
+  "package": "groq-sdk",
+  "provider": "groq",
+  "host": "api.groq.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (groq-sdk)",
+  "basePath": "/openai/v1",
+  "instance": {
+    "names": [
+      "default",
+      "Groq"
+    ],
+    "urlArg": {
+      "default": "0.baseURL",
+      "Groq": "0.baseURL"
+    }
+  },
+  "methods": {
+    "chat.completions.create": {
+      "method": "POST",
+      "path": "/openai/v1/chat/completions",
+      "bodyArg": 0,
+      "operationId": "createChatCompletion"
+    },
+    "embeddings.create": {
+      "method": "POST",
+      "path": "/openai/v1/embeddings",
+      "bodyArg": 0,
+      "operationId": "createEmbedding"
+    },
+    "audio.transcriptions.create": {
+      "method": "POST",
+      "path": "/openai/v1/audio/transcriptions",
+      "bodyArg": 0,
+      "encoding": "multipart",
+      "operationId": "createTranscription"
+    }
+  }
+}

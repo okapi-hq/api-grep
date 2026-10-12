@@ -19,6 +19,10 @@ export interface IrMethodSpec extends MethodSpec {
   bodyKw?: string;
   /** Every keyword argument is a query parameter (`client.files.list(purpose=...)`). */
   queryKwargs?: boolean;
+  /** The keyword argument holding the model of a model client or an agent (`ChatOpenAI(model=...)`). */
+  modelKw?: string;
+  /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */
+  baseUrlKw?: string[];
 }
 
 /**
@@ -40,6 +44,8 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   };
   /** Calls that only narrow a request (`collection`, `document`): left out of method keys. */
   builders?: string[];
+  /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): the call goes where it routes. */
+  routeByModel?: boolean;
   methods: Record<string, IrMethodSpec>;
 }
 

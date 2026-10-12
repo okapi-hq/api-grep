@@ -1,0 +1,18 @@
+{
+  "package": "@langchain/groq",
+  "provider": "groq",
+  "host": "api.groq.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (@langchain/groq: ChatGroq)",
+  "commands": {
+    "ChatGroq": {
+      "method": "POST",
+      "path": "/openai/v1/chat/completions",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "baseUrl"
+      ]
+    }
+  }
+}

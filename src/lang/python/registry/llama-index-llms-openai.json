@@ -1,0 +1,24 @@
+{
+  "$comment": "LlamaIndex's OpenAI LLM: `OpenAI(model=...)` sends chat requests.",
+  "package": "llama-index-llms-openai",
+  "imports": [
+    "llama_index.llms.openai"
+  ],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (llama-index-llms-openai: OpenAI)",
+  "basePath": "/v1",
+  "methods": {
+    "OpenAI": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base"
+      ],
+      "operationId": "createChatCompletion"
+    }
+  }
+}

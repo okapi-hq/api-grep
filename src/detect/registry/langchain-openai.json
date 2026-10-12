@@ -1,0 +1,40 @@
+{
+  "package": "@langchain/openai",
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (@langchain/openai: ChatOpenAI, OpenAI, OpenAIEmbeddings)",
+  "basePath": "/v1",
+  "commands": {
+    "ChatOpenAI": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "configuration.baseURL"
+      ],
+      "operationId": "createChatCompletion"
+    },
+    "OpenAI": {
+      "method": "POST",
+      "path": "/v1/completions",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "configuration.baseURL"
+      ],
+      "operationId": "createCompletion"
+    },
+    "OpenAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "configuration.baseURL"
+      ],
+      "operationId": "createEmbedding"
+    }
+  }
+}

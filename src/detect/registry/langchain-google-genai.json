@@ -1,0 +1,28 @@
+{
+  "package": "@langchain/google-genai",
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (@langchain/google-genai: ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings)",
+  "inlinePathLiterals": true,
+  "commands": {
+    "ChatGoogleGenerativeAI": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "params": {
+        "model": "arg:0.model"
+      }
+    },
+    "GoogleGenerativeAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:embedContent",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "params": {
+        "model": "arg:0.model"
+      }
+    }
+  }
+}

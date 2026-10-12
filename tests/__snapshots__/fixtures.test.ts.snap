@@ -557,6 +557,13 @@ exports[`axios > matches snapshot and key expectations 1`] = `
         "line": 6,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
       "provider": "openai",
@@ -798,7 +805,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1223,7 +1230,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2044,7 +2051,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3024,7 +3031,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3330,6 +3337,14 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
         "line": 4,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+          "gpt-4o-mini",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
       "provider": "openai",
@@ -3637,7 +3652,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4061,7 +4076,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4225,7 +4240,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4352,7 +4367,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -4485,6 +4500,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "body": {
         "properties": {
           "Bucket": {
+            "env": "BUCKET",
             "type": "string",
           },
           "Key": {
@@ -4972,6 +4988,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "line": 6,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
       "operationId": "createChatCompletion",
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
@@ -5048,6 +5071,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "line": 10,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "text-embedding-3-small",
+        ],
+      },
       "operationId": "createEmbedding",
       "optionsOpaque": false,
       "pathTemplate": "/v1/embeddings",
@@ -9515,11 +9545,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 33,
+    "filesSeen": 36,
     "languages": {
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 33,
+        "filesSeen": 36,
       },
     },
     "skipped": [
@@ -9576,6 +9606,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "models/config.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "models/direct.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "models/frameworks.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "openai-compatible/clients.ts",
         "reason": "excluded",
       },
@@ -9625,11 +9667,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 25,
+      "excluded": 28,
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -10596,7 +10638,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 2,

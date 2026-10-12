@@ -1,0 +1,52 @@
+{
+  "package": "@mistralai/mistralai",
+  "provider": "mistral",
+  "host": "api.mistral.ai",
+  "auth": "bearer",
+  "generatedFrom": "manual (@mistralai/mistralai v1)",
+  "instance": {
+    "names": [
+      "Mistral"
+    ],
+    "urlArg": {
+      "Mistral": "0.serverURL"
+    }
+  },
+  "methods": {
+    "chat.complete": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyArg": 0
+    },
+    "chat.stream": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyArg": 0
+    },
+    "chat.parse": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyArg": 0
+    },
+    "embeddings.create": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyArg": 0
+    },
+    "fim.complete": {
+      "method": "POST",
+      "path": "/v1/fim/completions",
+      "bodyArg": 0
+    },
+    "agents.complete": {
+      "method": "POST",
+      "path": "/v1/agents/completions",
+      "bodyArg": 0
+    },
+    "ocr.process": {
+      "method": "POST",
+      "path": "/v1/ocr",
+      "bodyArg": 0
+    }
+  }
+}

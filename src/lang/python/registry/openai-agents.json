@@ -1,0 +1,19 @@
+{
+  "$comment": "OpenAI Agents SDK: `Agent(name=..., model=\"gpt-4.1\")` sends Responses API requests with that model.",
+  "package": "openai-agents",
+  "imports": [
+    "agents"
+  ],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (openai-agents: Agent)",
+  "methods": {
+    "Agent": {
+      "method": "POST",
+      "path": "/v1/responses",
+      "modelKw": "model",
+      "operationId": "createResponse"
+    }
+  }
+}

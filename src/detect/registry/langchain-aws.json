@@ -1,0 +1,19 @@
+{
+  "package": "@langchain/aws",
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (@langchain/aws: ChatBedrockConverse)",
+  "inlinePathLiterals": true,
+  "commands": {
+    "ChatBedrockConverse": {
+      "method": "POST",
+      "path": "/model/{model}/converse",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "params": {
+        "model": "arg:0.model"
+      }
+    }
+  }
+}

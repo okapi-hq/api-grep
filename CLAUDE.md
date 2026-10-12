@@ -44,6 +44,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`.
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template}.ts`.
+- `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
+  the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden

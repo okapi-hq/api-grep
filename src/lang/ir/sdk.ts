@@ -8,6 +8,19 @@ import { staticKey } from "./values.js";
 /** Keyword arguments that configure the SDK call itself rather than the request body. */
 const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", "timeout", "max_retries", "request_options", "idempotency_key", "api_key", "stripe_account", "stripe_version", "options"]);
 
+/**
+ * Settings of a model client (LangChain, LlamaIndex, smolagents...) that configure it rather than its requests: keys,
+ * endpoints, transport, callbacks. What is left (model, temperature, max_tokens...) is what each request sends.
+ */
+const CLIENT_KWARGS = new Set([
+  "api_key", "openai_api_key", "anthropic_api_key", "google_api_key", "groq_api_key", "mistral_api_key", "cohere_api_key", "together_api_key", "fireworks_api_key", "deepseek_api_key", "xai_api_key",
+  "base_url", "api_base", "openai_api_base", "anthropic_api_url", "endpoint", "endpoint_url", "azure_endpoint", "api_version", "openai_api_version", "azure_deployment", "deployment_name", "azure_ad_token", "azure_ad_token_provider",
+  "organization", "openai_organization", "project", "location", "region_name", "credentials", "credentials_profile_name", "aws_access_key_id", "aws_secret_access_key", "aws_session_token", "client_options",
+  "timeout", "request_timeout", "max_retries", "http_client", "http_async_client", "client", "async_client", "default_headers", "default_query", "transport",
+  "streaming", "callbacks", "callback_manager", "verbose", "cache", "tags", "metadata", "rate_limiter", "disable_streaming", "model_kwargs", "provider",
+  "response_model", "validation_context", "max_retries", "strict",
+]);
+
 const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 
 /**
@@ -76,8 +89,12 @@ function matchEntry(entry: IrRegistryEntry, segs: Seg[], ctx: IrCtx): IrSdkMatch
   return spec ? { entry, key, spec, segs: rel, method: rel[rel.length - 1]! } : undefined;
 }
 
-/** The base URL the code gives the client: an argument of a call named in `instance.urlArg`. */
+/** The base URL the code gives the client: an argument of a call named in `instance.urlArg`, or of the call itself. */
 function codeBaseUrl(m: IrSdkMatch, ctx: IrCtx): Scoped | undefined {
+  for (const kw of m.spec.baseUrlKw ?? []) {
+    const own = argOf(m.method, undefined, kw);
+    if (own) return own;
+  }
   const urlArg = m.entry.instance?.urlArg;
   if (!urlArg) return undefined;
   const before = m.segs.slice(0, -1);
@@ -108,7 +125,9 @@ function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Sco
     return spec.bodyProp ? propOf(arg, spec.bodyProp, ctx) : arg;
   }
   if (spec.bodyKwargs) {
-    const dict = kwargsDict(call, pathKwargs(m));
+    const skip = pathKwargs(m);
+    if (spec.clientKwargs) for (const k of CLIENT_KWARGS) skip.add(k);
+    const dict = kwargsDict(call, skip);
     const positional = spec.bodyArg !== undefined ? argOf(m.method, spec.bodyArg) : undefined;
     return positional ?? (dict ? { expr: dict, fn } : undefined);
   }
@@ -128,8 +147,8 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
  * whatever `err` is, so a `report(err)` wrapper around it is not a client of its own.
  */
 function readsArgs(spec: IrMethodSpec): boolean {
-  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, ...(spec.pathArgs ?? [])];
-  return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || Object.keys(spec.params ?? {}).length > 0;
+  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.modelArg, ...(spec.pathArgs ?? [])];
+  return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
 }
 
 /** An SDK call: a chain from a registry's import root to one of its methods. */
@@ -153,6 +172,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       baseUrl,
       headers: [],
       inputs: [...(readsArgs(m.spec) ? args : []), ...(baseUrl ? [baseUrl] : [])],
+      model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,
     };
   }
   return undefined;

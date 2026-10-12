@@ -1,0 +1,33 @@
+{
+  "$comment": "langchain-mistralai: `ChatMistralAI(model=...)`, `MistralAIEmbeddings`.",
+  "package": "langchain-mistralai",
+  "imports": [
+    "langchain_mistralai"
+  ],
+  "provider": "mistral",
+  "host": "api.mistral.ai",
+  "auth": "bearer",
+  "generatedFrom": "manual (langchain-mistralai: ChatMistralAI, MistralAIEmbeddings)",
+  "methods": {
+    "ChatMistralAI": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "endpoint",
+        "base_url"
+      ]
+    },
+    "MistralAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "endpoint",
+        "base_url"
+      ]
+    }
+  }
+}

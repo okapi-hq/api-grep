@@ -1,0 +1,59 @@
+{
+  "$comment": "smolagents model classes: `LiteLLMModel(model_id=...)` routes by name, `OpenAIServerModel` speaks OpenAI's API (often at its own `api_base`).",
+  "package": "smolagents",
+  "imports": [
+    "smolagents"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (smolagents: LiteLLMModel, OpenAIServerModel, InferenceClientModel)",
+  "routeByModel": true,
+  "methods": {
+    "LiteLLMModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_id",
+      "baseUrlKw": [
+        "api_base"
+      ]
+    },
+    "OpenAIServerModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_id",
+      "baseUrlKw": [
+        "api_base"
+      ]
+    },
+    "InferenceClientModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_id",
+      "baseUrlKw": [
+        "api_base"
+      ]
+    },
+    "HfApiModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_id",
+      "baseUrlKw": [
+        "api_base"
+      ]
+    },
+    "LiteLLMRouterModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_id",
+      "baseUrlKw": [
+        "api_base"
+      ]
+    }
+  }
+}

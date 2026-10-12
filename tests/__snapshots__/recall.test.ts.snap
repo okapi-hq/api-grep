@@ -137,6 +137,37 @@ exports[`regression fixtures > python/httpx/httpx2 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/models 1`] = `
+[
+  "direct.py:13 openai POST /v1/chat/completions",
+  "direct.py:17 openai POST /v1/responses",
+  "direct.py:21 openai POST /v1/audio/transcriptions",
+  "direct.py:25 openai POST /v1/chat/completions",
+  "direct.py:30 anthropic POST /v1/messages",
+  "direct.py:34 openai POST /v1/chat/completions",
+  "direct.py:38 openai POST /v1/chat/completions",
+  "direct.py:42 openai POST /v1/chat/completions",
+  "frameworks.py:14 openai POST /v1/chat/completions",
+  "frameworks.py:15 openai POST /v1/embeddings",
+  "frameworks.py:16 anthropic POST /v1/messages",
+  "frameworks.py:17 google-ai POST /v1beta/models/gemini-1.5-pro:generateContent",
+  "frameworks.py:18 aws-bedrock POST /model/anthropic.claude-3-sonnet-20240229-v1:0/converse",
+  "frameworks.py:19 ollama POST /v1/chat/completions",
+  "frameworks.py:20 groq POST /openai/v1/chat/completions",
+  "frameworks.py:21 openai POST /v1/chat/completions",
+  "frameworks.py:22 openai POST /v1/responses",
+  "frameworks.py:23 anthropic POST /v1/messages",
+  "frameworks.py:24 openai POST /v1/chat/completions",
+  "frameworks.py:25 deepseek POST /chat/completions",
+  "frameworks.py:26 google-ai POST /v1beta/models/gemini-2.0-flash:generateContent",
+  "frameworks.py:30 mistral POST /v1/chat/completions",
+  "frameworks.py:34 openai POST /v1/embeddings",
+  "frameworks.py:38 unknown POST /",
+  "wrappers.py:9 openai POST /v1/chat/completions",
+  "wrappers.py:13 ollama POST /api/chat",
+]
+`;
+
 exports[`regression fixtures > python/negatives 1`] = `[]`;
 
 exports[`regression fixtures > python/requests/hardened 1`] = `
@@ -494,6 +525,27 @@ exports[`regression fixtures > sdk/mcp 1`] = `
 [
   "tools.ts:9 mcp POST /mcp",
   "tools.ts:10 mcp POST /mcp",
+]
+`;
+
+exports[`regression fixtures > sdk/models 1`] = `
+[
+  "direct.ts:11 openai POST /v1/chat/completions",
+  "direct.ts:12 openai POST /v1/embeddings",
+  "direct.ts:13 openai POST /v1/responses",
+  "direct.ts:14 openai POST /v1/chat/completions",
+  "direct.ts:15 groq POST /openai/v1/chat/completions",
+  "direct.ts:16 mistral POST /v1/chat/completions",
+  "direct.ts:17 ollama POST /api/generate",
+  "frameworks.ts:9 openai POST /v1/chat/completions",
+  "frameworks.ts:10 openai POST /v1/embeddings",
+  "frameworks.ts:11 anthropic POST /v1/messages",
+  "frameworks.ts:12 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+  "frameworks.ts:13 ollama POST /v1/chat/completions",
+  "frameworks.ts:14 anthropic POST /v1/messages",
+  "frameworks.ts:15 openai POST /v1/responses",
+  "frameworks.ts:16 openai POST /v1/responses",
+  "frameworks.ts:17 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
 ]
 `;
 

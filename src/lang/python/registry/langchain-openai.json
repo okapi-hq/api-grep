@@ -1,0 +1,47 @@
+{
+  "$comment": "langchain-openai: a model built here (`ChatOpenAI(model=...)`) sends each of its requests to the API; its request settings (model, temperature, max_tokens) are the body, its client settings (keys, base URL, callbacks) are not.",
+  "package": "langchain-openai",
+  "imports": [
+    "langchain_openai"
+  ],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (langchain-openai: ChatOpenAI, OpenAI, OpenAIEmbeddings)",
+  "basePath": "/v1",
+  "methods": {
+    "ChatOpenAI": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "openai_api_base"
+      ],
+      "operationId": "createChatCompletion"
+    },
+    "OpenAI": {
+      "method": "POST",
+      "path": "/v1/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "openai_api_base"
+      ],
+      "operationId": "createCompletion"
+    },
+    "OpenAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "openai_api_base"
+      ],
+      "operationId": "createEmbedding"
+    }
+  }
+}

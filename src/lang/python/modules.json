@@ -1,12 +1,18 @@
 {
   "$comment": "PyPI distributions whose import name is not the distribution name with `-` read as `_`: distribution -> import modules (dotted).",
   "modules": {
+    "PyGithub": [
+      "github"
+    ],
     "airtable-python-wrapper": [
       "airtable"
     ],
     "analytics-python": [
       "analytics",
       "segment.analytics"
+    ],
+    "autogen-ext": [
+      "autogen_ext"
     ],
     "azure-identity": [
       "azure.identity"
@@ -20,11 +26,17 @@
     "discord.py": [
       "discord"
     ],
+    "dspy-ai": [
+      "dspy"
+    ],
     "fireworks-ai": [
       "fireworks"
     ],
     "github3.py": [
       "github3"
+    ],
+    "google-adk": [
+      "google.adk"
     ],
     "google-ai-generativelanguage": [
       "google.ai.generativelanguage",
@@ -123,14 +135,11 @@
     "py-cord": [
       "discord"
     ],
-    "PyGithub": [
-      "github"
+    "pyTelegramBotAPI": [
+      "telebot"
     ],
     "pyrebase4": [
       "pyrebase"
-    ],
-    "pyTelegramBotAPI": [
-      "telebot"
     ],
     "python-intercom": [
       "intercom"

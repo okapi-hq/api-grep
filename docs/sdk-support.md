@@ -8,23 +8,23 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 54 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
-| Python (PyPI) | 21 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
+| TypeScript / JavaScript (npm) | 66 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| Python (PyPI) | 41 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
 
 | provider | TypeScript / JavaScript (npm) | Python (PyPI) | PHP (Composer) |
 |---|---|---|---|
 | Stripe | **`stripe`** | **`stripe`** | **`stripe/stripe-php`**, `laravel/cashier`, `cartalyst/stripe` |
-| OpenAI | **`openai`**, **`@ai-sdk/openai`**, `@langchain/openai` | **`openai`**, `openai-agents`, `langchain-openai`, `llama-index-llms-openai` | **`openai-php/client`**, **`openai-php/laravel`**, **`openai-php/symfony`**, `orhanerday/open-ai`, `symfony/ai-open-ai-platform` |
+| OpenAI | **`openai`**, **`@ai-sdk/openai`**, **`@langchain/openai`**, **`@openai/agents`** | **`openai`**, **`openai-agents`**, **`langchain-openai`**, **`llama-index-llms-openai`**, **`autogen-ext`** | **`openai-php/client`**, **`openai-php/laravel`**, **`openai-php/symfony`**, `orhanerday/open-ai`, `symfony/ai-open-ai-platform` |
 | Azure OpenAI | **`@ai-sdk/azure`**, `@azure/openai` | **`openai`** |  |
-| Anthropic | **`@anthropic-ai/sdk`**, **`@ai-sdk/anthropic`**, `@langchain/anthropic` | **`anthropic`**, `claude-agent-sdk`, `langchain-anthropic`, `llama-index-llms-anthropic` | **`anthropic-ai/sdk`**, **`mozex/anthropic-php`**, **`mozex/anthropic-laravel`**, `claude-php/claude-php-sdk`, `symfony/ai-anthropic-platform` |
-| Google Gemini | **`@google/genai`**, **`@google/generative-ai`**, **`@ai-sdk/google`**, `@genkit-ai/google-genai` | **`google-genai`**, **`google-generativeai`**, `google-ai-generativelanguage`, `langchain-google-genai` | **`google-gemini-php/client`**, **`google-gemini-php/laravel`**, `gemini-api-php/client`, `gemini-api-php/laravel`, `symfony/ai-gemini-platform` |
+| Anthropic | **`@anthropic-ai/sdk`**, **`@ai-sdk/anthropic`**, **`@langchain/anthropic`** | **`anthropic`**, `claude-agent-sdk`, **`langchain-anthropic`**, **`llama-index-llms-anthropic`** | **`anthropic-ai/sdk`**, **`mozex/anthropic-php`**, **`mozex/anthropic-laravel`**, `claude-php/claude-php-sdk`, `symfony/ai-anthropic-platform` |
+| Google Gemini | **`@google/genai`**, **`@google/generative-ai`**, **`@ai-sdk/google`**, `@genkit-ai/google-genai`, **`@langchain/google-genai`** | **`google-genai`**, **`google-generativeai`**, `google-ai-generativelanguage`, **`langchain-google-genai`**, **`google-adk`** | **`google-gemini-php/client`**, **`google-gemini-php/laravel`**, `gemini-api-php/client`, `gemini-api-php/laravel`, `symfony/ai-gemini-platform` |
 | Google Vertex AI | **`@ai-sdk/google-vertex`**, `@google-cloud/vertexai` | `google-cloud-aiplatform`, `vertexai`, `langchain-google-vertexai` | `google/cloud-ai-platform` |
 | Google Maps | `@googlemaps/google-maps-services-js` | `googlemaps`, `google-maps-places`, `google-maps-routing` |  |
 | Firebase | **`firebase`**, `firebase-admin`, **`@firebase/firestore`**, **`@firebase/auth`**, **`@firebase/storage`** | **`firebase-admin`**, **`google-cloud-firestore`**, `pyrebase4` | **`kreait/firebase-php`**, **`kreait/laravel-firebase`**, **`kreait/firebase-bundle`**, **`google/cloud-firestore`** |
 | Google | `googleapis`, `google-auth-library` | `google-api-python-client`, `google-auth`, `google-auth-oauthlib`, `google-cloud-storage`, `google-cloud-bigquery`, `google-cloud-pubsub`, `google-cloud-translate`, `google-cloud-vision`, `google-cloud-speech`, `google-cloud-texttospeech`, `google-cloud-secret-manager`, `google-cloud-tasks`, `gspread` | `google/apiclient`, `google/apiclient-services`, `google/auth`, `google/cloud-storage` |
 | AWS | **`aws-sdk`**, **`@aws-sdk/client-s3`** | **`boto3`**, `botocore`, **`aioboto3`**, `aiobotocore`, `s3fs` | **`aws/aws-sdk-php`**, **`aws/aws-sdk-php-laravel`**, **`aws/aws-sdk-php-symfony`**, `league/flysystem-aws-s3-v3`, `symfony/amazon-mailer` |
-| AWS Bedrock | **`@aws-sdk/client-bedrock-runtime`**, **`@ai-sdk/amazon-bedrock`** | `langchain-aws` | **`aws/aws-sdk-php`** |
+| AWS Bedrock | **`@aws-sdk/client-bedrock-runtime`**, **`@ai-sdk/amazon-bedrock`**, **`@langchain/aws`** | **`langchain-aws`** | **`aws/aws-sdk-php`** |
 | GitHub | **`octokit`**, **`@octokit/rest`**, **`@octokit/core`** | `PyGithub`, `githubkit`, `ghapi`, `github3.py` | `knplabs/github-api`, `graham-campbell/github` |
 | Slack | **`@slack/web-api`**, **`@slack/webhook`**, **`@slack/bolt`** | **`slack-sdk`**, `slack-bolt`, **`slackclient`** | **`jolicode/slack-php-api`**, `laravel/slack-notification-channel`, `symfony/slack-notifier` |
 | Twilio | **`twilio`** | **`twilio`** | **`twilio/sdk`**, `symfony/twilio-notifier` |
@@ -43,11 +43,12 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Vercel Blob | `@vercel/blob` |  |  |
 | Cloudinary | `cloudinary` | `cloudinary` | `cloudinary/cloudinary_php`, `cloudinary-labs/cloudinary-laravel` |
 | Microsoft | `@microsoft/microsoft-graph-client`, `@azure/msal-node` | `msgraph-sdk`, `msal`, `azure-identity` | `microsoft/microsoft-graph` |
-| Mistral AI | `@mistralai/mistralai`, **`@ai-sdk/mistral`** | **`mistralai`**, `langchain-mistralai` | `helgesverre/mistral`, `symfony/ai-mistral-platform` |
-| Groq | `groq-sdk`, **`@ai-sdk/groq`** | **`groq`**, `langchain-groq` | `lucianotonet/groq-php` |
+| Mistral AI | **`@mistralai/mistralai`**, **`@ai-sdk/mistral`**, **`@langchain/mistralai`** | **`mistralai`**, **`langchain-mistralai`** | `helgesverre/mistral`, `symfony/ai-mistral-platform` |
+| Groq | **`groq-sdk`**, **`@ai-sdk/groq`**, **`@langchain/groq`** | **`groq`**, **`langchain-groq`** | `lucianotonet/groq-php` |
 | OpenRouter | **`@openrouter/ai-sdk-provider`** | `openrouter` |  |
 | Vercel AI Gateway | **`@ai-sdk/gateway`** |  |  |
-| Ollama | `ollama`, **`ollama-ai-provider`** | `ollama`, `langchain-ollama` | `ardagnsrn/ollama-php` |
+| LLM router library | **`langchain`**, `@mastra/core` | **`litellm`**, **`langchain`**, **`pydantic-ai`**, **`crewai`**, **`dspy`**, **`smolagents`**, **`instructor`** |  |
+| Ollama | **`ollama`**, **`ollama-ai-provider`**, **`@langchain/ollama`** | **`ollama`**, **`langchain-ollama`** | `ardagnsrn/ollama-php` |
 | Z.ai | `z-ai-web-dev-sdk` | `zai-sdk`, `zhipuai` |  |
 | fal | `@fal-ai/client`, `@fal-ai/serverless-client` | `fal-client` |  |
 | xAI | **`@ai-sdk/xai`** | `xai-sdk`, `langchain-xai` |  |

@@ -48,6 +48,15 @@ function fileUrlArg(node: Node, reg: RegistryEntry): Expression | undefined {
   return built.length === 1 ? (built[0]!.getArguments()[from.arg] as Expression | undefined) : undefined;
 }
 
+/** A base URL among the settings of a model client built here (`new ChatOpenAI({ configuration: { baseURL } })`). */
+function ownBaseUrl(args: Expression[], spec: MethodSpec): Expression | undefined {
+  for (const where of spec.baseUrlProp ?? []) {
+    const value = where.split(".").reduce<Expression | undefined>((e, key) => getProp(e, key), args[spec.bodyArg ?? 0]);
+    if (value) return value;
+  }
+  return undefined;
+}
+
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall {
   const args = node.getArguments() as Expression[];
   const raw: RawCall = {
@@ -65,13 +74,15 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
       instanceArgs: callee.instance?.args,
       inlinePath: reg.inlinePathLiterals,
       basePath: reg.basePath,
+      routeByModel: reg.routeByModel,
     },
     bodyKey: "input",
   };
   if (spec.bodyArg !== undefined) raw.bodyExpr = spec.bodyProp ? getProp(args[spec.bodyArg], spec.bodyProp) : args[spec.bodyArg];
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
-  const base = clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
+  if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
+  const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }

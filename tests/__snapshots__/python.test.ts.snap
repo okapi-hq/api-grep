@@ -151,6 +151,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 25,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "anthropic.claude-3-haiku-20240307-v1:0",
+        ],
+      },
       "operationId": "InvokeModel",
       "optionsOpaque": false,
       "pathTemplate": "/model/{modelId}/invoke",
@@ -731,6 +738,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 16,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
       "operationId": "createChatCompletion",
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
@@ -803,6 +817,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 20,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "text-embedding-3-small",
+        ],
+      },
       "operationId": "createEmbedding",
       "optionsOpaque": false,
       "pathTemplate": "/v1/embeddings",
@@ -892,6 +913,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 24,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "anthropic/claude-sonnet-4",
+        ],
+      },
       "operationId": "createChatCompletion",
       "optionsOpaque": false,
       "pathTemplate": "/api/v1/chat/completions",
@@ -1037,6 +1065,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 32,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/messages",
       "provider": "anthropic",
@@ -1106,6 +1141,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 36,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/messages/count_tokens",
       "provider": "anthropic",
@@ -1169,6 +1211,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 40,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "path",
+        "values": [
+          "gemini-2.0-flash",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1beta/models/gemini-2.0-flash:generateContent",
       "provider": "google-ai",
@@ -1240,6 +1289,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "line": 48,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1",
+        ],
+      },
       "operationId": "createResponse",
       "optionsOpaque": false,
       "pathTemplate": "/v1/responses",
@@ -1707,7 +1763,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "sdk": 22,
@@ -1765,6 +1821,7 @@ exports[`python: constants > follows module constants, imported modules, class c
           "name": "apiKey",
           "origin": "env",
           "shape": {
+            "env": "CAL_KEY",
             "hint": "CAL_KEY",
             "type": "string",
           },
@@ -1804,6 +1861,7 @@ exports[`python: constants > follows module constants, imported modules, class c
       "queryShape": {
         "properties": {
           "apiKey": {
+            "env": "CAL_KEY",
             "hint": "CAL_KEY",
             "type": "string",
           },
@@ -2225,7 +2283,7 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "requests": 10,
@@ -2526,7 +2584,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "httpx": 4,
@@ -2749,7 +2807,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "aiohttp": 2,
@@ -3093,7 +3151,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "urllib": 4,
@@ -3688,7 +3746,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "requests": 9,
@@ -4068,7 +4126,7 @@ exports[`python: wrappers > expands project functions and methods at their call 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "requests": 5,

@@ -1,0 +1,67 @@
+{
+  "$comment": "Instructor wraps a client (`instructor.from_openai(OpenAI())`); its `create` calls are the wrapped API's, routed by model family.",
+  "package": "instructor",
+  "imports": [
+    "instructor"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (instructor: from_openai, from_anthropic, from_provider)",
+  "routeByModel": true,
+  "instance": {
+    "names": [
+      "from_openai",
+      "from_anthropic",
+      "from_gemini",
+      "from_groq",
+      "from_mistral",
+      "from_litellm",
+      "patch"
+    ]
+  },
+  "methods": {
+    "chat.completions.create": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "chat.completions.create_partial": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "chat.completions.create_iterable": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "chat.completions.create_with_completion": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "messages.create": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "create": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    },
+    "create_partial": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    }
+  }
+}

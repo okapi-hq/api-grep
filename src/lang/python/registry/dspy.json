@@ -1,0 +1,29 @@
+{
+  "$comment": "DSPy: `dspy.LM(\"openai/gpt-4o-mini\")`; LiteLLM underneath, so the provider comes from the model name.",
+  "package": "dspy",
+  "aliases": [
+    "dspy-ai"
+  ],
+  "imports": [
+    "dspy"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (dspy: LM)",
+  "routeByModel": true,
+  "methods": {
+    "LM": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "modelArg": 0,
+      "modelKw": "model",
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ]
+    }
+  }
+}

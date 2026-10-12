@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.4.0";
+export const SCHEMA_VERSION = "1.5.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -66,6 +66,10 @@ export const ShapeSchema: z.ZodType<Shape> = z
         enum: z.array(z.union([z.string(), z.number(), z.boolean()])).optional().describe("Literal values seen in the code."),
         fromType: z.string().optional(),
         hint: z.string().optional().describe("Source identifier the value came from (`email`), used to synthesize examples."),
+        env: z
+          .string()
+          .optional()
+          .describe("Environment variable the value is read from; `enum` then holds the default the code gives, if any (`os.getenv(\"MODEL\", \"gpt-4o\")`)."),
       }),
       z.object({ type: z.literal("union"), anyOf: z.array(ShapeSchema), fromType: z.string().optional() }),
       z.object({
@@ -116,6 +120,20 @@ export const DynamicPartSchema = z
   })
   .meta({ id: "DynamicPart", description: "Part of the request the scan could not know statically." });
 
+export const ModelSchema = z
+  .object({
+    values: z
+      .array(z.string())
+      .describe("Model names the code gives, literally or as a default (an environment variable's, a function's returns, every branch of a condition)."),
+    env: z.string().optional().describe("Environment variable the model is read from; `values` holds its default in the code, if any."),
+    dynamic: z.boolean().describe("Some value could not be read statically (a parameter, a call result): `values` may be incomplete."),
+    hint: z.string().optional().describe("Identifier the unread value comes from (`get_model`, `settings.model`)."),
+    from: z
+      .enum(["body", "path", "argument"])
+      .describe("Where the request carries it: a body property (`model`, `modelId`), a path segment (`/models/{model}`), or an SDK argument that is not the body (`openai(\"gpt-4o\")`)."),
+  })
+  .meta({ id: "Model", description: "The model a call names, as far as the code tells statically." });
+
 export const CallSchema = z
   .object({
     id: z.string().describe("Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."),
@@ -158,6 +176,7 @@ export const CallSchema = z
       .enum(BODY_SOURCES)
       .describe("Where the body shape came from: an object literal in the code, a declared type (TypeScript type, Python or PHP class), a value that could not be read, or no body."),
     examples: z.array(ExampleSchema).default([]),
+    model: ModelSchema.optional().describe("The model the request names (LLM and other AI APIs); absent when it names none."),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
 

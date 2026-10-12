@@ -10,6 +10,7 @@ import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
+import { shapeOf } from "./shape.js";
 
 export interface BuildIrCtx extends IrCtx {
   rootDir: string;
@@ -127,5 +128,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
     via: raw.via,
     codeBaseUrl: !!raw.baseUrl,
     optionsOpaque: raw.optionsOpaque,
+    model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
+    routeByModel: sdk?.entry.routeByModel,
   });
 }
