@@ -61,7 +61,7 @@ function sortCalls(calls: Call[]): Call[] {
  * One call per request per call site: a wrapper that reaches the same request twice (a retry, two branches building it)
  * gives it once; different requests from one call site keep distinct ids.
  */
-function onePerRequest(calls: Call[]): Call[] {
+export function onePerRequest(calls: Call[]): Call[] {
   const seen = new Set<string>();
   const perSite = new Map<string, number>();
   return calls.flatMap((c) => {
@@ -71,7 +71,7 @@ function onePerRequest(calls: Call[]): Call[] {
     seen.add(key);
     const n = perSite.get(id) ?? 0;
     perSite.set(id, n + 1);
-    return [n === 0 ? c : { ...c, id: callId(c.location, n) }];
+    return [n === 0 ? c : { ...c, id: callId(c.location, n, c.operation?.name) }];
   });
 }
 

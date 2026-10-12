@@ -1,0 +1,802 @@
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "schemaVersion": "1.6.0",
+  "tool": "api-grep",
+  "version": "<version>",
+  "repo": "operations",
+  "calls": [
+    {
+      "id": "0d7ddc6e4f5a",
+      "location": {
+        "file": "app/aws.py",
+        "line": 6,
+        "col": 8,
+        "language": "python"
+      },
+      "client": "requests",
+      "provider": "aws",
+      "host": "ec2.amazonaws.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "GET",
+      "pathTemplate": "/",
+      "urlTemplate": "https://ec2.amazonaws.com/?Action=DescribeInstances&Version=2016-11-15",
+      "operation": {
+        "protocol": "action",
+        "name": "DescribeInstances",
+        "dynamic": false,
+        "from": "query"
+      },
+      "query": [
+        "Action",
+        "Version"
+      ],
+      "queryShape": {
+        "type": "object",
+        "properties": {
+          "Action": {
+            "type": "string",
+            "enum": [
+              "DescribeInstances"
+            ]
+          },
+          "Version": {
+            "type": "string",
+            "enum": [
+              "2016-11-15"
+            ]
+          }
+        },
+        "required": [
+          "Action",
+          "Version"
+        ]
+      },
+      "headers": [],
+      "headerValues": {},
+      "authScheme": "unknown",
+      "bodyEncoding": "none",
+      "dynamic": [],
+      "optionsOpaque": false,
+      "bodySource": "none",
+      "examples": []
+    },
+    {
+      "id": "dab226a8395d",
+      "location": {
+        "file": "app/eth.py",
+        "line": 8,
+        "col": 12,
+        "language": "python"
+      },
+      "client": "requests",
+      "provider": "rpc.example-node.com",
+      "host": "rpc.example-node.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://rpc.example-node.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": "eth_{kind}",
+        "dynamic": true,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [],
+      "headerValues": {},
+      "authScheme": "none",
+      "body": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": [
+              "2.0"
+            ]
+          },
+          "id": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "method": {
+            "type": "string"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "unknown"
+            }
+          }
+        },
+        "required": [
+          "jsonrpc",
+          "id",
+          "method",
+          "params"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "kind",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "6cb7a3a5d5de",
+      "location": {
+        "file": "app/eth.py",
+        "line": 15,
+        "col": 12,
+        "language": "python"
+      },
+      "client": "requests",
+      "provider": "rpc.example-node.com",
+      "host": "rpc.example-node.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://rpc.example-node.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": null,
+        "dynamic": true,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [],
+      "headerValues": {},
+      "authScheme": "none",
+      "body": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": [
+              "2.0"
+            ]
+          },
+          "id": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "method": {
+            "type": "dynamic",
+            "origin": "param",
+            "hint": "method"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "unknown"
+            }
+          }
+        },
+        "required": [
+          "jsonrpc",
+          "id",
+          "method",
+          "params"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "method",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "3cc9b2ba580c",
+      "location": {
+        "file": "src/Carrier/TrackClient.php",
+        "line": 14,
+        "col": 16,
+        "language": "php"
+      },
+      "client": "guzzle",
+      "provider": "ws.example-carrier.com",
+      "host": "ws.example-carrier.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/track/v2",
+      "urlTemplate": "https://ws.example-carrier.com/track/v2",
+      "operation": {
+        "protocol": "soap",
+        "name": "Track",
+        "dynamic": false,
+        "from": "header"
+      },
+      "query": [],
+      "headers": [
+        "content-type",
+        "soapaction"
+      ],
+      "headerValues": {
+        "content-type": "text/xml",
+        "soapaction": "http://example-carrier.com/Track"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "string"
+      },
+      "bodyEncoding": "raw",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "id",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "a8584eae7041",
+      "location": {
+        "file": "src/Carrier/TrackClient.php",
+        "line": 27,
+        "col": 16,
+        "language": "php"
+      },
+      "client": "guzzle",
+      "provider": "ws.example-carrier.com",
+      "host": "ws.example-carrier.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/track/v2",
+      "urlTemplate": "https://ws.example-carrier.com/track/v2",
+      "operation": {
+        "protocol": "soap",
+        "name": "TrackRequest",
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "content-type"
+      ],
+      "headerValues": {
+        "content-type": "text/xml"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "string"
+      },
+      "bodyEncoding": "raw",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "id",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "46d05a97e25b",
+      "location": {
+        "file": "src/graphql/orders.ts",
+        "line": 9,
+        "col": 10,
+        "language": "typescript"
+      },
+      "client": "fetch",
+      "provider": "example-shop.myshopify.com",
+      "host": "example-shop.myshopify.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/admin/api/2024-01/graphql.json",
+      "urlTemplate": "https://example-shop.myshopify.com/admin/api/2024-01/graphql.json",
+      "operation": {
+        "protocol": "graphql",
+        "name": "GetOrder",
+        "type": "query",
+        "fields": [
+          "order.id",
+          "order.totalPriceSet.shopMoney.amount",
+          "order.customer.email"
+        ],
+        "dynamic": false,
+        "from": "document"
+      },
+      "query": [],
+      "headers": [
+        "content-type",
+        "x-shopify-access-token"
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+        "x-shopify-access-token": null
+      },
+      "authScheme": "apikey",
+      "body": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "enum": [
+              "query GetOrder($id: ID!) { order(id: $id) { id totalPriceSet { shopMoney { amount } } customer { email } } }"
+            ]
+          },
+          "variables": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "hint": "id"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        "required": [
+          "query",
+          "variables"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "id",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "24b5b797bf9e",
+      "location": {
+        "file": "src/rpc/solana.ts",
+        "line": 5,
+        "col": 10,
+        "language": "typescript"
+      },
+      "client": "fetch",
+      "provider": "api.mainnet-beta.solana.com",
+      "host": "api.mainnet-beta.solana.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://api.mainnet-beta.solana.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": "getTransaction",
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "content-type"
+      ],
+      "headerValues": {
+        "content-type": "application/json"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": [
+              "2.0"
+            ]
+          },
+          "id": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "getTransaction"
+            ]
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "hint": "signature"
+            }
+          }
+        },
+        "required": [
+          "jsonrpc",
+          "id",
+          "method",
+          "params"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "signature",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "a5e62e1f40f0",
+      "location": {
+        "file": "src/rpc/solana.ts",
+        "line": 12,
+        "col": 10,
+        "language": "typescript"
+      },
+      "client": "fetch",
+      "provider": "api.mainnet-beta.solana.com",
+      "host": "api.mainnet-beta.solana.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://api.mainnet-beta.solana.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": "getBalance",
+        "batch": true,
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "content-type"
+      ],
+      "headerValues": {
+        "content-type": "application/json"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "array",
+        "items": {
+          "type": "union",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "jsonrpc": {
+                  "type": "string",
+                  "enum": [
+                    "2.0"
+                  ]
+                },
+                "id": {
+                  "type": "number",
+                  "enum": [
+                    1
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "getBalance"
+                  ]
+                },
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "hint": "address"
+                  }
+                }
+              },
+              "required": [
+                "jsonrpc",
+                "id",
+                "method",
+                "params"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jsonrpc": {
+                  "type": "string",
+                  "enum": [
+                    "2.0"
+                  ]
+                },
+                "id": {
+                  "type": "number",
+                  "enum": [
+                    1
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "getSlot"
+                  ]
+                },
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "unknown"
+                  }
+                }
+              },
+              "required": [
+                "jsonrpc",
+                "id",
+                "method",
+                "params"
+              ]
+            }
+          ]
+        }
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "address",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "79ff31570e83",
+      "location": {
+        "file": "src/rpc/solana.ts",
+        "line": 12,
+        "col": 10,
+        "language": "typescript"
+      },
+      "client": "fetch",
+      "provider": "api.mainnet-beta.solana.com",
+      "host": "api.mainnet-beta.solana.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://api.mainnet-beta.solana.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": "getSlot",
+        "batch": true,
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "content-type"
+      ],
+      "headerValues": {
+        "content-type": "application/json"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "array",
+        "items": {
+          "type": "union",
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "jsonrpc": {
+                  "type": "string",
+                  "enum": [
+                    "2.0"
+                  ]
+                },
+                "id": {
+                  "type": "number",
+                  "enum": [
+                    1
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "getBalance"
+                  ]
+                },
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "hint": "address"
+                  }
+                }
+              },
+              "required": [
+                "jsonrpc",
+                "id",
+                "method",
+                "params"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "jsonrpc": {
+                  "type": "string",
+                  "enum": [
+                    "2.0"
+                  ]
+                },
+                "id": {
+                  "type": "number",
+                  "enum": [
+                    1
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "getSlot"
+                  ]
+                },
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "unknown"
+                  }
+                }
+              },
+              "required": [
+                "jsonrpc",
+                "id",
+                "method",
+                "params"
+              ]
+            }
+          ]
+        }
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "address",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    },
+    {
+      "id": "39e8de421986",
+      "location": {
+        "file": "src/rpc/solana.ts",
+        "line": 20,
+        "col": 10,
+        "language": "typescript"
+      },
+      "client": "fetch",
+      "provider": "api.mainnet-beta.solana.com",
+      "host": "api.mainnet-beta.solana.com",
+      "hostKind": "literal",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://api.mainnet-beta.solana.com/",
+      "operation": {
+        "protocol": "json-rpc",
+        "name": "getBlock",
+        "alternatives": [
+          "getBlock",
+          "getBlockHeight"
+        ],
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "content-type"
+      ],
+      "headerValues": {
+        "content-type": "application/json"
+      },
+      "authScheme": "none",
+      "body": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": [
+              "2.0"
+            ]
+          },
+          "id": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "getBlock",
+              "getBlockHeight"
+            ]
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "unknown"
+            }
+          }
+        },
+        "required": [
+          "jsonrpc",
+          "id",
+          "method",
+          "params"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
+    }
+  ],
+  "stats": {
+    "filesScanned": 5,
+    "callsFound": 10,
+    "byLanguage": {
+      "typescript": 5,
+      "python": 3,
+      "php": 2
+    },
+    "byClient": {
+      "fetch": 5,
+      "requests": 3,
+      "guzzle": 2
+    },
+    "byProvider": {
+      "api.mainnet-beta.solana.com": 4,
+      "rpc.example-node.com": 2,
+      "ws.example-carrier.com": 2,
+      "aws": 1,
+      "example-shop.myshopify.com": 1
+    },
+    "byHostKind": {
+      "literal": 10
+    },
+    "withBodyShape": 9,
+    "withDynamic": 8,
+    "redacted": 0,
+    "durationMs": 0
+  }
+}
