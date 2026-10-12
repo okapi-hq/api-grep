@@ -93,7 +93,9 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   const pos = posOf(n);
   const value = special(fn, args, lambda, pos);
   if (value) return value;
-  const call: CallExpr = { k: "call", fn, args, pos };
+  const targs = kids.find((c) => c.type === "type_arguments");
+  const typeArgs = targs ? named(targs).flatMap((p) => lowerType(named(p).find((c) => c.type !== "variance_modifier")).type ?? []) : [];
+  const call: CallExpr = { k: "call", fn, args, pos, ...(typeArgs.length ? { typeArgs } : {}) };
   st.fn.calls.push(call);
   return call;
 }

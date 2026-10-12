@@ -72,6 +72,8 @@ export interface CallExpr {
   pos: Pos;
   /** `new X(...)` (PHP); a Python class call is a plain call. */
   isNew?: boolean;
+  /** Type arguments as written (Kotlin `retrofit.create<Api>()`), as type expressions. */
+  typeArgs?: Expr[];
 }
 
 export interface Assign {

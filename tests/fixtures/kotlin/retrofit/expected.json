@@ -1,0 +1,20 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/31",
+  "calls": [
+    {"file": "Catalog.kt", "line": 17, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 20, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 23, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 26, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 29, "provider": "unknown"},
+    {"file": "Catalog.kt", "line": 32, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 35, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 39, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 43, "provider": "api.example-catalog.com"},
+    {"file": "Profiles.kt", "line": 11, "provider": "unknown"},
+    {"file": "Trades.kt", "line": 19, "provider": "api.example-exchange.com"},
+    {"file": "Trades.kt", "line": 25, "provider": "api.example-exchange.com"},
+    {"file": "Weather.kt", "line": 12, "provider": "api.example-weather.com"},
+    {"file": "Weather.kt", "line": 24, "provider": "reports.example-weather.com"},
+    {"file": "Weather.kt", "line": 24, "provider": "backup.example-weather.com"}
+  ]
+}

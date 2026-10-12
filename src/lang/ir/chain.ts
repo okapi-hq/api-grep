@@ -144,6 +144,8 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
 }
 
 function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
+  const made = ctx.idx.lang.instanceOf?.(e, fn, ctx);
+  if (made) return { root: { kind: "instance", cls: made }, segs: [] };
   const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
     if (c.root.kind === "function") return factoryResult(c.root.fn, e, fn, ctx, depth);

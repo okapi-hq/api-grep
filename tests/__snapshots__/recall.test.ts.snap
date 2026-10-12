@@ -82,6 +82,26 @@ exports[`regression fixtures > kotlin/okhttp 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/retrofit 1`] = `
+[
+  "Catalog.kt:17 api.example-catalog.com GET /v2/items/{id}",
+  "Catalog.kt:20 api.example-catalog.com GET /health",
+  "Catalog.kt:23 api.example-catalog.com GET /v2/search",
+  "Catalog.kt:26 api.example-catalog.com DELETE /v2/items/{id}",
+  "Catalog.kt:29 unknown GET /",
+  "Catalog.kt:32 api.example-catalog.com POST /v2",
+  "Catalog.kt:35 api.example-catalog.com PUT /v2/items/{id}/name",
+  "Catalog.kt:39 api.example-catalog.com POST /v2/items/{id}/image",
+  "Catalog.kt:43 api.example-catalog.com GET /v2/items",
+  "Profiles.kt:11 unknown GET /profiles/{id}",
+  "Trades.kt:19 api.example-exchange.com GET /api/v4/spot/trades",
+  "Trades.kt:25 api.example-exchange.com POST /api/v4/orders",
+  "Weather.kt:12 api.example-weather.com GET /data/2.5/weather",
+  "Weather.kt:24 reports.example-weather.com POST /v1/reports",
+  "Weather.kt:24 backup.example-weather.com POST /v1/reports",
+]
+`;
+
 exports[`regression fixtures > kotlin/spring 1`] = `
 [
   "Payments.kt:17 api.example-shop.com GET /v1/items/{id}",

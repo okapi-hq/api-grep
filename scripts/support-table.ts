@@ -33,7 +33,7 @@ function typescriptColumn(): Column {
 const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = {
   python: ["urllib"],
   php: ["curl", "php-stream"],
-  kotlin: ["okhttp", "java-http", "ktor", "spring-webclient", "feign"],
+  kotlin: ["okhttp", "java-http", "ktor", "spring-webclient", "feign", "retrofit"],
 };
 
 function irColumn(title: string, lang: IrLanguage): Column {

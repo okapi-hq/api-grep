@@ -229,6 +229,33 @@
     "params": { "RequestParam": "query", "Param": "query", "RequestHeader": "header", "RequestBody": "body", "SpringQueryMap": "queryMap", "QueryMap": "queryMap", "HeaderMap": "headers" },
     "targets": ["target"]
   },
+  "retrofit": {
+    "$comment": "Retrofit service interfaces: `annotations` are the packages of the method annotations (a file importing one of them declares Retrofit interfaces); `creates` return an instance of the interface named by their class argument; the builder steps give the base URL, the OkHttp client and the converters, which choose the body encoding.",
+    "annotations": ["retrofit2.http"],
+    "verbs": { "GET": "GET", "POST": "POST", "PUT": "PUT", "PATCH": "PATCH", "DELETE": "DELETE", "HEAD": "HEAD", "OPTIONS": "OPTIONS", "HTTP": "" },
+    "headers": "Headers",
+    "form": "FormUrlEncoded",
+    "multipart": "Multipart",
+    "params": { "Path": "path", "Query": "query", "QueryMap": "queryMap", "QueryName": "queryName", "Header": "header", "HeaderMap": "headers", "Body": "body", "Field": "field", "FieldMap": "fieldMap", "Part": "part", "PartMap": "partMap", "Url": "url" },
+    "builders": ["Retrofit.Builder"],
+    "creates": ["create"],
+    "baseUrl": ["baseUrl"],
+    "client": ["client", "callFactory"],
+    "converter": ["addConverterFactory"],
+    "converters": {
+      "GsonConverterFactory.create": "json",
+      "MoshiConverterFactory.create": "json",
+      "JacksonConverterFactory.create": "json",
+      "asConverterFactory": "json",
+      "ScalarsConverterFactory.create": "scalars",
+      "ProtoConverterFactory.create": "raw",
+      "WireConverterFactory.create": "raw",
+      "SimpleXmlConverterFactory.create": "raw",
+      "JaxbConverterFactory.create": "raw"
+    },
+    "scalars": ["String", "Int", "Long", "Boolean", "Double", "Float", "Short", "Byte", "Char", "Integer", "Character"],
+    "rawBodies": ["RequestBody"]
+  },
   "fluentMaps": [
     { "objects": ["JSONObject"], "put": ["put", "putOpt", "accumulate"], "encoding": "json" },
     { "objects": ["JSONArray"], "items": ["put"] },
