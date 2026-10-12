@@ -179,13 +179,5 @@ export interface UrlShape {
   raw: string;
 }
 
-export interface Finding {
-  rule: "unknown-property" | "missing-required" | "type-mismatch" | "deprecated" | "enum-mismatch";
-  severity: "high" | "medium" | "low";
-  property: string;
-  message: string;
-  specRef?: string;
-}
-
 export type AuthScheme = "bearer" | "apikey" | "basic" | "none" | "unknown";
 export type BodyEncoding = "json" | "form" | "multipart" | "raw" | "none";

@@ -44,12 +44,11 @@ describe("scan output", () => {
     expect(strip(readFileSync(out, "utf8"))).toEqual(strip(run.stdout));
   });
 
-  it("prints a table per file with a summary, filtered by --min-confidence", () => {
+  it("prints a table per file with a summary", () => {
     const all = cli(["scan", gotky]);
     expect(all.status).toBe(0);
     expect(all.stdout).toMatch(/got\.ts\s+typescript/);
-    expect(all.stdout).toMatch(/\d+ calls in 2 files \(\d+ shown at confidence >= 0\.3\)/);
-    expect(cli(["scan", gotky, "--min-confidence", "1"]).stdout).toMatch(/\(0 shown at confidence >= 1\)/);
+    expect(all.stdout).toMatch(/\d+ calls in 2 files; languages: typescript=\d+/);
   });
 
   it("prints runnable curl commands: comments, curl lines and their flags only", () => {
@@ -85,8 +84,6 @@ describe("exit codes and errors", () => {
     const cases: [string[], RegExp][] = [
       [["--examples", "abc"], /--examples.*whole number/],
       [["--examples", "-1"], /--examples.*whole number/],
-      [["--min-confidence", "2"], /--min-confidence.*between 0 and 1/],
-      [["--validate"], /--validate requires --specs/],
       [["--tsconfig", "missing.json"], /tsconfig not found/],
     ];
     for (const [args, message] of cases) {

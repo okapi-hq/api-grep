@@ -29,10 +29,6 @@ export { PROVIDERS, providerForHost, providerFromEnvName, resolveProvider, type 
 export { resolveUrl, partsToUrlShape } from "./resolve/url.js";
 export { resolveBody, shapeOf } from "./resolve/body.js";
 export { resolveHeaders } from "./resolve/headers.js";
-export { score, type Evidence } from "./confidence.js";
 export { redact } from "./report/redact.js";
 export { looksSecret, isCredentialKey, isCredentialHeader } from "./secrets.js";
-export { checkShape } from "./validate/check.js";
-export { matchOperation } from "./validate/match.js";
-export { SpecStore } from "./validate/spec-loader.js";
 export type * from "./types.js";

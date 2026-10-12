@@ -1,4 +1,4 @@
-import { symlinkSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { cli, git, removeTempDirs, scanJson, tempRepo } from "./helpers.js";
@@ -45,44 +45,5 @@ describe("--changed-since", () => {
     const r = cli(["scan", repo, "--changed-since", "no-such-branch"]);
     expect(r.status).toBe(1);
     expect(r.stderr).toContain("unknown git ref: no-such-branch");
-  });
-});
-
-describe("--specs --validate", () => {
-  it("names the operation and reports where the body departs from the spec", () => {
-    const repo = tempRepo({
-      "pay.ts": [
-        `export const pay = () =>`,
-        `  fetch("https://api.stripe.com/v1/payment_intents", {`,
-        `    method: "POST",`,
-        `    body: JSON.stringify({ amount: "12", currency: "gbp", descriptin: "typo" }),`,
-        `  });`,
-      ].join("\n"),
-    });
-    const schema = {
-      type: "object",
-      additionalProperties: false,
-      required: ["amount", "currency"],
-      properties: { amount: { type: "integer" }, currency: { type: "string", enum: ["usd", "eur"] }, description: { type: "string", nullable: true } },
-    };
-    const spec = {
-      openapi: "3.0.0",
-      info: { title: "stripe", version: "1" },
-      servers: [{ url: "https://api.stripe.com/" }],
-      paths: { "/v1/payment_intents": { post: { operationId: "PostPaymentIntents", requestBody: { content: { "application/json": { schema } } }, responses: {} } } },
-    };
-    const specs = tempRepo({ "elsewhere/stripe.json": JSON.stringify(spec) });
-    writeFileSync(path.join(repo, "stripe.json"), JSON.stringify(spec));
-    const findings = (specsDir: string): string[] => {
-      const call = scanJson(repo, ["--specs", specsDir, "--validate"]).report.calls[0]!;
-      expect(call.operationId).toBe("PostPaymentIntents");
-      return call.findings.map((f) => `${f.rule}:${f.property}`).sort();
-    };
-    expect(findings(repo)).toEqual(["enum-mismatch:currency", "type-mismatch:amount", "unknown-property:descriptin"]);
-    if (process.platform === "win32") return;
-    // a spec linked from another checkout (an APIs-guru clone) is read like a copy
-    const linked = tempRepo({});
-    symlinkSync(path.join(specs, "elsewhere", "stripe.json"), path.join(linked, "stripe.json"));
-    expect(findings(linked)).toHaveLength(3);
   });
 });

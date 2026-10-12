@@ -21,9 +21,6 @@ interface ScanFlags {
   out?: string;
   tsconfig?: string;
   changedSince?: string;
-  specs?: string;
-  validate?: boolean;
-  minConfidence: number;
   include?: string[];
   exclude?: string[];
   wrappers?: boolean;
@@ -53,19 +50,12 @@ function port(value: string): number {
   return n;
 }
 
-function confidence(value: string): number {
-  const n = Number(value);
-  if (value.trim() === "" || !(n >= 0 && n <= 1)) throw new InvalidArgumentError("expected a number between 0 and 1.");
-  return n;
-}
-
 /** Messages name files and expressions of the scanned repository: printed on one line, without control characters. */
 function warn(message: string): void {
   process.stderr.write(`warning: ${printable(message)}\n`);
 }
 
 async function runScan(dir: string, flags: ScanFlags): Promise<void> {
-  if (flags.validate && !flags.specs) throw new Error("--validate requires --specs <dir>");
   const scanned = await scan({
     dir,
     languages: languages(flags.language),
@@ -73,8 +63,6 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
     include: flags.include,
     exclude: flags.exclude,
     changedSince: flags.changedSince,
-    specs: flags.specs,
-    validate: flags.validate,
     wrappers: flags.wrappers,
     examples: flags.examples,
     repo: path.basename(path.resolve(dir)),
@@ -83,8 +71,8 @@ async function runScan(dir: string, flags: ScanFlags): Promise<void> {
   const report = finalizeReport(scanned, warn);
   if (flags.out) writeFileSync(flags.out, serializeReport(report));
   if (flags.json) process.stdout.write(`${serializeReport(report)}\n`);
-  else if (flags.curl) process.stdout.write(toCurl(report, flags.minConfidence));
-  else process.stdout.write(toTable(report, flags.minConfidence));
+  else if (flags.curl) process.stdout.write(toCurl(report));
+  else process.stdout.write(toTable(report));
   // 0: complete scan, 2: partial scan (the report is still written), 1: fatal error (see the catch below)
   process.exitCode = report.diagnostics?.complete === false ? 2 : 0;
 }
@@ -101,9 +89,6 @@ export function buildProgram(): Command {
     .option("--out <file>", "write JSON report to file")
     .option("--tsconfig <path>", "TypeScript: tsconfig.json to load (default: nearest)")
     .option("--changed-since <ref>", "only files changed vs git ref (+ importers, one hop)")
-    .option("--specs <dir>", "directory with <provider>.{json,yaml} specs or an APIs-guru checkout")
-    .option("--validate", "run deterministic checks against specs (requires --specs)")
-    .option("--min-confidence <n>", "hide calls below this confidence in table and curl output (0 to 1)", confidence, 0.3)
     .option("--include <glob>", "include glob (repeatable)", collect)
     .option("--exclude <glob>", "exclude glob (repeatable)", collect)
     .option("--no-wrappers", "disable one-hop wrapper expansion")

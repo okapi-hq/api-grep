@@ -12,4 +12,4 @@ One CSV per repo, produced by `pnpm eval:score sample <repo> 100` and filled by 
 
 For recall, spend 30 minutes grepping two packages for calls the tool missed and list them
 one per line in `<repo>.missed.txt` (`file:line reason`). `pnpm eval:score` prints precision
-per field and per confidence bucket, and recall when a missed file exists.
+per field and per `hostKind`, and recall when a missed file exists.

@@ -1,13 +1,12 @@
 import { createHash } from "node:crypto";
-import { bodySourceOf, score } from "./confidence.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
-import type { Call, ClientKind } from "./report/schema.js";
+import type { BodySource, Call, ClientKind } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
 import type { AuthScheme, DynamicPart, Shape, UrlShape } from "./types.js";
 
-/** A call resolved by a language front end: everything the report needs, before provider and confidence. */
+/** A call resolved by a language front end: everything the report needs, before provider and id. */
 export interface ResolvedCall {
   /** File, line, column and language of the call. */
   location: Call["location"];
@@ -24,7 +23,7 @@ export interface ResolvedCall {
   via?: string;
   /** The code gives the SDK client its own base URL (`new OpenAI({ baseURL })`, `OpenAI(base_url=...)`). */
   codeBaseUrl?: boolean;
-  /** Options present but not resolvable to a literal: method and body may be wrong. */
+  /** Options present but not readable as an object literal: method, headers or body may be missing. */
   optionsOpaque?: boolean;
 }
 
@@ -46,17 +45,14 @@ function providerOf(r: ResolvedCall): ResolvedProvider {
   return r.sdk ? { provider: r.sdk.provider, source: "sdk" } : fromUrl;
 }
 
-function confidenceOf(r: ResolvedCall): number {
-  return score({
-    sdkHit: !!r.sdk,
-    hostKind: r.url.hostKind,
-    envHinted: r.url.hostKind === "env" && !!r.url.host,
-    pathDynamicNamed: !r.url.dynamic.some((d) => d.where === "path" && d.name === "expr"),
-    bodySource: bodySourceOf(r.body.shape, r.body.fromType, r.body.fromLiteral),
-    viaWrapper: !!r.via,
-    specMatched: false,
-    optionsOpaque: !!r.optionsOpaque,
-  });
+/** Where the body shape came from: an object literal, a declared type, a value that could not be read, or no body. */
+export function bodySourceOf(body: BodyResult): BodySource {
+  const { shape, fromType, fromLiteral } = body;
+  if (!shape) return "none";
+  if (shape.type === "dynamic" || shape.type === "unknown") return "unknown";
+  if (fromLiteral) return "literal";
+  if (fromType || shape.type === "object") return "type";
+  return "literal";
 }
 
 /** Hash of where the call is; the n-th other request made from the same place (through a wrapper) adds `#n`. */
@@ -65,7 +61,7 @@ export function callId(loc: Call["location"], n = 0): string {
   return createHash("sha1").update(key).digest("hex").slice(0, 12);
 }
 
-/** The report's Call record: provider, confidence and id are decided here, the same way for every language. */
+/** The report's Call record: provider and id are decided here, the same way for every language. */
 export function assembleCall(r: ResolvedCall): Call {
   const { provider, source: providerSource } = providerOf(r);
   const q = queryOf(r.url, r.query);
@@ -96,8 +92,8 @@ export function assembleCall(r: ResolvedCall): Call {
     bodyEncoding: r.body.shape ? r.body.encoding : "none",
     dynamic: r.dynamic,
     via: r.via,
-    confidence: confidenceOf(r),
-    findings: [],
+    optionsOpaque: !!r.optionsOpaque,
+    bodySource: bodySourceOf(r.body),
     examples: [],
   };
 }

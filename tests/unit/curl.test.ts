@@ -20,8 +20,8 @@ const call = (over: Partial<Call> = {}): Call => ({
   authScheme: "none",
   bodyEncoding: "none",
   dynamic: [],
-  confidence: 0.9,
-  findings: [],
+  optionsOpaque: false,
+  bodySource: "none",
   examples: [ex()],
   ...over,
 });
@@ -32,7 +32,7 @@ const report = (calls: Call[]): Report => ({
   tool: "api-grep",
   version: "0.0.0",
   calls,
-  stats: { filesScanned: 1, callsFound: calls.length, byLanguage: {}, byClient: {}, byProvider: {}, byHostKind: {}, withBodyShape: 0, withDynamic: 0, withFindings: 0, redacted: 0, durationMs: 0 },
+  stats: { filesScanned: 1, callsFound: calls.length, byLanguage: {}, byClient: {}, byProvider: {}, byHostKind: {}, withBodyShape: 0, withDynamic: 0, redacted: 0, durationMs: 0 },
 });
 
 describe("exampleToCurl method", () => {
@@ -96,19 +96,19 @@ describe("exampleToCurl body", () => {
 
 describe("toCurl", () => {
   it("renders a commented header and one block per example", () => {
-    const out = toCurl(report([call({ via: "wrapper:api", examples: [ex(), ex({ variant: "full" })] })]), 0);
+    const out = toCurl(report([call({ via: "wrapper:api", examples: [ex(), ex({ variant: "full" })] })]));
     expect(out).toBe(
-      "# src/a.ts:3 (typescript)  api.example.com GET /v1/x via wrapper:api  (confidence 0.90)\n" +
+      "# src/a.ts:3 (typescript)  api.example.com GET /v1/x via wrapper:api\n" +
         "# minimal\ncurl -X GET 'https://api.example.com/v1/x'\n" +
         "# full\ncurl -X GET 'https://api.example.com/v1/x'\n",
     );
   });
 
-  it("skips calls below the confidence threshold", () => {
-    const out = toCurl(report([call({ id: "lo", confidence: 0.2, pathTemplate: "/low" }), call({ id: "hi", pathTemplate: "/high" })]), 0.5);
-    expect(out).not.toContain("/low");
-    expect(out).toContain("/high");
-    expect(toCurl(report([]), 0)).toBe("\n");
+  it("renders every call", () => {
+    const out = toCurl(report([call({ id: "a", pathTemplate: "/one" }), call({ id: "b", pathTemplate: "/two" })]));
+    expect(out).toContain("/one");
+    expect(out).toContain("/two");
+    expect(toCurl(report([]))).toBe("\n");
   });
 
   it("keeps the header on one line whatever the scanned code put in it", () => {
@@ -118,8 +118,8 @@ describe("toCurl", () => {
       provider: "evil\u001b]0;pwned\u0007",
       via: "wrapper:a\u202eb",
     });
-    const lines = toCurl(report([c]), 0).split("\n");
-    expect(lines[0]).toBe("# src/a\\u000arm -rf ~.ts:1 (typescript)  evil\\u001b]0;pwned\\u0007 GET /x\\u000a/y via wrapper:a\\u202eb  (confidence 0.90)");
+    const lines = toCurl(report([c])).split("\n");
+    expect(lines[0]).toBe("# src/a\\u000arm -rf ~.ts:1 (typescript)  evil\\u001b]0;pwned\\u0007 GET /x\\u000a/y via wrapper:a\\u202eb");
     expect(lines[1]).toBe("# minimal");
   });
 });

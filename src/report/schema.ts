@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.3.0";
+export const SCHEMA_VERSION = "1.4.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -81,17 +81,10 @@ export const ShapeSchema: z.ZodType<Shape> = z
     description: "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
   });
 
-export const FindingSchema = z
-  .object({
-    rule: z.enum(["unknown-property", "missing-required", "type-mismatch", "deprecated", "enum-mismatch"]),
-    severity: z.enum(["high", "medium", "low"]),
-    property: z.string().describe("Dotted path of the property in the body."),
-    message: z.string(),
-    specRef: z.string().optional().describe("JSON pointer into the OpenAPI spec."),
-  })
-  .meta({ id: "Finding", description: "A mismatch between the body shape and the provider's OpenAPI spec (--specs --validate)." });
-
 const EncodingSchema = z.enum(["json", "form", "multipart", "raw", "none"]);
+
+export const BODY_SOURCES = ["literal", "type", "unknown", "none"] as const;
+export type BodySource = (typeof BODY_SOURCES)[number];
 
 export const ExampleSchema = z
   .object({
@@ -148,7 +141,7 @@ export const CallSchema = z
     method: z.string().describe("HTTP method, upper case; `DYNAMIC` when it is not known statically."),
     pathTemplate: z.string().describe("Path with `{name}` placeholders for the dynamic segments."),
     urlTemplate: z.string().describe("Full URL template."),
-    operationId: z.string().optional().describe("OpenAPI operation id, from the SDK registry or a matched spec."),
+    operationId: z.string().optional().describe("OpenAPI operation id, from the SDK registry."),
     query: z.array(z.string()).describe("Query parameter names."),
     queryShape: ShapeSchema.optional(),
     headers: z.array(z.string()).describe("Header names, lower case."),
@@ -159,8 +152,12 @@ export const CallSchema = z
     bodyEncoding: EncodingSchema,
     dynamic: z.array(DynamicPartSchema),
     via: z.string().optional().describe("Wrapper chain the call went through (`wrapper:tlsFetch>doFetch`); the location is the outer call site."),
-    confidence: z.number().min(0).max(1).describe("0 to 1. How sure the scan is of provider, URL and body."),
-    findings: z.array(FindingSchema).default([]),
+    optionsOpaque: z
+      .boolean()
+      .describe("The request's options are a value the scan could not read as an object literal (a variable, a call): method, headers or body may be missing."),
+    bodySource: z
+      .enum(BODY_SOURCES)
+      .describe("Where the body shape came from: an object literal in the code, a declared type (TypeScript type, Python or PHP class), a value that could not be read, or no body."),
     examples: z.array(ExampleSchema).default([]),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
@@ -175,7 +172,6 @@ export const StatsSchema = z
     byHostKind: z.record(z.string(), z.number()).describe("Calls per hostKind."),
     withBodyShape: z.number(),
     withDynamic: z.number(),
-    withFindings: z.number(),
     redacted: z.number().describe("Secret-looking strings replaced with `<redacted>`."),
     durationMs: z.number(),
   })

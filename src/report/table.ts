@@ -4,7 +4,7 @@ import { coverageWarnings, diagnosticsLine, plural } from "./diagnostics.js";
 import { printable } from "./printable.js";
 import type { Call, Report } from "./schema.js";
 
-const HEAD = ["line", "method", "provider", "path", "body", "dyn", "conf"];
+const HEAD = ["line", "method", "provider", "path", "body", "dyn"];
 
 function shortShape(c: Call): string {
   const b = c.body;
@@ -17,11 +17,6 @@ function shortShape(c: Call): string {
   return b.type;
 }
 
-function conf(n: number): string {
-  const s = n.toFixed(2);
-  return n >= 0.7 ? pc.green(s) : n >= 0.4 ? pc.yellow(s) : pc.red(s);
-}
-
 function counts(byKey: Record<string, number>, max: number): string {
   return Object.entries(byKey)
     .sort((a, b) => b[1] - a[1])
@@ -31,16 +26,15 @@ function counts(byKey: Record<string, number>, max: number): string {
 }
 
 /** One section per file (`src/billing.ts  typescript`), then one row per call in it. */
-export function toTable(report: Report, minConfidence: number): string {
-  const rows = report.calls.filter((c) => c.confidence >= minConfidence);
+export function toTable(report: Report): string {
   const table = new Table({
     head: HEAD.map((h) => pc.bold(h)),
     wordWrap: true,
-    colWidths: [6, 8, 18, 42, 36, 5, 6],
+    colWidths: [6, 8, 18, 42, 36, 5],
     style: { head: [], border: [] },
   });
   let file: string | undefined;
-  for (const c of rows) {
+  for (const c of report.calls) {
     if (c.location.file !== file) {
       file = c.location.file;
       table.push([{ colSpan: HEAD.length, content: `${pc.bold(printable(file))}  ${pc.dim(c.location.language)}` }]);
@@ -48,10 +42,10 @@ export function toTable(report: Report, minConfidence: number): string {
     const name = printable(c.provider);
     const provider = c.client === "sdk" ? `${name} ${pc.dim("sdk")}` : c.framework ? `${name} ${pc.dim(printable(c.framework))}` : name;
     const target = printable(c.pathTemplate) + (c.via ? pc.dim(` (${printable(c.via)})`) : "");
-    table.push([pc.dim(String(c.location.line)), printable(c.method), provider, target, shortShape(c), String(c.dynamic.length), conf(c.confidence)]);
+    table.push([pc.dim(String(c.location.line)), printable(c.method), provider, target, shortShape(c), String(c.dynamic.length)]);
   }
   const s = report.stats;
-  const summary = `${plural(s.callsFound, "call", "calls")} in ${plural(s.filesScanned, "file", "files")} (${rows.length} shown at confidence >= ${minConfidence}); languages: ${counts(s.byLanguage, 4)}; providers: ${counts(s.byProvider, 8)}`;
+  const summary = `${plural(s.callsFound, "call", "calls")} in ${plural(s.filesScanned, "file", "files")}; languages: ${counts(s.byLanguage, 4)}; providers: ${counts(s.byProvider, 8)}`;
   const d = report.diagnostics;
   const coverage = d ? `\n${d.complete ? pc.dim(diagnosticsLine(d)) : pc.yellow(diagnosticsLine(d))}` : "";
   const sdkWarnings = report.coverage ? coverageWarnings(report.coverage).map((w) => `\n${pc.yellow(`⚠ ${w}`)}`).join("") : "";

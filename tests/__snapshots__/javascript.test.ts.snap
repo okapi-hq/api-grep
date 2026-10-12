@@ -30,8 +30,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "type": "object",
       },
       "bodyEncoding": "form",
+      "bodySource": "literal",
       "client": "html-form",
-      "confidence": 0.6,
       "dynamic": [],
       "examples": [
         {
@@ -64,7 +64,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "full",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "formspree.io",
@@ -77,6 +76,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 9,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/f/xyzabcd",
       "provider": "formspree",
       "providerSource": "host",
@@ -87,8 +87,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "html-form",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -102,7 +102,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "www.google.com",
@@ -115,6 +114,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 16,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/search",
       "provider": "www.google.com",
       "query": [
@@ -148,8 +148,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "type": "object",
       },
       "bodyEncoding": "multipart",
+      "bodySource": "literal",
       "client": "html-form",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -166,7 +166,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "relative",
@@ -178,6 +177,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 20,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/api/upload",
       "provider": "internal",
       "query": [],
@@ -186,8 +186,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -201,7 +201,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -214,6 +213,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 33,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/todos",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -228,8 +228,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "axios",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "user",
@@ -247,7 +247,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.github.com",
@@ -260,6 +259,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 38,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/users/{user}/repos",
       "provider": "github",
       "providerSource": "host",
@@ -270,8 +270,8 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -286,7 +286,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.open-meteo.com",
@@ -299,6 +298,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
         "line": 43,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/forecast",
       "provider": "open-meteo",
       "providerSource": "host",
@@ -361,7 +361,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -390,7 +390,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     "redacted": 0,
     "withBodyShape": 2,
     "withDynamic": 1,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -424,8 +423,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "type": "object",
       },
       "bodyEncoding": "form",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "line_items",
@@ -450,7 +449,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.stripe.com",
@@ -464,6 +462,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       },
       "method": "POST",
       "operationId": "PostCheckoutSessions",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/checkout/sessions",
       "provider": "stripe",
       "providerSource": "sdk",
@@ -479,8 +478,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     {
       "authScheme": "apikey",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "axios",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "owner",
@@ -502,7 +501,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {
         "authorization": null,
       },
@@ -519,6 +517,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "line": 15,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/users/{owner}/repos",
       "provider": "github",
       "providerSource": "host",
@@ -558,8 +557,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "fetch",
-      "confidence": 0.35,
       "dynamic": [
         {
           "name": "text",
@@ -583,7 +582,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {
         "content-type": "application/json",
       },
@@ -599,6 +597,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "line": 20,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/",
       "provider": "slack",
       "providerSource": "env-name",
@@ -646,8 +645,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -671,7 +670,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.openai.com",
@@ -685,6 +683,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       },
       "method": "POST",
       "operationId": "createChatCompletion",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
       "provider": "openai",
       "providerSource": "sdk",
@@ -700,8 +699,8 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "latitude",
@@ -727,7 +726,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.open-meteo.com",
@@ -740,6 +738,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "line": 9,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/forecast",
       "provider": "open-meteo",
       "providerSource": "host",
@@ -807,7 +806,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -835,7 +834,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     "redacted": 0,
     "withBodyShape": 3,
     "withDynamic": 4,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -849,8 +847,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "jquery",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -865,7 +863,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "icanhazdadjoke.com",
@@ -878,6 +875,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 4,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/search",
       "provider": "icanhazdadjoke.com",
       "query": [
@@ -924,8 +922,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "jquery",
-      "confidence": 0.6,
       "dynamic": [
         {
           "name": "email",
@@ -948,7 +946,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.convertkit.com",
@@ -961,6 +958,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 10,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v3/forms/123/subscribe",
       "provider": "convertkit",
       "providerSource": "host",
@@ -976,8 +974,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "type": "dynamic",
       },
       "bodyEncoding": "form",
+      "bodySource": "unknown",
       "client": "jquery",
-      "confidence": 0,
       "dynamic": [
         {
           "name": "id",
@@ -1003,7 +1001,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "relative",
@@ -1015,6 +1012,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 19,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/api/items/{id}",
       "provider": "internal",
       "query": [],
@@ -1034,8 +1032,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "type": "object",
       },
       "bodyEncoding": "multipart",
+      "bodySource": "literal",
       "client": "xhr",
-      "confidence": 0.6,
       "dynamic": [],
       "examples": [
         {
@@ -1053,7 +1051,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {
         "x-requested-with": "XMLHttpRequest",
       },
@@ -1070,6 +1067,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 28,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1_1/demo/image/upload",
       "provider": "cloudinary",
       "providerSource": "host",
@@ -1080,8 +1078,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "axios",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "query",
@@ -1117,7 +1115,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.themoviedb.org",
@@ -1130,6 +1127,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 32,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/3/search/movie",
       "provider": "tmdb",
       "providerSource": "host",
@@ -1162,8 +1160,8 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "repo",
@@ -1181,7 +1179,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.github.com",
@@ -1194,6 +1191,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
         "line": 6,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/repos/{repo}",
       "provider": "github",
       "providerSource": "host",
@@ -1220,7 +1218,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -1249,7 +1247,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     "redacted": 0,
     "withBodyShape": 2,
     "withDynamic": 4,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",

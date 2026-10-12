@@ -31,14 +31,13 @@ export function exampleToCurl(ex: Example): string {
 
 function header(c: Call): string {
   const via = c.via ? ` via ${c.via}` : "";
-  return printable(`# ${c.location.file}:${c.location.line} (${c.location.language})  ${c.provider} ${c.method} ${c.pathTemplate}${via}  (confidence ${c.confidence.toFixed(2)})`);
+  return printable(`# ${c.location.file}:${c.location.line} (${c.location.language})  ${c.provider} ${c.method} ${c.pathTemplate}${via}`);
 }
 
-/** Renders every example of every call above `minConfidence` as commented curl commands. */
-export function toCurl(report: Report, minConfidence: number): string {
+/** Renders every example of every call as commented curl commands. */
+export function toCurl(report: Report): string {
   const blocks: string[] = [];
   for (const c of report.calls) {
-    if (c.confidence < minConfidence) continue;
     const lines = [header(c)];
     for (const ex of c.examples) lines.push(`# ${ex.variant}`, exampleToCurl(ex));
     blocks.push(lines.join("\n"));

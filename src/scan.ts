@@ -10,7 +10,6 @@ import type { LanguageScanResult } from "./lang/types.js";
 import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Language, type Report, type SdkCoverage, type Stats } from "./report/schema.js";
 import { DiagnosticsCollector } from "./report/diagnostics.js";
 import { splitValid } from "./report/valid.js";
-import { applySpecs } from "./validate/index.js";
 import { toolVersion } from "./version.js";
 
 export interface ScanOptions {
@@ -22,8 +21,6 @@ export interface ScanOptions {
   include?: string[];
   exclude?: string[];
   changedSince?: string;
-  specs?: string;
-  validate?: boolean;
   /** TypeScript SDK registry (default: the built-in one). */
   registry?: Registry;
   repo?: string;
@@ -51,7 +48,6 @@ export function computeStats(calls: Call[], filesScanned: number, durationMs: nu
     byHostKind: count(calls, (c) => c.hostKind),
     withBodyShape: calls.filter((c) => c.body && c.body.type !== "dynamic" && c.body.type !== "unknown").length,
     withDynamic: calls.filter((c) => c.dynamic.length > 0).length,
-    withFindings: calls.filter((c) => c.findings.length > 0).length,
     redacted: 0,
     durationMs,
   };
@@ -124,7 +120,6 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
   const found = await scanLanguages(rootDir, opts, diag, changed);
   const built = onePerRequest(sortCalls(found.calls));
-  if (opts.specs) await applySpecs(built, { specsDir: opts.specs, validate: !!opts.validate, onWarning: opts.onWarning });
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
   return {

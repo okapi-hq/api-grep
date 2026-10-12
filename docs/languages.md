@@ -20,8 +20,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
   `ecosystem` (`npm`, `pypi`, `composer`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
-  `Call` schema, provider table, confidence rules, example requests, curl output, spec validation, secret redaction,
-  diagnostics and SDK coverage. Only detection and resolution are language specific.
+  `Call` schema, provider table, example requests, curl output, secret redaction, diagnostics and SDK coverage. Only detection and resolution are language specific.
 - **SDKs differ per language.** Each language has its own registries, keyed by the package name its ecosystem uses
   (`sentry-sdk` on PyPI, `@sentry/react` on npm), with the method names its SDK exposes (`chat_postMessage`,
   `Customer.create`). The provider ids, hosts and paths stay the same, so the reports line up.
@@ -34,7 +33,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 files ──▶   │ TypeScript: ts-morph checker ─▶ detect ─▶ resolve ──┐                          │
             │ Python / PHP / …: tree-sitter ─▶ lower to IR ─▶ IR engine (detect, resolve) ──┤──▶ Call[]
             └──────────────────────────────────────────────────────────────────────────────────┘
-Call[] ──▶ specs ─▶ examples ─▶ schema check ─▶ redaction ─▶ JSON / table / curl     (shared)
+Call[] ──▶ examples ─▶ schema check ─▶ redaction ─▶ JSON / table / curl              (shared)
            stats, diagnostics, SDK coverage per ecosystem                              (shared)
 ```
 
@@ -42,7 +41,8 @@ Call[] ──▶ specs ─▶ examples ─▶ schema check ─▶ redaction ─�
   files seen and scanned, and coverage rows. `src/lang/index.ts` lists the languages; `src/scan.ts` runs each one and
   merges the results.
 - `src/assemble.ts` turns what a front end resolved (URL shape, method, body, headers, query, SDK match) into the report
-  `Call`: provider, confidence and id are decided there, the same way for every language.
+  `Call`: provider, id and the facts `optionsOpaque` and `bodySource` are decided there, the same way for every
+  language.
 - Language-neutral helpers shared by every front end: `src/resolve/parts.ts`, `url-shape.ts` (URL templates and host
   classification), `header-names.ts`, `shape-utils.ts`, `sdk-template.ts` (registry paths, `inlinePathLiterals`,
   `basePath`, code-given base URLs) and `src/coverage.ts`.
