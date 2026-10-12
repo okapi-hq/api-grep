@@ -40,7 +40,9 @@ function bindingChain(b: Binding, name: string, ctx: IrCtx, depth: number): Chai
       const dflt = b.param.default ? valueChain(b.param.default, b.fn, ctx, depth + 1) : UNKNOWN;
       if (resolved(dflt)) return dflt;
       const typed = b.param.type ? typeChain(b.param.type, b.fn, ctx, depth + 1) : UNKNOWN;
-      return resolved(typed) ? typed : { root: { kind: "param", name, param: b.param, fn: b.fn }, segs: [] };
+      if (resolved(typed)) return typed;
+      // `cache: MutableMap<...>` in a typed language: a value the type names, not a client received from outside
+      return b.param.type && ctx.idx.lang.typedParams ? UNKNOWN : { root: { kind: "param", name, param: b.param, fn: b.fn }, segs: [] };
     }
     case "value": {
       const c = valueChain(b.assign.value, b.fn, ctx, depth + 1);

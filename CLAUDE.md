@@ -9,7 +9,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python and PHP (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
+(inline scripts and forms), Python and PHP; Kotlin is parsed and its Gradle / Maven manifests read, its clients come
+with #31-#33, Java with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -40,10 +41,19 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
   see `src/lang/html/`).
-- Tree-sitter languages (Python, PHP): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
+- Tree-sitter languages (Python, PHP, Kotlin): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
-  rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`.
+  rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
+  `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
+  values are in `src/lang/jvm/`, shared with Java later.
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template}.ts`.
+- Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
+  `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
+  them to the shape (`src/resolve/object-edits.ts`, `edited-shape.ts`). Rules in `docs/languages.md`.
+- A parameter's values (#39): a body value, model or header that is an unsubstituted parameter reads the literals its
+  callers pass (one level) and its default; callers come from `src/lang/ir/param-values.ts` (IR) and
+  `src/resolve/param-values.ts` (TypeScript references), merged by `src/resolve/param-shape.ts`; several header values
+  go to `Call.headerAlternatives`.
 - `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
   the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
@@ -52,7 +62,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
-- `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`).
+- `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
   `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
@@ -64,7 +74,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`). Patterns from real repositories go in a directory with an `expected.json` so the recall
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`). The recall check scans a fixture without its
+  subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
 - A per-file failure is a diagnostic (`diagnostics.skipped` / `droppedCalls`), never a crash.
@@ -76,7 +87,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `src/lang/php/registry/` (format: `IrRegistryEntry` in `src/lang/ir/language.ts`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
-  Composer package in `src/lang/php/namespaces.json`.
+  Composer package in `src/lang/php/namespaces.json`; Java / Kotlin package roots of a Maven `group:artifact` that are
+  not its group id in `src/lang/jvm/packages.json`.
 - The server's archives are hostile input too: never write anything but regular files and directories, never log a
   path, a query value or anything from an archive, and never pass the server's environment to a scan.
 - Comments explain why, briefly; match the surrounding code.
@@ -85,4 +97,6 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 
 - Issues #3 to #8 (recall, diagnostics, fixtures, provider roadmap, coverage, provider resolution) apply to every
   language; `docs/languages.md` has a table of how each is covered in TypeScript, Python and PHP.
+- Kotlin: #29 (parsing, lowering, manifests) is done; Retrofit #31, OkHttp / `java.net.http` / Ktor / Spring / Feign
+  #32, JVM SDK registries #33, Java #43.
 - Next language candidates (Go, Ruby, Java, C#) and what each needs are listed at the end of `docs/languages.md`.

@@ -20,7 +20,7 @@ export interface ResolvedCall {
   /** Every dynamic part (method, URL, body, query), in report order. */
   dynamic: DynamicPart[];
   body: BodyResult;
-  headers: { names: string[]; values: Record<string, string | null>; authScheme: AuthScheme };
+  headers: { names: string[]; values: Record<string, string | null>; alternatives?: Record<string, string[]>; authScheme: AuthScheme };
   query: { names: string[]; shape: Record<string, Shape> };
   via?: string;
   /** The code gives the SDK client its own base URL (`new OpenAI({ baseURL })`, `OpenAI(base_url=...)`). */
@@ -124,6 +124,7 @@ export function assembleCall(r: ResolvedCall): Call {
     queryShape: q.queryShape,
     headers: r.headers.names,
     headerValues: r.headers.values,
+    ...(r.headers.alternatives && Object.keys(r.headers.alternatives).length > 0 ? { headerAlternatives: r.headers.alternatives } : {}),
     authScheme: r.headers.authScheme,
     body: withoutCredentialLiterals(r.body.shape),
     bodyFromType: r.body.fromType,

@@ -11,6 +11,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | HTML | supported | inline scripts through the type checker, forms read directly | npm (CDN scripts) | `package.json` |
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
+| Kotlin | parsed, no client yet | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
 
 ## Goals
 
@@ -18,7 +19,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   `api-grep scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
-  `ecosystem` (`npm`, `pypi`, `composer`), so the same package name in two ecosystems (`openai`) is two rows.
+  `ecosystem` (`npm`, `pypi`, `composer`, `maven`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
   `Call` schema, provider table, example requests, curl output, secret redaction, diagnostics and SDK coverage. Only detection and resolution are language specific.
 - **SDKs differ per language.** Each language has its own registries, keyed by the package name its ecosystem uses
@@ -66,9 +67,9 @@ bodies by their declared types. The same front end reads three languages:
 
 ### Tree-sitter languages: the IR engine
 
-Python and PHP have no type checker to lean on, but they share most of what a scanner needs. Each is parsed with
-[tree-sitter](https://tree-sitter.github.io) (WebAssembly grammars, no native build) and **lowered** into a small
-language-neutral model (`src/lang/ir/model.ts`):
+Python, PHP and Kotlin are read without a type checker (Kotlin's declared types are kept, not checked), but they share
+most of what a scanner needs. Each is parsed with [tree-sitter](https://tree-sitter.github.io) (WebAssembly grammars,
+no native build) and **lowered** into a small language-neutral model (`src/lang/ir/model.ts`):
 
 - expressions: literals, interpolated strings (`f"..."`, `"$x"`), concatenation, `or` / `??` defaults, format calls
   (`%`, `.format()`, `sprintf`), environment reads with their default, names, attributes, indexes, calls with keyword
@@ -85,6 +86,8 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `chain.ts` | what a callee is: `self.client.chat.completions.create` becomes `[openai, OpenAI(), chat, completions, create()]`, following variables, fields, typed parameters (`client: OpenAI`), factories (`def get_client(): return OpenAI()`), `with ... as`, `or` defaults and external base classes |
 | `evaluate.ts`, `format.ts` | string values as static / env / dynamic parts, like the TypeScript evaluator: constants across files, env defaults, `self.base_url` set in the constructor, parameter defaults, URL helpers and lambdas, fields of objects built in the project (`instance.ts`), literal `.replace()` |
 | `shape.ts`, `types.ts`, `request.ts` | body, query and header shapes: dict literals and spreads, serializers (`json.dumps`, `urlencode`), declared types (dataclass, TypedDict, pydantic models) |
+| `param-values.ts` | what a parameter no wrapper substituted can be: its callers' arguments (one level) and its default, see [#39](#a-parameters-values-39) |
+| `edits.ts` | keys a dict gets or loses after it is built (`kwargs["k"] = v`, `.update`, `$params['k'] = $v`): folded into the variable's value where it is read |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
@@ -99,6 +102,11 @@ A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, 
 - `manifests.ts` and `modules.json`: declared packages, their versions, and import names that differ from the package;
 - `index.ts`: the `IrLanguage` (excludes, passthrough calls, serializers, custom detectors such as `urllib.request`
   or curl handles, and `resolveCall` for calls that stand for project data, like Laravel's `config()`).
+
+Language traits are flags of the `IrLanguage`: `moduleVarsVisible` (Python globals), `sharedGlobals` (PHP constants
+and functions seen from every file), `packageScope` (the files of a Kotlin package see each other's declarations),
+`typedParams` (a typed parameter that names no client is not an `injected-client`), `allowHiddenErrors` and `repair`
+(see Kotlin below).
 
 ### Registries
 
@@ -136,7 +144,8 @@ first when a base class method runs on it), parameter defaults,
 (`db: Client = ctx.db`), fields of objects built in the project and passed down (`Call(base="https://...")` for a
 dataclass, NamedTuple or pydantic model, `self.url` set in `__init__`, `replace(call, ...)`), literal `.replace()` and
 `re.sub` (the pattern is never run). Bodies come from dict literals, `**spreads`, `dict(...)`, `json.dumps`, `urlencode`,
-`.model_dump()`, and declared dataclass / TypedDict / pydantic types.
+`.model_dump()`, and declared dataclass / TypedDict / pydantic types, with the keys added or removed later in the same
+function, before the call (see [Keys added after a dict is built](#keys-added-after-a-dict-is-built-38)).
 
 **Out of scope by default:** `tests/`, `test/`, `test_*.py`, `*_test.py`, `conftest.py`, virtualenvs (`.venv`, `venv`,
 `site-packages`), caches. Files a scan excludes are still read so imports resolve through them, as in TypeScript.
@@ -171,6 +180,8 @@ arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, `str_replace` / `preg_repl
 fields of objects built in the project (`new Call(base: '...')`, promoted or set in the constructor), named
 arguments, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
 `getenv()`, `$_ENV`, `$_SERVER`, and Laravel `config('file.key')` / `Config::get(...)` read from `config/<file>.php`.
+Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params += [...]`, `array_merge(...)`,
+`unset(...)`, see [#38](#keys-added-after-a-dict-is-built-38)).
 
 **Out of scope by default:** `vendor/`, `tests/`, `Tests/`, `test/`, `*Test.php`, `storage/`, `bootstrap/cache/`,
 `var/cache/`, `*.blade.php`.
@@ -184,6 +195,59 @@ arguments, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
   `$sdk->createClient('s3')` and PostHog's `init()` host are not followed; SDK coverage shows such packages.
 - Laravel facades are matched by their class (`Illuminate\Support\Facades\Http`, or `Http` without a namespace);
   a facade alias registered under another name is not.
+
+## Kotlin
+
+**Status:** parsed, lowered and resolved; no HTTP client table and no SDK registry yet. Retrofit service interfaces
+(#31), OkHttp, `java.net.http`, Ktor, Spring and Feign (#32) and the JVM SDK registries (#33) build on this. A Kotlin
+repository reports its files in `diagnostics.languages` and its SDKs in `coverage.sdks`, with no calls. Java is #43.
+
+**Lowering** (`src/lang/kotlin/`): the module is the file's package, and every file of a package sees the others'
+top-level declarations (`packageScope`); `import a.b.*` makes a project package's declarations names of the file, and
+`import a.Config.BASE` reads an `object` member. A class's primary constructor, property initializers and `init` blocks
+are its `<init>` method; constructor `val` / `var` parameters, body properties, `by lazy { ... }` (what the lambda
+returns), getters, nested classes and `companion object` members (initialized in `<clinit>`) are its fields. A bare
+name in a method is a local or parameter first, then a member of the class (`this.name`, Kotlin's implicit receiver),
+then a top-level name. Lambdas are closures; `x.let { it }` gives `it` the value of `x`, and `run`, `with`,
+`withContext` and `lazy` stand for what their lambda returns. Annotations of functions and parameters
+(`@GET("users/{id}")`, `@Query("page")`) are kept on `FunctionDef.annotations` / `Param.annotations` for Retrofit.
+
+**Resolved:** string templates (`"$base/v1/${id}"`, raw strings), `+`, `buildString { append(...) }`,
+`StringBuilder(...).append(...).toString()`, `String.format` and `"...".format(...)`, `joinToString`, `mapOf("a" to
+b)` / `listOf`, `?:`, `if` / `when` / `try` as values, `const val`, parameter defaults and named arguments,
+`System.getenv("X")` (also `getenv()["X"]` and `getOrDefault`), `System.getProperty("x", "default")`, Android
+`BuildConfig.X` read as the configuration value `X` with the literal of `buildConfigField` in the module's nearest
+Gradle build script as its default, and Spring `@Value("\${x:default}")` on properties and constructor parameters.
+Declared types of parameters, properties and locals are kept, so a client's type names it (`client: OkHttpClient`);
+data classes and other classes with typed constructor properties give body shapes, under their
+`@SerializedName`, `@Json(name = ...)`, `@SerialName` or `@JsonProperty` names (`@Transient` / `@JsonIgnore` aside).
+
+**Manifests** (`src/lang/jvm/`, shared with Java later): Gradle build scripts in the Kotlin and Groovy DSL
+(`implementation("g:a:v")`, `api 'g:a:v'`, `group:` / `name:` maps, `platform(...)`, `libs.x` and `libs.bundles.x`
+from `gradle/libs.versions.toml`; test configurations aside; versions from script variables and `gradle.properties`),
+and `pom.xml` (test scope and plugin dependencies aside; `${property}` versions from the pom and its parent
+directories' poms, `dependencyManagement` versions). Packages are `group:artifact`; their package roots are the group
+id unless `src/lang/jvm/packages.json` says otherwise. Every manifest is read as text with linear-time patterns, never
+run.
+
+**Grammar:** `@tree-sitter-grammars/tree-sitter-kotlin` (the unscoped `tree-sitter-kotlin` package ships no `.wasm`).
+It wants a separator after the last member of a class body closed on the same line (`companion object { const val X =
+1 }`): with one such body it inserts a hidden token (`allowHiddenErrors` accepts the tree), with two it gives up on the
+file. A file that does not parse is then read once more with a `;` in place of the space before each such `}`
+(`repair`, `src/lang/kotlin/repair.ts`): same length, so every position stays, kept only if it parses.
+
+**Out of scope by default:** `*.gradle.kts`, `buildSrc/`, `build-logic/`, `.gradle/`, test source sets (`src/test*`,
+`src/androidTest*`, `src/*Test`), `test/`, `tests/`, `*Test.kt`, `*Tests.kt`.
+
+**Limitations:**
+
+- A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
+- Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
+  `this` is the enclosing class's); the anonymous object's own properties are not fields.
+- A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
+  unresolved.
+- `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
+  flavors other than the first literal are not listed.
 
 ## JavaScript and HTML
 
@@ -277,8 +341,8 @@ registry method of two members or more (`messages.create`, `chat.completions.cre
 
 Decisions:
 
-- The call is reported where the SDK method is called, inside the helper; the helper's other parameters stay dynamic
-  there. A caller whose other arguments flow into the request also gets the call through wrapper expansion
+- The call is reported where the SDK method is called, inside the helper; the helper's other parameters take the
+  values its callers pass and their defaults there, as any parameter's do (#39). A caller whose other arguments flow into the request also gets the call through wrapper expansion
   (`via: wrapper:ask`), as with a typed parameter; that call needs no `clientFrom` since its client is the caller's own.
 - The issue suggested lowering a `confidence` on manifest matches. The report states facts and has no score, so the
   fact is `clientFrom` and the weighing is left to the consumer.
@@ -293,23 +357,83 @@ Decisions:
 | Python | callers (functions, methods, constructors), manifests, `receiver-unknown` |
 | PHP | same engine, same behaviour (`tests/fixtures/php/receiver/`) |
 | TypeScript / JavaScript | callers (functions, arrow functions, methods) in the scanned files, `package.json` manifests, `receiver-unknown`; a client stored on `this` by a constructor parameter is not followed yet |
+| Kotlin | does not apply: every parameter has a type, and one that names no client stays unresolved (`typedParams`) |
+
+## Keys added after a dict is built (#38)
+
+Code that adapts one call to several models or API versions often builds the arguments and then completes them:
+`kwargs["max_tokens"] = 64` in one branch, `kwargs["max_completion_tokens"] = 64` in the other. For a variable that
+becomes a call's arguments or body, the statements of the same function that run before the call change its keys:
+
+| language | adds | removes |
+|---|---|---|
+| Python | `kwargs["k"] = v`, `kwargs.update(k=v)`, `.update({...})`, `.update(**other)`, `.setdefault("k", v)`, `kwargs \|= {...}`, `kwargs = {**kwargs, ...}` | `del kwargs["k"]`, `kwargs.pop("k")` |
+| TypeScript / JavaScript | `params.k = v`, `params["k"] = v`, `Object.assign(params, {...})` | `delete params.k`, `params.k = undefined` |
+| PHP | `$params['k'] = $v`, `$params += [...]` (keys not set yet), `$params = array_merge($params, [...])`, `$data['k'] = $v` with no `$data = [...]` before | `unset($params['k'])` |
+
+- **Branches.** Every key set on some path is reported. A key set in a block that may not run (an `if` branch, a loop
+  body, a `case`, an `except` / `catch`, the right side of `&&`) is left out of `required`, unless every branch of an
+  `if` / `elif` / `else` chain sets it. Values set on several paths merge as alternatives (`model: ["gpt-4o-mini",
+  "o3"]`), and literal values count for the `model` fact like those of a dict literal.
+- **Order.** Only statements before the call count; a later edit, or one in a nested function or callback, does not. A
+  removal in a branch makes the key optional; an unconditional one drops it.
+- **Where.** Python and PHP: the front ends lower each statement as an edit of the variable (`Assign.edit` in
+  `src/lang/ir/model.ts`, blocks that may not run in `FunctionDef.branches`); `lookup` (`src/lang/ir/project.ts`)
+  folds the edits into one dict literal (`src/lang/ir/edits.ts`), so shapes, options, the model and every other reader
+  see them. TypeScript: `src/resolve/object-edits.ts` collects the edits of a variable declared with an object, and
+  `src/resolve/edited-shape.ts` applies them to its shape (`identifierShape` in `src/resolve/body.ts`).
+- **Limits.** Python and PHP edit a value built in place: a dict literal, `dict(...)`, `.copy()`, `**kwargs`. A dict
+  returned by a function, or a plain parameter, keeps the keys the code gives it, and a key that comes from a spread
+  of another variable cannot be removed. In TypeScript, only `const` / `let` declarations initialized with a value of
+  object shape are edited (not `fetch` init objects read key by key, such as `init.headers = ...`).
+
+## A parameter's values (#39)
+
+Wrappers keep their model and version settings in parameter defaults (`model="gpt-4o-mini"`, `max_tokens=1024`,
+`api_version="2024-06-01"`). When a body value, a model or a header value is a parameter of the enclosing function that
+no wrapper expansion substituted (the call as written in the wrapper's body), it is read from:
+
+- the literals its callers in the project pass, one level up (a caller's own parameter is not followed further);
+- its default, when some caller leaves it out or nothing in the project calls the function.
+
+The values merge as alternatives: `model.values` lists them all, a body value becomes an `enum` with every value, and
+`dynamic` is true when a caller passes something that cannot be read (that value adds the parameter's declared type or
+a dynamic shape next to the literal ones). At a caller, wrapper expansion already substitutes the argument, so each
+call site keeps its own single value.
+
+- **Headers.** `headerValues` keeps one value per header: the first, or null when one value cannot be read. A header
+  that can take several values also lists every literal one in `headerAlternatives` (schema 1.8.0). Credential headers
+  never list values.
+- **What counts.** Literal scalars, constants, env var defaults and class attributes (`model or self.default_model`
+  merges both); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
+  / `null` / `undefined` stand for "not given" and add no value.
+- **Callers.** Python and PHP: calls of the function or method (`self.f(...)`, `$this->f(...)`, a class call for its
+  constructor) found among the project's same-named calls (`src/lang/ir/param-values.ts`). TypeScript: the checker's
+  references to the function, the variable holding it, or the class it constructs (`src/resolve/param-values.ts`); a
+  function also passed as a value (`items.map(fetchOne)`) or called with a spread counts as unread. At most 20 callers
+  are read; past that, the rest count as unread.
+- **Not covered.** Callers outside the project (an exported library function) are not seen: with no caller in the
+  project the default alone is reported. Dataclass and TypeScript class field initializers were already read
+  (`self.model`, `this.model`); the values a constructor call gives a dataclass field are not merged with them.
 
 ## How the open issues apply to each language
 
-| issue | TypeScript / JavaScript / HTML | Python | PHP |
-|---|---|---|---|
-| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK |
-| #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist |
-| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` |
-| #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` |
-| #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same |
-| #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python |
+| issue | TypeScript / JavaScript / HTML | Python | PHP | Kotlin |
+|---|---|---|---|---|
+| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | supabase-kt, Firebase and Sentry artifacts listed in `providers.json` (registries: #33); per-file parse / internal errors |
+| #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` (negatives now; client fixtures with #31 / #32) |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries with #33 |
+| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"` |
+| #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
+| #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same | same |
+| #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
+| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); no client fixture until #31 / #32 |
 
 ## Adding a language
 
-1. Add the tree-sitter grammar as a dev dependency and to `GRAMMARS` in `tsup.config.ts` (only its `.wasm` ships).
+1. Add the tree-sitter grammar as a dev dependency and to `GRAMMARS` in `src/lang/grammars.ts` (only its `.wasm` ships;
+   the build copies it next to the bundle).
 2. Create `src/lang/<language>/`: the lowering into `src/lang/ir/model.ts`, `clients.json`, `registry/*.json`,
    manifests, and an `IrLanguage` in `index.ts`; register `irLanguage(...)` in `src/lang/index.ts`.
 3. Add the language id to `LanguageSchema` (and its extensions to `src/language.ts`), its HTTP clients to
@@ -327,5 +451,5 @@ A language whose needs go beyond the IR (a type system the engine should use, li
 |---|---|---|
 | Go | Go modules (`go.mod`) | `net/http`, `resty`; SDK clients are structs (`stripe.Key`, `client.Customers.New(params)`) |
 | Ruby | RubyGems (`Gemfile`) | `Net::HTTP`, `Faraday`, `HTTParty`; SDKs are mostly module-level (`Stripe::Customer.create`) |
-| Java / Kotlin | Maven / Gradle | `HttpClient`, OkHttp, Retrofit annotations; builders everywhere |
+| Java | Maven / Gradle (shared with Kotlin) | one front end with Kotlin for mixed projects (#43); `HttpClient`, OkHttp, Retrofit annotations |
 | C# | NuGet | `HttpClient`, RestSharp, typed SDK clients |

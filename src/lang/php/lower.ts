@@ -1,5 +1,7 @@
+import { markBranches } from "../branches.js";
 import type { ClassDef, Expr, FunctionDef, ModuleModel, Param } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { PHP_BRANCHES, setEdit, unsetEdit } from "./edits.js";
 import { lowerExpr, newFunction, setStatementHooks } from "./lower-expr.js";
 import { classPath, lowerUse, newNames, posOf, type PhpState } from "./names.js";
 
@@ -64,12 +66,33 @@ function lowerClosure(n: SyntaxNode, st: PhpState): FunctionDef {
   return fn;
 }
 
+/** `$params['k'] = $v`, `$params += [...]`: keys added to the array a variable holds. `$list[] = $v` appends. */
+function lowerEdit(left: SyntaxNode, op: string, value: Expr, offset: number, st: PhpState): boolean {
+  if (left.type === "variable_name" && op === "+=") {
+    st.fn.assigns.push(setEdit(varName(left)!, undefined, value, offset));
+    return true;
+  }
+  const [obj, key] = left.type === "subscript_expression" && op === "=" ? named(left) : [];
+  if (obj?.type !== "variable_name" || !key) return false;
+  st.fn.assigns.push(setEdit(varName(obj)!, lowerExpr(key, st), value, offset));
+  return true;
+}
+
+/** `unset($params['k'])`: the key leaves the array. */
+function lowerUnset(n: SyntaxNode, st: PhpState): void {
+  for (const t of named(n)) {
+    const [obj, key] = t.type === "subscript_expression" ? named(t) : [];
+    if (obj?.type === "variable_name" && key) st.fn.assigns.push(unsetEdit(varName(obj)!, lowerExpr(key, st), n.endIndex));
+  }
+}
+
 /** `$x = v`, `$x .= v`, `$this->x = v`, `self::$x = v`: assignments of the current function, and class fields. */
 function lowerAssignment(n: SyntaxNode, st: PhpState): Expr {
   const left = field(n, "left");
   const value = lowerExpr(field(n, "right")!, st);
   const op = field(n, "operator")?.text;
   const augmented = n.type === "augmented_assignment_expression";
+  if (left && lowerEdit(left, op ?? "=", value, n.endIndex, st)) return value;
   if (!left || (augmented && op !== ".=" && op !== "??=")) return value;
   if (left.type === "variable_name") {
     st.fn.assigns.push({ target: varName(left)!, value, offset: n.endIndex, ...(augmented && op === ".=" ? { augmented: true } : {}) });
@@ -162,6 +185,9 @@ function lowerStatement(c: SyntaxNode, st: PhpState): boolean {
     case "const_declaration":
       lowerConst(c, st);
       return true;
+    case "unset_statement":
+      lowerUnset(c, st);
+      return true;
     case "return_statement": {
       const e = named(c)[0];
       if (e) st.fn.returns.push(lowerExpr(e, st));
@@ -186,6 +212,7 @@ function lowerNode(n: SyntaxNode, st: PhpState): void {
     return;
   }
   if (n.type.endsWith("_statement") || n.type.endsWith("_clause") || n.type === "program" || n.type === "compound_statement" || n.type.endsWith("_list") || n.type === "colon_block") {
+    markBranches(n, st.fn, PHP_BRANCHES);
     for (const x of named(n)) lowerNode(x, st);
     return;
   }

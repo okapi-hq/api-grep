@@ -52,6 +52,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.12.0)
+      '@tree-sitter-grammars/tree-sitter-kotlin':
+        specifier: 1.1.0
+        version: 1.1.0
       '@types/node':
         specifier: ^22.13.10
         version: 22.20.1
@@ -691,6 +694,14 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@tree-sitter-grammars/tree-sitter-kotlin@1.1.0':
+    resolution: {integrity: sha512-vlVXaxEE8t2kpJgfZpa8XVvxcnKw9AYtRTgy7KWjsDmAsadk06RxAT80IXOgGQnmM9i/orQn1nD84gPNUHu6DQ==}
+    peerDependencies:
+      tree-sitter: ^0.22.4
+    peerDependenciesMeta:
+      tree-sitter:
+        optional: true
 
   '@ts-morph/common@0.26.1':
     resolution: {integrity: sha512-Sn28TGl/4cFpcM+jwsH1wLncYq3FtN/BIpem+HOygfBWPT5pAeS5dB4VFVzV8FbnOKHpDLZmvAl4AjPEev5idA==}
@@ -1354,6 +1365,11 @@ packages:
 
   node-gyp-build@4.8.4:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
+    hasBin: true
+
+  npm-check-updates@17.1.18:
+    resolution: {integrity: sha512-bkUy2g4v1i+3FeUf5fXMLbxmV95eG4/sS7lYE32GrUeVgQRfQEk39gpskksFunyaxQgTIdrvYbnuNbO/pSUSqw==}
+    engines: {node: ^18.18.0 || >=20.0.0, npm: '>=8.12.1'}
     hasBin: true
 
   object-assign@4.1.1:
@@ -2191,6 +2207,12 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
+  '@tree-sitter-grammars/tree-sitter-kotlin@1.1.0':
+    dependencies:
+      node-addon-api: 8.9.2
+      node-gyp-build: 4.8.4
+      npm-check-updates: 17.1.18
+
   '@ts-morph/common@0.26.1':
     dependencies:
       fast-glob: 3.3.3
@@ -2921,6 +2943,8 @@ snapshots:
   node-addon-api@8.9.2: {}
 
   node-gyp-build@4.8.4: {}
+
+  npm-check-updates@17.1.18: {}
 
   object-assign@4.1.1: {}
 

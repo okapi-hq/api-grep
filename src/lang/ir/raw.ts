@@ -15,6 +15,8 @@ export interface IrCtx {
   self?: ClassDef;
   /** Packages the manifests of a file's directories declare, as `normalizePackage` writes them. */
   declared?: (file: string) => Set<string>;
+  /** Reading a caller's argument for a parameter's values (`param-values.ts`): its own parameters are not followed up. */
+  callerLevel?: boolean;
 }
 
 /** The context for code running on an object of class `cls`. */

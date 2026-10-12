@@ -18,9 +18,27 @@ const SCALARS: Record<string, Shape> = {
   date: { type: "string", hint: "date" },
   EmailStr: { type: "string", hint: "email" },
   HttpUrl: { type: "string", hint: "url" },
+  // Kotlin and Java
+  String: { type: "string" },
+  Char: { type: "string" },
+  Int: { type: "integer" },
+  Long: { type: "integer" },
+  Short: { type: "integer" },
+  Byte: { type: "integer" },
+  Integer: { type: "integer" },
+  BigInteger: { type: "integer" },
+  Double: { type: "number" },
+  Float: { type: "number" },
+  BigDecimal: { type: "number" },
+  Boolean: { type: "boolean" },
+  Instant: { type: "string", hint: "createdAt" },
+  LocalDateTime: { type: "string", hint: "createdAt" },
+  OffsetDateTime: { type: "string", hint: "createdAt" },
+  ZonedDateTime: { type: "string", hint: "createdAt" },
+  LocalDate: { type: "string", hint: "date" },
 };
-const MAPPINGS = new Set(["dict", "Dict", "Mapping", "MutableMapping", "array", "object", "Any", "JSON", "Json"]);
-const SEQUENCES = new Set(["list", "List", "Sequence", "tuple", "Tuple", "set", "Set", "Iterable"]);
+const MAPPINGS = new Set(["dict", "Dict", "Mapping", "MutableMapping", "array", "object", "Any", "JSON", "Json", "Map", "MutableMap", "HashMap", "LinkedHashMap", "JsonObject", "JSONObject"]);
+const SEQUENCES = new Set(["list", "List", "Sequence", "tuple", "Tuple", "set", "Set", "Iterable", "MutableList", "ArrayList", "Array", "Collection", "MutableSet", "HashSet"]);
 const MAX_DEPTH = 4;
 
 const lastName = (e: Expr): string | undefined => (e.k === "name" ? e.name : e.k === "attr" ? e.name : e.k === "qname" ? e.path[e.path.length - 1] : undefined);

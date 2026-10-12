@@ -1,0 +1,8 @@
+{
+  "name": "mutated-params-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "openai": "5.11.0"
+  }
+}

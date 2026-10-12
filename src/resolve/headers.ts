@@ -4,6 +4,7 @@ import { propertyKey, propertyValue, toObjectLiteral } from "../ast/object.js";
 import type { EvalCtx } from "../types.js";
 import { evaluate } from "./evaluate.js";
 import { addHeader, type HeadersResult } from "./header-names.js";
+import { paramAlternatives } from "./param-values.js";
 import { typeToShape } from "./type-shape.js";
 
 export type { HeadersResult } from "./header-names.js";
@@ -35,7 +36,7 @@ function collect(obj: Expression, ctx: EvalCtx, out: HeadersResult, depth: numbe
 }
 
 function pushName(out: HeadersResult, key: string, value: Expression | undefined, ctx: EvalCtx): void {
-  addHeader(out, key, value ? evaluate(value, ctx) : undefined);
+  addHeader(out, key, value ? evaluate(value, ctx) : undefined, value ? paramAlternatives(value, ctx) : undefined);
 }
 
 /** Header names (lower-cased), non-credential literal values and the auth scheme from a headers expression. */

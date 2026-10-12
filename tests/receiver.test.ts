@@ -61,10 +61,10 @@ describe("receiver details", () => {
     expect(summary(manifest)).toEqual(["Tagger.php:9 anthropic manifest"]);
   });
 
-  it("keeps the helper's own arguments dynamic in the call made inside it", async () => {
+  it("reads the helper's own arguments from its callers in the call made inside it (#39)", async () => {
     const r = await scanFixture("python/receiver/one-caller");
     expect(summary(r)).toEqual(["app.py:5 anthropic caller", "app.py:14 anthropic (wrapper:ask) -"]);
-    expect(JSON.stringify(r.calls[0]!.body)).not.toContain("hello");
+    expect(JSON.stringify(r.calls[0]!.body)).toContain("hello");
     expect(JSON.stringify(r.calls[1]!.body)).toContain("hello");
   });
 });

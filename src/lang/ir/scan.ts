@@ -6,7 +6,7 @@ import { sdkPackages } from "../../normalize/provider.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
 import { errorText, languageFiles, leftOutFiles, readEnvHints } from "../files.js";
-import { parserFor, syntaxError } from "../tree-sitter.js";
+import { parserFor, syntaxError, type Parser, type Tree } from "../tree-sitter.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { buildIrCall, type BuildIrCtx } from "./build.js";
 import { detectIn, type Candidate, type IrUnfollowed } from "./detect.js";
@@ -15,6 +15,22 @@ import type { ModuleModel } from "./model.js";
 import { ProjectIndex } from "./project.js";
 import type { IrCtx, IrRaw } from "./raw.js";
 import { expandWrappers } from "./wrappers.js";
+
+/** A file's syntax tree and its first syntax error; the language's same-length repair is tried when there is one. */
+function parseFile(parser: Parser, lang: IrLanguage, text: string): { tree: Tree; problem?: string } {
+  const tree = parser.parse(text);
+  if (!tree) throw new Error("the parser returned no tree");
+  const problem = syntaxError(tree, lang.allowHiddenErrors);
+  const fixed = problem && lang.repair ? lang.repair(text) : text;
+  if (fixed === text) return { tree, problem };
+  const retry = parser.parse(fixed);
+  if (retry && !syntaxError(retry, lang.allowHiddenErrors)) {
+    tree.delete();
+    return { tree: retry };
+  }
+  retry?.delete();
+  return { tree, problem };
+}
 
 /**
  * Parses and lowers every file; a file that does not parse, or makes the lowering throw, is skipped, not fatal. Files
@@ -27,10 +43,8 @@ async function lowerAll(lang: IrLanguage, files: string[], scanned: Set<string>,
     for (const file of files) {
       const rel = relativePosix(rootDir, file);
       try {
-        const tree = parser.parse(readFileSync(file, "utf8"));
-        if (!tree) throw new Error("the parser returned no tree");
+        const { tree, problem } = parseFile(parser, lang, readFileSync(file, "utf8"));
         try {
-          const problem = syntaxError(tree);
           if (!problem) modules.push(lang.lower(tree.rootNode, file, rootDir));
           else if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: problem });
         } finally {

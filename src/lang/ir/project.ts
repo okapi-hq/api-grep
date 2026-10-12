@@ -1,3 +1,4 @@
+import { editedAssign, editedParam, editedUnbound } from "./edits.js";
 import type { IrLanguage } from "./language.js";
 import type { Assign, ClassDef, Expr, FunctionDef, ModuleModel, Param } from "./model.js";
 
@@ -23,6 +24,8 @@ export class ProjectIndex {
   private readonly globals = new Map<string, { assign: Assign; fn: FunctionDef }>();
   /** Functions by their short name (PHP: a namespaced helper called from its own namespace), when globals are shared. */
   private readonly shortFunctions = new Map<string, FunctionDef>();
+  /** Files per package, when the files of one package see each other's declarations (Kotlin). */
+  private readonly packages = new Map<string, ModuleModel[]>();
   /** Import roots of known SDKs and clients: never resolved to a project module (`services/stripe.py` is not `stripe`). */
   private readonly external: Set<string>;
   /** Project base classes per class, resolved once: every member lookup walks them (a Laravel model has many traits). */
@@ -48,6 +51,7 @@ export class ProjectIndex {
       const q = m.name ? `${m.name}.${f.name}` : f.name;
       if (!this.functions.has(q)) this.functions.set(q, f);
     }
+    if (this.lang.packageScope) this.packages.set(m.name, [...(this.packages.get(m.name) ?? []), m]);
     if (!this.lang.sharedGlobals) return;
     for (const f of m.functions.values()) if (!this.shortFunctions.has(f.name)) this.shortFunctions.set(f.name, f);
     for (const a of m.top.assigns) if (!a.target.startsWith("$") && !a.target.includes(".") && !this.globals.has(a.target)) this.globals.set(a.target, { assign: a, fn: m.top });
@@ -89,6 +93,15 @@ export class ProjectIndex {
     return this.mods;
   }
 
+  /** A top-level declaration of another file of `mod`'s package, when the language shares them (Kotlin). */
+  packageMember(mod: ModuleModel, name: string): Binding | undefined {
+    for (const m of this.packages.get(mod.name) ?? []) {
+      const b = m === mod ? undefined : ownMember(m, name);
+      if (b) return b;
+    }
+    return undefined;
+  }
+
   /** A global function or constant defined in any file (PHP `define()` / helpers): the last resort of a lookup. */
   global(name: string): Binding {
     if (!this.lang.sharedGlobals) return { kind: "none" };
@@ -104,7 +117,7 @@ export function lastAssign(assigns: Assign[], target: string, at: number | undef
   let before: Assign | undefined;
   let first: Assign | undefined;
   for (const a of assigns) {
-    if (a.target !== target) continue;
+    if (a.target !== target || a.edit) continue;
     first ??= a;
     if (at === undefined || a.offset < at) before = a;
   }
@@ -113,17 +126,35 @@ export function lastAssign(assigns: Assign[], target: string, at: number | undef
 
 const MAX_REEXPORTS = 6;
 
-/** What a module-level name is: a variable, function, class or import (followed through re-exports). */
-export function moduleMember(mod: ModuleModel, name: string, idx: ProjectIndex, depth = 0): Binding {
+/** A variable, function or class the module itself declares at top level. */
+function ownMember(mod: ModuleModel, name: string): Binding | undefined {
   const a = lastAssign(mod.top.assigns, name, undefined);
-  if (a) return { kind: "value", assign: a, fn: mod.top };
+  if (a) return { kind: "value", assign: editedAssign(mod.top, a, undefined), fn: mod.top };
   const fn = mod.functions.get(name);
   if (fn) return { kind: "function", fn };
   const cls = mod.classes.get(name);
-  if (cls) return { kind: "class", cls };
+  return cls ? { kind: "class", cls } : undefined;
+}
+
+/** `import com.example.api.*`: a project declaration of a package imported whole (external ones stay unknown). */
+function wildcardMember(mod: ModuleModel, name: string, idx: ProjectIndex, depth: number): Binding | undefined {
+  for (const w of mod.wildcards ?? []) {
+    const b = bindingOfPath([...w, name], idx, mod, depth + 1);
+    if (b.kind !== "external" && b.kind !== "none") return b;
+  }
+  return undefined;
+}
+
+/**
+ * What a module-level name is: a variable, function, class or import (followed through re-exports), then a
+ * declaration of another file of the same package and of a package imported whole, where the language has them.
+ */
+export function moduleMember(mod: ModuleModel, name: string, idx: ProjectIndex, depth = 0): Binding {
+  const own = ownMember(mod, name);
+  if (own) return own;
   const imp = mod.imports.get(name);
   if (imp) return bindingOfPath(imp.path, idx, mod, depth + 1);
-  return { kind: "none" };
+  return idx.packageMember(mod, name) ?? wildcardMember(mod, name, idx, depth) ?? { kind: "none" };
 }
 
 /** A dotted path (an import, a qualified class name): a project symbol when the project defines it, else external. */
@@ -132,7 +163,16 @@ export function bindingOfPath(path: string[], idx: ProjectIndex, from?: ModuleMo
   if (!hit) return { kind: "external", path };
   if (hit.rest.length === 0) return memberBinding(hit.member);
   if (hit.member.kind === "module" && hit.rest.length === 1) return moduleMember(hit.member.mod, hit.rest[0]!, idx, depth);
+  if (hit.member.kind === "class" && hit.rest.length === 1) return classMember(hit.member.cls, hit.rest[0]!, idx) ?? { kind: "external", path };
   return { kind: "external", path };
+}
+
+/** `import com.example.Config.BASE_URL` (Kotlin): a method of a project class, else the first value of its field. */
+function classMember(cls: ClassDef, name: string, idx: ProjectIndex): Binding | undefined {
+  const fn = classMethod(cls, name, idx);
+  if (fn) return { kind: "function", fn };
+  const f = classField(cls, name, idx)[0];
+  return f ? { kind: "value", assign: { target: name, value: f.value, offset: f.fn.pos.offset }, fn: f.fn } : undefined;
 }
 
 export function memberBinding(m: Member): Binding {
@@ -148,15 +188,20 @@ export function lookup(name: string, fn: FunctionDef, at: number | undefined, id
   const local = lastAssign(fn.assigns, name, at);
   const param = fn.params.find((p) => p.name === name);
   // a parameter reassigned only later (`$url = $response->getHeader(...)` in a loop) is still the parameter here
-  if (param && (!local || (at !== undefined && local.offset >= at))) return { kind: "param", fn, param };
-  if (local) return { kind: "value", assign: local, fn };
+  if (param && (!local || (at !== undefined && local.offset >= at))) {
+    const edited = editedParam(fn, param, at);
+    return edited ? { kind: "value", assign: edited, fn } : { kind: "param", fn, param };
+  }
+  if (local) return { kind: "value", assign: editedAssign(fn, local, at), fn };
   if (visibleInParent(fn, name)) return lookup(name, fn.parent!, fn.pos.offset, idx);
   const mod = fn.module;
   if (fn === mod.top || idx.lang.moduleVarsVisible || !name.startsWith("$")) {
     const b = moduleMember(mod, name, idx);
     if (b.kind !== "none") return b;
   }
-  return name.startsWith("$") ? { kind: "none" } : idx.global(name);
+  const b = name.startsWith("$") ? ({ kind: "none" } as const) : idx.global(name);
+  const unbound = b.kind === "none" ? editedUnbound(fn, name, at) : undefined;
+  return unbound ? { kind: "value", assign: unbound, fn } : b;
 }
 
 /** The field `name` of a class or its project base classes: its values, with the method each is assigned in. */

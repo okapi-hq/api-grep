@@ -1,6 +1,8 @@
 import path from "node:path";
+import { markBranches } from "../branches.js";
 import type { ClassDef, Expr, FunctionDef, ModuleModel } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { mergeEdit, PY_BRANCHES, removeEdit } from "./lower-edits.js";
 import { lowerExpr, newFunction, type PyState } from "./lower-expr.js";
 import { decoratorNames, lowerParams, lowerType } from "./lower-types.js";
 
@@ -52,6 +54,30 @@ function classAttribute(cls: ClassDef, name: string, value: Expr | undefined, an
   cls.annotations.push({ name, type: annotation.type, optional: annotation.optional || !!value });
 }
 
+/** `kwargs |= {...}`, `kwargs["k"] = v`: keys added to the dict a variable holds, lowered as an edit of it. */
+function lowerEdit(n: SyntaxNode, left: SyntaxNode, value: Expr, st: PyState): boolean {
+  const op = n.type === "augmented_assignment" ? field(n, "operator")?.text : "=";
+  if (left.type === "identifier" && op === "|=") {
+    st.fn.assigns.push(mergeEdit(left.text, value, n.endIndex));
+    return true;
+  }
+  const obj = left.type === "subscript" && op === "=" ? field(left, "value") : undefined;
+  const key = obj?.type === "identifier" ? field(left, "subscript") : undefined;
+  if (!obj || !key) return false;
+  st.fn.assigns.push(mergeEdit(obj.text, { k: "dict", entries: [{ key: lowerExpr(key, st), value }] }, n.endIndex));
+  return true;
+}
+
+/** `del kwargs["k"]`: the key leaves the dict; other targets only have their calls recorded. */
+function lowerDelete(n: SyntaxNode, st: ModState): void {
+  for (const t of named(n).flatMap((c) => (c.type === "expression_list" ? named(c) : [c]))) {
+    const obj = t.type === "subscript" ? field(t, "value") : undefined;
+    const key = obj?.type === "identifier" ? field(t, "subscript") : undefined;
+    if (obj && key) st.fn.assigns.push(removeEdit(obj.text, lowerExpr(key, st), n.endIndex));
+    else lowerExpr(t, st);
+  }
+}
+
 /** `x = v`, `self.x = v`, `a, b = 1, 2`, `a = b = v`, `x += v`: assignments of the current function, and class fields. */
 function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
   const left = field(n, "left");
@@ -60,21 +86,22 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
   const valueNode = rightNode?.type === "assignment" ? field(rightNode, "right") : rightNode;
   const value: Expr | undefined = valueNode ? lowerExpr(valueNode, st) : undefined;
   const augmented = n.type === "augmented_assignment";
-  if (!left || (augmented && field(n, "operator")?.text !== "+=")) return;
+  if (!left || (value && lowerEdit(n, left, value, st)) || (augmented && field(n, "operator")?.text !== "+=")) return;
   if (left.type === "identifier") {
     const annotation = lowerType(field(n, "type"), st);
     if (cls) classAttribute(cls, left.text, value, annotation, st);
     if (value) st.fn.assigns.push({ target: left.text, value, offset: n.endIndex, ...(augmented ? { augmented } : {}), ...(annotation.type ? { type: annotation.type } : {}) });
     return;
   }
-  if (left.type === "attribute" && st.receiver && field(left, "object")?.text === st.receiver && st.fn.cls && value) {
+  if (!value) return;
+  if (left.type === "attribute" && st.receiver && field(left, "object")?.text === st.receiver && st.fn.cls) {
     const attr = field(left, "attribute")!.text;
     addField(st.fn.cls, attr, value, st.fn);
     const t = lowerType(field(n, "type"), st).type;
     if (t) st.fn.cls.fieldTypes.set(attr, t);
     return;
   }
-  if ((left.type === "pattern_list" || left.type === "tuple_pattern") && value?.k === "list") {
+  if ((left.type === "pattern_list" || left.type === "tuple_pattern") && value.k === "list") {
     named(left).forEach((t, i) => {
       if (t.type === "identifier" && value.items[i]) st.fn.assigns.push({ target: t.text, value: value.items[i], offset: n.endIndex });
     });
@@ -162,13 +189,20 @@ function lowerStatement(c: SyntaxNode, st: ModState): void {
     const e = named(c)[0];
     if (e) st.fn.returns.push(lowerExpr(e, st));
   } else if (c.type === "with_statement") lowerWith(c, st);
-  else for (const x of named(c)) lowerNode(x, st);
+  else if (c.type === "delete_statement") lowerDelete(c, st);
+  else {
+    markBranches(c, st.fn, PY_BRANCHES);
+    for (const x of named(c)) lowerNode(x, st);
+  }
 }
 
 /** A statement, a block or clause (`else:`, `except:`), or an expression (a condition, a loop's iterable). */
 function lowerNode(c: SyntaxNode, st: ModState): void {
   if (c.type.endsWith("_statement") || c.type.endsWith("_definition") || c.type === "expression_statement") lowerStatement(c, st);
-  else if (c.type === "block" || c.type.endsWith("_clause") || c.type === "module") lowerBlock(c, st);
+  else if (c.type === "block" || c.type.endsWith("_clause") || c.type === "module") {
+    markBranches(c, st.fn, PY_BRANCHES);
+    lowerBlock(c, st);
+  }
   else if (!SKIP.has(c.type)) lowerExpr(c, st);
 }
 

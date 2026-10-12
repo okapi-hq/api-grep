@@ -653,7 +653,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.7.0",
+  "schemaVersion": "1.9.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -860,7 +860,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.7.0",
+  "schemaVersion": "1.9.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -1813,7 +1813,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.7.0",
+  "schemaVersion": "1.9.0",
   "stats": {
     "byClient": {
       "sdk": 16,

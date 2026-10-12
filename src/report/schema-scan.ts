@@ -3,10 +3,11 @@ import { z } from "zod";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const EcosystemSchema = z
-  .enum(["npm", "pypi", "composer"])
+  .enum(["npm", "pypi", "composer", "maven"])
   .meta({
     id: "Ecosystem",
-    description: "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json).",
+    description:
+      "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml).",
   });
 
 export const SkippedFileSchema = z
@@ -59,14 +60,14 @@ export const DiagnosticsSchema = z
 
 export const SdkCoverageSchema = z
   .object({
-    package: z.string().describe("Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package."),
+    package: z.string().describe("Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package, a Maven `group:artifact`."),
     ecosystem: EcosystemSchema,
     provider: z.string().describe("Provider id the package talks to."),
     supported: z.boolean().describe("An SDK registry exists for the package, so its calls can be listed."),
     declared: z
       .boolean()
       .describe(
-        "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json.",
+        "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json, the dependencies of a Gradle build script (test configurations aside) or of a pom.xml (test scope aside).",
       ),
     imported: z.boolean(),
     importSites: z.number().describe("Scanned files that import the package (type-only imports aside)."),
