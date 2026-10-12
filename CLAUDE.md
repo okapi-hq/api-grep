@@ -7,7 +7,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 ## What this is
 
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
-path template, body / query / header shapes, auth scheme, confidence. Supported languages: TypeScript, JavaScript, HTML
+path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
+and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python and PHP (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
@@ -33,9 +34,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 ## Architecture in one screen
 
 - `src/scan.ts` runs each language in `src/lang/index.ts` and merges calls, diagnostics and coverage.
-- A language (`src/lang/types.ts`) returns report `Call`s. Everything after that is shared: specs, examples, schema
-  check, redaction, stats, diagnostics, coverage. `src/assemble.ts` builds the `Call` (provider, confidence, id) for
-  every language.
+- A language (`src/lang/types.ts`) returns report `Call`s. Everything after that is shared: examples, schema check,
+  redaction, stats, diagnostics, coverage. `src/assemble.ts` builds the `Call` (provider, id, `optionsOpaque`,
+  `bodySource`) for every language.
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
   see `src/lang/html/`).

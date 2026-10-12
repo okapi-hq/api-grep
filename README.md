@@ -18,7 +18,6 @@ Use it to:
 
 - inventory the third-party APIs a codebase depends on;
 - review the outbound calls a pull request adds (`--changed-since origin/main`);
-- check request payloads against OpenAPI specs (`--specs`, `--validate`);
 - get a runnable `curl` command for every call (`--curl`);
 - run it as a service: `api-grep serve` scans the archives sent to it ([HTTP server](#http-server), [Docker](#docker)).
 
@@ -59,20 +58,20 @@ export const getIntent = (id: string) => stripe.paymentIntents.retrieve(id);
 `api-grep scan` prints one section per file, with its language, then one row per call:
 
 ```
-┌──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┐
-│ line │ method │ provider         │ path                                     │ body                               │ dyn │ conf │
-├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┤
-│ billing/stripe.ts  typescript                                                                                                 │
-├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┤
-│ 6    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │ 1.00 │
-├──────┼────────┼──────────────────┼──────────────────────────────────────────┼────────────────────────────────────┼─────┼──────┤
-│ 9    │ GET    │ stripe sdk       │ /v1/payment_intents/{intent}             │ -                                  │ 1   │ 1.00 │
-└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┘
-2 calls in 1 file (2 shown at confidence >= 0.3); languages: typescript=2; providers: stripe=2
+┌──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┐
+│ line │ method │ provider         │ path                                     │ body                               │ dyn │
+├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┤
+│ billing/stripe.ts  typescript                                                                                          │
+├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┤
+│ 6    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │
+├──────┼────────┼──────────────────┼──────────────────────────────────────────┼────────────────────────────────────┼─────┤
+│ 9    │ GET    │ stripe sdk       │ /v1/payment_intents/{intent}             │ -                                  │ 1   │
+└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┘
+2 calls in 1 file; languages: typescript=2; providers: stripe=2
 scanned 1/1 files, complete
 ```
 
-`dyn` counts the parts that could not be known statically; `conf` is the [confidence](#confidence).
+`dyn` counts the parts that could not be known statically.
 
 The same calls in Python (and PHP: `\Stripe\Customer::create([...])`, `$stripe->customers->create([...])`)
 are reported the same way:
@@ -88,17 +87,17 @@ def create_customer(email: str, user_id: str):
 ```
 
 ```
-├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┤
-│ billing.py  python                                                                                                            │
-├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┬──────┤
-│ 7    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │ 1.00 │
-└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┴──────┘
+├──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┤
+│ billing.py  python                                                                                                     │
+├──────┬────────┬──────────────────┬──────────────────────────────────────────┬────────────────────────────────────┬─────┤
+│ 7    │ POST   │ stripe sdk       │ /v1/customers                            │ {email, name, metadata}            │ 2   │
+└──────┴────────┴──────────────────┴──────────────────────────────────────────┴────────────────────────────────────┴─────┘
 ```
 
 With `--curl`, each call becomes concrete example requests. Credentials are never invented:
 
 ```sh
-# billing/stripe.ts:6 (typescript)  stripe POST /v1/customers  (confidence 1.00)
+# billing/stripe.ts:6 (typescript)  stripe POST /v1/customers
 # minimal
 curl -X POST 'https://api.stripe.com/v1/customers' \
   -H 'authorization: Bearer <token>' \
@@ -110,12 +109,15 @@ curl -X POST 'https://api.stripe.com/v1/customers' \
 
 ## Output format
 
-`api-grep scan <dir> --json` (or `--out report.json`) writes one JSON document. For the example
-above, with `--examples 1`, shown as YAML with one comment per field and the second call left out:
+`api-grep scan <dir> --json` (or `--out report.json`) writes one JSON document. It states facts
+about each call (what the code shows and where each part came from, such as `hostKind`,
+`providerSource`, `bodySource`, `optionsOpaque` and `dynamic`) and gives no score or verdict: any
+judgement is left to the consumer. For the example above, with `--examples 1`, shown as YAML with
+one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.3.0            # report format version; readers check the major
+schemaVersion: 1.4.0            # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -137,7 +139,7 @@ calls:                          # one entry per call, sorted by file, line, colu
     method: POST                # DYNAMIC when not known statically
     pathTemplate: /v1/customers # {name} marks a dynamic segment
     urlTemplate: https://api.stripe.com/v1/customers
-    operationId: PostCustomers  # from the SDK registry or a matched OpenAPI spec
+    operationId: PostCustomers  # from the SDK registry
     query: []                   # query parameter names
     headers: []                 # header names
     headerValues: {}            # literal values only; null for credentials
@@ -153,8 +155,8 @@ calls:                          # one entry per call, sorted by file, line, colu
     dynamic:                    # what could not be known statically
       - { where: body, name: email, origin: param }
       - { where: body, name: userId, origin: param }
-    confidence: 1               # 0 to 1
-    findings: []                # spec mismatches, with --specs --validate
+    optionsOpaque: false        # true: the options are a value the scan could not read (method, headers or body may be missing)
+    bodySource: literal         # literal | type | unknown | none: where the body shape came from
     examples:                   # concrete requests with invented values
       - variant: minimal        # minimal | full | alt
         method: POST
@@ -172,7 +174,6 @@ stats:                          # counts over calls
   byHostKind: { literal: 2 }
   withBodyShape: 1
   withDynamic: 2
-  withFindings: 0
   redacted: 0                   # secret-looking strings replaced with <redacted>
   durationMs: 1044
 diagnostics:                    # what the scan could not read, see Diagnostics
@@ -217,7 +218,6 @@ api-grep scan <dir>                                   # table
 api-grep scan <dir> --curl                            # one curl command per example request
 api-grep scan <dir> --json                            # JSON report on stdout
 api-grep scan <dir> --out report.json --changed-since origin/main
-api-grep scan <dir> --specs ./specs --validate
 api-grep schema                                       # JSON Schema of the --json report
 api-grep providers                                    # provider ids, names, hosts and packages
 api-grep scan <dir> --language python                 # one language only
@@ -233,9 +233,6 @@ api-grep serve --port 8080                            # HTTP server, see below
 | `--out <file>` | write the JSON report to a file |
 | `--tsconfig <path>` | TypeScript: tsconfig.json to load (default: nearest) |
 | `--changed-since <ref>` | only scan files changed since a git ref, plus their direct importers |
-| `--specs <dir>` | directory of `<provider>.{json,yaml}` OpenAPI specs, or an [APIs-guru](https://github.com/APIs-guru/openapi-directory) checkout |
-| `--validate` | check request shapes against the specs (requires `--specs`) |
-| `--min-confidence <n>` | hide calls below this confidence (0 to 1) in the table and `--curl` output (default 0.3; JSON keeps everything) |
 | `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable); excluded files are still read to resolve imports |
 | `--no-wrappers` | disable wrapper expansion |
 
@@ -425,7 +422,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `packages`; an exact host wins over the longest matching suffix). An env URL with a literal
   default (`process.env.X ?? "https://api.langdock.com/v1"`) keeps `envName` and takes the
   default's host and base path; with no value at all, the env var's name is used
-  (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`, lower confidence). A
+  (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`). A
   host that still holds a placeholder never becomes a provider: it is `internal` (localhost),
   `env:<NAME>` or `unknown`, except a templated subdomain: of a provider listed by suffix it is
   that provider (`{instance}.my.salesforce.com` is `salesforce`), of any other domain the vendor's
@@ -446,9 +443,6 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
   the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
   call per call site; different requests from one call site get distinct `id`s.
-- **Specs**: with `--specs`, path templates are matched to OpenAPI operations. `--validate`
-  adds deterministic findings: unknown property, missing required, type mismatch, enum
-  mismatch, deprecated.
 
 ### Example requests
 
@@ -459,13 +453,6 @@ date, `per_page` a small integer), seeded by the call id so they are stable acro
 union branches and booleans. Secret-looking keys and headers (`token`, `api_key`, `password`,
 `authorization`, `cookie`) become `<name>` placeholders. Unresolved hosts stay visible as
 `https://{baseUrl}/…` or `https://{env:API_URL}/…`.
-
-### Confidence
-
-Additive rules, clamped to `[0, 1]`: SDK registry hit +0.6, literal or resolved-constant host
-+0.3, env host with `.env.example` hint +0.15, named dynamic path segments +0.1, body from an
-object literal +0.2, from a declared type +0.15, body `any`/unknown −0.2, via wrapper −0.1,
-spec match +0.1. Unknown or relative hosts are capped at 0.4.
 
 ### Privacy
 
@@ -480,8 +467,7 @@ reach `host` or `urlTemplate`, and credential headers keep their name only.
 
 A scanned repository is treated as hostile input:
 
-- Its code is parsed, never run. With `--specs`, `$ref`s resolve inside the specs directory
-  only; a remote `$ref` is an error, not a download.
+- Its code is parsed, never run.
 - Paths, URLs and values it chooses are printed with control characters escaped, so they cannot
   drive the terminal. `--curl` quotes every value and uses `--data-raw` / `--form-string`, so a
   value such as `@/etc/passwd` is sent as written, never read from disk.
@@ -524,8 +510,7 @@ A scanned repository is treated as hostile input:
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
-  `--exclude` / `--include`), a dropped call or a call not followed. Calls below `--min-confidence`
-  are only hidden from the table, never dropped from the JSON.
+  `--exclude` / `--include`), a dropped call or a call not followed.
 
 The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed`.
 Skipped files and dropped calls are also printed to stderr as `warning:` lines.
@@ -576,7 +561,6 @@ package. `--changed-since` scans have no coverage section.
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
-- Spec matching treats id-looking literal segments as parameters.
 
 ## Evaluation
 
@@ -588,7 +572,7 @@ language only). Results are in [`eval/results.md`](eval/results.md).
 pnpm eval                       # shallow-clone, scan, write eval/out/<repo>.json and a summary
 pnpm eval dub                   # a single repository
 pnpm eval:score sample dub 100  # stratified sample to label by hand
-pnpm eval:score                 # precision per field and confidence bucket, recall when available
+pnpm eval:score                 # precision per field and per hostKind, recall when available
 ```
 
 The labeling protocol is in [`eval/label/README.md`](eval/label/README.md). Between evaluations,

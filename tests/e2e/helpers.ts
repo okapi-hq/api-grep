@@ -1,4 +1,4 @@
-import { spawn, spawnSync, type SpawnSyncOptions } from "node:child_process";
+import { spawnSync, type SpawnSyncOptions } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -28,19 +28,6 @@ export function cli(args: string[], opts: { cwd?: string; env?: Record<string, s
   };
   const r = spawnSync(process.execPath, [CLI, ...args], spawnOpts);
   return { status: r.status, stdout: String(r.stdout), stderr: String(r.stderr) };
-}
-
-/** `cli` without blocking the event loop, for tests that serve requests while the CLI runs. */
-export function cliAsync(args: string[]): Promise<Run> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [CLI, ...args], { cwd: ROOT, env: { ...process.env, API_GREP_NO_RESPAWN: "1" } });
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (d: Buffer) => (stdout += d.toString()));
-    child.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
-    child.on("error", reject);
-    child.on("close", (status) => resolve({ status, stdout, stderr }));
-  });
 }
 
 export function scanJson(dir: string, args: string[] = []): { run: Run; report: Report } {

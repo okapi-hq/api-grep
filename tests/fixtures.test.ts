@@ -18,6 +18,12 @@ describe("fetch", () => {
     expect(at(r, "node-fetch.ts", 4)).toMatchObject({ provider: "slack", method: "POST" });
     expect(at(r, "opaque-options.ts", 5).dynamic).toContainEqual({ where: "method", name: "options", origin: "unknown" });
     expect(at(r, "opaque-options.ts", 9).method).toBe("DYNAMIC");
+    expect(at(r, "opaque-options.ts", 5).optionsOpaque).toBe(true);
+    expect(at(r, "opaque-options.ts", 9).optionsOpaque).toBe(false);
+    expect(at(r, "literal.ts", 4).bodySource).toBe("literal");
+    expect(at(r, "literal.ts", 12).bodySource).toBe("none");
+    expect(at(r, "typed-body.ts", 10).bodySource).toBe("type");
+    expect(at(r, "typed-body.ts", 14).bodySource).toBe("unknown");
   });
 });
 
@@ -52,7 +58,7 @@ describe("sdk", () => {
   it("matches snapshot and key expectations", async () => {
     const r = await scanFixture("sdk");
     expect(r).toMatchSnapshot();
-    expect(r.calls.every((c) => c.client === "sdk" && c.confidence === 1)).toBe(true);
+    expect(r.calls.every((c) => c.client === "sdk" && c.providerSource === "sdk")).toBe(true);
     expect(at(r, "stripe-literal.ts", 6)).toMatchObject({ provider: "stripe", pathTemplate: "/v1/customers", operationId: "PostCustomers", bodyEncoding: "form" });
     expect(at(r, "stripe-typed.ts", 9)).toMatchObject({ bodyFromType: "CustomerCreateParams" });
     expect(Object.keys((at(r, "stripe-typed.ts", 9).body as { properties: object }).properties)).toContain("email");
@@ -90,7 +96,6 @@ describe("negatives", () => {
     expect(r).toMatchSnapshot();
     expect(r.calls.map((c) => c.location.file).sort()).toEqual(["relative.ts", "then-chain.ts"]);
     expect(at(r, "relative.ts", 1)).toMatchObject({ provider: "internal", hostKind: "relative" });
-    expect(at(r, "relative.ts", 1).confidence).toBeLessThanOrEqual(0.4);
   });
 });
 

@@ -10,7 +10,7 @@ describe("provider resolution", () => {
     expect(at(r, "llm.ts", 7)).toMatchObject({ provider: "elevenlabs", envName: "TTS_URL", pathTemplate: "/v1/voices" });
   });
 
-  it("takes the provider from the env var's name, with lower confidence", async () => {
+  it("takes the provider from the env var's name", async () => {
     const r = await scanFixture("resolve/env-name");
     expect(r).toMatchSnapshot();
     expect(at(r, "clients.ts", 1)).toMatchObject({ provider: "openrouter", providerSource: "env-name", envName: "OPENROUTER_BASE_URL" });
@@ -19,7 +19,6 @@ describe("provider resolution", () => {
     expect(at(r, "clients.ts", 8)).toMatchObject({ provider: "env:VITE_API_URL" });
     expect(at(r, "clients.ts", 9)).toMatchObject({ provider: "env:GITHUB_CALLBACK_URL" });
     expect(at(r, "clients.ts", 1).providerSource).toBe("env-name");
-    expect(at(r, "clients.ts", 1).confidence).toBeLessThan(0.3);
   });
 
   it("follows local helpers that build the URL", async () => {

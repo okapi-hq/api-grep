@@ -12,6 +12,8 @@ describe("php: Guzzle, Laravel Http, Symfony HttpClient", () => {
     expect(at(guzzle, "GitHub.php", 38)).toMatchObject({ provider: "twilio", bodyEncoding: "form", authScheme: "basic" });
     expect(at(guzzle, "GitHub.php", 47)).toMatchObject({ provider: "cloudinary", bodyEncoding: "multipart" });
     expect(at(guzzle, "GitHub.php", 52)).toMatchObject({ provider: "notion", headerValues: { "notion-version": "2022-06-28" } });
+    expect(at(guzzle, "Opaque.php", 7)).toMatchObject({ method: "POST", optionsOpaque: true });
+    expect(at(guzzle, "GitHub.php", 27)).toMatchObject({ optionsOpaque: false, bodySource: "literal" });
     const laravel = await scanFixture("php/laravel");
     expect(laravel).toMatchSnapshot();
     expect(at(laravel, "Notifier.php", 11)).toMatchObject({ client: "laravel-http", provider: "mailgun", hostKind: "env", envName: "MAILGUN_ENDPOINT", bodyEncoding: "form", authScheme: "basic" });

@@ -141,7 +141,7 @@
           "description": "Full URL template."
         },
         "operationId": {
-          "description": "OpenAPI operation id, from the SDK registry or a matched spec.",
+          "description": "OpenAPI operation id, from the SDK registry.",
           "type": "string"
         },
         "query": {
@@ -212,18 +212,19 @@
           "description": "Wrapper chain the call went through (`wrapper:tlsFetch>doFetch`); the location is the outer call site.",
           "type": "string"
         },
-        "confidence": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "0 to 1. How sure the scan is of provider, URL and body."
+        "optionsOpaque": {
+          "type": "boolean",
+          "description": "The request's options are a value the scan could not read as an object literal (a variable, a call): method, headers or body may be missing."
         },
-        "findings": {
-          "default": [],
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Finding"
-          }
+        "bodySource": {
+          "type": "string",
+          "enum": [
+            "literal",
+            "type",
+            "unknown",
+            "none"
+          ],
+          "description": "Where the body shape came from: an object literal in the code, a declared type (TypeScript type, Python or PHP class), a value that could not be read, or no body."
         },
         "examples": {
           "default": [],
@@ -248,8 +249,8 @@
         "authScheme",
         "bodyEncoding",
         "dynamic",
-        "confidence",
-        "findings",
+        "optionsOpaque",
+        "bodySource",
         "examples"
       ],
       "description": "One outbound HTTP or SDK call found in the source."
@@ -508,47 +509,6 @@
       ],
       "description": "Part of the request the scan could not know statically."
     },
-    "Finding": {
-      "type": "object",
-      "properties": {
-        "rule": {
-          "type": "string",
-          "enum": [
-            "unknown-property",
-            "missing-required",
-            "type-mismatch",
-            "deprecated",
-            "enum-mismatch"
-          ]
-        },
-        "severity": {
-          "type": "string",
-          "enum": [
-            "high",
-            "medium",
-            "low"
-          ]
-        },
-        "property": {
-          "type": "string",
-          "description": "Dotted path of the property in the body."
-        },
-        "message": {
-          "type": "string"
-        },
-        "specRef": {
-          "description": "JSON pointer into the OpenAPI spec.",
-          "type": "string"
-        }
-      },
-      "required": [
-        "rule",
-        "severity",
-        "property",
-        "message"
-      ],
-      "description": "A mismatch between the body shape and the provider's OpenAPI spec (--specs --validate)."
-    },
     "Example": {
       "type": "object",
       "properties": {
@@ -664,9 +624,6 @@
         "withDynamic": {
           "type": "number"
         },
-        "withFindings": {
-          "type": "number"
-        },
         "redacted": {
           "type": "number",
           "description": "Secret-looking strings replaced with `<redacted>`."
@@ -684,7 +641,6 @@
         "byHostKind",
         "withBodyShape",
         "withDynamic",
-        "withFindings",
         "redacted",
         "durationMs"
       ],

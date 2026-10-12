@@ -24,8 +24,8 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "fetch",
-      "confidence": 0.6,
       "dynamic": [
         {
           "name": "BOT_TOKEN",
@@ -62,7 +62,6 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.telegram.org",
@@ -75,6 +74,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
         "line": 6,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/bot{BOT_TOKEN}/sendMessage",
       "provider": "telegram",
       "providerSource": "host",
@@ -85,8 +85,8 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -98,7 +98,6 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.invoices.example.com",
@@ -111,6 +110,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
         "line": 13,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v2/invoices",
       "provider": "api.invoices.example.com",
       "query": [],
@@ -136,7 +136,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -157,7 +157,6 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "redacted": 0,
     "withBodyShape": 1,
     "withDynamic": 1,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -171,8 +170,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.1,
       "dynamic": [
         {
           "name": "hostname",
@@ -193,7 +192,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{hostname}:443",
@@ -206,6 +204,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
         "line": 1,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/status",
       "provider": "unknown",
       "query": [],
@@ -215,8 +214,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.25,
       "dynamic": [],
       "envName": "PORT",
       "examples": [
@@ -229,7 +228,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "127.0.0.1:{env:PORT}",
@@ -242,6 +240,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
         "line": 2,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/health",
       "provider": "internal",
       "query": [],
@@ -251,8 +250,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [
         {
           "name": "port",
@@ -273,7 +272,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "localhost:{port}",
@@ -286,6 +284,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
         "line": 3,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/api/items",
       "provider": "internal",
       "query": [],
@@ -295,8 +294,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.25,
       "dynamic": [],
       "envName": "REPLIT_CONNECTORS_HOSTNAME",
       "examples": [
@@ -309,7 +308,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{env:REPLIT_CONNECTORS_HOSTNAME}",
@@ -322,6 +320,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
         "line": 4,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/api/v2/connection",
       "provider": "env:REPLIT_CONNECTORS_HOSTNAME",
       "query": [],
@@ -331,8 +330,8 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.1,
       "dynamic": [
         {
           "name": "region",
@@ -353,7 +352,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "calendar.zoho.{region}",
@@ -366,6 +364,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
         "line": 5,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/api/v1/events",
       "provider": "unknown",
       "query": [],
@@ -391,7 +390,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -415,7 +414,6 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "redacted": 0,
     "withBodyShape": 0,
     "withDynamic": 3,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -434,8 +432,8 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
         "type": "dynamic",
       },
       "bodyEncoding": "json",
+      "bodySource": "unknown",
       "client": "fetch",
-      "confidence": 0.2,
       "dynamic": [
         {
           "name": "body",
@@ -456,7 +454,6 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.gladia.io",
@@ -469,6 +466,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
         "line": 9,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v2/upload",
       "provider": "gladia",
       "providerSource": "host",
@@ -491,8 +489,8 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "fetch",
-      "confidence": 0.6,
       "dynamic": [
         {
           "name": "voiceId",
@@ -523,7 +521,6 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.elevenlabs.io",
@@ -536,6 +533,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
         "line": 17,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/text-to-speech/{voiceId}",
       "provider": "elevenlabs",
       "providerSource": "host",
@@ -546,8 +544,8 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.4,
       "dynamic": [],
       "examples": [
         {
@@ -559,7 +557,6 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.elevenlabs.io",
@@ -572,6 +569,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
         "line": 22,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/voices",
       "provider": "elevenlabs",
       "providerSource": "host",
@@ -598,7 +596,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "fetch": 3,
@@ -619,7 +617,6 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "redacted": 0,
     "withBodyShape": 1,
     "withDynamic": 2,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -670,8 +667,8 @@ exports[`provider resolution > takes the provider from an env var's literal defa
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "fetch",
-      "confidence": 0.45,
       "dynamic": [],
       "envName": "LANGDOCK_BASE_URL",
       "examples": [
@@ -695,7 +692,6 @@ exports[`provider resolution > takes the provider from an env var's literal defa
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.langdock.com",
@@ -708,6 +704,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
         "line": 4,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/openai/eu/v1/chat/completions",
       "provider": "langdock",
       "providerSource": "host",
@@ -718,8 +715,8 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.25,
       "dynamic": [],
       "envName": "TTS_URL",
       "examples": [
@@ -732,7 +729,6 @@ exports[`provider resolution > takes the provider from an env var's literal defa
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "api.elevenlabs.io",
@@ -745,6 +741,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
         "line": 7,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/voices",
       "provider": "elevenlabs",
       "providerSource": "host",
@@ -771,7 +768,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -792,22 +789,21 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "redacted": 0,
     "withBodyShape": 1,
     "withDynamic": 0,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
 }
 `;
 
-exports[`provider resolution > takes the provider from the env var's name, with lower confidence 1`] = `
+exports[`provider resolution > takes the provider from the env var's name 1`] = `
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.15,
       "dynamic": [],
       "envName": "OPENROUTER_BASE_URL",
       "examples": [
@@ -820,7 +816,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "env",
@@ -832,6 +827,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "line": 1,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/models",
       "provider": "openrouter",
       "providerSource": "env-name",
@@ -841,8 +837,8 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.15,
       "dynamic": [
         {
           "name": "name",
@@ -864,7 +860,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "env",
@@ -876,6 +871,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "line": 3,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/functions/v1/{name}",
       "provider": "supabase",
       "providerSource": "env-name",
@@ -897,8 +893,8 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "fetch",
-      "confidence": 0.35,
       "dynamic": [
         {
           "name": "text",
@@ -922,7 +918,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "env",
@@ -934,6 +929,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "line": 5,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/",
       "provider": "slack",
       "providerSource": "env-name",
@@ -943,8 +939,8 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.15,
       "dynamic": [],
       "envName": "VITE_API_URL",
       "examples": [
@@ -957,7 +953,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "env",
@@ -969,6 +964,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "line": 8,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/me",
       "provider": "env:VITE_API_URL",
       "query": [],
@@ -977,8 +973,8 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     {
       "authScheme": "none",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "fetch",
-      "confidence": 0.15,
       "dynamic": [],
       "envName": "GITHUB_CALLBACK_URL",
       "examples": [
@@ -993,7 +989,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "hostKind": "env",
@@ -1005,6 +1000,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
         "line": 9,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/",
       "provider": "env:GITHUB_CALLBACK_URL",
       "query": [
@@ -1045,7 +1041,7 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -1069,7 +1065,6 @@ exports[`provider resolution > takes the provider from the env var's name, with 
     "redacted": 0,
     "withBodyShape": 1,
     "withDynamic": 2,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",

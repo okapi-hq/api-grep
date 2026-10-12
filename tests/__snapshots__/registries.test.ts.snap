@@ -7,8 +7,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "apikey",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "key",
@@ -28,7 +28,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "identitytoolkit.googleapis.com",
@@ -41,6 +40,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 4,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/accounts:signInWithIdp",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -68,8 +68,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "apikey",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "key",
@@ -89,7 +89,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "identitytoolkit.googleapis.com",
@@ -102,6 +101,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 6,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/accounts:signUp",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -129,8 +129,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "apikey",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "key",
@@ -150,7 +150,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "identitytoolkit.googleapis.com",
@@ -163,6 +162,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 8,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/accounts:signInWithPassword",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -190,8 +190,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -219,7 +219,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -232,6 +231,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 4,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -246,8 +246,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -267,7 +267,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -280,6 +279,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 8,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -309,8 +309,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "type",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -343,7 +343,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -356,6 +355,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 12,
       },
       "method": "PATCH",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -386,8 +386,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -430,7 +430,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -443,6 +442,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 17,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}/comments",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -469,8 +469,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -504,7 +504,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -517,6 +516,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 20,
       },
       "method": "PATCH",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/{ref}",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -531,8 +531,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -560,7 +560,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -573,6 +572,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 22,
       },
       "method": "DELETE",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders/{orderId}",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -587,8 +587,8 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -608,7 +608,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "firestore.googleapis.com",
@@ -621,6 +620,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
         "line": 24,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/v1/projects/{projectId}/databases/(default)/documents/orders",
       "provider": "firebase",
       "providerSource": "sdk",
@@ -663,7 +663,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -683,7 +683,6 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "redacted": 0,
     "withBodyShape": 3,
     "withDynamic": 10,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -697,8 +696,8 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     {
       "authScheme": "unknown",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -716,7 +715,6 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{org}.ingest.sentry.io",
@@ -729,6 +727,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
         "line": 8,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
       "providerSource": "sdk",
@@ -743,8 +742,8 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     {
       "authScheme": "unknown",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -762,7 +761,6 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{org}.ingest.sentry.io",
@@ -775,6 +773,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
         "line": 6,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
       "providerSource": "sdk",
@@ -789,8 +788,8 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     {
       "authScheme": "unknown",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "projectId",
@@ -808,7 +807,6 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{org}.ingest.sentry.io",
@@ -821,6 +819,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
         "line": 9,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/api/{projectId}/envelope",
       "provider": "sentry",
       "providerSource": "sdk",
@@ -874,7 +873,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -894,7 +893,6 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "redacted": 0,
     "withBodyShape": 0,
     "withDynamic": 3,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -908,8 +906,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -923,7 +921,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{project}.supabase.co",
@@ -936,6 +933,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 9,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -964,8 +962,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -983,7 +981,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "{project}.supabase.co",
@@ -996,6 +993,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 16,
       },
       "method": "PATCH",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1010,8 +1008,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -1025,7 +1023,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "abcdefgh.supabase.co",
@@ -1038,6 +1035,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 9,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/invoices",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1052,8 +1050,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "examples": [
         {
@@ -1067,7 +1065,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "abcdefgh.supabase.co",
@@ -1080,6 +1077,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 12,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/invoices",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1094,8 +1092,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 0.85,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1110,7 +1108,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1123,6 +1120,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 4,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1161,8 +1159,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "title",
@@ -1194,7 +1192,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1207,6 +1204,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 9,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1236,8 +1234,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "type",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1257,7 +1255,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1270,6 +1267,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 12,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1298,8 +1296,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1318,7 +1316,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1331,6 +1328,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 14,
       },
       "method": "PATCH",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1345,8 +1343,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 0.85,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1361,7 +1359,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1374,6 +1371,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 16,
       },
       "method": "DELETE",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1388,8 +1386,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 0.85,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1404,7 +1402,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1417,6 +1414,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 19,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/tasks",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1431,8 +1429,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 0.85,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1447,7 +1445,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1460,6 +1457,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 19,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/projects",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1486,8 +1484,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "project_id",
@@ -1512,7 +1510,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1525,6 +1522,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 23,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/rest/v1/rpc/project_stats",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1539,8 +1537,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     {
       "authScheme": "bearer",
       "bodyEncoding": "none",
+      "bodySource": "none",
       "client": "sdk",
-      "confidence": 0.85,
       "dynamic": [],
       "envName": "SUPABASE_URL",
       "examples": [
@@ -1555,7 +1553,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1568,6 +1565,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 26,
       },
       "method": "GET",
+      "optionsOpaque": false,
       "pathTemplate": "/auth/v1/user",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1599,8 +1597,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "email",
@@ -1633,7 +1631,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1646,6 +1643,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 30,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/auth/v1/token",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1681,8 +1679,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "dynamic",
       },
       "bodyEncoding": "raw",
+      "bodySource": "unknown",
       "client": "sdk",
-      "confidence": 0.65,
       "dynamic": [
         {
           "name": "userId",
@@ -1713,7 +1711,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1726,6 +1723,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 33,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/storage/v1/object/avatars/{userId}/avatar.png",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1752,8 +1750,8 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "type": "object",
       },
       "bodyEncoding": "json",
+      "bodySource": "literal",
       "client": "sdk",
-      "confidence": 1,
       "dynamic": [
         {
           "name": "taskId",
@@ -1778,7 +1776,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
           "variant": "minimal",
         },
       ],
-      "findings": [],
       "headerValues": {},
       "headers": [],
       "host": "xyzcompany.supabase.co",
@@ -1791,6 +1788,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
         "line": 36,
       },
       "method": "POST",
+      "optionsOpaque": false,
       "pathTemplate": "/functions/v1/notify-assignee",
       "provider": "supabase",
       "providerSource": "sdk",
@@ -1844,7 +1842,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -1865,7 +1863,6 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "redacted": 0,
     "withBodyShape": 7,
     "withDynamic": 5,
-    "withFindings": 0,
   },
   "tool": "api-grep",
   "version": "<version>",

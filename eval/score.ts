@@ -5,10 +5,10 @@ import type { Call, Report } from "../src/report/schema.js";
 
 /**
  * Labeling protocol:
- *   pnpm eval:score sample <repo> [n]   -> writes eval/label/<repo>.csv with n calls stratified by confidence bucket
+ *   pnpm eval:score sample <repo> [n]   -> writes eval/label/<repo>.csv with n calls stratified by hostKind
  *   pnpm eval:score                     -> scores every eval/label/*.csv against eval/out/<repo>.json
  *
- * CSV columns: id,file,line,provider,method,path,confidence,is_call,provider_ok,path_ok,body_ok,notes
+ * CSV columns: id,file,line,provider,method,path,hostKind,is_call,provider_ok,path_ok,body_ok,notes
  *   is_call / provider_ok / path_ok: y | n
  *   body_ok: y | partial | n | na
  */
@@ -17,10 +17,6 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.join(here, "out");
 const labelDir = path.join(here, "label");
 
-function bucket(c: number): string {
-  return c >= 0.7 ? "high" : c >= 0.4 ? "mid" : "low";
-}
-
 function csvEscape(v: string): string {
   return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
@@ -28,7 +24,7 @@ function csvEscape(v: string): string {
 function sample(repo: string, n: number): void {
   const report = JSON.parse(readFileSync(path.join(outDir, `${repo}.json`), "utf8")) as Report;
   const groups = new Map<string, Call[]>();
-  for (const c of report.calls) groups.set(bucket(c.confidence), [...(groups.get(bucket(c.confidence)) ?? []), c]);
+  for (const c of report.calls) groups.set(c.hostKind, [...(groups.get(c.hostKind) ?? []), c]);
   const per = Math.ceil(n / Math.max(1, groups.size));
   const picked: Call[] = [];
   let seed = 42;
@@ -37,8 +33,8 @@ function sample(repo: string, n: number): void {
     const shuffled = [...calls].sort(() => rand() - 0.5);
     picked.push(...shuffled.slice(0, per));
   }
-  const rows = picked.slice(0, n).map((c) => [c.id, c.location.file, String(c.location.line), c.provider, c.method, c.pathTemplate, String(c.confidence), "", "", "", "", ""].map(csvEscape).join(","));
-  const header = "id,file,line,provider,method,path,confidence,is_call,provider_ok,path_ok,body_ok,notes";
+  const rows = picked.slice(0, n).map((c) => [c.id, c.location.file, String(c.location.line), c.provider, c.method, c.pathTemplate, c.hostKind, "", "", "", "", ""].map(csvEscape).join(","));
+  const header = "id,file,line,provider,method,path,hostKind,is_call,provider_ok,path_ok,body_ok,notes";
   writeFileSync(path.join(labelDir, `${repo}.csv`), `${header}\n${rows.join("\n")}\n`);
   process.stdout.write(`wrote ${rows.length} rows to eval/label/${repo}.csv\n`);
 }
@@ -73,17 +69,17 @@ function pct(num: number, den: number): string {
 function score(repo: string): void {
   const rows = parseCsv(readFileSync(path.join(labelDir, `${repo}.csv`), "utf8")).filter((r) => r.is_call);
   const real = rows.filter((r) => r.is_call === "y");
-  const byBucket = new Map<string, { real: number; total: number }>();
+  const byHostKind = new Map<string, { real: number; total: number }>();
   for (const r of rows) {
-    const b = bucket(Number(r.confidence));
-    const e = byBucket.get(b) ?? { real: 0, total: 0 };
+    const b = r.hostKind ?? "";
+    const e = byHostKind.get(b) ?? { real: 0, total: 0 };
     e.total++;
     if (r.is_call === "y") e.real++;
-    byBucket.set(b, e);
+    byHostKind.set(b, e);
   }
   process.stdout.write(`\n${repo}: labeled ${rows.length}\n`);
   process.stdout.write(`  precision (is a real outbound call): ${pct(real.length, rows.length)}\n`);
-  for (const [b, e] of byBucket) process.stdout.write(`    ${b}: ${pct(e.real, e.total)}\n`);
+  for (const [b, e] of byHostKind) process.stdout.write(`    ${b}: ${pct(e.real, e.total)}\n`);
   process.stdout.write(`  provider correct: ${pct(real.filter((r) => r.provider_ok === "y").length, real.length)}\n`);
   process.stdout.write(`  path correct:     ${pct(real.filter((r) => r.path_ok === "y").length, real.length)}\n`);
   const withBody = real.filter((r) => r.body_ok && r.body_ok !== "na");

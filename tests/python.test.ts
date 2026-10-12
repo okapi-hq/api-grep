@@ -13,6 +13,9 @@ describe("python: requests", () => {
     expect(at(r, "verbs.py", 31)).toMatchObject({ method: "DYNAMIC", provider: "linear" });
     expect(at(r, "session.py", 10)).toMatchObject({ provider: "hubspot", pathTemplate: "/crm/v3/objects/contacts/{contact_id}", authScheme: "bearer" });
     expect(at(r, "session.py", 15)).toMatchObject({ provider: "twilio", bodyEncoding: "form", authScheme: "basic" });
+    expect(at(r, "opaque.py", 5)).toMatchObject({ method: "POST", optionsOpaque: true, bodySource: "none" });
+    expect(at(r, "opaque.py", 9)).toMatchObject({ optionsOpaque: false, bodySource: "unknown" });
+    expect(at(r, "verbs.py", 10).bodySource).toBe("literal");
   });
 });
 

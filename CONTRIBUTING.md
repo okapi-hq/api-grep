@@ -34,14 +34,13 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 |---|---|
 | `src/lang/` | language front ends: `typescript/` (wraps the pipeline below for TypeScript, JavaScript and HTML), `html/` (inline scripts, forms, template tags), `ir/` (the engine shared by tree-sitter languages), `python/`, `php/` |
 | `src/lang/python/`, `src/lang/php/` | lowering, HTTP client tables (`clients.json`), SDK registries (`registry/`), manifests, import names / namespaces, language detectors (urllib, curl, streams, PSR-18, Laravel `config()`) |
-| `src/assemble.ts` | turns what a front end resolved into a report `Call` (provider, confidence, id), for every language |
+| `src/assemble.ts` | turns what a front end resolved into a report `Call` (provider, id, `optionsOpaque`, `bodySource`), for every language |
 | `src/ast/` | TypeScript: ts-morph helpers shared by every stage: unwrapping, member chains, object literals, classes, import origins |
 | `src/detect/` | TypeScript: finds call sites: fetch, axios, got/ky, node http, SDKs, framework helpers (`DETECTORS`, tried in order) |
 | `src/detect/registry/` | TypeScript: JSON registries mapping SDK member chains to endpoints |
 | `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
 | `src/wrappers/` | TypeScript: expansion of local HTTP wrapper functions (up to four deep) |
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
-| `src/validate/` | OpenAPI spec loading, operation matching and shape checks |
 | `src/examples/` | synthesized example requests |
 | `src/coverage.ts` | declared and imported SDKs compared with the calls found, per ecosystem |
 | `src/secrets.ts` | what counts as a secret: redaction patterns, credential names, URL credentials |
@@ -200,7 +199,8 @@ The report is a contract other tools read. Its source is [`src/report/schema.ts`
   disabling the rule.
 - Keep the scanner static: no network calls, no code execution, no AI.
 - Detection and resolution are per language; everything after a `Call` is built (provider,
-  confidence, examples, specs, redaction, diagnostics, coverage) is shared. Keep it that way.
+  examples, redaction, diagnostics, coverage) is shared. Keep it that way. The report states facts, never a score
+  or a verdict: leave any judgement to its consumer.
 - Treat everything read from a scanned repository as hostile: print it through `printable()`,
   read config files and manifests through `readConfigFile()`, and add a case to
   `tests/e2e/security.e2e.test.ts` when a new output can carry it.
