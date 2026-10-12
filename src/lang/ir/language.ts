@@ -118,8 +118,15 @@ export interface Manifests {
 export interface IrLanguage {
   id: Language;
   ecosystem: Ecosystem;
-  /** Grammar package name after `tree-sitter-` (`python`, `php`). */
+  /** Grammar name (`python`, `php`), a key of `GRAMMARS`. */
   grammar: string;
+  /**
+   * The grammar marks some valid code as repaired with a token it hides (Kotlin: the automatic semicolon before a `}`
+   * on the same line): a tree with no ERROR or MISSING node to point at still lowers.
+   */
+  allowHiddenErrors?: boolean;
+  /** A same-length rewrite of a file that does not parse as written, kept when it parses (Kotlin: `;` before a `}`). */
+  repair?: (text: string) => string;
   extensions: string[];
   /** Out of scope by default: tests, virtualenvs, vendored code, build output. */
   excludes: string[];
@@ -128,6 +135,10 @@ export interface IrLanguage {
   moduleVarsVisible: boolean;
   /** Module-level constants and functions of one file are visible in every file (PHP), not only through imports. */
   sharedGlobals: boolean;
+  /** Files of one package (the same module name) see each other's top-level declarations without an import (Kotlin). */
+  packageScope?: boolean;
+  /** Parameters declare their type (Kotlin): one whose type names no client is never listed as `injected-client`. */
+  typedParams?: boolean;
   registry: IrRegistryEntry[];
   clients: ClientSpec[];
   /** Detectors for calls that tables cannot describe (`urlopen(Request(...))`, curl handles). */

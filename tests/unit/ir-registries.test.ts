@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { IrRegistryEntry } from "../../src/lang/ir/language.js";
+import { kotlinLanguage } from "../../src/lang/kotlin/index.js";
 import { phpLanguage } from "../../src/lang/php/index.js";
 import { normalizeComposer } from "../../src/lang/php/manifests.js";
 import { pythonLanguage } from "../../src/lang/python/index.js";
@@ -37,6 +38,13 @@ describe("tree-sitter language registries", () => {
 
   it("php: every Composer package with a provider has its namespaces", () => {
     for (const pkg of sdkPackages("composer").keys()) expect(phpLanguage.importRoots(pkg).length, pkg).toBeGreaterThan(0);
+  });
+
+  it("maven: every artifact with a provider is a `group:artifact` with package roots", () => {
+    for (const pkg of sdkPackages("maven").keys()) {
+      expect(pkg, pkg).toMatch(/^[\w.-]+:[\w.-]+$/);
+      expect(kotlinLanguage.importRoots(pkg).every((r) => /^[a-z][\w]*(?:\.[\w]+)*$/.test(r)), pkg).toBe(true);
+    }
   });
 
   it("every client table names an import root and known option roles", () => {

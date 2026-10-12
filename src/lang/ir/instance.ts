@@ -7,6 +7,9 @@ import { deref } from "./values.js";
 
 const MAX_DEPTH = 4;
 
+/** Constructor methods: Python, PHP, and Kotlin's `<init>` (primary constructor, property initializers, `init` blocks). */
+const CONSTRUCTORS = ["__init__", "__construct", "<init>"];
+
 /** A field's value and the context it reads in: the constructor's parameters bound to the call's arguments. */
 export interface FieldValue extends Scoped {
   ctx: IrCtx;
@@ -29,7 +32,7 @@ function constructed(call: CallExpr, caller: FunctionDef, name: string, ctx: IrC
   const target = calleeChain(call, caller, ctx);
   if (target.root.kind !== "class" || target.segs.length > 0) return undefined;
   const cls = target.root.cls;
-  const init = classMethod(cls, "__init__", ctx.idx) ?? classMethod(cls, "__construct", ctx.idx);
+  const init = CONSTRUCTORS.map((n) => classMethod(cls, n, ctx.idx)).find((m) => !!m);
   if (init) {
     const stored = classField(cls, name, ctx.idx).find((f) => f.fn === init);
     if (!stored) return undefined;

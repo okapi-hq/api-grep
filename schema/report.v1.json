@@ -288,9 +288,10 @@
         "javascript",
         "html",
         "python",
-        "php"
+        "php",
+        "kotlin"
       ],
-      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python and php."
+      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php and kotlin."
     },
     "Client": {
       "type": "string",
@@ -947,7 +948,7 @@
       "properties": {
         "package": {
           "type": "string",
-          "description": "Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package."
+          "description": "Package name in its ecosystem: an npm package, a PyPI distribution, a Composer package, a Maven `group:artifact`."
         },
         "ecosystem": {
           "$ref": "#/definitions/Ecosystem"
@@ -962,7 +963,7 @@
         },
         "declared": {
           "type": "boolean",
-          "description": "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json."
+          "description": "Declared in a manifest the scan covered: `dependencies` / `peerDependencies` of a package.json, a requirements file, pyproject.toml, Pipfile, setup.cfg or setup.py, `require` of a composer.json, the dependencies of a Gradle build script (test configurations aside) or of a pom.xml (test scope aside)."
         },
         "imported": {
           "type": "boolean"
@@ -1004,9 +1005,10 @@
       "enum": [
         "npm",
         "pypi",
-        "composer"
+        "composer",
+        "maven"
       ],
-      "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json)."
+      "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml)."
     }
   }
 }

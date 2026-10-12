@@ -8,7 +8,7 @@ export interface ProviderInfo {
   name: string;
   /** Exact hosts; a leading dot matches any subdomain (`.supabase.co`). */
   hosts: string[];
-  /** SDK packages that talk to this provider, by ecosystem (npm package, PyPI distribution). */
+  /** SDK packages that talk to this provider, by ecosystem (npm package, PyPI distribution, Composer package, Maven `group:artifact`). */
   packages?: Partial<Record<Ecosystem, string[]>>;
   category?: string;
 }

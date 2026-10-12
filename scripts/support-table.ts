@@ -1,6 +1,7 @@
 import { AI_SDK_PACKAGES } from "../src/detect/ai-sdk.js";
 import { defaultRegistry } from "../src/detect/registry/index.js";
 import type { IrLanguage } from "../src/lang/ir/language.js";
+import { kotlinLanguage } from "../src/lang/kotlin/index.js";
 import { phpLanguage } from "../src/lang/php/index.js";
 import { pythonLanguage } from "../src/lang/python/index.js";
 import { PROVIDERS } from "../src/normalize/provider.js";
@@ -28,17 +29,20 @@ function typescriptColumn(): Column {
   };
 }
 
+/** Clients read by a language's own detectors rather than its client tables. */
+const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = { python: ["urllib"], php: ["curl", "php-stream"] };
+
 function irColumn(title: string, lang: IrLanguage): Column {
   return {
     title,
     ecosystem: lang.ecosystem,
     methods: (pkg) =>
       lang.registry.filter((r) => lang.normalizePackage(r.package) === lang.normalizePackage(pkg) || r.aliases?.includes(pkg)).reduce((n, r) => n + Object.keys(r.methods).length, 0),
-    clients: [...new Set([...lang.clients.map((c) => c.client), ...(lang.id === "python" ? ["urllib"] : ["curl", "php-stream"])])],
+    clients: [...new Set([...lang.clients.map((c) => c.client), ...(DETECTED_CLIENTS[lang.id] ?? [])])],
   };
 }
 
-export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage), irColumn("PHP (Composer)", phpLanguage)];
+export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage), irColumn("PHP (Composer)", phpLanguage), irColumn("Kotlin (Maven)", kotlinLanguage)];
 
 function cell(col: Column, packages: string[] | undefined): string {
   if (!packages || packages.length === 0) return "";
@@ -53,7 +57,7 @@ export function supportMarkdown(): string {
   });
   const supported = COLUMNS.map((c) => {
     const pkgs = PROVIDERS.flatMap((p) => p.packages?.[c.ecosystem] ?? []).filter((p) => c.methods(p) > 0);
-    return `| ${c.title} | ${new Set(pkgs).size} | ${c.clients.map((x) => `\`${x}\``).join(", ")} |`;
+    return `| ${c.title} | ${new Set(pkgs).size} | ${c.clients.map((x) => `\`${x}\``).join(", ") || "none yet"} |`;
   });
   return [
     "# SDK support by language",
