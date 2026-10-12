@@ -259,6 +259,59 @@ first 8 KB, `vendor/`, `bower_components/`, `coverage/`, `.nuxt/`, `.output/`, `
 attributes (`onclick="..."`) are not; a form whose action is a template tag is skipped (its target is the app's own
 route); `{% url %}` / `url_for` values in scripts stay unknown hosts.
 
+## Operations the URL does not name (#30)
+
+JSON-RPC, GraphQL, SOAP and action-style APIs (AWS Query, Flickr) send every operation to one URL and name it in the
+body, a header or a query parameter. A call to one of them carries `operation`, the same for every language and
+protocol (`Operation` in `src/report/schema.ts`):
+
+```ts
+operation?: {
+  protocol: "json-rpc" | "graphql" | "soap" | "action";
+  /** getTransaction, GetOrder (the root fields of an anonymous GraphQL operation), Track, DescribeInstances */
+  name: string | null;
+  /** GraphQL only */
+  type?: "query" | "mutation" | "subscription";
+  /** GraphQL only: selected field paths from the root, aliases resolved, fragments inlined: ["order.id", "order.customer.email"] */
+  fields?: string[];
+  /** Every name when a branch picks one of several, `name` first */
+  alternatives?: string[];
+  /** Sent in one request together with other operations (a batch) */
+  batch?: boolean;
+  /** Part of the name is not known statically: `name` keeps the literal parts with `{…}` for the rest, null if none */
+  dynamic: boolean;
+  /** Where the request carries the name */
+  from: "body" | "header" | "query" | "document";
+};
+```
+
+- `operationId` keeps its meaning, the OpenAPI operation id from an SDK registry; `operation` is about the wire
+  protocol.
+- **Identity.** `id` hashes the file, line and column and, when the call has one, `operation.name`: `getTransaction`
+  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids.
+- **Batches: one `Call` per operation.** A request that sends several operations together (a JSON-RPC array, a GraphQL
+  batch array) gives one `Call` per operation, at the request's location, each with its own `id` and `batch: true`;
+  the same operation twice in one batch is one call. Every field but `operation` and `id` describes the HTTP request,
+  so it is the same on each operation of a batch (the body is the whole array). A request that sends one operation
+  picked by a branch gives one `Call` with `alternatives`. A GraphQL document holding several operations is not a
+  batch: the request runs the one `operationName` names.
+  - `alternatives` means "one of these"; a batch sends all of them. One field for both would merge two facts.
+  - Each operation is an endpoint: grouping by `id`, or by `method`, `pathTemplate` and `operation.name`, needs no
+    special case, and "which calls send `getTransaction`" is a filter on `operation.name`.
+  - GraphQL operations each have their own `type` and `fields`, which one `Call` could not hold.
+  - The cost: `stats.callsFound` counts operations rather than HTTP requests, as it already counts each request a
+    wrapper sends from one call site; `batch` and the shared location tell them apart.
+  - Not chosen: one `Call` with `alternatives` (merges "one of" and "all of", drops per-operation fields), or an
+    `operations` array on `Call` (every reader of the common single-operation case loops over a list, and ids and
+    grouping per operation need another key).
+- Front ends fill it through `ResolvedCall.operation` (`src/assemble.ts`). No protocol is detected yet:
+
+| protocol | issue | status |
+|---|---|---|
+| JSON-RPC (body `method`) | #34 | not started |
+| GraphQL (document: type, name, fields) | #35 | not started |
+| SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
+
 ## How the open issues apply to each language
 
 | issue | TypeScript / JavaScript / HTML | Python | PHP | Kotlin |
@@ -269,6 +322,7 @@ route); `{% url %}` / `url_for` values in scripts stay unknown hosts.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries with #33 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
+| #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same | same |
 
 ## Adding a language
 

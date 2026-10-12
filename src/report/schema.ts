@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.6.0";
+export const SCHEMA_VERSION = "1.7.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -134,9 +134,39 @@ export const ModelSchema = z
   })
   .meta({ id: "Model", description: "The model a call names, as far as the code tells statically." });
 
+export const OperationSchema = z
+  .object({
+    protocol: z
+      .enum(["json-rpc", "graphql", "soap", "action"])
+      .describe("The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`)."),
+    name: z
+      .string()
+      .nullable()
+      .describe(
+        "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
+      ),
+    type: z.enum(["query", "mutation", "subscription"]).optional().describe("GraphQL only: the operation type."),
+    fields: z
+      .array(z.string())
+      .optional()
+      .describe("GraphQL only: the selected field paths from the root, aliases resolved and fragments inlined (`order.id`, `order.customer.email`)."),
+    alternatives: z.array(z.string()).optional().describe("Every name the call can send when a branch picks one, `name` first."),
+    batch: z
+      .boolean()
+      .optional()
+      .describe("Sent in one request together with other operations (a JSON-RPC array): each operation is a call of its own at the same location."),
+    dynamic: z.boolean().describe("Part of the name is not known statically (computed, or a branch the scan could not read)."),
+    from: z
+      .enum(["body", "header", "query", "document"])
+      .describe("Where the request carries the name: a body property or element, a header (`SOAPAction`), a query parameter, or a GraphQL document."),
+  })
+  .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL." });
+
 export const CallSchema = z
   .object({
-    id: z.string().describe("Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."),
+    id: z
+      .string()
+      .describe("Stable id: a hash of file, line and column, and of `operation.name` when there is one. Each other request made from the same place (through a wrapper) adds its index."),
     location: LocationSchema,
     client: ClientSchema,
     sdk: z
@@ -159,6 +189,7 @@ export const CallSchema = z
     pathTemplate: z.string().describe("Path with `{name}` placeholders for the dynamic segments."),
     urlTemplate: z.string().describe("Full URL template."),
     operationId: z.string().optional().describe("OpenAPI operation id, from the SDK registry."),
+    operation: OperationSchema.optional().describe("The operation, for protocols that name it outside the URL; absent when the scan recognizes none."),
     query: z.array(z.string()).describe("Query parameter names."),
     queryShape: ShapeSchema.optional(),
     headers: z.array(z.string()).describe("Header names, lower case."),
@@ -217,6 +248,7 @@ export type Language = z.infer<typeof LanguageSchema>;
 export type ClientKind = z.infer<typeof ClientSchema>;
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
+export type Operation = z.infer<typeof OperationSchema>;
 export type Stats = z.infer<typeof StatsSchema>;
 export type Report = z.infer<typeof ReportSchema>;
 export * from "./schema-scan.js";

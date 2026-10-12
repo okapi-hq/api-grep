@@ -118,13 +118,13 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.6.0            # report format version; readers check the major
+schemaVersion: 1.7.0            # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
 commit: 9ae2b37…                # HEAD, when the directory is a git repository
 calls:                          # one entry per call, sorted by file, line, column
-  - id: 916d2bd1f6b1            # stable: hash of file, line and column
+  - id: 916d2bd1f6b1            # stable: hash of file, line, column (and operation.name)
     location:
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
@@ -208,6 +208,28 @@ Libraries that pick the provider from the model name (LiteLLM, LangChain's `init
 CrewAI, DSPy, smolagents, Mastra) are reported at the provider their first name routes to
 (`anthropic/claude-sonnet-4` to Anthropic, `gpt-4o` to OpenAI), the prefix dropped from `values`; a name
 that routes nowhere leaves the provider `unknown`.
+
+A call to an API that names the operation outside the URL (JSON-RPC, GraphQL, SOAP, action-style APIs such as
+AWS Query) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
+calls. The field is in the format; no protocol is detected yet: JSON-RPC
+([#34](https://github.com/okapi-hq/api-grep/issues/34)), GraphQL
+([#35](https://github.com/okapi-hq/api-grep/issues/35)), SOAP and action-style APIs
+([#36](https://github.com/okapi-hq/api-grep/issues/36)) will fill it.
+
+```yaml
+    operation:
+      protocol: graphql          # json-rpc | graphql | soap | action
+      name: GetOrder             # null when no part of it is known
+      type: query                # GraphQL only: query | mutation | subscription
+      fields: [order.id, order.customer.email]   # GraphQL only: selected fields, aliases resolved, fragments inlined
+      dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
+      from: document             # body | header | query | document
+```
+
+`alternatives` lists every name when a branch picks one (`name` is the first). A request that sends several
+operations together (a JSON-RPC batch array) gives one call per operation at the same location, each with
+`batch: true`. `operationId` is unrelated: the OpenAPI id of an SDK method. The reasons are in
+[docs/languages.md](docs/languages.md#operations-the-url-does-not-name-30).
 
 ### Contract
 

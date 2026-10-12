@@ -60,7 +60,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Stable id: a hash of file, line and column. Each other request made from the same place (through a wrapper) adds its index."
+          "description": "Stable id: a hash of file, line and column, and of `operation.name` when there is one. Each other request made from the same place (through a wrapper) adds its index."
         },
         "location": {
           "$ref": "#/definitions/Location"
@@ -134,6 +134,10 @@
         "operationId": {
           "description": "OpenAPI operation id, from the SDK registry.",
           "type": "string"
+        },
+        "operation": {
+          "description": "The operation, for protocols that name it outside the URL; absent when the scan recognizes none.",
+          "$ref": "#/definitions/Operation"
         },
         "query": {
           "type": "array",
@@ -316,6 +320,76 @@
         "framework"
       ],
       "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper)."
+    },
+    "Operation": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "json-rpc",
+            "graphql",
+            "soap",
+            "action"
+          ],
+          "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`)."
+        },
+        "name": {
+          "description": "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "description": "GraphQL only: the operation type.",
+          "type": "string",
+          "enum": [
+            "query",
+            "mutation",
+            "subscription"
+          ]
+        },
+        "fields": {
+          "description": "GraphQL only: the selected field paths from the root, aliases resolved and fragments inlined (`order.id`, `order.customer.email`).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alternatives": {
+          "description": "Every name the call can send when a branch picks one, `name` first.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "batch": {
+          "description": "Sent in one request together with other operations (a JSON-RPC array): each operation is a call of its own at the same location.",
+          "type": "boolean"
+        },
+        "dynamic": {
+          "type": "boolean",
+          "description": "Part of the name is not known statically (computed, or a branch the scan could not read)."
+        },
+        "from": {
+          "type": "string",
+          "enum": [
+            "body",
+            "header",
+            "query",
+            "document"
+          ],
+          "description": "Where the request carries the name: a body property or element, a header (`SOAPAction`), a query parameter, or a GraphQL document."
+        }
+      },
+      "required": [
+        "protocol",
+        "name",
+        "dynamic",
+        "from"
+      ],
+      "description": "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL."
     },
     "Shape": {
       "description": "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",
