@@ -26,6 +26,8 @@ export interface Entry {
   value: Expr;
   /** `{**base}` / `[...$base]`. */
   spread?: boolean;
+  /** Set on some paths only (a key added in a branch, see `edits.ts`): not a required key. */
+  optional?: boolean;
 }
 
 export type Expr =
@@ -78,6 +80,19 @@ export interface Assign {
   augmented?: boolean;
   /** Declared type (`db: Client = ctx.db`, a PHP `@var` tag): what the value is when it cannot be followed. */
   type?: Expr;
+  /**
+   * Changes the keys of the dict `target` holds rather than replacing it (`edits.ts`): `merge` adds the entries of the
+   * dict `value` (`kwargs["k"] = v`, `.update(...)`, `|=`), `default` adds those not set yet (`.setdefault`, PHP `+=`),
+   * `remove` drops the keys listed in `value` (`del kwargs["k"]`, `.pop("k")`, `unset(...)`).
+   */
+  edit?: "merge" | "default" | "remove";
+}
+
+export interface Branch {
+  start: number;
+  end: number;
+  /** One of the `size` branches of an `if` / `elif` / `else` chain with an `else`: exactly one of them runs. */
+  group?: { id: number; size: number };
 }
 
 /** A JVM annotation (`@GET("users/{id}")`, `@Query("page")`): its class as written, resolved like a name, and its arguments. */
@@ -113,6 +128,8 @@ export interface FunctionDef {
   pos: Pos;
   /** A Python `@staticmethod` / PHP `static function`: no `self`. */
   isStatic?: boolean;
+  /** Offsets of blocks that may not run (branches, loop bodies, handlers), for the keys a dict gets there. */
+  branches?: Branch[];
   annotations?: Annotation[];
 }
 

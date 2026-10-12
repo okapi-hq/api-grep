@@ -86,6 +86,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `chain.ts` | what a callee is: `self.client.chat.completions.create` becomes `[openai, OpenAI(), chat, completions, create()]`, following variables, fields, typed parameters (`client: OpenAI`), factories (`def get_client(): return OpenAI()`), `with ... as`, `or` defaults and external base classes |
 | `evaluate.ts`, `format.ts` | string values as static / env / dynamic parts, like the TypeScript evaluator: constants across files, env defaults, `self.base_url` set in the constructor, parameter defaults, URL helpers and lambdas, fields of objects built in the project (`instance.ts`), literal `.replace()` |
 | `shape.ts`, `types.ts`, `request.ts` | body, query and header shapes: dict literals and spreads, serializers (`json.dumps`, `urlencode`), declared types (dataclass, TypedDict, pydantic models) |
+| `edits.ts` | keys a dict gets or loses after it is built (`kwargs["k"] = v`, `.update`, `$params['k'] = $v`): folded into the variable's value where it is read |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
@@ -141,7 +142,8 @@ first when a base class method runs on it), parameter defaults,
 (`db: Client = ctx.db`), fields of objects built in the project and passed down (`Call(base="https://...")` for a
 dataclass, NamedTuple or pydantic model, `self.url` set in `__init__`, `replace(call, ...)`), literal `.replace()` and
 `re.sub` (the pattern is never run). Bodies come from dict literals, `**spreads`, `dict(...)`, `json.dumps`, `urlencode`,
-`.model_dump()`, and declared dataclass / TypedDict / pydantic types.
+`.model_dump()`, and declared dataclass / TypedDict / pydantic types, with the keys added or removed later in the same
+function, before the call (see [Keys added after a dict is built](#keys-added-after-a-dict-is-built-38)).
 
 **Out of scope by default:** `tests/`, `test/`, `test_*.py`, `*_test.py`, `conftest.py`, virtualenvs (`.venv`, `venv`,
 `site-packages`), caches. Files a scan excludes are still read so imports resolve through them, as in TypeScript.
@@ -175,6 +177,8 @@ arrow functions, `.` and `.=`, `??`, `?:`, `sprintf`, `str_replace` / `preg_repl
 fields of objects built in the project (`new Call(base: '...')`, promoted or set in the constructor), named
 arguments, double-quoted, heredoc and nowdoc strings, `env('X', 'default')`,
 `getenv()`, `$_ENV`, `$_SERVER`, and Laravel `config('file.key')` / `Config::get(...)` read from `config/<file>.php`.
+Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params += [...]`, `array_merge(...)`,
+`unset(...)`, see [#38](#keys-added-after-a-dict-is-built-38)).
 
 **Out of scope by default:** `vendor/`, `tests/`, `Tests/`, `test/`, `*Test.php`, `storage/`, `bootstrap/cache/`,
 `var/cache/`, `*.blade.php`.
@@ -311,6 +315,34 @@ operation?: {
 | JSON-RPC (body `method`) | #34 | not started |
 | GraphQL (document: type, name, fields) | #35 | not started |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
+
+## Keys added after a dict is built (#38)
+
+Code that adapts one call to several models or API versions often builds the arguments and then completes them:
+`kwargs["max_tokens"] = 64` in one branch, `kwargs["max_completion_tokens"] = 64` in the other. For a variable that
+becomes a call's arguments or body, the statements of the same function that run before the call change its keys:
+
+| language | adds | removes |
+|---|---|---|
+| Python | `kwargs["k"] = v`, `kwargs.update(k=v)`, `.update({...})`, `.update(**other)`, `.setdefault("k", v)`, `kwargs \|= {...}`, `kwargs = {**kwargs, ...}` | `del kwargs["k"]`, `kwargs.pop("k")` |
+| TypeScript / JavaScript | `params.k = v`, `params["k"] = v`, `Object.assign(params, {...})` | `delete params.k`, `params.k = undefined` |
+| PHP | `$params['k'] = $v`, `$params += [...]` (keys not set yet), `$params = array_merge($params, [...])`, `$data['k'] = $v` with no `$data = [...]` before | `unset($params['k'])` |
+
+- **Branches.** Every key set on some path is reported. A key set in a block that may not run (an `if` branch, a loop
+  body, a `case`, an `except` / `catch`, the right side of `&&`) is left out of `required`, unless every branch of an
+  `if` / `elif` / `else` chain sets it. Values set on several paths merge as alternatives (`model: ["gpt-4o-mini",
+  "o3"]`), and literal values count for the `model` fact like those of a dict literal.
+- **Order.** Only statements before the call count; a later edit, or one in a nested function or callback, does not. A
+  removal in a branch makes the key optional; an unconditional one drops it.
+- **Where.** Python and PHP: the front ends lower each statement as an edit of the variable (`Assign.edit` in
+  `src/lang/ir/model.ts`, blocks that may not run in `FunctionDef.branches`); `lookup` (`src/lang/ir/project.ts`)
+  folds the edits into one dict literal (`src/lang/ir/edits.ts`), so shapes, options, the model and every other reader
+  see them. TypeScript: `src/resolve/object-edits.ts` collects the edits of a variable declared with an object, and
+  `src/resolve/edited-shape.ts` applies them to its shape (`identifierShape` in `src/resolve/body.ts`).
+- **Limits.** Python and PHP edit a value built in place: a dict literal, `dict(...)`, `.copy()`, `**kwargs`. A dict
+  returned by a function, or a plain parameter, keeps the keys the code gives it, and a key that comes from a spread
+  of another variable cannot be removed. In TypeScript, only `const` / `let` declarations initialized with a value of
+  object shape are edited (not `fetch` init objects read key by key, such as `init.headers = ...`).
 
 ## How the open issues apply to each language
 

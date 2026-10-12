@@ -1,5 +1,6 @@
 import type { Arg, CallExpr, Entry, Expr, FunctionDef, ModuleModel, Pos } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { callEdit } from "./lower-edits.js";
 
 /** Lowering state: the module, the function whose calls are being collected, and the method receiver (`self`, `cls`). */
 export interface PyState {
@@ -116,6 +117,8 @@ function lowerCall(n: SyntaxNode, st: PyState): Expr {
   }
   const call: CallExpr = { k: "call", fn, args, pos: posOf(n) };
   st.fn.calls.push(call);
+  const edit = callEdit(fn, args, n.endIndex);
+  if (edit) st.fn.assigns.push(edit);
   return call;
 }
 

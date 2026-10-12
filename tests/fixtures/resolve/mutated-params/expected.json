@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/38",
+  "calls": [
+    {"file": "order.js", "line": 5, "provider": "api.example-shop.com"},
+    {"file": "params.ts", "line": 9, "provider": "openai"},
+    {"file": "params.ts", "line": 19, "provider": "openai"},
+    {"file": "params.ts", "line": 27, "provider": "openai"},
+    {"file": "params.ts", "line": 32, "provider": "openai"},
+    {"file": "params.ts", "line": 45, "provider": "openai"}
+  ]
+}
