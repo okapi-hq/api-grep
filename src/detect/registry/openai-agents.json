@@ -1,0 +1,19 @@
+{
+  "package": "@openai/agents",
+  "aliases": [
+    "@openai/agents-core"
+  ],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (@openai/agents: Agent)",
+  "commands": {
+    "Agent": {
+      "method": "POST",
+      "path": "/v1/responses",
+      "modelArg": 0,
+      "modelProp": "model",
+      "operationId": "createResponse"
+    }
+  }
+}

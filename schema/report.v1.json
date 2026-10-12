@@ -223,6 +223,10 @@
           "items": {
             "$ref": "#/definitions/Example"
           }
+        },
+        "model": {
+          "description": "The model the request names (LLM and other AI APIs); absent when it names none.",
+          "$ref": "#/definitions/Model"
         }
       },
       "required": [
@@ -400,6 +404,10 @@
             "hint": {
               "description": "Source identifier the value came from (`email`), used to synthesize examples.",
               "type": "string"
+            },
+            "env": {
+              "description": "Environment variable the value is read from; `enum` then holds the default the code gives, if any (`os.getenv(\"MODEL\", \"gpt-4o\")`).",
+              "type": "string"
             }
           },
           "required": [
@@ -559,6 +567,45 @@
         "bodyEncoding"
       ],
       "description": "A concrete request synthesized from the call: invented values, stable across runs."
+    },
+    "Model": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Model names the code gives, literally or as a default (an environment variable's, a function's returns, every branch of a condition)."
+        },
+        "env": {
+          "description": "Environment variable the model is read from; `values` holds its default in the code, if any.",
+          "type": "string"
+        },
+        "dynamic": {
+          "type": "boolean",
+          "description": "Some value could not be read statically (a parameter, a call result): `values` may be incomplete."
+        },
+        "hint": {
+          "description": "Identifier the unread value comes from (`get_model`, `settings.model`).",
+          "type": "string"
+        },
+        "from": {
+          "type": "string",
+          "enum": [
+            "body",
+            "path",
+            "argument"
+          ],
+          "description": "Where the request carries it: a body property (`model`, `modelId`), a path segment (`/models/{model}`), or an SDK argument that is not the body (`openai(\"gpt-4o\")`)."
+        }
+      },
+      "required": [
+        "values",
+        "dynamic",
+        "from"
+      ],
+      "description": "The model a call names, as far as the code tells statically."
     },
     "Stats": {
       "type": "object",

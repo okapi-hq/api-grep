@@ -78,7 +78,7 @@ export function bindingElementValue(decl: Node, ctx: EvalCtx = {}, depth = 0): E
 }
 
 /** `import { config } from "./config"`: the variable a project file exports under that name. */
-function importedVariable(ident: Expression): VariableDeclaration | undefined {
+export function importedVariable(ident: Expression): VariableDeclaration | undefined {
   const sym = ident.getSymbol();
   if (!sym?.isAlias()) return undefined;
   const decls = sym.getAliasedSymbol()?.getDeclarations() ?? [];

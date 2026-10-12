@@ -1,0 +1,68 @@
+{
+  "$comment": "PydanticAI: `Agent(\"openai:gpt-4o\")` (or a model class) names the model its requests send; the provider comes from the name.",
+  "package": "pydantic-ai",
+  "imports": [
+    "pydantic_ai"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (pydantic-ai: Agent, models.*Model)",
+  "routeByModel": true,
+  "methods": {
+    "Agent": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model"
+    },
+    "models.openai.OpenAIModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.openai.OpenAIChatModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.openai.OpenAIResponsesModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.anthropic.AnthropicModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.gemini.GeminiModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.google.GoogleModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.groq.GroqModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    },
+    "models.mistral.MistralModel": {
+      "method": "POST",
+      "path": "/",
+      "modelArg": 0,
+      "modelKw": "model_name"
+    }
+  }
+}

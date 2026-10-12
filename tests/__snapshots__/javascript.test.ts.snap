@@ -357,7 +357,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -675,6 +675,13 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
         "line": 6,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
       "operationId": "createChatCompletion",
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
@@ -797,7 +804,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -1205,7 +1212,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "axios": 1,

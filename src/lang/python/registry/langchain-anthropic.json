@@ -1,0 +1,23 @@
+{
+  "$comment": "langchain-anthropic: `ChatAnthropic(model=...)` sends Messages API requests.",
+  "package": "langchain-anthropic",
+  "imports": [
+    "langchain_anthropic"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (langchain-anthropic: ChatAnthropic)",
+  "methods": {
+    "ChatAnthropic": {
+      "method": "POST",
+      "path": "/v1/messages",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "anthropic_api_url"
+      ]
+    }
+  }
+}

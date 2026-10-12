@@ -117,7 +117,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.4.0            # report format version; readers check the major
+schemaVersion: 1.5.0            # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -188,6 +188,25 @@ coverage:                       # API SDKs the repo uses, see SDK coverage
   sdks:
     - { package: stripe, ecosystem: npm, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
 ```
+
+A call to a model API also carries `model`: the model names the code gives, read from an SDK argument
+(`ChatOpenAI(model=...)`, `Agent("openai:gpt-4o")`), the body (`model`, `modelId`) or the path
+(`/v1beta/models/gemini-2.0-flash:generateContent`). Names behind constants, env var defaults
+(`os.getenv("MODEL", "gpt-4o")`, `process.env.MODEL ?? "gpt-4o"`), settings classes, function returns and
+branches are followed; `dynamic` says some branch could not be read.
+
+```yaml
+    model:
+      values: [gpt-4o-mini, o3]  # every name a branch can give, as the provider receives it
+      env: CHAT_MODEL            # the env var that can override them
+      dynamic: false             # true: some value could not be read (hint: its name)
+      from: body                 # argument | body | path
+```
+
+Libraries that pick the provider from the model name (LiteLLM, LangChain's `init_chat_model`, PydanticAI,
+CrewAI, DSPy, smolagents, Mastra) are reported at the provider their first name routes to
+(`anthropic/claude-sonnet-4` to Anthropic, `gpt-4o` to OpenAI), the prefix dropped from `values`; a name
+that routes nowhere leaves the provider `unknown`.
 
 ### Contract
 

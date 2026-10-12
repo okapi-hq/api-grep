@@ -2,7 +2,7 @@ import { assembleCall } from "./assemble.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
-import { resolveBody } from "./resolve/body.js";
+import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
@@ -10,6 +10,7 @@ import { staticText } from "./resolve/parts.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
+import { withoutClientSettings } from "./model/client-settings.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, UrlShape } from "./types.js";
 
@@ -72,6 +73,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const { url, method } = resolveTarget(raw, ctx, dynamic);
   dynamic.push(...url.dynamic);
   const body = resolveBody(raw.bodyExpr, ctx, defaultEncoding(raw, method));
+  if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveQuery(raw.queryExpr, ctx);
@@ -93,5 +95,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
     via: raw.via,
     codeBaseUrl: !!raw.baseUrlExpr,
     optionsOpaque: raw.optionsOpaque,
+    model: raw.modelExpr ? shapeOf(raw.modelExpr, ctx).shape : undefined,
+    routeByModel: sdk?.routeByModel,
   });
 }

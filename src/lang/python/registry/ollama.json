@@ -1,0 +1,43 @@
+{
+  "$comment": "ollama-python: a local server unless `Client(host=...)` says otherwise; keyword arguments are the request.",
+  "package": "ollama",
+  "imports": [
+    "ollama"
+  ],
+  "provider": "ollama",
+  "host": "localhost:11434",
+  "auth": "none",
+  "generatedFrom": "manual (ollama-python: chat, generate, embed)",
+  "instance": {
+    "names": [
+      "Client",
+      "AsyncClient"
+    ],
+    "urlArg": {
+      "Client": "kw:host",
+      "AsyncClient": "kw:host"
+    }
+  },
+  "methods": {
+    "chat": {
+      "method": "POST",
+      "path": "/api/chat",
+      "bodyKwargs": true
+    },
+    "generate": {
+      "method": "POST",
+      "path": "/api/generate",
+      "bodyKwargs": true
+    },
+    "embed": {
+      "method": "POST",
+      "path": "/api/embed",
+      "bodyKwargs": true
+    },
+    "embeddings": {
+      "method": "POST",
+      "path": "/api/embeddings",
+      "bodyKwargs": true
+    }
+  }
+}

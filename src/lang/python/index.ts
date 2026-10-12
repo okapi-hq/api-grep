@@ -30,6 +30,26 @@ import slackSdk from "./registry/slack-sdk.json" with { type: "json" };
 import stripe from "./registry/stripe.json" with { type: "json" };
 import supabase from "./registry/supabase.json" with { type: "json" };
 import twilio from "./registry/twilio.json" with { type: "json" };
+import langchainOpenai from "./registry/langchain-openai.json" with { type: "json" };
+import langchainAnthropic from "./registry/langchain-anthropic.json" with { type: "json" };
+import langchainGoogleGenai from "./registry/langchain-google-genai.json" with { type: "json" };
+import langchainGroq from "./registry/langchain-groq.json" with { type: "json" };
+import langchainMistralai from "./registry/langchain-mistralai.json" with { type: "json" };
+import langchainOllama from "./registry/langchain-ollama.json" with { type: "json" };
+import langchainAws from "./registry/langchain-aws.json" with { type: "json" };
+import langchain from "./registry/langchain.json" with { type: "json" };
+import llamaIndexOpenai from "./registry/llama-index-llms-openai.json" with { type: "json" };
+import llamaIndexAnthropic from "./registry/llama-index-llms-anthropic.json" with { type: "json" };
+import litellm from "./registry/litellm.json" with { type: "json" };
+import pydanticAi from "./registry/pydantic-ai.json" with { type: "json" };
+import openaiAgents from "./registry/openai-agents.json" with { type: "json" };
+import crewai from "./registry/crewai.json" with { type: "json" };
+import dspy from "./registry/dspy.json" with { type: "json" };
+import smolagents from "./registry/smolagents.json" with { type: "json" };
+import instructor from "./registry/instructor.json" with { type: "json" };
+import autogenExt from "./registry/autogen-ext.json" with { type: "json" };
+import googleAdk from "./registry/google-adk.json" with { type: "json" };
+import ollama from "./registry/ollama.json" with { type: "json" };
 
 /** Registries sharing an import root are told apart by their instance names; module-level calls (`openai.chat...`) go to the first one. */
 export const PYTHON_REGISTRY = [
@@ -57,6 +77,26 @@ export const PYTHON_REGISTRY = [
   cohere,
   cohereV2,
   elevenlabs,
+  langchainOpenai,
+  langchainAnthropic,
+  langchainGoogleGenai,
+  langchainGroq,
+  langchainMistralai,
+  langchainOllama,
+  langchainAws,
+  langchain,
+  llamaIndexOpenai,
+  llamaIndexAnthropic,
+  litellm,
+  pydanticAi,
+  openaiAgents,
+  crewai,
+  dspy,
+  smolagents,
+  instructor,
+  autogenExt,
+  googleAdk,
+  ollama,
 ] as unknown as IrRegistryEntry[];
 
 const MODULES: Record<string, string[]> = modules.modules;

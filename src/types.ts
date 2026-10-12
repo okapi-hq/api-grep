@@ -67,6 +67,8 @@ export interface RawCall {
   via?: string;
   /** Parameter substitutions when this call was expanded through a wrapper. */
   subst?: Subst;
+  /** The model when the request carries it outside the body (`openai("gpt-4o")` in an AI SDK call, an agent's model). */
+  modelExpr?: Expression;
 }
 
 export interface MethodSpec {
@@ -91,6 +93,16 @@ export interface MethodSpec {
    * `fn:N` (a Convex function reference: `api.tasks.get` gives `tasks/get`). `arg:N.model` reads a property of it.
    */
   params?: Record<string, string>;
+  /**
+   * A model client or an agent built here (`new ChatOpenAI({ model })`, `Agent("openai:gpt-4o")`): where its model is
+   * when it is not a body property, argument N (Python adds a keyword) or a property of it.
+   */
+  modelArg?: number;
+  modelProp?: string;
+  /** Properties of the body argument that set the client's base URL (`configuration.baseURL`), the first given wins. */
+  baseUrlProp?: string[];
+  /** The settings mix the client's (keys, callbacks, retries) with the request's: only the request's are body. */
+  clientKwargs?: boolean;
 }
 
 export interface RegistryEntry {
@@ -113,6 +125,8 @@ export interface RegistryEntry {
   inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;
   commands?: Record<string, MethodSpec>;
+  /** The library picks the provider from the model name (LangChain's `initChatModel`): the call goes where it routes. */
+  routeByModel?: boolean;
 }
 
 export interface FrameworkKeys {
@@ -146,12 +160,13 @@ export interface SdkMatch {
   instanceArgs?: Expression[];
   inlinePath?: boolean;
   basePath?: string;
+  routeByModel?: boolean;
 }
 
 export type Shape =
   | { type: "object"; properties: Record<string, Shape>; required: string[]; dynamicKeys?: boolean; fromType?: string }
   | { type: "array"; items: Shape; fromType?: string }
-  | { type: "string" | "number" | "integer" | "boolean" | "null"; enum?: (string | number | boolean)[]; fromType?: string; hint?: string }
+  | { type: "string" | "number" | "integer" | "boolean" | "null"; enum?: (string | number | boolean)[]; fromType?: string; hint?: string; env?: string }
   | { type: "union"; anyOf: Shape[]; fromType?: string }
   | { type: "dynamic"; origin: DynamicOrigin; hint?: string }
   | { type: "unknown" };

@@ -1,9 +1,10 @@
-import { Node, SyntaxKind, type Expression } from "ts-morph";
+import { Node, SyntaxKind, type BinaryExpression, type Expression } from "ts-morph";
 import { constructedName, isUndefinedLiteral, unwrap } from "../ast/expr.js";
-import { bindingElementValue, declarationsOf, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
+import { bindingElementValue, declarationsOf, importedVariable, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { collectAppendedKeys } from "./appended.js";
+import { localReturn } from "./local-return.js";
 import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
 import { isNullable, typeToShape } from "./type-shape.js";
 
@@ -108,6 +109,9 @@ function fromChecker(u: Expression, origin: "param" | "call" | "unknown", hint?:
 }
 
 function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
+  // `import { CHAT_MODEL } from "./config"`: the constant that file defines
+  const imported = importedVariable(u)?.getInitializer();
+  if (imported) return shapeOf(imported, ctx, depth + 1, dynamic);
   for (const decl of declarationsOf(u)) {
     const sub = paramSubstitution(decl, ctx);
     if (sub.isParam) return sub.expr ? shapeOf(sub.expr, ctx, depth + 1, dynamic) : fromChecker(u, "param", u.getText());
@@ -126,15 +130,53 @@ export function shapeOf(expr: Expression, ctx: EvalCtx = {}, depth = 0, dynamic:
   if (lit) return { shape: lit, fromLiteral: true };
   if (Node.isObjectLiteralExpression(u)) return { shape: objectLiteralShape(u, ctx, depth, dynamic), fromLiteral: true };
   if (Node.isIdentifier(u)) return identifierShape(u, ctx, depth, dynamic);
-  if (Node.isConditionalExpression(u)) {
-    const a = shapeOf(u.getWhenTrue(), ctx, depth + 1, dynamic);
-    const b = shapeOf(u.getWhenFalse(), ctx, depth + 1, dynamic);
-    return { shape: unionOf([a.shape, b.shape]), fromLiteral: false, origin: a.fromLiteral && b.fromLiteral ? "unknown" : (a.origin ?? b.origin) };
-  }
-  if (Node.isCallExpression(u)) return fromChecker(u, "call", u.getExpression().getText().slice(0, 40));
-  const first = evaluate(u, ctx, depth)[0];
-  if (first?.kind === "env") return { shape: { type: "string" }, fromLiteral: false, origin: "env" };
-  return fromChecker(u, "unknown", u.getText().slice(0, 40));
+  if (Node.isConditionalExpression(u)) return branchesShape([u.getWhenTrue(), u.getWhenFalse()], ctx, depth, dynamic);
+  const env = envShape(u, ctx, depth);
+  if (env) return env;
+  if (isDefaultExpression(u)) return branchesShape([u.getLeft(), u.getRight()], ctx, depth, dynamic, true);
+  if (Node.isCallExpression(u)) return returnsShape(u, ctx, depth) ?? fromChecker(u, "call", u.getExpression().getText().slice(0, 40));
+  return constantShape(u, ctx, depth) ?? fromChecker(u, "unknown", u.getText().slice(0, 40));
+}
+
+/** An env var read (`process.env.MODEL ?? "gpt-4o"`): a string from that variable, its literal default as the value. */
+function envShape(u: Expression, ctx: EvalCtx, depth: number): ShapeResult | undefined {
+  if (!Node.isPropertyAccessExpression(u) && !Node.isElementAccessExpression(u) && !Node.isCallExpression(u) && !Node.isBinaryExpression(u)) return undefined;
+  const parts = evaluate(u, ctx, depth);
+  const env = parts.length === 1 && parts[0]!.kind === "env" ? parts[0]! : undefined;
+  if (env?.kind !== "env") return undefined;
+  return { shape: { type: "string", ...(env.fallback ? { enum: [env.fallback] } : {}), env: env.name }, fromLiteral: false, origin: "env" };
+}
+
+/** `a ?? b`, `a || b`: either side can be what runs. */
+function isDefaultExpression(u: Expression): u is BinaryExpression {
+  if (!Node.isBinaryExpression(u)) return false;
+  const op = u.getOperatorToken().getKind();
+  return op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken;
+}
+
+/** The shapes of every branch a value can take (a condition, a default); `optionalLeft` drops a missing left side. */
+function branchesShape(branches: Expression[], ctx: EvalCtx, depth: number, dynamic: DynamicPart[], optionalLeft = false): ShapeResult {
+  const results = branches.map((b) => shapeOf(b, ctx, depth + 1, dynamic));
+  const shapes = results.map((r, i) => (optionalLeft && i === 0 && r.shape.type === "union" ? unionOf(r.shape.anyOf.filter((m) => m.type !== "null")) : r.shape));
+  const literal = results.every((r) => r.fromLiteral);
+  return { shape: unionOf(shapes), fromLiteral: false, origin: literal ? "unknown" : (results.find((r) => !r.fromLiteral)?.origin ?? "unknown") };
+}
+
+/** What a function of the project returns (`model: getModel()`): the shapes of its returns, its arguments substituted. */
+function returnsShape(u: Expression, ctx: EvalCtx, depth: number): ShapeResult | undefined {
+  const local = localReturn(u, ctx);
+  if (!local) return undefined;
+  // the returns' own dynamic parts belong to the function, not to this request
+  const results = local.exprs.map((e) => shapeOf(e, local.ctx, depth + 1, []));
+  if (results.every((r) => r.shape.type === "dynamic" || r.shape.type === "unknown")) return undefined;
+  return { shape: unionOf(results.map((r) => r.shape)), fromLiteral: false, origin: "call" };
+}
+
+/** A constant read through a property (`config.model`, `MODELS.chat`): its static text, as one value. */
+function constantShape(u: Expression, ctx: EvalCtx, depth: number): ShapeResult | undefined {
+  if (!Node.isPropertyAccessExpression(u) && !Node.isElementAccessExpression(u)) return undefined;
+  const text = staticText(evaluate(u, ctx, depth));
+  return text !== undefined && text !== "" ? { shape: { type: "string", enum: [text] }, fromLiteral: false, origin: "unknown" } : undefined;
 }
 
 function appendedKeys(varExpr: Expression): string[] {

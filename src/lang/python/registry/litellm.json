@@ -1,0 +1,133 @@
+{
+  "$comment": "LiteLLM routes each request by its model name (`anthropic/claude-sonnet-4`, or a family like `gpt-4o`); keyword arguments are the request.",
+  "package": "litellm",
+  "imports": [
+    "litellm"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (litellm: completion, acompletion, embedding, responses)",
+  "routeByModel": true,
+  "methods": {
+    "completion": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createChatCompletion"
+    },
+    "acompletion": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createChatCompletion"
+    },
+    "embedding": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createEmbedding"
+    },
+    "aembedding": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createEmbedding"
+    },
+    "text_completion": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ]
+    },
+    "atext_completion": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ]
+    },
+    "responses": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createResponse"
+    },
+    "aresponses": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createResponse"
+    },
+    "image_generation": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createImage"
+    },
+    "transcription": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createTranscription"
+    },
+    "speech": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ],
+      "operationId": "createSpeech"
+    }
+  }
+}

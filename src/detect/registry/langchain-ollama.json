@@ -1,0 +1,27 @@
+{
+  "package": "@langchain/ollama",
+  "provider": "ollama",
+  "host": "localhost:11434",
+  "auth": "none",
+  "generatedFrom": "manual (@langchain/ollama: ChatOllama, OllamaEmbeddings)",
+  "commands": {
+    "ChatOllama": {
+      "method": "POST",
+      "path": "/api/chat",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "baseUrl"
+      ]
+    },
+    "OllamaEmbeddings": {
+      "method": "POST",
+      "path": "/api/embed",
+      "bodyArg": 0,
+      "clientKwargs": true,
+      "baseUrlProp": [
+        "baseUrl"
+      ]
+    }
+  }
+}

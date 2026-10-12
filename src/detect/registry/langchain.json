@@ -1,0 +1,17 @@
+{
+  "package": "langchain",
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (langchain: initChatModel)",
+  "routeByModel": true,
+  "methods": {
+    "initChatModel": {
+      "method": "POST",
+      "path": "/",
+      "bodyArg": 1,
+      "modelArg": 0,
+      "clientKwargs": true
+    }
+  }
+}

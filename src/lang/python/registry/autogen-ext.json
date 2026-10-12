@@ -1,0 +1,23 @@
+{
+  "$comment": "AutoGen model clients: `OpenAIChatCompletionClient(model=...)` sends OpenAI chat requests.",
+  "package": "autogen-ext",
+  "imports": [
+    "autogen_ext.models.openai"
+  ],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (autogen-ext: OpenAIChatCompletionClient)",
+  "basePath": "/v1",
+  "methods": {
+    "OpenAIChatCompletionClient": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    }
+  }
+}

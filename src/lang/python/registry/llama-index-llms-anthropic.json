@@ -1,0 +1,22 @@
+{
+  "$comment": "LlamaIndex's Anthropic LLM: `Anthropic(model=...)` sends Messages API requests.",
+  "package": "llama-index-llms-anthropic",
+  "imports": [
+    "llama_index.llms.anthropic"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (llama-index-llms-anthropic: Anthropic)",
+  "methods": {
+    "Anthropic": {
+      "method": "POST",
+      "path": "/v1/messages",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$comment": "CrewAI: `LLM(model=...)` or `Agent(llm=\"gpt-4o\")`; LiteLLM underneath, so the provider comes from the model name.",
+  "package": "crewai",
+  "imports": [
+    "crewai"
+  ],
+  "provider": "llm-router",
+  "host": "{provider}",
+  "auth": "unknown",
+  "generatedFrom": "manual (crewai: LLM, Agent)",
+  "routeByModel": true,
+  "methods": {
+    "LLM": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "modelArg": 0,
+      "modelKw": "model",
+      "baseUrlKw": [
+        "base_url",
+        "api_base"
+      ]
+    },
+    "Agent": {
+      "method": "POST",
+      "path": "/",
+      "modelKw": "llm"
+    }
+  }
+}

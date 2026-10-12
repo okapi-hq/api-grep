@@ -1,0 +1,32 @@
+{
+  "$comment": "langchain-google-genai: the model is in the path (`/v1beta/models/{model}:generateContent`).",
+  "package": "langchain-google-genai",
+  "imports": [
+    "langchain_google_genai"
+  ],
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (langchain-google-genai: ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings)",
+  "inlinePathLiterals": true,
+  "methods": {
+    "ChatGoogleGenerativeAI": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:generateContent",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {
+        "model": "kw:model"
+      }
+    },
+    "GoogleGenerativeAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1beta/models/{model}:embedContent",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {
+        "model": "kw:model"
+      }
+    }
+  }
+}

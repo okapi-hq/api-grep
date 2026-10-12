@@ -1,0 +1,31 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "direct.py", "line": 13, "provider": "openai"},
+    {"file": "direct.py", "line": 17, "provider": "openai"},
+    {"file": "direct.py", "line": 21, "provider": "openai"},
+    {"file": "direct.py", "line": 25, "provider": "openai"},
+    {"file": "direct.py", "line": 30, "provider": "anthropic"},
+    {"file": "direct.py", "line": 34, "provider": "openai"},
+    {"file": "direct.py", "line": 38, "provider": "openai"},
+    {"file": "direct.py", "line": 42, "provider": "openai"},
+    {"file": "frameworks.py", "line": 14, "provider": "openai"},
+    {"file": "frameworks.py", "line": 15, "provider": "openai"},
+    {"file": "frameworks.py", "line": 16, "provider": "anthropic"},
+    {"file": "frameworks.py", "line": 17, "provider": "google-ai"},
+    {"file": "frameworks.py", "line": 18, "provider": "aws-bedrock"},
+    {"file": "frameworks.py", "line": 19, "provider": "ollama"},
+    {"file": "frameworks.py", "line": 20, "provider": "groq"},
+    {"file": "frameworks.py", "line": 21, "provider": "openai"},
+    {"file": "frameworks.py", "line": 22, "provider": "openai"},
+    {"file": "frameworks.py", "line": 23, "provider": "anthropic"},
+    {"file": "frameworks.py", "line": 24, "provider": "openai"},
+    {"file": "frameworks.py", "line": 25, "provider": "deepseek"},
+    {"file": "frameworks.py", "line": 26, "provider": "google-ai"},
+    {"file": "frameworks.py", "line": 30, "provider": "mistral"},
+    {"file": "frameworks.py", "line": 34, "provider": "openai"},
+    {"file": "frameworks.py", "line": 38, "provider": "unknown"},
+    {"file": "wrappers.py", "line": 9, "provider": "openai"},
+    {"file": "wrappers.py", "line": 13, "provider": "ollama"}
+  ]
+}

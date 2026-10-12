@@ -473,7 +473,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "guzzle": 7,
@@ -813,7 +813,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "laravel-http": 4,
@@ -1100,7 +1100,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "symfony-http": 4,
@@ -1210,6 +1210,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 13,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
       "provider": "openai",
@@ -1276,6 +1283,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 19,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "anthropic/claude-sonnet-4",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/api/v1/chat/completions",
       "provider": "openrouter",
@@ -1347,6 +1361,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 24,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "text-embedding-3-small",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/embeddings",
       "provider": "openai",
@@ -1443,6 +1464,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 30,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1/messages",
       "provider": "anthropic",
@@ -1484,6 +1512,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 35,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "path",
+        "values": [
+          "gemini-2.0-flash",
+        ],
+      },
       "optionsOpaque": false,
       "pathTemplate": "/v1beta/models/gemini-2.0-flash:generateContent",
       "provider": "google-ai",
@@ -2058,6 +2093,13 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
         "line": 19,
       },
       "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "anthropic.claude-3-haiku-20240307-v1:0",
+        ],
+      },
       "operationId": "InvokeModel",
       "optionsOpaque": false,
       "pathTemplate": "/model/{modelId}/invoke",
@@ -2631,7 +2673,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "sdk": 19,
@@ -2823,6 +2865,7 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
           "name": "apiKey",
           "origin": "env",
           "shape": {
+            "env": "CAL_KEY",
             "hint": "CAL_KEY",
             "type": "string",
           },
@@ -2862,6 +2905,7 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
       "queryShape": {
         "properties": {
           "apiKey": {
+            "env": "CAL_KEY",
             "hint": "CAL_KEY",
             "type": "string",
           },
@@ -3042,7 +3086,7 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "guzzle": 7,
@@ -3328,7 +3372,7 @@ exports[`php: curl, streams, PSR-18, WordPress > reads curl options, stream cont
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "stats": {
     "byClient": {
       "curl": 4,

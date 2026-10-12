@@ -1,0 +1,40 @@
+{
+  "$comment": "langchain-ollama: a local Ollama server unless `base_url` says otherwise.",
+  "package": "langchain-ollama",
+  "imports": [
+    "langchain_ollama"
+  ],
+  "provider": "ollama",
+  "host": "localhost:11434",
+  "auth": "none",
+  "generatedFrom": "manual (langchain-ollama: ChatOllama, OllamaLLM, OllamaEmbeddings)",
+  "methods": {
+    "ChatOllama": {
+      "method": "POST",
+      "path": "/api/chat",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    },
+    "OllamaLLM": {
+      "method": "POST",
+      "path": "/api/generate",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    },
+    "OllamaEmbeddings": {
+      "method": "POST",
+      "path": "/api/embed",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    }
+  }
+}
