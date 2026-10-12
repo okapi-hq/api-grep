@@ -41,7 +41,9 @@ export function toTable(report: Report): string {
     }
     const name = printable(c.provider);
     const provider = c.client === "sdk" ? `${name} ${pc.dim("sdk")}` : c.framework ? `${name} ${pc.dim(printable(c.framework))}` : name;
-    const target = printable(c.pathTemplate) + (c.via ? pc.dim(` (${printable(c.via)})`) : "");
+    // calls to one URL that name their operation elsewhere (JSON-RPC) differ by it
+    const operation = c.operation?.name ? ` ${printable(c.operation.name)}` : "";
+    const target = printable(c.pathTemplate) + operation + (c.via ? pc.dim(` (${printable(c.via)})`) : "");
     table.push([pc.dim(String(c.location.line)), printable(c.method), provider, target, shortShape(c), String(c.dynamic.length)]);
   }
   const s = report.stats;

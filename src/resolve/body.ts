@@ -3,6 +3,7 @@ import { constructedName, isUndefinedLiteral, unwrap } from "../ast/expr.js";
 import { bindingElementValue, declarationsOf, importedVariable, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
+import { stringShapeOf } from "./string-template.js";
 import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
 import { localReturn } from "./local-return.js";
@@ -22,10 +23,7 @@ export interface BodyResult {
 
 function literalToShape(u: Expression, ctx: EvalCtx, depth: number): Shape | undefined {
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u)) return { type: "string", enum: [u.getLiteralValue()] };
-  if (Node.isTemplateExpression(u)) {
-    const text = staticText(evaluate(u, ctx, depth));
-    return text !== undefined ? { type: "string", enum: [text] } : { type: "string" };
-  }
+  if (Node.isTemplateExpression(u)) return stringShapeOf(evaluate(u, ctx, depth));
   if (Node.isNumericLiteral(u)) {
     // getLiteralValue() reads `30_000` and `0x10`; Number(getText()) gives NaN for separators, which breaks the schema.
     const n = u.getLiteralValue();

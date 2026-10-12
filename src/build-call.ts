@@ -1,4 +1,4 @@
-import { assembleCall, type ResolvedCall } from "./assemble.js";
+import { assembleCalls, type ResolvedCall } from "./assemble.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
@@ -69,8 +69,8 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme };
 }
 
-/** Resolves a RawCall into the report's Call record. */
-export function buildCall(raw: RawCall, base: BuildCtx): Call {
+/** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
+export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
   const dynamic: DynamicPart[] = [];
   const { url, method } = resolveTarget(raw, ctx, dynamic);
@@ -82,7 +82,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call {
   const q = resolveQuery(raw.queryExpr, ctx);
   dynamic.push(...q.dynamic);
   const sdk = raw.sdk;
-  return assembleCall({
+  return assembleCalls({
     location: location(raw, base.rootDir),
     client: raw.client,
     sdk: sdk

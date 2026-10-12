@@ -34,6 +34,23 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > json-rpc 1`] = `
+[
+  "node.ts:4 rpc.example-chain.net POST / getTransaction",
+  "node.ts:12 rpc.example-chain.net POST / getBalance",
+  "node.ts:20 rpc.example-chain.net POST / getBalance (wrapper:rpc)",
+  "node.ts:21 rpc.example-chain.net POST / getSlot (wrapper:rpc)",
+  "node.ts:22 rpc.example-chain.net POST / getBlock (wrapper:rpc)",
+  "node.ts:25 rpc.example-chain.net POST / getBalance",
+  "node.ts:25 rpc.example-chain.net POST / getSlot",
+  "node.ts:36 rpc.example-chain.net POST / getTransaction",
+  "node.ts:43 rpc.example-chain.net POST / get{kind}Info",
+  "node.ts:47 internal POST / getblockcount",
+  "node.ts:52 api.example-pay.com POST /v1/payments",
+  "node.ts:56 relay.example-proxy.com POST /forward",
+]
+`;
+
 exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
 
 exports[`regression fixtures > multi-provider-site 1`] = `
@@ -51,6 +68,20 @@ exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
 
 exports[`regression fixtures > negatives/test-files 1`] = `[]`;
+
+exports[`regression fixtures > php/json-rpc 1`] = `
+[
+  "NodeClient.php:18 rpc.example-chain.net POST / getBlockHeight",
+  "NodeClient.php:23 rpc.example-chain.net POST / getSlot",
+  "NodeClient.php:28 rpc.example-chain.net POST / getSlot (wrapper:NodeClient.call)",
+  "NodeClient.php:33 rpc.example-chain.net POST / getSupply (wrapper:NodeClient.call)",
+  "NodeClient.php:38 rpc.example-chain.net POST / getHealth (wrapper:NodeClient.call)",
+  "NodeClient.php:43 rpc.example-chain.net POST / getBalance",
+  "NodeClient.php:43 rpc.example-chain.net POST / getSlot",
+  "NodeClient.php:52 rpc.example-chain.net POST / getTransaction",
+  "NodeClient.php:57 rpc.example-chain.net POST / get{kind}Info",
+]
+`;
 
 exports[`regression fixtures > php/negatives 1`] = `[]`;
 
@@ -173,6 +204,21 @@ exports[`regression fixtures > python/httpx/httpx2 1`] = `
 [
   "weather.py:8 api.example-weather.com GET /forecast",
   "weather.py:13 api.example-weather.com GET /alerts",
+]
+`;
+
+exports[`regression fixtures > python/json-rpc 1`] = `
+[
+  "node.py:9 eth.example-node.io POST / eth_getBalance",
+  "node.py:13 eth.example-node.io POST / eth_blockNumber",
+  "node.py:17 eth.example-node.io POST / eth_blockNumber (wrapper:rpc)",
+  "node.py:21 eth.example-node.io POST / eth_chainId (wrapper:rpc)",
+  "node.py:25 eth.example-node.io POST / eth_gasPrice (wrapper:rpc)",
+  "node.py:29 eth.example-node.io POST / eth_getBalance",
+  "node.py:29 eth.example-node.io POST / eth_blockNumber",
+  "node.py:37 eth.example-node.io POST / eth_getTransactionByHash",
+  "node.py:41 eth.example-node.io POST / {namespace}_syncing",
+  "node.py:46 api.example-pay.com POST /v1/payments",
 ]
 `;
 
