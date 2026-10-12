@@ -1,7 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { LANGUAGE_IDS } from "../lang/index.js";
-import { PROVIDERS } from "../normalize/provider.js";
 import { type Language, SCHEMA_VERSION } from "../report/schema.js";
 import { toolVersion } from "../version.js";
 import type { ServerConfig } from "./config.js";
@@ -117,8 +116,8 @@ function loopbackHost(header: string | undefined): boolean {
 }
 
 /**
- * The server's routes: `GET /v1/health` (open), `GET /v1/providers` and `POST /v1/scan` (bearer token). Without a
- * token it only answers requests addressed to localhost, so a web page cannot reach it through DNS rebinding.
+ * The server's routes: `GET /v1/health` (open) and `POST /v1/scan` (bearer token). Without a token it only
+ * answers requests addressed to localhost, so a web page cannot reach it through DNS rebinding.
  */
 export function createHandler(config: ServerConfig, scanner: Scanner, log: (line: string) => void): Handler {
   const state = { busy: false };
@@ -136,10 +135,6 @@ export function createHandler(config: ServerConfig, scanner: Scanner, log: (line
         return send(res, 200, JSON.stringify({ status: "ok", tool: "api-grep", version: toolVersion(), schemaVersion: SCHEMA_VERSION, busy: state.busy }));
       }
       if (!authorized(req, config.token)) throw new HttpError(401, "unauthorized", "missing or wrong bearer token", { "www-authenticate": "Bearer" });
-      if (url.pathname === "/v1/providers") {
-        allow(req, "GET");
-        return send(res, 200, JSON.stringify(PROVIDERS));
-      }
       if (url.pathname !== "/v1/scan") throw new HttpError(404, "not_found", "no such route");
       await scan(req, res, url.searchParams);
     } catch (err) {

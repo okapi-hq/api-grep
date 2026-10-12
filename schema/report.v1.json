@@ -97,15 +97,6 @@
           "type": "string",
           "description": "Provider id from `api-grep providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."
         },
-        "providerSource": {
-          "description": "sdk: the SDK registry. host: a known host. env-name: only the env var's name.",
-          "type": "string",
-          "enum": [
-            "sdk",
-            "host",
-            "env-name"
-          ]
-        },
         "host": {
           "description": "Host, possibly with placeholders (`{project}.supabase.co`). Absent when unknown.",
           "type": "string"

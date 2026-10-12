@@ -10,7 +10,7 @@ describe("javascript: Node", () => {
     expect(r.calls.every((c) => c.location.language === "javascript")).toBe(true);
     expect(at(r, "server.js", 10)).toMatchObject({ client: "sdk", provider: "stripe", pathTemplate: "/v1/checkout/sessions", sdk: { package: "stripe", version: "^14.0.0" } });
     expect(at(r, "server.js", 15)).toMatchObject({ client: "axios", provider: "github", host: "api.github.com", pathTemplate: "/users/{owner}/repos", query: ["per_page"] });
-    expect(at(r, "server.js", 20)).toMatchObject({ provider: "slack", providerSource: "env-name", envName: "SLACK_WEBHOOK_URL", bodyEncoding: "json" });
+    expect(at(r, "server.js", 20)).toMatchObject({ provider: "slack", envName: "SLACK_WEBHOOK_URL", bodyEncoding: "json" });
     expect(at(r, "worker.mjs", 6)).toMatchObject({ provider: "openai", pathTemplate: "/v1/chat/completions" });
     expect(r.diagnostics?.languages).toEqual({ javascript: { filesSeen: 4, filesScanned: 4 } });
     expect(r.coverage?.sdks.map((s) => `${s.package}:${s.status}`)).toEqual(["openai:ok", "stripe:ok"]);

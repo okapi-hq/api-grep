@@ -58,7 +58,7 @@ describe("sdk", () => {
   it("matches snapshot and key expectations", async () => {
     const r = await scanFixture("sdk");
     expect(r).toMatchSnapshot();
-    expect(r.calls.every((c) => c.client === "sdk" && c.providerSource === "sdk")).toBe(true);
+    expect(r.calls.every((c) => c.client === "sdk")).toBe(true);
     expect(at(r, "stripe-literal.ts", 6)).toMatchObject({ provider: "stripe", pathTemplate: "/v1/customers", operationId: "PostCustomers", bodyEncoding: "form" });
     expect(at(r, "stripe-typed.ts", 9)).toMatchObject({ bodyFromType: "CustomerCreateParams" });
     expect(Object.keys((at(r, "stripe-typed.ts", 9).body as { properties: object }).properties)).toContain("email");

@@ -79,7 +79,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
       "optionsOpaque": false,
       "pathTemplate": "/f/xyzabcd",
       "provider": "formspree",
-      "providerSource": "host",
       "query": [],
       "scheme": "https",
       "urlTemplate": "https://formspree.io/f/xyzabcd",
@@ -216,7 +215,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
       "optionsOpaque": false,
       "pathTemplate": "/rest/v1/todos",
       "provider": "supabase",
-      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -262,7 +260,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
       "optionsOpaque": false,
       "pathTemplate": "/users/{user}/repos",
       "provider": "github",
-      "providerSource": "host",
       "query": [],
       "scheme": "https",
       "urlTemplate": "https://api.github.com/users/{user}/repos",
@@ -301,7 +298,6 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
       "optionsOpaque": false,
       "pathTemplate": "/v1/forecast",
       "provider": "open-meteo",
-      "providerSource": "host",
       "query": [
         "latitude",
         "longitude",
@@ -465,7 +461,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "optionsOpaque": false,
       "pathTemplate": "/v1/checkout/sessions",
       "provider": "stripe",
-      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -520,7 +515,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "optionsOpaque": false,
       "pathTemplate": "/users/{owner}/repos",
       "provider": "github",
-      "providerSource": "host",
       "query": [
         "per_page",
       ],
@@ -600,7 +594,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "optionsOpaque": false,
       "pathTemplate": "/",
       "provider": "slack",
-      "providerSource": "env-name",
       "query": [],
       "urlTemplate": "{env:SLACK_WEBHOOK_URL}",
     },
@@ -686,7 +679,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "optionsOpaque": false,
       "pathTemplate": "/v1/chat/completions",
       "provider": "openai",
-      "providerSource": "sdk",
       "query": [],
       "scheme": "https",
       "sdk": {
@@ -741,7 +733,6 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "optionsOpaque": false,
       "pathTemplate": "/v1/forecast",
       "provider": "open-meteo",
-      "providerSource": "host",
       "query": [
         "latitude",
         "longitude",
@@ -961,7 +952,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
       "optionsOpaque": false,
       "pathTemplate": "/v3/forms/123/subscribe",
       "provider": "convertkit",
-      "providerSource": "host",
       "query": [],
       "scheme": "https",
       "urlTemplate": "https://api.convertkit.com/v3/forms/123/subscribe",
@@ -1070,7 +1060,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
       "optionsOpaque": false,
       "pathTemplate": "/v1_1/demo/image/upload",
       "provider": "cloudinary",
-      "providerSource": "host",
       "query": [],
       "scheme": "https",
       "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
@@ -1130,7 +1119,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
       "optionsOpaque": false,
       "pathTemplate": "/3/search/movie",
       "provider": "tmdb",
-      "providerSource": "host",
       "query": [
         "query",
         "api_key",
@@ -1194,7 +1182,6 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
       "optionsOpaque": false,
       "pathTemplate": "/repos/{repo}",
       "provider": "github",
-      "providerSource": "host",
       "query": [],
       "scheme": "https",
       "urlTemplate": "https://api.github.com/repos/{repo}",

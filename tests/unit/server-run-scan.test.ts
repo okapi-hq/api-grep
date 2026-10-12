@@ -28,7 +28,8 @@ const failure = (p: Promise<unknown>): Promise<HttpError> => p.then(() => Promis
 
 describe("runScan", () => {
   it("returns the report of a complete or partial scan", async () => {
-    expect((JSON.parse(await run("ok")) as { dir: string }).dir).toBe(path.join(root, "archive", "repo"));
+    // the fake echoes its environment, longer than 1 KB under a git hook
+    expect((JSON.parse(await run("ok", { maxReportBytes: 1024 * 1024 })) as { dir: string }).dir).toBe(path.join(root, "archive", "repo"));
     expect(await run("partial")).toBe("{}");
   });
 
