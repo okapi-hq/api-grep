@@ -13,6 +13,8 @@ const BY_EXTENSION: Record<string, Language> = {
   ".htm": "html",
   ".py": "python",
   ".php": "php",
+  ".kt": "kotlin",
+  ".kts": "kotlin",
 };
 
 /** Language of a source file from its extension; the scanner parses anything else it is given as TypeScript. */

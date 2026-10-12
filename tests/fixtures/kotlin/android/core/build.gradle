@@ -1,0 +1,11 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+def posthogVersion = '3.8.2'
+
+dependencies {
+    implementation "com.posthog:posthog:$posthogVersion"
+    api group: 'com.squareup.moshi', name: 'moshi', version: '1.15.1'
+    testImplementation 'junit:junit:4.13.2'
+}

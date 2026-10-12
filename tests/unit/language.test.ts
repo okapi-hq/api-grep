@@ -8,6 +8,8 @@ describe("languageOf", () => {
     expect(languageOf("lib/b.mjs")).toBe("javascript");
     expect(languageOf("api/client.py")).toBe("python");
     expect(languageOf("src/Http.php")).toBe("php");
+    expect(languageOf("app/src/main/java/Api.kt")).toBe("kotlin");
+    expect(languageOf("scripts/release.main.kts")).toBe("kotlin");
   });
 
   it("falls back to typescript, the language the scanner parses", () => {

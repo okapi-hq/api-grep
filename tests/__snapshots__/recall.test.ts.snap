@@ -34,6 +34,8 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
+
 exports[`regression fixtures > multi-provider-site 1`] = `
 [
   "models.ts:11 unknown GET /models",

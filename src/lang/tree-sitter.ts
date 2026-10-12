@@ -3,8 +3,9 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Language, Parser, type Node, type Tree } from "web-tree-sitter";
+import { GRAMMARS } from "./grammars.js";
 
-export type { Node as SyntaxNode, Tree } from "web-tree-sitter";
+export type { Node as SyntaxNode, Parser, Tree } from "web-tree-sitter";
 
 let init: Promise<void> | undefined;
 const grammars = new Map<string, Promise<Language>>();
@@ -20,7 +21,7 @@ function grammarPath(name: string): string {
   for (const dir of [path.join(here, "grammars"), path.join(here, "..", "grammars")]) {
     if (existsSync(path.join(dir, file))) return path.join(dir, file);
   }
-  return createRequire(import.meta.url).resolve(`tree-sitter-${name}/${file}`);
+  return createRequire(import.meta.url).resolve(`${GRAMMARS[name] ?? `tree-sitter-${name}`}/${file}`);
 }
 
 /** A parser for one grammar (`python`, `php`); the WebAssembly runtime and grammar load once, on first use. */
@@ -37,11 +38,16 @@ export async function parserFor(name: string): Promise<Parser> {
   return parser;
 }
 
-/** The first syntax error of a tree, as `syntax error at line N`; undefined when the file parsed cleanly. */
-export function syntaxError(tree: Tree): string | undefined {
+/**
+ * The first syntax error of a tree, as `syntax error at line N`; undefined when the file parsed cleanly. With
+ * `allowHidden`, a tree whose only errors are tokens the parser inserted and hides (no ERROR or MISSING node to point
+ * at) counts as parsed.
+ */
+export function syntaxError(tree: Tree, allowHidden = false): string | undefined {
   if (!tree.rootNode.hasError) return undefined;
   const bad = firstError(tree.rootNode);
-  return bad ? `syntax error at line ${bad.startPosition.row + 1}` : "syntax error";
+  if (bad) return `syntax error at line ${bad.startPosition.row + 1}`;
+  return allowHidden ? undefined : "syntax error";
 }
 
 function firstError(n: Node): Node | undefined {
