@@ -133,7 +133,6 @@ export const CallSchema = z
     provider: z
       .string()
       .describe("Provider id from `api-grep providers` (`stripe`), or `internal` (relative URL, localhost), `env:<NAME>` or `unknown`."),
-    providerSource: z.enum(["sdk", "host", "env-name"]).optional().describe("sdk: the SDK registry. host: a known host. env-name: only the env var's name."),
     host: z.string().optional().describe("Host, possibly with placeholders (`{project}.supabase.co`). Absent when unknown."),
     hostKind: z.enum(["literal", "const", "env", "relative", "unknown"]).describe("Where the host came from."),
     envName: z.string().optional().describe("Env var holding the base URL, when hostKind is env."),

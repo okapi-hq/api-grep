@@ -5,7 +5,7 @@ describe("provider resolution", () => {
   it("takes the provider from an env var's literal default and keeps the env var", async () => {
     const r = await scanFixture("resolve/env-default");
     expect(r).toMatchSnapshot();
-    expect(at(r, "llm.ts", 4)).toMatchObject({ provider: "langdock", providerSource: "host", hostKind: "env", envName: "LANGDOCK_BASE_URL", host: "api.langdock.com", pathTemplate: "/openai/eu/v1/chat/completions" });
+    expect(at(r, "llm.ts", 4)).toMatchObject({ provider: "langdock", hostKind: "env", envName: "LANGDOCK_BASE_URL", host: "api.langdock.com", pathTemplate: "/openai/eu/v1/chat/completions" });
     expect(at(r, "llm.ts", 4).examples[0]!.url).toBe("https://api.langdock.com/openai/eu/v1/chat/completions");
     expect(at(r, "llm.ts", 7)).toMatchObject({ provider: "elevenlabs", envName: "TTS_URL", pathTemplate: "/v1/voices" });
   });
@@ -13,12 +13,11 @@ describe("provider resolution", () => {
   it("takes the provider from the env var's name", async () => {
     const r = await scanFixture("resolve/env-name");
     expect(r).toMatchSnapshot();
-    expect(at(r, "clients.ts", 1)).toMatchObject({ provider: "openrouter", providerSource: "env-name", envName: "OPENROUTER_BASE_URL" });
-    expect(at(r, "clients.ts", 3)).toMatchObject({ provider: "supabase", providerSource: "env-name" });
-    expect(at(r, "clients.ts", 5)).toMatchObject({ provider: "slack", providerSource: "env-name" });
+    expect(at(r, "clients.ts", 1)).toMatchObject({ provider: "openrouter", envName: "OPENROUTER_BASE_URL" });
+    expect(at(r, "clients.ts", 3)).toMatchObject({ provider: "supabase" });
+    expect(at(r, "clients.ts", 5)).toMatchObject({ provider: "slack" });
     expect(at(r, "clients.ts", 8)).toMatchObject({ provider: "env:VITE_API_URL" });
     expect(at(r, "clients.ts", 9)).toMatchObject({ provider: "env:GITHUB_CALLBACK_URL" });
-    expect(at(r, "clients.ts", 1).providerSource).toBe("env-name");
   });
 
   it("follows local helpers that build the URL", async () => {

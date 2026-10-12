@@ -63,7 +63,7 @@ export function callId(loc: Call["location"], n = 0): string {
 
 /** The report's Call record: provider and id are decided here, the same way for every language. */
 export function assembleCall(r: ResolvedCall): Call {
-  const { provider, source: providerSource } = providerOf(r);
+  const { provider } = providerOf(r);
   const q = queryOf(r.url, r.query);
   const loc = r.location;
   return {
@@ -73,7 +73,6 @@ export function assembleCall(r: ResolvedCall): Call {
     sdk: r.sdk ? { package: r.sdk.package, version: r.sdk.version, chain: r.sdk.chain } : undefined,
     framework: r.framework,
     provider,
-    providerSource,
     host: r.url.host,
     hostKind: r.url.hostKind,
     envName: r.url.envName,

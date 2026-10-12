@@ -111,7 +111,7 @@ curl -X POST 'https://api.stripe.com/v1/customers' \
 
 `api-grep scan <dir> --json` (or `--out report.json`) writes one JSON document. It states facts
 about each call (what the code shows and where each part came from, such as `hostKind`,
-`providerSource`, `bodySource`, `optionsOpaque` and `dynamic`) and gives no score or verdict: any
+`bodySource`, `optionsOpaque` and `dynamic`) and gives no score or verdict: any
 judgement is left to the consumer. For the example above, with `--examples 1`, shown as YAML with
 one comment per field and the second call left out:
 
@@ -132,7 +132,6 @@ calls:                          # one entry per call, sorted by file, line, colu
     client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
-    providerSource: sdk         # sdk | host | env-name
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
     hostKind: literal           # literal | const | env | relative | unknown
     scheme: https
@@ -263,7 +262,6 @@ git archive --format=tar.gz --prefix=repo/ HEAD \
 | route | answer |
 |---|---|
 | `POST /v1/scan` | the report (`200`, a partial scan included) for the archive in the body. Query: `language` (as `--language`), `examples` (0 to 20). A `Server-Timing` header gives the unpack and scan times |
-| `GET /v1/providers` | the provider table, as `api-grep providers` prints it |
 | `GET /v1/health` | `status`, `version`, `schemaVersion` and whether a scan is running. The only route without the token |
 
 Errors are JSON, `{ "error": { "code", "message" } }`: `400` bad query, `401` missing or wrong token, `413` archive
@@ -422,7 +420,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `packages`; an exact host wins over the longest matching suffix). An env URL with a literal
   default (`process.env.X ?? "https://api.langdock.com/v1"`) keeps `envName` and takes the
   default's host and base path; with no value at all, the env var's name is used
-  (`OPENROUTER_BASE_URL` gives `openrouter`, `providerSource: "env-name"`). A
+  (`OPENROUTER_BASE_URL` gives `openrouter`). A
   host that still holds a placeholder never becomes a provider: it is `internal` (localhost),
   `env:<NAME>` or `unknown`, except a templated subdomain: of a provider listed by suffix it is
   that provider (`{instance}.my.salesforce.com` is `salesforce`), of any other domain the vendor's

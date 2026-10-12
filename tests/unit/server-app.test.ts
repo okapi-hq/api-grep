@@ -45,10 +45,8 @@ describe("routes", () => {
   });
 
   it("requires the bearer token everywhere else", async () => {
-    expect(await errorOf(await fetch(`${base}/v1/providers`))).toEqual({ status: 401, code: "unauthorized" });
-    expect((await fetch(`${base}/v1/providers`, { headers: { authorization: "Bearer wrong" } })).status).toBe(401);
-    const providers = (await (await fetch(`${base}/v1/providers`, { headers: auth })).json()) as { id: string }[];
-    expect(providers.some((p) => p.id === "stripe")).toBe(true);
+    expect(await errorOf(await fetch(`${base}/v1/scan`, { method: "POST" }))).toEqual({ status: 401, code: "unauthorized" });
+    expect((await fetch(`${base}/v1/scan`, { method: "POST", headers: { authorization: "Bearer wrong" } })).status).toBe(401);
   });
 
   it("answers 404 and 405 for unknown routes and methods", async () => {
