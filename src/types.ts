@@ -14,6 +14,8 @@ export type Subst = Map<ParameterDeclaration, Expression>;
 export interface EvalCtx {
   subst?: Subst;
   envHints?: Record<string, string>;
+  /** Reading a caller's argument for a parameter's values (`resolve/param-values.ts`): its own parameters are not followed up. */
+  callerLevel?: boolean;
 }
 
 export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "sdk" | "framework";

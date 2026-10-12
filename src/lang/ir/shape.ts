@@ -1,10 +1,12 @@
 import { isSafeKey } from "../../record-keys.js";
 import { staticText } from "../../resolve/parts.js";
+import { paramValues } from "../../resolve/param-shape.js";
 import { unionOf } from "../../resolve/shape-utils.js";
 import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
-import type { CallExpr, Entry, Expr, FunctionDef } from "./model.js";
+import type { CallExpr, Entry, Expr, FunctionDef, Param } from "./model.js";
+import { callerCtx, paramSources } from "./param-values.js";
 import { argFor, exprText } from "./model.js";
 import { classField, lookup } from "./project.js";
 import { withSubst, type IrCtx, type Subst } from "./raw.js";
@@ -105,10 +107,21 @@ function nameShape(e: Expr & { k: "name" }, fn: FunctionDef, ctx: IrCtx, depth: 
     const sub = ctx.subst?.get(b.param);
     if (sub) return shapeOf(sub.expr, sub.fn, ctx, depth + 1, dynamic);
     const typed = b.param.type ? typeShape(b.param.type, b.fn, ctx) : undefined;
-    if (typed) return { shape: withHint(typed, e.name), fromLiteral: false, origin: "param" };
-    return { shape: { type: "dynamic", origin: "param", hint: e.name.replace(/^\$/, "") }, fromLiteral: false, origin: "param" };
+    const unread: ShapeResult = typed
+      ? { shape: withHint(typed, e.name), fromLiteral: false, origin: "param" }
+      : { shape: { type: "dynamic", origin: "param", hint: e.name.replace(/^\$/, "") }, fromLiteral: false, origin: "param" };
+    return paramShape(b.param, b.fn, ctx, depth, unread);
   }
   return { shape: { type: "dynamic", origin: "unknown", hint: e.name.replace(/^\$/, "") }, fromLiteral: false, origin: "unknown" };
+}
+
+/** A parameter nobody substituted: the values its callers pass and its default, as alternatives (#39). */
+function paramShape(p: Param, fn: FunctionDef, ctx: IrCtx, depth: number, unread: ShapeResult): ShapeResult {
+  const found = paramSources(p, fn, ctx);
+  if (!found) return unread;
+  // the callers' own dynamic parts belong to them, not to this request
+  const results = found.sources.map((s) => shapeOf(s.expr, s.fn, callerCtx(ctx), depth + 1, []));
+  return paramValues(results, found.unread, unread);
 }
 
 function callShape(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {

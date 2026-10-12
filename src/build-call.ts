@@ -1,4 +1,4 @@
-import { assembleCall } from "./assemble.js";
+import { assembleCall, type ResolvedCall } from "./assemble.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
@@ -6,6 +6,7 @@ import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
+import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
@@ -52,18 +53,20 @@ function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { ur
   return { url, method: m.method };
 }
 
-function resolveAuth(raw: RawCall, ctx: EvalCtx): { names: string[]; values: Record<string, string | null>; authScheme: Call["authScheme"] } {
+function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   if (raw.sdk) return { names: [], values: {}, authScheme: raw.sdk.auth ?? "unknown" };
   const call = resolveHeaders(raw.headersExpr, ctx);
   for (const [k, v] of raw.headerPairs ?? []) {
     const name = staticText(evaluate(k, ctx));
-    if (name) addHeader(call, name, evaluate(v, ctx));
+    if (name) addHeader(call, name, evaluate(v, ctx), paramAlternatives(v, ctx));
   }
   const inst = resolveHeaders(raw.instanceHeadersExpr, ctx);
   const definite = (s: Call["authScheme"]): boolean => s !== "none" && s !== "unknown";
   const fromHeaders = definite(call.authScheme) ? call.authScheme : inst.authScheme !== "none" ? inst.authScheme : call.authScheme;
   const authScheme = definite(fromHeaders) || !raw.authHint ? fromHeaders : raw.authHint;
-  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, authScheme };
+  // a header the call sets replaces the instance's, alternatives included
+  const alternatives = { ...Object.fromEntries(Object.entries(inst.alternatives ?? {}).filter(([k]) => !(k in call.values))), ...call.alternatives };
+  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme };
 }
 
 /** Resolves a RawCall into the report's Call record. */

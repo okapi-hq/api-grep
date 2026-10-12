@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.6.0";
+export const SCHEMA_VERSION = "1.7.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -194,6 +194,12 @@ export const CallSchema = z
     queryShape: ShapeSchema.optional(),
     headers: z.array(z.string()).describe("Header names, lower case."),
     headerValues: z.record(z.string(), z.string().nullable()).default({}).describe("Literal header values; null for credentials and dynamic values."),
+    headerAlternatives: z
+      .record(z.string(), z.array(z.string()))
+      .optional()
+      .describe(
+        "Headers that can take several values, each with every literal value the code gives (a parameter's default and the arguments its callers pass). `headerValues` holds the first one, or null when some value cannot be read.",
+      ),
     authScheme: z.enum(["bearer", "apikey", "basic", "none", "unknown"]),
     body: ShapeSchema.optional(),
     bodyFromType: z.string().optional().describe("TypeScript type the body was read from."),

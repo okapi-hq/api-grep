@@ -85,6 +85,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `chain.ts` | what a callee is: `self.client.chat.completions.create` becomes `[openai, OpenAI(), chat, completions, create()]`, following variables, fields, typed parameters (`client: OpenAI`), factories (`def get_client(): return OpenAI()`), `with ... as`, `or` defaults and external base classes |
 | `evaluate.ts`, `format.ts` | string values as static / env / dynamic parts, like the TypeScript evaluator: constants across files, env defaults, `self.base_url` set in the constructor, parameter defaults, URL helpers and lambdas, fields of objects built in the project (`instance.ts`), literal `.replace()` |
 | `shape.ts`, `types.ts`, `request.ts` | body, query and header shapes: dict literals and spreads, serializers (`json.dumps`, `urlencode`), declared types (dataclass, TypedDict, pydantic models) |
+| `param-values.ts` | what a parameter no wrapper substituted can be: its callers' arguments (one level) and its default, see [#39](#a-parameters-values-39) |
 | `edits.ts` | keys a dict gets or loses after it is built (`kwargs["k"] = v`, `.update`, `$params['k'] = $v`): folded into the variable's value where it is read |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
@@ -285,6 +286,35 @@ becomes a call's arguments or body, the statements of the same function that run
   of another variable cannot be removed. In TypeScript, only `const` / `let` declarations initialized with a value of
   object shape are edited (not `fetch` init objects read key by key, such as `init.headers = ...`).
 
+## A parameter's values (#39)
+
+Wrappers keep their model and version settings in parameter defaults (`model="gpt-4o-mini"`, `max_tokens=1024`,
+`api_version="2024-06-01"`). When a body value, a model or a header value is a parameter of the enclosing function that
+no wrapper expansion substituted (the call as written in the wrapper's body), it is read from:
+
+- the literals its callers in the project pass, one level up (a caller's own parameter is not followed further);
+- its default, when some caller leaves it out or nothing in the project calls the function.
+
+The values merge as alternatives: `model.values` lists them all, a body value becomes an `enum` with every value, and
+`dynamic` is true when a caller passes something that cannot be read (that value adds the parameter's declared type or
+a dynamic shape next to the literal ones). At a caller, wrapper expansion already substitutes the argument, so each
+call site keeps its own single value.
+
+- **Headers.** `headerValues` keeps one value per header: the first, or null when one value cannot be read. A header
+  that can take several values also lists every literal one in `headerAlternatives` (schema 1.7.0). Credential headers
+  never list values.
+- **What counts.** Literal scalars, constants, env var defaults and class attributes (`model or self.default_model`
+  merges both); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
+  / `null` / `undefined` stand for "not given" and add no value.
+- **Callers.** Python and PHP: calls of the function or method (`self.f(...)`, `$this->f(...)`, a class call for its
+  constructor) found among the project's same-named calls (`src/lang/ir/param-values.ts`). TypeScript: the checker's
+  references to the function, the variable holding it, or the class it constructs (`src/resolve/param-values.ts`); a
+  function also passed as a value (`items.map(fetchOne)`) or called with a spread counts as unread. At most 20 callers
+  are read; past that, the rest count as unread.
+- **Not covered.** Callers outside the project (an exported library function) are not seen: with no caller in the
+  project the default alone is reported. Dataclass and TypeScript class field initializers were already read
+  (`self.model`, `this.model`); the values a constructor call gives a dataclass field are not merged with them.
+
 ## How the open issues apply to each language
 
 | issue | TypeScript / JavaScript / HTML | Python | PHP |
@@ -296,6 +326,7 @@ becomes a call's arguments or body, the statements of the same function that run
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` |
 | #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same |
+| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same |
 
 ## Adding a language
 

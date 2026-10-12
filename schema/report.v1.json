@@ -170,6 +170,19 @@
             ]
           }
         },
+        "headerAlternatives": {
+          "description": "Headers that can take several values, each with every literal value the code gives (a parameter's default and the arguments its callers pass). `headerValues` holds the first one, or null when some value cannot be read.",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
         "authScheme": {
           "type": "string",
           "enum": [
