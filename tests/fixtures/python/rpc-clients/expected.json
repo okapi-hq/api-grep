@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "node.py", "line": 14, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "node.py", "line": 18, "provider": "eth.example-node.io", "operation": "eth_getTransactionReceipt"},
+    {"file": "node.py", "line": 22, "provider": "env:NODE_URL", "operation": "eth_getTransactionCount"},
+    {"file": "node.py", "line": 26, "provider": "eth.example-node.io", "operation": "eth_feeHistory"},
+    {"file": "node.py", "line": 34, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "node.py", "line": 38, "provider": "rpc.example-chain.net", "operation": "getSignaturesForAddress"},
+    {"file": "node.py", "line": 43, "provider": "rpc.example-chain.net", "operation": "getLatestBlockhash"}
+  ]
+}

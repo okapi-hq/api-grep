@@ -291,13 +291,16 @@ original's URL, method and body;
   from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
   `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
   `RequestBody` class of the project writes its own bytes, so its body is opaque (`raw`, not its constructor fields).
+  `Credentials.basic(user, password)` is `Basic <credentials>`, so an `Authorization` header set to it (on the request
+  or in an interceptor, also through a variable) is basic auth (#69, `src/lang/jvm/http/bodies.ts`).
 - **Interceptors**: the headers and query parameters an interceptor sets (a lambda, `Interceptor { }`, an
   `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
   factories). They are in `query` / `headers` and `authScheme` like any other, and listed in `clientParts` with
   `from: "interceptor"`. Headers set on a response (`chain.proceed(...).newBuilder()`, `Response.Builder()`) and
   one-argument reads (`request.header("X")`) are not the request's. A header set in a branch of the interceptor
-  (`if (url.contains(...))`) is still listed for every call. `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
+  (`if (url.contains(...))`) is still listed for every call: the report has no way yet to mark a header optional
+  (#69). `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
   Retrofit reads the client of `.client(okHttp)` with it.
 - **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
   `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
@@ -335,8 +338,9 @@ original's URL, method and body;
 - **Retrofit** (`retrofit`, `retrofit.ts`, `retrofit-link.ts`): one call per annotated method of a service interface,
   at the method declaration: `@GET` ... `@OPTIONS` and `@HTTP(method, path, hasBody)`, `@Path` (the `{name}` stays a
   placeholder), `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers("Name: value")` (literal values in
-  `headerValues`), `@Body` (its declared type gives the shape, under `@SerializedName` / `@Json` / `@SerialName` /
-  `@JsonProperty` names), `@FormUrlEncoded` with `@Field` / `@FieldMap` (a form body), `@Multipart` with `@Part` /
+  `headerValues`; a line built from constants or a template, `"Accept: $ACCEPT_JSON"` or `"Accept: " + ACCEPT_JSON`, is
+  split at its first colon, and one whose name is not known leaves the headers unknown, #61), `@Body` (its declared
+  type gives the shape, under `@SerializedName` / `@Json` / `@SerialName` / `@JsonProperty` names), `@FormUrlEncoded` with `@Field` / `@FieldMap` (a form body), `@Multipart` with `@Part` /
   `@PartMap`, `@Url` (the URL is the argument). The base URL is the `baseUrl(...)` of the `Retrofit.Builder()` whose
   `create(Api::class.java)` or `create<Api>()` made the interface, followed through variables, fields, `by lazy`,
   factories and singletons set in their getter; an interface created by several builders gives one call per base URL.
@@ -413,6 +417,10 @@ original's URL, method and body;
   `mutableMapOf()` / `hashMapOf()` filled with `map["k"] = v` (#38: a key set in an `if` / `when` branch or a loop is
   optional), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data classes, `LinkedMultiValueMap` (form);
   `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
+- **Names from constants** (#61): a header or query name given by a member of a class or object holding a literal
+  (`header(CacheControl.SAVE, "1")`, `@Header(HeaderNames.TRACE)`, `@RequestHeader(TENANT)`: a `const val` of an
+  `object` or a companion object, a Java `static final`, also statically imported) is read in every client above, as
+  a literal name is (`tests/fixtures/kotlin/const-names/`, `tests/fixtures/java/const-names/`).
 
 **Clients a DI container provides** (#46, `src/lang/jvm/di/`, the language's `injection`): a parameter or field
 nothing in the code sets gets the value of the binding a container gives it, so a client injected by its type keeps
@@ -684,11 +692,12 @@ operation?: {
   per protocol, for the operations of the resolved request (method, URL, body shape, headers, query), so every
   language gets them from what it already resolves; a front end that knows better sets `ResolvedCall.operation`
   itself and is kept as it is. SDK calls are left out (their registry names the endpoint), except a method whose
-  registry entry names the argument holding a GraphQL document (`documentArg`).
+  registry entry names the argument holding a GraphQL document (`documentArg`), and a JSON-RPC client library's
+  method, whose front end sets the RPC method it sends (`rpc` / `rpcArg`, #52).
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects, properties and vendor providers #78 |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay, Shopify and `sgqlc` #67; bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
@@ -711,9 +720,38 @@ one-value enum:
   each caller's literal `method` into the body, so `rpc("getBalance", [address])` is a call at the caller with the
   operation `getBalance`; the request inside the helper lists every method its callers pass as `alternatives`.
 - `params` keeps its shape as before: positional `params` an array, named `params` an object with its properties.
-- **Not covered**: RPC client libraries that hide the envelope (`@solana/web3.js`, viem, ethers, web3.py,
-  solana-py) map a client method to an RPC method and need registries of their own (#52); JSON builders that are not
-  literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP clients (#32).
+- **Client libraries** (#52) hide the envelope: registries of the `json-rpc` provider (`anyHost`, as for GraphQL
+  clients: a call's provider is the one its URL names) map each client method to the RPC method it sends, `rpc` in
+  the registry, which is the call's `operation` (`from: body`): `getParsedTransaction` sends `getTransaction`,
+  `readContract` `eth_call`; a method that sends one of several (a block by number or by hash, a write signed locally
+  or by the node) lists them, giving `alternatives`. A generic transport method names the argument holding the method
+  (`rpcArg`: ethers `send(method, params)`, viem `request({ method, params })`, web3.py `provider.make_request`),
+  read like a body's `method`, also through a helper's callers. `src/detect/registry/solana-web3.json` (also
+  `@solana/kit`: `createSolanaRpc(url).getBalance(a).send()`, reported at the method call), `viem.json`,
+  `ethers.json`, `web3.json`, `src/lang/python/registry/web3.json` and `solana.json`. The method is `POST`, the path
+  the URL's; the body is the method's options object when it takes one (viem), else none (positional arguments are
+  mapped to `params` by each library).
+  - **Endpoint**: the client's URL (`new Connection(url)`, `new JsonRpcProvider(url)`, `createSolanaRpc(url)`, `new
+    Web3(url)`, solana-py `Client(url)`), or the HTTP transport handed to it (viem `transport: http(url)`, one of a
+    `fallback([...])` or several, which leaves the host unknown; `new Web3(new HttpProvider(url))`; web3.py
+    `Web3(HTTPProvider(url))`). `clusterApiUrl("devnet")` reads as `https://api.devnet.solana.com`
+    (`src/resolve/library-urls.ts`).
+  - **HTTP only** (`src/detect/rpc-endpoint.ts`): these libraries also talk to a browser wallet (`new
+    BrowserProvider(window.ethereum)`, v5 `Web3Provider`, viem `custom(window.ethereum)`, `new Web3(window.ethereum)`
+    or `Web3.givenProvider`) and over sockets (`WebSocketProvider`, `webSocket()`, `IPCProvider`), which are no HTTP
+    request of the app. `endpoint.nonHttp` lists those constructions; a call is reported only when its client reads as
+    HTTP: a client whose transport is one of them, or is not readable, or `new Web3(x)` with an `x` that is not a URL
+    string, gives no call. In Python, a client built with no provider (`Web3()` looks for a local socket first) or a
+    socket provider gives none, an unreadable provider an unknown host.
+  - **A call that names no client** (a typed parameter, `endpoint.types` such as `Provider` or `PublicClient`; a
+    receiver of another type, `token: Contract`, is not one) uses the project's client when it builds exactly one,
+    else an unknown host; it gives no call when the project builds a wallet or socket client of that library, or no
+    client at all while the library has wallet clients (TypeScript; Python keeps such calls with an unknown host).
+  - Not covered yet: contract objects (`new ethers.Contract(...).balanceOf()`, `w3.eth.contract(...).functions.x().call()`,
+    `eth_call` behind ABI-defined names), web3.py properties (`w3.eth.block_number`), ethers' vendor providers
+    (`InfuraProvider`, `AlchemyProvider`), wagmi, and `@solana/spl-token` helpers (#78).
+- **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
+  clients (#32).
 
 ### GraphQL (#35)
 
@@ -951,7 +989,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 

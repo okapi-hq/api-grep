@@ -1,0 +1,39 @@
+{
+  "$comment": "web3.js v1 and v4 (#52): `new Web3(url)` and `new Web3(new HttpProvider(url))` send JSON-RPC over HTTP; `new Web3(window.ethereum)` or `Web3.givenProvider` talk to the wallet, and a WebSocket or IPC provider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire.",
+  "package": "web3",
+  "provider": "json-rpc",
+  "host": "{rpcEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against web3 1.10 and 4.16)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["Web3", "default"] },
+  "endpoint": {
+    "clients": {
+      "Web3": { "url": "0", "transport": "0" },
+      "default": { "url": "0", "transport": "0" }
+    },
+    "transports": { "HttpProvider": { "url": "0", "headers": "1.headers" } },
+    "nonHttp": ["WebsocketProvider", "IpcProvider"],
+    "types": ["Web3"]
+  },
+  "methods": {
+    "eth.call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
+    "eth.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },
+    "eth.getAccounts": { "method": "POST", "path": "", "rpc": "eth_accounts" },
+    "eth.getBalance": { "method": "POST", "path": "", "rpc": "eth_getBalance" },
+    "eth.getBlock": { "method": "POST", "path": "", "rpc": ["eth_getBlockByNumber", "eth_getBlockByHash"] },
+    "eth.getBlockNumber": { "method": "POST", "path": "", "rpc": "eth_blockNumber" },
+    "eth.getChainId": { "method": "POST", "path": "", "rpc": "eth_chainId" },
+    "eth.getCode": { "method": "POST", "path": "", "rpc": "eth_getCode" },
+    "eth.getFeeHistory": { "method": "POST", "path": "", "rpc": "eth_feeHistory" },
+    "eth.getGasPrice": { "method": "POST", "path": "", "rpc": "eth_gasPrice" },
+    "eth.getPastLogs": { "method": "POST", "path": "", "rpc": "eth_getLogs", "bodyArg": 0 },
+    "eth.getStorageAt": { "method": "POST", "path": "", "rpc": "eth_getStorageAt" },
+    "eth.getTransaction": { "method": "POST", "path": "", "rpc": "eth_getTransactionByHash" },
+    "eth.getTransactionCount": { "method": "POST", "path": "", "rpc": "eth_getTransactionCount" },
+    "eth.getTransactionReceipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "eth.net.getId": { "method": "POST", "path": "", "rpc": "net_version" },
+    "eth.sendSignedTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
+    "eth.sendTransaction": { "method": "POST", "path": "", "rpc": ["eth_sendTransaction", "eth_sendRawTransaction"], "bodyArg": 0 }
+  }
+}

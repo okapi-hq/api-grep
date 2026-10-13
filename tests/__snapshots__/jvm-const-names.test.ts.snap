@@ -1,0 +1,581 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`jvm: header and query names from constants (#61) > reads Java static final members, static imports and concatenated @Headers lines 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "dynamic": [
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "hint": "page",
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "x-client": "ledger-android",
+            "x-trace-id": "<x-trace-id>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "3",
+          },
+          "url": "https://ledger.example.com/v2/entries?page=3",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "x-client": "ledger-android",
+        "x-trace-id": null,
+      },
+      "headers": [
+        "accept",
+        "x-client",
+        "x-trace-id",
+      ],
+      "host": "ledger.example.com",
+      "hostKind": "literal",
+      "id": "4c553a491dea",
+      "location": {
+        "col": 5,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/entries",
+      "provider": "ledger.example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "hint": "page",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://ledger.example.com/v2/entries",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "hint": "page",
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "<x-tenant>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "2",
+          },
+          "url": "https://balances.example.com/v1/balances?page=2",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": null,
+      },
+      "headers": [
+        "x-tenant",
+      ],
+      "host": "balances.example.com",
+      "hostKind": "literal",
+      "id": "8b11f5885061",
+      "location": {
+        "col": 5,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 29,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/balances",
+      "provider": "balances.example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "hint": "page",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://balances.example.com/v1/balances",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "origin": "unknown",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "unknown",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "body",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-tenant": "main",
+            "x-trace-id": "<x-trace-id>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://ledger.example.com/v2/entries/sj6alxkv/close",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "main",
+        "x-trace-id": null,
+      },
+      "headers": [
+        "x-trace-id",
+        "x-tenant",
+      ],
+      "host": "ledger.example.com",
+      "hostKind": "literal",
+      "id": "c6c6c486c23f",
+      "location": {
+        "col": 9,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 44,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/entries/{id}/close",
+      "provider": "ledger.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://ledger.example.com/v2/entries/{id}/close",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "feign": 1,
+      "okhttp": 1,
+      "retrofit": 1,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "java": 3,
+    },
+    "byProvider": {
+      "balances.example.com": 1,
+      "ledger.example.com": 2,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`jvm: header and query names from constants (#61) > reads Kotlin const val members and @Headers lines with templates 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "dynamic": [
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "hint": "page",
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "x-client": "shelf-android",
+            "x-save-data": "<x-save-data>",
+            "x-trace-id": "<x-trace-id>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "1",
+          },
+          "url": "https://shelf.example.com/v1/items?page=1",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "x-client": "shelf-android",
+        "x-save-data": null,
+        "x-trace-id": null,
+      },
+      "headers": [
+        "accept",
+        "x-client",
+        "x-save-data",
+        "x-trace-id",
+      ],
+      "host": "shelf.example.com",
+      "hostKind": "literal",
+      "id": "a96b0c072ea4",
+      "location": {
+        "col": 5,
+        "file": "Shelf.kt",
+        "language": "kotlin",
+        "line": 17,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "shelf.example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "hint": "page",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://shelf.example.com/v1/items",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://shelf.example.com/v1/me",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "shelf.example.com",
+      "hostKind": "literal",
+      "id": "9421bdf378d5",
+      "location": {
+        "col": 5,
+        "file": "Shelf.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/me",
+      "provider": "shelf.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://shelf.example.com/v1/me",
+    },
+    {
+      "authScheme": "unknown",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://shelf.example.com/v1/ping",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "shelf.example.com",
+      "hostKind": "literal",
+      "id": "215f96710a63",
+      "location": {
+        "col": 5,
+        "file": "Shelf.kt",
+        "language": "kotlin",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/ping",
+      "provider": "shelf.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://shelf.example.com/v1/ping",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-save-data": "1",
+            "x-trace-id": "<x-trace-id>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://shelf.example.com/v1/items/1blqp8j5/save",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-save-data": "1",
+        "x-trace-id": null,
+      },
+      "headers": [
+        "x-save-data",
+        "x-trace-id",
+      ],
+      "host": "shelf.example.com",
+      "hostKind": "literal",
+      "id": "6d1616700e28",
+      "location": {
+        "col": 9,
+        "file": "Shelf.kt",
+        "language": "kotlin",
+        "line": 41,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}/save",
+      "provider": "shelf.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://shelf.example.com/v1/items/{id}/save",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "hint": "page",
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "<x-tenant>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "0",
+          },
+          "url": "https://stock.example.com/v1/stock?page=0",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": null,
+      },
+      "headers": [
+        "x-tenant",
+      ],
+      "host": "stock.example.com",
+      "hostKind": "literal",
+      "id": "6fa2e950e9dc",
+      "location": {
+        "col": 5,
+        "file": "Shelf.kt",
+        "language": "kotlin",
+        "line": 47,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/stock",
+      "provider": "stock.example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "hint": "page",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://stock.example.com/v1/stock",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "feign": 1,
+      "okhttp": 1,
+      "retrofit": 3,
+    },
+    "byHostKind": {
+      "literal": 5,
+    },
+    "byLanguage": {
+      "kotlin": 5,
+    },
+    "byProvider": {
+      "shelf.example.com": 4,
+      "stock.example.com": 1,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

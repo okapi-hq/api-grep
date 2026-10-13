@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "ledger.ts", "line": 6, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "ledger.ts", "line": 10, "provider": "rpc.example-chain.net", "operation": "getTransaction"},
+    {"file": "ledger.ts", "line": 14, "provider": "rpc.example-chain.net", "operation": "getSignaturesForAddress"},
+    {"file": "ledger.ts", "line": 18, "provider": "rpc.example-chain.net", "operation": "sendTransaction"},
+    {"file": "ledger.ts", "line": 22, "provider": "rpc.example-chain.net", "operation": "getSlot"}
+  ]
+}

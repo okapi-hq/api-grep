@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "node.ts", "line": 8, "provider": "env:ETH_NODE_URL", "operation": "eth_getBalance"},
+    {"file": "node.ts", "line": 12, "provider": "env:ETH_NODE_URL", "operation": "eth_getTransactionReceipt"},
+    {"file": "node.ts", "line": 16, "provider": "env:ETH_NODE_URL", "operation": "eth_feeHistory"},
+    {"file": "node.ts", "line": 20, "provider": "archive.example-node.io", "operation": "eth_getBlockByNumber"}
+  ]
+}
