@@ -4,6 +4,7 @@ import type { Call, Language } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
+import { resolveReference } from "../../resolve/url-reference.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Part, UrlShape } from "../../types.js";
 import { argAt, argOf, propOf } from "./args.js";
@@ -33,11 +34,12 @@ function baseUrlParts(s: Scoped, ctx: IrCtx): Part[] {
   return bareHost ? [{ kind: "static", text: "https://" }, ...parts] : parts;
 }
 
-function resolveUrl(url: Scoped | undefined, base: Scoped | undefined, ctx: IrCtx): UrlShape {
+function resolveUrl(url: Scoped | undefined, base: Scoped | undefined, ctx: IrCtx, join?: IrRaw["urlJoin"]): UrlShape {
   if (!url && !base) return { hostKind: "unknown", pathTemplate: "/", query: [], queryShape: {}, dynamic: [{ where: "host", name: "url", origin: "unknown" }], raw: "" };
   const pathParts = url ? urlParts(url, ctx) : [];
   const baseParts = base ? urlParts(base, ctx) : [];
-  return partsToUrlShape(joinParts(baseParts, pathParts), { envHints: ctx.envHints });
+  const joined = join === "reference" ? resolveReference(baseParts, pathParts) : joinParts(baseParts, pathParts);
+  return partsToUrlShape(joined, { envHints: ctx.envHints });
 }
 
 const HTTP_METHOD = /^(?:get|post|put|patch|delete|head|options|trace)$/i;
@@ -118,7 +120,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
   const method = target?.method ?? resolveMethod(raw, ctx, dynamic);
   // an SDK call to a URL the client was built with (`WebhookClient(url).send(...)`) goes there
-  const url = target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx);
+  const url = target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
   dynamic.push(...url.dynamic);
   const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), ctx);
   if (raw.encoding && body.shape) body.encoding = raw.encoding;

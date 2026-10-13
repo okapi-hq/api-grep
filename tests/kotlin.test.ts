@@ -13,8 +13,12 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
 describe("kotlin: an Android project", () => {
   it("reads every source file, leaves build scripts and tests out, and compares the Maven SDKs with the calls", async () => {
     const r = await scanFixture("kotlin/android", { exclude: [] });
-    // no HTTP client or SDK registry is read yet
-    expect(r.calls).toEqual([]);
+    // the Retrofit interface, with the base URL its `create` gets from BuildConfig; no SDK registry is read yet
+    expect(r.calls.map((c) => [c.location.file, c.location.line, c.client, c.provider, c.urlTemplate])).toEqual([
+      ["app/src/main/java/com/example/forecast/data/ForecastApi.kt", 7, "retrofit", "open-meteo", "{env:FORECAST_URL}/v1/forecast"],
+    ]);
+    // `hourly` is left out by the only caller: its default is the value sent
+    expect(r.calls[0]).toMatchObject({ queryShape: { properties: { hourly: { type: "string", enum: ["temperature_2m"] } } } });
     expect(r.diagnostics).toMatchObject({ filesSeen: 6, filesScanned: 6, skipped: [], unfollowed: [], languages: { kotlin: { filesSeen: 6, filesScanned: 6 } }, complete: true });
     expect(r.coverage?.sdks.map((s) => [s.package, s.ecosystem, s.provider, s.status, s.importSites])).toEqual([
       ["com.google.firebase:firebase-firestore", "maven", "firebase", "unsupported", 1],

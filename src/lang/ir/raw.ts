@@ -70,6 +70,8 @@ export interface IrRaw {
   client: ClientKind;
   url?: Scoped;
   baseUrl?: Scoped;
+  /** `reference`: the URL is a reference resolved against the base by RFC 3986 (Retrofit), not appended to it. */
+  urlJoin?: "reference";
   method?: Scoped;
   impliedMethod?: string;
   body?: Scoped;

@@ -1,10 +1,13 @@
 import type { Arg, CallExpr, Expr } from "../ir/model.js";
 import { buildConfigValue } from "../jvm/build-config.js";
-import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { field, named as namedNodes, type SyntaxNode } from "../tree-sitter.js";
 import { isEnvMap, special } from "./calls.js";
 import { hook, nameRef, posOf, type KtState } from "./state.js";
 import { charValue, numberValue, shortTemplate, unescapeKotlin } from "./strings.js";
 import { classRef, lowerType } from "./types.js";
+
+/** Named children but comments, which can sit anywhere in an expression (`.baseUrl(url) // why` in a builder chain). */
+const named = (n: SyntaxNode): SyntaxNode[] => namedNodes(n).filter((c) => !c.type.endsWith("comment"));
 
 const unknown = (n: SyntaxNode): Expr => ({ k: "unknown", text: n.text.slice(0, 80), pos: posOf(n) });
 
@@ -68,7 +71,7 @@ function lowerNavigation(n: SyntaxNode, st: KtState): Expr {
 export function lowerArgs(n: SyntaxNode | undefined, st: KtState): Arg[] {
   return (n ? named(n) : []).flatMap((a): Arg[] => {
     if (a.type !== "value_argument") return [];
-    const kids = named(a).filter((c) => !c.type.endsWith("comment"));
+    const kids = named(a);
     const value = kids[kids.length - 1];
     if (!value) return [];
     if (value.type === "spread_expression") return [{ value: lowerExpr(named(value)[0] ?? value, st), spread: "list" }];
@@ -93,7 +96,9 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   const pos = posOf(n);
   const value = special(fn, args, lambda, pos);
   if (value) return value;
-  const call: CallExpr = { k: "call", fn, args, pos };
+  const targs = kids.find((c) => c.type === "type_arguments");
+  const typeArgs = targs ? named(targs).flatMap((p) => lowerType(named(p).find((c) => c.type !== "variance_modifier")).type ?? []) : [];
+  const call: CallExpr = { k: "call", fn, args, pos, ...(typeArgs.length ? { typeArgs } : {}) };
   st.fn.calls.push(call);
   return call;
 }
@@ -118,7 +123,7 @@ const leaves = (n: SyntaxNode): boolean => n.type === "return_expression" || n.t
 function lowerIf(n: SyntaxNode, st: KtState): Expr {
   const cond = field(n, "condition");
   if (cond) lowerExpr(cond, st);
-  const [then, alt] = named(n).filter((c) => c.id !== cond?.id && !c.type.endsWith("comment"));
+  const [then, alt] = named(n).filter((c) => c.id !== cond?.id);
   const a = then ? hook("statement")(then, st) : unknown(n);
   const b = alt ? hook("statement")(alt, st) : ({ k: "null" } as Expr);
   return { k: "cond", then: a, else: b };
@@ -166,7 +171,7 @@ const PASSTHROUGH = new Set(["parenthesized_expression", "labeled_expression", "
 
 /** Wrappers are their value (`(x)`, `x as T`, `x!!`); anything else still has its calls recorded. */
 function lowerOther(n: SyntaxNode, st: KtState): Expr {
-  const kids = named(n).filter((c) => !c.type.endsWith("comment") && c.type !== "label" && c.type !== "annotation");
+  const kids = named(n).filter((c) => c.type !== "label" && c.type !== "annotation");
   if (PASSTHROUGH.has(n.type) && kids.length > 0) return lowerExpr(kids[kids.length - 1]!, st);
   if (n.type === "as_expression" && field(n, "left")) return lowerExpr(field(n, "left")!, st);
   if (n.type === "unary_expression" && field(n, "operator")?.text === "!!" && field(n, "argument")) return lowerExpr(field(n, "argument")!, st);

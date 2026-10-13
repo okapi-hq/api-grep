@@ -2,7 +2,7 @@ import type { ClientKind, Ecosystem, Language } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding, MethodSpec, RegistryEntry } from "../../types.js";
 import type { SyntaxNode } from "../tree-sitter.js";
 import type { Chain } from "./chain.js";
-import type { CallExpr, Expr, FunctionDef, ModuleModel } from "./model.js";
+import type { CallExpr, ClassDef, Expr, FunctionDef, ModuleModel } from "./model.js";
 import type { IrCtx, IrRaw } from "./raw.js";
 
 /** An expression with the function it is written in: names are looked up there. */
@@ -177,6 +177,11 @@ export interface IrLanguage {
   constants?: Record<string, string>;
   /** A call that stands for another expression of the project (Laravel `config('services.x.url')`: an entry of `config/services.php`). */
   resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
+  /**
+   * A call that returns an instance of a project class it names (`retrofit.create(Api::class.java)`,
+   * `create<Api>()`): the value's members are that class's methods, so their callers are known.
+   */
+  instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number) => ClassDef | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

@@ -12,8 +12,8 @@ headers, auth scheme, and a `dynamic` list of what could not be known statically
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
 checker, and Python, PHP and Kotlin through tree-sitter; a repository that mixes languages gets one
 report that says which language each call comes from. Kotlin's HTTP clients are read (OkHttp,
-`java.net.http`, Ktor, Spring, Feign) and its Gradle and Maven manifests list the JVM SDKs a project
-uses; Retrofit and the JVM SDK calls come next.
+`java.net.http`, Ktor, Spring, Feign, Retrofit) and its Gradle and Maven manifests list the JVM SDKs
+a project uses; the JVM SDK calls come next.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
@@ -131,7 +131,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | html | python | php | kotlin
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign (Kotlin), sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit (Kotlin), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -463,11 +463,12 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 | Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, the client's `defaultRequest { url(...); header(...) }` |
 | Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity`, `UriComponentsBuilder` URLs), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl` and `defaultHeader` of their builder |
 | OpenFeign | `@FeignClient(url = "\${x:default}")` interfaces with `@GetMapping` / `@PostMapping` / `@RequestMapping`, `@RequestParam`, `@RequestHeader`, `@RequestBody`, `@SpringQueryMap`; Feign `@RequestLine` / `@Headers` interfaces given to `Feign.builder().target(...)`; one call per method, at its declaration |
+| Retrofit | service interfaces (`@GET` ... `@OPTIONS`, `@HTTP`, `@Path`, `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers`, `@Body`, `@FormUrlEncoded` with `@Field` / `@FieldMap`, `@Multipart` with `@Part` / `@PartMap`, `@Url`), one call per method at its declaration, resolved against the `baseUrl(...)` of the `Retrofit.Builder()` whose `create(Api::class.java)` / `create<Api>()` made it (one call per base URL), as Retrofit resolves it (a leading `/` replaces the base path, the base's query string is dropped); the interceptors of `.client(okHttp)`; the converters choose the body encoding |
 
 JSON bodies come from `JSONObject().put(...)` chains, `mapOf(...)` serialized by Gson, Moshi,
 Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiValueMap` and the
-content type. Retrofit (#31) and the JVM SDK registries (#33) come next; Java (#43) will share these
-clients, which read the engine's model only. The Gradle and Maven manifests are read, so
+content type. The JVM SDK registries (#33) come next; Java (#43) will share these clients, which read
+the engine's model only. The Gradle and Maven manifests are read, so
 `coverage.sdks` lists the JVM SDKs a project declares (`ecosystem: "maven"`).
 
 Values are resolved through string templates, `+`, `buildString`, `String.format`,
@@ -648,8 +649,10 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: Retrofit and the JVM SDKs are not read yet; a client injected by a DI framework (Hilt,
-  Spring) is known by its type only, so its interceptors and base URL are not followed (#46). The
+- Kotlin: the JVM SDKs are not read yet; a client injected by a DI framework (Hilt, Spring) is
+  known by its type only, so its interceptors and base URL are not followed (#46): a Retrofit
+  interface created on an injected `Retrofit` gets the project's only Retrofit builder, else an
+  unknown host. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java is not read yet ([docs/languages.md](docs/languages.md#kotlin)).

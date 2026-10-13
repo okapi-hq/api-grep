@@ -51,6 +51,24 @@ export interface FeignTables {
   targets: string[];
 }
 
+export interface RetrofitTables {
+  annotations: string[];
+  verbs: Record<string, string>;
+  headers: string;
+  form: string;
+  multipart: string;
+  params: Record<string, "path" | "query" | "queryMap" | "queryName" | "header" | "headers" | "body" | "field" | "fieldMap" | "part" | "partMap" | "url">;
+  builders: string[];
+  creates: string[];
+  baseUrl: string[];
+  client: string[];
+  converter: string[];
+  /** Converter factories and what they write: `scalars` writes strings and primitives as text, other types go on. */
+  converters: Record<string, BodyEncoding | "scalars">;
+  scalars: string[];
+  rawBodies: string[];
+}
+
 export interface JvmTables {
   okhttp: BuiltRequestClient;
   javaHttp: BuiltRequestClient;
@@ -64,6 +82,7 @@ export interface JvmTables {
   restTemplate: ClientSpec;
   entities: string[];
   feign: FeignTables;
+  retrofit: RetrofitTables;
   fluentMaps: FluentMapSpec[];
   /** Classes of these clients a wildcard import (`import io.ktor.client.*`) stands for. */
   wildcardTypes: string[];

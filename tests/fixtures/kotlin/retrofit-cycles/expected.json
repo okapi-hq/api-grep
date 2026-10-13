@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/31",
+  "calls": [
+    {"file": "Loop.kt", "line": 7, "provider": "api.example-loop.com"}
+  ]
+}
