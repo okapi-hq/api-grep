@@ -129,6 +129,18 @@ export interface MethodSpec {
   rpcArg?: string;
   /** Called as the package's own function (viem/actions `getBalance(client, args)`), the call takes the client first. */
   clientFirst?: boolean;
+  /** An attribute read rather than a call (web3.py `w3.eth.block_number` sends `eth_blockNumber`, #78). */
+  property?: boolean;
+  /**
+   * A function of a contract object (#78), which the contract's ABI names (`*` in the key): `auto` sends `eth_call` for
+   * a view and a transaction otherwise, as the ABI and the runner tell (ethers `token.balanceOf(owner)`); `send` a
+   * transaction, as the runner tells (ethers v6 `token.transfer.send(...)`).
+   */
+  contract?: "auto" | "send";
+  /** Where the contract's construction takes its runner or client: `2` (ethers `new Contract(address, abi, runner)`), `0.client.public|0.client`. */
+  runnerArg?: string;
+  /** Where the contract's construction takes its ABI: `1` (ethers). */
+  abiArg?: string;
 }
 
 /** Where a GraphQL client or one of its transports takes its URL and headers: `0`, `0.uri`, `1.headers` (TypeScript). */
@@ -178,6 +190,8 @@ export interface RegistryEntry {
   routeByModel?: boolean;
   /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */
   endpoint?: EndpointSpec;
+  /** Members of a contract object (`connect`, `interface`): a `*` in a method key, a function of its ABI, is never one of them (#78). */
+  notFunctions?: string[];
 }
 
 export interface FrameworkKeys {
