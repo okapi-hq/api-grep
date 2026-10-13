@@ -334,8 +334,9 @@ original's URL, method and body;
 - **Retrofit** (`retrofit`, `retrofit.ts`, `retrofit-link.ts`): one call per annotated method of a service interface,
   at the method declaration: `@GET` ... `@OPTIONS` and `@HTTP(method, path, hasBody)`, `@Path` (the `{name}` stays a
   placeholder), `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers("Name: value")` (literal values in
-  `headerValues`), `@Body` (its declared type gives the shape, under `@SerializedName` / `@Json` / `@SerialName` /
-  `@JsonProperty` names), `@FormUrlEncoded` with `@Field` / `@FieldMap` (a form body), `@Multipart` with `@Part` /
+  `headerValues`; a line built from constants or a template, `"Accept: $ACCEPT_JSON"` or `"Accept: " + ACCEPT_JSON`, is
+  split at its first colon, and one whose name is not known leaves the headers unknown, #61), `@Body` (its declared
+  type gives the shape, under `@SerializedName` / `@Json` / `@SerialName` / `@JsonProperty` names), `@FormUrlEncoded` with `@Field` / `@FieldMap` (a form body), `@Multipart` with `@Part` /
   `@PartMap`, `@Url` (the URL is the argument). The base URL is the `baseUrl(...)` of the `Retrofit.Builder()` whose
   `create(Api::class.java)` or `create<Api>()` made the interface, followed through variables, fields, `by lazy`,
   factories and singletons set in their getter; an interface created by several builders gives one call per base URL.
@@ -412,6 +413,10 @@ original's URL, method and body;
   `mutableMapOf()` / `hashMapOf()` filled with `map["k"] = v` (#38: a key set in an `if` / `when` branch or a loop is
   optional), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data classes, `LinkedMultiValueMap` (form);
   `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
+- **Names from constants** (#61): a header or query name given by a member of a class or object holding a literal
+  (`header(CacheControl.SAVE, "1")`, `@Header(HeaderNames.TRACE)`, `@RequestHeader(TENANT)`: a `const val` of an
+  `object` or a companion object, a Java `static final`, also statically imported) is read in every client above, as
+  a literal name is (`tests/fixtures/kotlin/const-names/`, `tests/fixtures/java/const-names/`).
 
 **Clients a DI container provides** (#46, `src/lang/jvm/di/`, the language's `injection`): a parameter or field
 nothing in the code sets gets the value of the binding a container gives it, so a client injected by its type keeps
