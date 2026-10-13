@@ -833,9 +833,10 @@ document with the `graphql` package's parser (no schema, no network):
     a literal or returned by the function the compiler calls in place, gives the text of `params.text`; a persisted
     query (`text: null` and an `id`) gives the operation's name and type from `params`, its fields left out.
   - Not covered: `QueryRenderer` and the other container components (JSX, not calls), `loadQuery` and
-    `useQueryLoader` (the query is reported where `usePreloadedQuery` reads it), refetch and pagination of fragments.
+    `useQueryLoader` (the query is reported where `usePreloadedQuery` reads it), refetch and pagination of fragments
+    (#83).
 - **Shopify's clients** (#67) are clients of one provider: registries of the `shopify` provider (no host in
-  `providers.json`: raw calls to `{shop}.myshopify.com` keep the host's domain as their provider) with `documentArg`,
+  `providers.json`: raw calls to `{shop}.myshopify.com` keep the host's domain as their provider, #83) with `documentArg`,
   as Octokit's `graphql`, at `{shop}.myshopify.com` (the shop is the session's or the code's) and the path
   `/admin/api/{version}/graphql.json`, or `/api/{version}/graphql.json` for the Storefront API. The version is written
   in when the client is given one (`apiVersion: "2025-01"`), else `{version}` stays. The body is the variables.
@@ -851,7 +852,7 @@ document with the `graphql` package's parser (no schema, no network):
     typed parameter, is not matched); `shopify-api-node`: `graphql(document, variables)`.
   - Python `ShopifyAPI` (`src/lang/python/registry/shopify.json`): `shopify.GraphQL().execute(query, variables)`.
   - Not covered: Hydrogen's `storefront.query` (the client comes from the request's context), and the REST resources
-    of these libraries.
+    of these libraries, clients a project factory returns inside an object (#83).
 - **sgqlc** (#67, `src/lang/python/registry/sgqlc.json`): the endpoint is called directly
   (`HTTPEndpoint(url, base_headers)(document, variables)`, also `RequestsEndpoint`): the registry's key is `()`, the
   call of the instance, and the endpoint is the one the instance is built with. The document is text, or an
@@ -861,7 +862,7 @@ document with the `graphql` package's parser (no schema, no network):
   `.__fields__("a", "b")`; `__as__(Type)` is an inline fragment), written in GraphQL as sgqlc writes them (`created_at`
   is `createdAt`), at most 2,000 paths 32 deep. Selections a helper given the operation makes are not read: the field
   they hang under is a leaf. An endpoint the code receives as a parameter its callers do not give leaves the call
-  unreported.
+  unreported (#83).
 - **Bounds.** The document comes from a hostile repository: 100,000 characters, 50,000 parser tokens, 32 levels of
   selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
   code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
