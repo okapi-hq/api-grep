@@ -25,7 +25,11 @@ function transportSeg(s: Scoped, names: string[], ctx: IrCtx): Seg | undefined {
   return chain.root.kind === "external" && last?.call === d.expr && names.includes(last.name) ? last : undefined;
 }
 
-export function irEndpoint(m: IrSdkMatch, ctx: IrCtx): IrEndpoint {
+/**
+ * The endpoint of a GraphQL or JSON-RPC client call. Null for a JSON-RPC client built with no provider (web3.py's
+ * `Web3()` looks for a local socket first) or with one that is not HTTP (`WebsocketProvider`, `IPCProvider`, #52).
+ */
+export function irEndpoint(m: IrSdkMatch, ctx: IrCtx): IrEndpoint | null {
   const spec = m.entry.endpoint;
   if (!spec || m.spec.subscription) return {};
   const before = m.segs.slice(0, -1);
@@ -36,6 +40,7 @@ export function irEndpoint(m: IrSdkMatch, ctx: IrCtx): IrEndpoint {
     const own = read(seg, client, ctx);
     if (own.url) return own;
     const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
+    if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
     const transports = spec.transports ?? {};
     const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
     return t ? read(t, transports[t.name]!, ctx) : {};

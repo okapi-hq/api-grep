@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "accounts.ts", "line": 6, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "accounts.ts", "line": 11, "provider": "rpc.example-chain.net", "operation": "getEpochInfo"},
+    {"file": "accounts.ts", "line": 15, "provider": "rpc.example-chain.net", "operation": "getAccountInfo"}
+  ]
+}

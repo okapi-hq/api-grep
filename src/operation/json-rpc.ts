@@ -1,6 +1,6 @@
 import type { Operation } from "../report/schema.js";
 import type { BodyResult } from "../resolve/body.js";
-import type { Shape } from "../types.js";
+import type { MethodSpec, Shape } from "../types.js";
 import { namesOf } from "./names.js";
 
 /**
@@ -55,4 +55,18 @@ export function jsonRpcOperations(body: BodyResult): Operation[] {
   const ops = batchRequests(s.items).map((r) => operationOf(r, true));
   // the same method twice in one batch is one operation
   return ops.filter((op, i) => ops.findIndex((o) => o.name === op.name) === i);
+}
+
+/**
+ * The operation of a JSON-RPC client library's method (#52): the RPC method its registry names (`rpc`), or the one a
+ * generic transport method is given (`send(method, params)`: the shape of that argument). None for other SDK methods.
+ */
+export function rpcClientOperation(spec: MethodSpec, method: Shape | undefined): Operation | undefined {
+  if (spec.rpc !== undefined) {
+    const names = typeof spec.rpc === "string" ? [spec.rpc] : spec.rpc;
+    return { protocol: "json-rpc", name: names[0] ?? null, ...(names.length > 1 ? { alternatives: names } : {}), dynamic: false, from: "body" };
+  }
+  if (spec.rpcArg === undefined) return undefined;
+  const acc = method ? namesOf(method) : { names: [], dynamic: true };
+  return { protocol: "json-rpc", name: acc.names[0] ?? null, ...(acc.names.length > 1 ? { alternatives: acc.names } : {}), dynamic: acc.dynamic, from: "body" };
 }

@@ -90,7 +90,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   expands an entity). GraphQL client libraries (#54: Apollo, urql, graphql-request, Python `gql`) are registries with
   an `endpoint` (the URL and headers of the client or its one transport, else the project's one client:
   `src/detect/endpoint.ts`, `src/lang/ir/endpoint.ts`) under the `anyHost` provider `graphql`, so a call's provider
-  is the one its URL names.
+  is the one its URL names. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
+  method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
+  `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
+  (`src/detect/rpc-endpoint.ts`; `irEndpoint` returns null otherwise).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

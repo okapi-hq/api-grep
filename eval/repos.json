@@ -47,5 +47,9 @@
   { "name": "halo", "url": "https://github.com/halo-dev/halo.git", "language": "java" },
   { "name": "scribejava", "url": "https://github.com/scribejava/scribejava.git", "language": "java" },
   { "name": "docker-client", "url": "https://github.com/spotify/docker-client.git", "language": "java" },
-  { "name": "vertx-examples", "url": "https://github.com/vert-x3/vertx-examples.git", "language": "java" }
+  { "name": "vertx-examples", "url": "https://github.com/vert-x3/vertx-examples.git", "language": "java" },
+  { "name": "solana-explorer", "url": "https://github.com/solana-foundation/explorer.git" },
+  { "name": "grants-stack-indexer", "url": "https://github.com/gitcoinco/grants-stack-indexer.git" },
+  { "name": "aave-interface", "url": "https://github.com/aave/interface.git" },
+  { "name": "safe-eth-py", "url": "https://github.com/safe-global/safe-eth-py.git", "language": "python" }
 ]

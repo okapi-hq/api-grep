@@ -16,29 +16,29 @@ export interface Endpoint {
   headers?: Expression;
 }
 
-type Construction = CallExpression | NewExpression;
+export type Construction = CallExpression | NewExpression;
 
 /** Nodes visited while looking for a transport in a client's options, and identifier hops: bounds on hostile input. */
-const MAX_VISITS = 64;
-const MAX_DEPTH = 6;
+export const MAX_VISITS = 64;
+export const MAX_DEPTH = 6;
 
 /** `0`, `0.uri`, `0.fetchOptions.headers`: an argument, or a property of one. */
-function at(args: Expression[], where: string | undefined): Expression | undefined {
+export function at(args: Expression[], where: string | undefined): Expression | undefined {
   if (where === undefined) return undefined;
   const [idx, ...props] = where.split(".");
   return props.reduce<Expression | undefined>((e, prop) => getProp(e, prop), args[Number(idx)]);
 }
 
 /** `new HttpLink(...)`, `apollo.HttpLink(...)`: the name called; none for anything else (`f()()`, an IIFE). */
-function calledName(c: Construction): string | undefined {
+export function calledName(c: Construction): string | undefined {
   const mc = memberChain(c.getExpression());
   return mc.chain.at(-1) ?? (Node.isIdentifier(mc.root) ? mc.root.getText() : undefined);
 }
 
-const argsOf = (c: Construction): Expression[] => c.getArguments() as Expression[];
+export const argsOf = (c: Construction): Expression[] => c.getArguments() as Expression[];
 
 /** What a variable holds: its initializer, in this file or the one it is imported from. */
-function valueOf(e: Expression): Expression | undefined {
+export function valueOf(e: Expression): Expression | undefined {
   for (const decl of declarationsOf(e)) {
     const target = Node.isImportSpecifier(decl) || Node.isImportClause(decl) ? e.getSymbol()?.getAliasedSymbol()?.getDeclarations()[0] : decl;
     if (target && Node.isVariableDeclaration(target)) return target.getInitializer();
@@ -47,7 +47,7 @@ function valueOf(e: Expression): Expression | undefined {
 }
 
 /** Transport constructions reachable from a client option: through variables, arrays, `from([...])`, `a.concat(b)`, `split(...)`. */
-function transportsIn(e: Expression, names: Record<string, EndpointSource>, out: Set<Construction>, budget: { left: number }, depth: number): void {
+export function transportsIn(e: Expression, names: Record<string, EndpointSource>, out: Set<Construction>, budget: { left: number }, depth: number): void {
   if (--budget.left < 0 || depth > MAX_DEPTH) return;
   const u = unwrap(e);
   if (Node.isIdentifier(u)) {
@@ -75,7 +75,7 @@ function transportsIn(e: Expression, names: Record<string, EndpointSource>, out:
   for (const arg of argsOf(u)) transportsIn(arg, names, out, budget, depth + 1);
 }
 
-function fromTransport(c: Construction, spec: Record<string, EndpointSource>): Endpoint {
+export function fromTransport(c: Construction, spec: Record<string, EndpointSource>): Endpoint {
   const source = spec[calledName(c) ?? ""];
   return source ? { url: at(argsOf(c), source.url), headers: at(argsOf(c), source.headers) } : {};
 }
@@ -95,7 +95,7 @@ function fromClient(name: string, args: Expression[], reg: RegistryEntry): Endpo
 }
 
 /** The client construction an expression holds (`useQuery(DOC, { client: adminClient })`). */
-function constructionOf(e: Expression | undefined, reg: RegistryEntry, depth = 0): Construction | undefined {
+export function constructionOf(e: Expression | undefined, reg: RegistryEntry, depth = 0): Construction | undefined {
   if (!e || depth > MAX_DEPTH) return undefined;
   const u = unwrap(e);
   if (Node.isIdentifier(u)) return constructionOf(valueOf(u), reg, depth + 1);
@@ -103,7 +103,7 @@ function constructionOf(e: Expression | undefined, reg: RegistryEntry, depth = 0
   return Object.hasOwn(reg.endpoint?.clients ?? {}, calledName(u) ?? "") ? u : undefined;
 }
 
-const ofEntry = (pkg: string | undefined, reg: RegistryEntry): boolean =>
+export const ofEntry = (pkg: string | undefined, reg: RegistryEntry): boolean =>
   !!pkg && [reg.package, ...(reg.aliases ?? [])].some((p) => p === pkg || (p.endsWith("/*") && pkg.startsWith(p.slice(0, -1))));
 
 /** Every construction of the registry's clients and of transports from a package, with the endpoint each gives. */

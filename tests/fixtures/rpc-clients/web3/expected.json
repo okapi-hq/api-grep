@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "node.ts", "line": 7, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "node.ts", "line": 11, "provider": "eth.example-node.io", "operation": "eth_getTransactionCount"},
+    {"file": "node.ts", "line": 15, "provider": "eth.example-node.io", "operation": "eth_sendRawTransaction"}
+  ]
+}

@@ -120,6 +120,15 @@ export interface MethodSpec {
   clientArg?: string;
   /** Sent over the client's subscription transport (often a WebSocket of its own): its endpoint is not the client's URL. */
   subscription?: boolean;
+  /**
+   * JSON-RPC client libraries (#52): the RPC method the client method sends (`getParsedTransaction` sends
+   * `getTransaction`); a list when the library picks one of several (a block by number or by hash).
+   */
+  rpc?: string | string[];
+  /** Where a generic transport method takes the RPC method: `0` (`send(method, params)`), `0.method` (`request({ method })`). */
+  rpcArg?: string;
+  /** Called as the package's own function (viem/actions `getBalance(client, args)`), the call takes the client first. */
+  clientFirst?: boolean;
 }
 
 /** Where a GraphQL client or one of its transports takes its URL and headers: `0`, `0.uri`, `1.headers` (TypeScript). */
@@ -136,6 +145,13 @@ export interface EndpointSource {
 export interface EndpointSpec {
   clients: Record<string, EndpointSource & { transport?: string }>;
   transports?: Record<string, EndpointSource>;
+  /**
+   * JSON-RPC clients (#52) also talk to browser wallets and sockets: with this list, a call is reported only when its
+   * client reads as HTTP. It names the constructions that do not (`BrowserProvider`, viem's `custom`, `WebsocketProvider`).
+   */
+  nonHttp?: string[];
+  /** Types a client of the library is declared with (`JsonRpcProvider`, `PublicClient`): a call on another type is not one. */
+  types?: string[];
 }
 
 export interface RegistryEntry {

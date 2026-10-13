@@ -984,6 +984,18 @@ exports[`regression fixtures > python/resolve/string-replace 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/rpc-clients 1`] = `
+[
+  "node.py:14 eth.example-node.io POST / eth_getBalance",
+  "node.py:18 eth.example-node.io POST / eth_getTransactionReceipt",
+  "node.py:22 env:NODE_URL POST / eth_getTransactionCount",
+  "node.py:26 eth.example-node.io POST / eth_feeHistory",
+  "node.py:34 rpc.example-chain.net POST / getBalance",
+  "node.py:38 rpc.example-chain.net POST / getSignaturesForAddress",
+  "node.py:43 rpc.example-chain.net POST / getLatestBlockhash",
+]
+`;
+
 exports[`regression fixtures > python/sdk/firebase 1`] = `
 [
   "store.py:9 firebase GET /v1/projects/{projectId}/databases/(default)/documents/users",
@@ -1230,6 +1242,69 @@ exports[`regression fixtures > robustness/bad-specifier 1`] = `
 exports[`regression fixtures > robustness/odd-body 1`] = `
 [
   "client.ts:4 api.example.com PUT /v1/monitors/{monitorId}",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/ethers 1`] = `
+[
+  "node.ts:8 env:ETH_NODE_URL POST / eth_getBalance",
+  "node.ts:12 env:ETH_NODE_URL POST / eth_getTransactionReceipt",
+  "node.ts:16 env:ETH_NODE_URL POST / eth_feeHistory",
+  "node.ts:20 archive.example-node.io POST / eth_getBlockByNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/ethers-helpers 1`] = `
+[
+  "node.ts:6 eth.example-node.io POST /rpc eth_blockNumber",
+  "node.ts:9 eth.example-node.io POST /rpc eth_blockNumber (wrapper:rpc)",
+  "node.ts:11 eth.example-node.io POST /rpc net_peerCount (wrapper:rpc)",
+  "node.ts:14 eth.example-node.io POST /rpc eth_getCode",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/solana 1`] = `
+[
+  "ledger.ts:6 rpc.example-chain.net POST / getBalance",
+  "ledger.ts:10 rpc.example-chain.net POST / getTransaction",
+  "ledger.ts:14 rpc.example-chain.net POST / getSignaturesForAddress",
+  "ledger.ts:18 rpc.example-chain.net POST / sendTransaction",
+  "ledger.ts:22 rpc.example-chain.net POST / getSlot",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/solana-cluster 1`] = `
+[
+  "faucet.ts:6 api.devnet.solana.com POST / requestAirdrop",
+  "faucet.ts:10 api.mainnet-beta.solana.com POST / getMinimumBalanceForRentExemption",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/solana-kit 1`] = `
+[
+  "accounts.ts:6 rpc.example-chain.net POST / getBalance",
+  "accounts.ts:11 rpc.example-chain.net POST / getEpochInfo",
+  "accounts.ts:15 rpc.example-chain.net POST / getAccountInfo",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/viem 1`] = `
+[
+  "chain.ts:14 eth.example-node.io POST /v1/demo eth_getBalance",
+  "chain.ts:18 eth.example-node.io POST /v1/demo eth_call",
+  "chain.ts:22 unknown POST / eth_gasPrice",
+  "chain.ts:26 eth.example-node.io POST /v1/demo eth_chainId",
+  "chain.ts:30 eth.example-node.io POST /v1/demo eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wallets 1`] = `[]`;
+
+exports[`regression fixtures > rpc-clients/web3 1`] = `
+[
+  "node.ts:7 eth.example-node.io POST / eth_getBalance",
+  "node.ts:11 eth.example-node.io POST / eth_getTransactionCount",
+  "node.ts:15 eth.example-node.io POST / eth_sendRawTransaction",
 ]
 `;
 

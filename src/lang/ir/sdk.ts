@@ -190,6 +190,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
     const body = bodyOf(m, call, fn, ctx);
     const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
     const endpoint = entry.endpoint ? irEndpoint(m, ctx) : undefined;
+    if (endpoint === null) continue;
     const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
     const headers = [endpoint?.headers, m.spec.headersArg !== undefined ? argOf(m.method, m.spec.headersArg, "headers") : undefined].filter((h): h is Scoped => !!h);
     const args = m.segs.flatMap((s) => (s.call && s.fn ? s.call.args.map((a) => ({ expr: a.value, fn: s.fn! })) : []));

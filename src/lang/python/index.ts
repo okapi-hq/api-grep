@@ -21,6 +21,8 @@ import googleGenai from "./registry/google-genai.json" with { type: "json" };
 import googleGenerativeai from "./registry/google-generativeai.json" with { type: "json" };
 import groq from "./registry/groq.json" with { type: "json" };
 import gql from "./registry/gql.json" with { type: "json" };
+import solana from "./registry/solana.json" with { type: "json" };
+import web3 from "./registry/web3.json" with { type: "json" };
 import mistralai from "./registry/mistralai.json" with { type: "json" };
 import openaiAzure from "./registry/openai-azure.json" with { type: "json" };
 import openai from "./registry/openai.json" with { type: "json" };
@@ -99,6 +101,8 @@ export const PYTHON_REGISTRY = [
   googleAdk,
   ollama,
   gql,
+  web3,
+  solana,
 ] as unknown as IrRegistryEntry[];
 
 const MODULES: Record<string, string[]> = modules.modules;
