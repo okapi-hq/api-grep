@@ -114,7 +114,11 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    empty paths, `documentArg` on each method and an `endpoint`: its `clients` (constructor ->
    where the URL, the headers and a `transport` option are) and `transports` (a link built apart),
    as in [`apollo-client.json`](src/detect/registry/apollo-client.json); `subscription`,
-   `clientArg`, `headersArg` and `endpointFirst` are method flags for them. AI SDK model factories live in
+   `clientArg`, `headersArg` and `endpointFirst` are method flags for them. A JSON-RPC client library is the same
+   under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
+   the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
+   listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in
+   [`viem.json`](src/detect/registry/viem.json). AI SDK model factories live in
    [`src/detect/registry/ai-sdk.json`](src/detect/registry/ai-sdk.json). See `MethodSpec` and `RegistryEntry` in [`src/types.ts`](src/types.ts)
    for every field.
 2. Register it in `defaultRegistry()` in [`src/detect/registry/index.ts`](src/detect/registry/index.ts).

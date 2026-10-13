@@ -1,0 +1,60 @@
+{
+  "$comment": "web3.py (#52): `Web3(Web3.HTTPProvider(url))` and `AsyncWeb3(AsyncWeb3.AsyncHTTPProvider(url))` send JSON-RPC to that URL. A WebSocket or IPC provider talks over a socket, and `Web3()` looks for a local socket first: calls through them are not reported. `rpc` is the method on the wire; properties (`w3.eth.block_number`) are not calls and are not read.",
+  "package": "web3",
+  "imports": ["web3"],
+  "provider": "json-rpc",
+  "host": "{rpcEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against web3.py 6.20 and 7.6)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["Web3", "AsyncWeb3"] },
+  "endpoint": {
+    "clients": {
+      "Web3": { "transport": "kw:provider|0" },
+      "AsyncWeb3": { "transport": "kw:provider|0" }
+    },
+    "transports": {
+      "HTTPProvider": { "url": "kw:endpoint_uri|0" },
+      "AsyncHTTPProvider": { "url": "kw:endpoint_uri|0" }
+    },
+    "nonHttp": ["WebsocketProvider", "WebSocketProvider", "LegacyWebSocketProvider", "WebsocketProviderV2", "IPCProvider", "AsyncIPCProvider", "EthereumTesterProvider", "AsyncEthereumTesterProvider"]
+  },
+  "methods": {
+    "eth.call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
+    "eth.create_access_list": { "method": "POST", "path": "", "rpc": "eth_createAccessList", "bodyArg": 0 },
+    "eth.estimate_gas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },
+    "eth.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },
+    "eth.fee_history": { "method": "POST", "path": "", "rpc": "eth_feeHistory" },
+    "eth.get_balance": { "method": "POST", "path": "", "rpc": "eth_getBalance" },
+    "eth.getBalance": { "method": "POST", "path": "", "rpc": "eth_getBalance" },
+    "eth.get_block": { "method": "POST", "path": "", "rpc": ["eth_getBlockByNumber", "eth_getBlockByHash"] },
+    "eth.getBlock": { "method": "POST", "path": "", "rpc": ["eth_getBlockByNumber", "eth_getBlockByHash"] },
+    "eth.get_block_number": { "method": "POST", "path": "", "rpc": "eth_blockNumber" },
+    "eth.get_block_transaction_count": { "method": "POST", "path": "", "rpc": ["eth_getBlockTransactionCountByNumber", "eth_getBlockTransactionCountByHash"] },
+    "eth.get_code": { "method": "POST", "path": "", "rpc": "eth_getCode" },
+    "eth.getCode": { "method": "POST", "path": "", "rpc": "eth_getCode" },
+    "eth.get_logs": { "method": "POST", "path": "", "rpc": "eth_getLogs", "bodyArg": 0 },
+    "eth.getLogs": { "method": "POST", "path": "", "rpc": "eth_getLogs", "bodyArg": 0 },
+    "eth.get_proof": { "method": "POST", "path": "", "rpc": "eth_getProof" },
+    "eth.get_storage_at": { "method": "POST", "path": "", "rpc": "eth_getStorageAt" },
+    "eth.getStorageAt": { "method": "POST", "path": "", "rpc": "eth_getStorageAt" },
+    "eth.get_transaction": { "method": "POST", "path": "", "rpc": "eth_getTransactionByHash" },
+    "eth.getTransaction": { "method": "POST", "path": "", "rpc": "eth_getTransactionByHash" },
+    "eth.get_transaction_by_block": { "method": "POST", "path": "", "rpc": ["eth_getTransactionByBlockNumberAndIndex", "eth_getTransactionByBlockHashAndIndex"] },
+    "eth.get_transaction_count": { "method": "POST", "path": "", "rpc": "eth_getTransactionCount" },
+    "eth.getTransactionCount": { "method": "POST", "path": "", "rpc": "eth_getTransactionCount" },
+    "eth.get_transaction_receipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "eth.getTransactionReceipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "eth.send_raw_transaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
+    "eth.sendRawTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
+    "eth.send_transaction": { "method": "POST", "path": "", "rpc": ["eth_sendTransaction", "eth_sendRawTransaction"], "bodyArg": 0 },
+    "eth.sendTransaction": { "method": "POST", "path": "", "rpc": ["eth_sendTransaction", "eth_sendRawTransaction"], "bodyArg": 0 },
+    "eth.wait_for_transaction_receipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "eth.waitForTransactionReceipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "is_connected": { "method": "POST", "path": "", "rpc": "web3_clientVersion" },
+    "isConnected": { "method": "POST", "path": "", "rpc": "web3_clientVersion" },
+    "manager.coro_request": { "method": "POST", "path": "", "rpcArg": "kw:method|0", "bodyArg": 1 },
+    "manager.request_blocking": { "method": "POST", "path": "", "rpcArg": "kw:method|0", "bodyArg": 1 },
+    "provider.make_request": { "method": "POST", "path": "", "rpcArg": "kw:method|0", "bodyArg": 1 }
+  }
+}

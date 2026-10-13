@@ -64,8 +64,22 @@ function springFormData(call: CallExpr, fn: FunctionDef): Scoped | undefined {
   return { expr: { ...cur, args: [{ value: dict }] }, fn };
 }
 
-/** Bodies a library builds with helpers, as values the engine reads: Ktor's lambda builders, Spring's form inserters. */
-export const httpBuilt = (call: CallExpr, fn: FunctionDef): Scoped | undefined => ktorBuilt(call, fn) ?? springFormData(call, fn);
+const BASIC_CREDENTIALS = ["Credentials.basic"];
+
+/**
+ * OkHttp's `Credentials.basic(user, password)`: `Basic ` and the encoded credentials, so an `Authorization` header
+ * set to it is basic auth, as `basicAuth(user, password)` steps are.
+ */
+function basicCredentials(call: CallExpr, fn: FunctionDef): Scoped | undefined {
+  if (!calleeIs(call, BASIC_CREDENTIALS) || positional(call).length < 2) return undefined;
+  return { expr: { k: "tmpl", parts: [{ k: "str", v: "Basic " }, { k: "unknown", text: "credentials" }] }, fn };
+}
+
+/**
+ * Values a library builds with helpers, as values the engine reads: Ktor's lambda builders, Spring's form inserters,
+ * OkHttp's basic credentials.
+ */
+export const httpBuilt = (call: CallExpr, fn: FunctionDef): Scoped | undefined => ktorBuilt(call, fn) ?? springFormData(call, fn) ?? basicCredentials(call, fn);
 
 /** The calls of a builder lambda named `name` among `fn`'s (`bearer { ... }` in `install(Auth) { ... }`). */
 const block = (fn: FunctionDef, names: string[]): FunctionDef[] => fn.calls.flatMap((c) => (calleeIs(c, names) ? (lambdaOf(c) ?? []) : []));

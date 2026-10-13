@@ -1,0 +1,41 @@
+{
+  "$comment": "ethers v5 and v6 (#52): a JsonRpcProvider sends JSON-RPC to the URL it is built with. A BrowserProvider (v5 Web3Provider) talks to the wallet and a WebSocketProvider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire.",
+  "package": "ethers",
+  "aliases": ["@ethersproject/providers"],
+  "provider": "json-rpc",
+  "host": "{rpcEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against ethers 5.7 and 6.13)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["JsonRpcProvider", "StaticJsonRpcProvider"] },
+  "endpoint": {
+    "clients": {
+      "JsonRpcProvider": { "url": "0" },
+      "StaticJsonRpcProvider": { "url": "0" }
+    },
+    "nonHttp": ["BrowserProvider", "Web3Provider", "WebSocketProvider", "IpcProvider", "IpcSocketProvider", "SocketProvider"],
+    "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider"]
+  },
+  "methods": {
+    "broadcastTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
+    "call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
+    "estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },
+    "getBalance": { "method": "POST", "path": "", "rpc": "eth_getBalance" },
+    "getBlock": { "method": "POST", "path": "", "rpc": ["eth_getBlockByNumber", "eth_getBlockByHash"] },
+    "getBlockNumber": { "method": "POST", "path": "", "rpc": "eth_blockNumber" },
+    "getBlockWithTransactions": { "method": "POST", "path": "", "rpc": ["eth_getBlockByNumber", "eth_getBlockByHash"] },
+    "getCode": { "method": "POST", "path": "", "rpc": "eth_getCode" },
+    "getGasPrice": { "method": "POST", "path": "", "rpc": "eth_gasPrice" },
+    "getLogs": { "method": "POST", "path": "", "rpc": "eth_getLogs", "bodyArg": 0 },
+    "getNetwork": { "method": "POST", "path": "", "rpc": "eth_chainId" },
+    "getStorage": { "method": "POST", "path": "", "rpc": "eth_getStorageAt" },
+    "getStorageAt": { "method": "POST", "path": "", "rpc": "eth_getStorageAt" },
+    "getTransaction": { "method": "POST", "path": "", "rpc": "eth_getTransactionByHash" },
+    "getTransactionCount": { "method": "POST", "path": "", "rpc": "eth_getTransactionCount" },
+    "getTransactionReceipt": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" },
+    "listAccounts": { "method": "POST", "path": "", "rpc": "eth_accounts" },
+    "send": { "method": "POST", "path": "", "rpcArg": "0", "bodyArg": 1 },
+    "sendTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
+    "waitForTransaction": { "method": "POST", "path": "", "rpc": "eth_getTransactionReceipt" }
+  }
+}

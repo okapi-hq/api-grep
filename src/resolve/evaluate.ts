@@ -8,6 +8,7 @@ import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
 import { astDocumentParts } from "./graphql-ast.js";
 import { documentParts, importedDocument, printedArgument } from "./graphql-source.js";
+import { libraryUrl } from "./library-urls.js";
 import { localReturn } from "./local-return.js";
 import { hasStaticHost, markConst, partsToTemplate, pickBranch, replaceInParts, staticText } from "./parts.js";
 import { typeToShape } from "./type-shape.js";
@@ -233,6 +234,8 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     const replaced = evalReplace(u, callee, ctx, depth);
     if (replaced) return replaced;
   }
+  const known = libraryUrl(u);
+  if (known) return [{ kind: "static", text: known }];
   return helperResult(u, ctx, depth) ?? typeLiteral(u) ?? dyn(u, "call");
 }
 

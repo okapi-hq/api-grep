@@ -1,6 +1,7 @@
 import { assembleCalls } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
-import type { Call, Language } from "../../report/schema.js";
+import { rpcClientOperation } from "../../operation/json-rpc.js";
+import type { Call, Language, Operation } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
@@ -122,6 +123,14 @@ function documentOf(raw: IrRaw, ctx: IrCtx): Shape | undefined {
   return arg ? shapeOf(arg.expr, arg.fn, ctx).shape : { type: "unknown" };
 }
 
+/** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */
+function rpcOperation(raw: IrRaw, ctx: IrCtx): Operation | undefined {
+  const m = raw.sdk;
+  if (!m || (m.spec.rpc === undefined && m.spec.rpcArg === undefined)) return undefined;
+  const arg = m.spec.rpcArg !== undefined ? argAt(m.method, m.spec.rpcArg, ctx) : undefined;
+  return rpcClientOperation(m.spec, arg ? shapeOf(arg.expr, arg.fn, ctx).shape : undefined);
+}
+
 /** Resolves a detected call into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const ctx = withSelf(withSubst(base, raw.subst), raw.self);
@@ -159,6 +168,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
     optionsOpaque: raw.optionsOpaque,
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     document: documentOf(raw, ctx),
+    operation: rpcOperation(raw, ctx),
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,

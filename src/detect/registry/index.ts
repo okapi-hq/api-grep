@@ -36,6 +36,10 @@ import ollama from "./ollama.json" with { type: "json" };
 import apolloClient from "./apollo-client.json" with { type: "json" };
 import graphqlRequest from "./graphql-request.json" with { type: "json" };
 import urql from "./urql.json" with { type: "json" };
+import solanaWeb3 from "./solana-web3.json" with { type: "json" };
+import viem from "./viem.json" with { type: "json" };
+import ethers from "./ethers.json" with { type: "json" };
+import web3 from "./web3.json" with { type: "json" };
 
 export class Registry {
   private byPkg = new Map<string, RegistryEntry>();
@@ -70,5 +74,7 @@ export function defaultRegistry(): Registry {
   entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);
   // GraphQL clients of any API (#54)
   entries.push(apolloClient, urql, graphqlRequest);
+  // JSON-RPC clients of any node (#52)
+  entries.push(solanaWeb3, viem, ethers, web3);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }
