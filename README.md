@@ -233,9 +233,21 @@ imported `.graphql` file or a codegen AST object (`{"kind":"Document","definitio
 its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
-(`Action` for AWS Query, `method` for Flickr): `protocol: action`. RPC client libraries such as viem or web3.py are
-[#52](https://github.com/okapi-hq/api-grep/issues/52), SOAP client libraries (`SoapClient`, zeep, node-soap)
-[#58](https://github.com/okapi-hq/api-grep/issues/58).
+(`Action` for AWS Query, `method` for Flickr): `protocol: action`. SOAP client libraries (`SoapClient`, zeep,
+node-soap) are [#58](https://github.com/okapi-hq/api-grep/issues/58).
+
+JSON-RPC client libraries ([#52](https://github.com/okapi-hq/api-grep/issues/52)) are SDK calls whose operation is
+the RPC method the client method sends, not the method's own name: `connection.getParsedTransaction(sig)` is
+`getTransaction`, `client.readContract(...)` is `eth_call`; a generic transport method reads it from its argument
+(`provider.send("eth_feeHistory", ...)`, `client.request({ method })`, `w3.provider.make_request(...)`). Covered:
+`@solana/web3.js` (`Connection`, `sendAndConfirmTransaction`, `clusterApiUrl`) and `@solana/kit`
+(`createSolanaRpc(url).getBalance(a).send()`), viem (public, wallet and test clients, `viem/actions`), ethers v5 and v6
+(`JsonRpcProvider`, `StaticJsonRpcProvider`), web3.js, web3.py (`Web3(HTTPProvider(url))`, `AsyncWeb3`) and
+solana-py (`Client`, `AsyncClient`). The endpoint is the URL the client or its HTTP transport is built with
+(`http(url)`, also inside `fallback`), the method `POST`, and the provider the one that URL names. These libraries
+also talk to a browser wallet (`new BrowserProvider(window.ethereum)`, viem `custom(window.ethereum)`, `new
+Web3(window.ethereum)`) or over a WebSocket or IPC socket: those calls are not HTTP requests of the app and are not
+reported, nor is a typed client (`provider: Provider`) in a project that builds one of them.
 
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
@@ -411,7 +423,7 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link) |
+| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link); JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `viem`, `ethers`, `web3` (endpoint from the client or its HTTP transport) |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
 | XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
@@ -461,7 +473,7 @@ whose action is a template, an anchor or a `mailto:` are not requests.
 | httpx | module functions, `request`, `stream`, `Client` / `AsyncClient` with `base_url` and `headers`, also through `async with` |
 | aiohttp | `ClientSession(base_url)` and its verbs, `request(method, url)` |
 | urllib | `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))` (POST when there is data), `urllib3.PoolManager().request(...)` |
-| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex; the GraphQL client `gql` (endpoint from its transport) |
+| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex; the GraphQL client `gql` (endpoint from its transport); the JSON-RPC clients web3.py and solana-py (endpoint from the provider or client) |
 
 Python keyword arguments are SDK bodies (`client.chat.completions.create(model=..., messages=...)`).
 Clients are followed through module variables and imports, `self.client = OpenAI()` in any method,

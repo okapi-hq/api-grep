@@ -11,7 +11,8 @@ const SOLANA_CLUSTERS = new Set(["devnet", "testnet", "mainnet-beta"]);
  */
 export function libraryUrl(call: CallExpression): string | undefined {
   const mc = memberChain(call.getExpression());
-  if (!Node.isIdentifier(mc.root)) return undefined;
+  // the name first: the origin of every call evaluated would cost a symbol lookup each
+  if (!Node.isIdentifier(mc.root) || (mc.chain.at(-1) ?? mc.root.getText()) !== "clusterApiUrl") return undefined;
   const origin = identifierOrigin(mc.root);
   if (origin.kind !== "package" || origin.package !== "@solana/web3.js") return undefined;
   const name = mc.chain.length === 0 ? origin.importedName : mc.chain.length === 1 ? mc.chain[0] : undefined;
