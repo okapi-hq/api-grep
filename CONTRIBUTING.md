@@ -114,7 +114,10 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    empty paths, `documentArg` on each method and an `endpoint`: its `clients` (constructor ->
    where the URL, the headers and a `transport` option are) and `transports` (a link built apart),
    as in [`apollo-client.json`](src/detect/registry/apollo-client.json); `subscription`,
-   `clientArg`, `headersArg` and `endpointFirst` are method flags for them. A JSON-RPC client library is the same
+   `clientArg`, `headersArg` and `endpointFirst` are method flags for them. A transport listed by its dotted name
+   with `fetchIn` is a function the app writes, whose one `fetch` gives the URL, and `contextClient` makes a client
+   argument the scan cannot read the project's one client, as in [`relay.json`](src/detect/registry/relay.json);
+   `documentProp` names the property of the argument holding the document (Shopify `query({ data })`). A JSON-RPC client library is the same
    under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in

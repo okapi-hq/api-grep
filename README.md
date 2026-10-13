@@ -261,6 +261,20 @@ for a plain HTTP call. A hook names no client: it uses the project's client when
 the one its `client` option names), otherwise its host stays `unknown`, as does a subscription's (they usually go
 over a WebSocket of their own).
 
+Relay, Shopify's clients and Python `sgqlc` ([#67](https://github.com/okapi-hq/api-grep/issues/67)) are read the same
+way. Relay (`useLazyLoadQuery`, `usePreloadedQuery`, `useMutation`, `commitMutation`, `fetchQuery`) sends to the URL of
+the one `fetch` in the function its network layer is built with (`new Environment({ network: Network.create(fetchFn)
+})`, also through the functions it calls), the project's one environment, else an `unknown` host; a compiled artifact
+(`import Query from "./__generated__/Query.graphql"`) gives the text of its `params`, or the name and type of a
+persisted query. Shopify's clients are calls to the `shopify` provider at `{shop}.myshopify.com`, path
+`/admin/api/{version}/graphql.json` (`/api/{version}/graphql.json` for the Storefront API), the version written in when
+the code gives it: `admin.graphql(...)` from `authenticate.admin(request)` (the Remix and React Router app packages),
+`new shopify.clients.Graphql({ session }).request(...)` / `.query({ data })`, `createAdminApiClient(...)` and
+`createStorefrontApiClient(...)` `.request(...)`, `shopify-api-node`'s `graphql(...)` and Python `shopify.GraphQL().execute(...)`.
+`sgqlc` sends to its endpoint's URL (`HTTPEndpoint(url, headers)(document, variables)`), its document written as text
+or built with `Operation(schema.Query)` and the selections the same function makes on it
+(`op.repository(owner=o).issues(first=10).nodes.title()`).
+
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
 by an XML library or sent with an XML content type is `xml` with its value unread. HTML and SVG markup (`<p>...</p>`,
@@ -423,7 +437,7 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link); JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `viem`, `ethers`, `web3` (endpoint from the client or its HTTP transport) |
+| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`); JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `viem`, `ethers`, `web3` (endpoint from the client or its HTTP transport) |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
 | XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
@@ -473,7 +487,7 @@ whose action is a template, an anchor or a `mailto:` are not requests.
 | httpx | module functions, `request`, `stream`, `Client` / `AsyncClient` with `base_url` and `headers`, also through `async with` |
 | aiohttp | `ClientSession(base_url)` and its verbs, `request(method, url)` |
 | urllib | `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))` (POST when there is data), `urllib3.PoolManager().request(...)` |
-| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex; the GraphQL client `gql` (endpoint from its transport); the JSON-RPC clients web3.py and solana-py (endpoint from the provider or client) |
+| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex; the GraphQL clients `gql` (endpoint from its transport) and `sgqlc` (endpoint from its `HTTPEndpoint`, documents built with `Operation` read), ShopifyAPI's `GraphQL().execute`; the JSON-RPC clients web3.py and solana-py (endpoint from the provider or client) |
 
 Python keyword arguments are SDK bodies (`client.chat.completions.create(model=..., messages=...)`).
 Clients are followed through module variables and imports, `self.client = OpenAI()` in any method,
