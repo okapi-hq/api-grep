@@ -12,6 +12,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
 | Kotlin | supported: HTTP clients, Retrofit interfaces and SDK registries | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
+| Java | supported: the same clients and registries, one index with Kotlin | tree-sitter + shared engine (the Kotlin front end) | Maven | the same as Kotlin |
 
 ## Goals
 
@@ -68,7 +69,7 @@ bodies by their declared types. The same front end reads three languages:
 
 ### Tree-sitter languages: the IR engine
 
-Python, PHP and Kotlin are read without a type checker (Kotlin's declared types are kept, not checked), but they share
+Python, PHP, Kotlin and Java are read without a type checker (Kotlin's and Java's declared types are kept, not checked), but they share
 most of what a scanner needs. Each is parsed with [tree-sitter](https://tree-sitter.github.io) (WebAssembly grammars,
 no native build) and **lowered** into a small language-neutral model (`src/lang/ir/model.ts`):
 
@@ -114,7 +115,8 @@ expressions (an expression read in another function's scope) when it puts a requ
 several places.
 
 Language traits are flags of the `IrLanguage`: `moduleVarsVisible` (Python globals), `sharedGlobals` (PHP constants
-and functions seen from every file), `packageScope` (the files of a Kotlin package see each other's declarations),
+and functions seen from every file), `packageScope` (the files of a Kotlin or Java package see each other's declarations), `alsoReads` (other languages
+lowered into the same modules and index: Java with Kotlin, see [Java](#java)),
 `typedParams` (a typed parameter that names no client is not an `injected-client`), `allowHiddenErrors` and `repair`
 (see Kotlin below).
 
@@ -213,13 +215,13 @@ Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params +=
 ## Kotlin
 
 **Status:** parsed, lowered and resolved; the HTTP clients and Retrofit service interfaces below are detected, and SDK
-calls through the JVM registries (#33). Java is #43; it will read the same clients and registries.
+calls through the JVM registries (#33). Java is read by the same front end, into the same index ([Java](#java)).
 
 **SDKs:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
 AWS SDK for Java 2.x S3 and Bedrock Runtime, Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
 `FirestoreClient`, the Android SDK), Firebase Admin Auth, Cloud Messaging and Realtime Database, Twilio, Slack, Sentry
 and PostHog (the Android / JVM facade and posthog-java). The registries are in `src/lang/jvm/registry/`, keyed by Maven
-coordinates and fully qualified classes so that Java reuses them as they are.
+coordinates and fully qualified classes, so Java reads them as they are.
 
 **SDK registries** (#33): JVM SDKs build clients with factories and builders, reach resources through accessor calls,
 and take parameters as builders.
@@ -258,8 +260,10 @@ and take parameters as builders.
 - **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (also a bare `Builder()` when the client
   is OkHttp's; `url`, verbs, `method`, `header` /
   `addHeader`, `headers`), also built over several statements, held in a field, sent through a wrapper or returned
-  by a request factory of the project (`newCall(get(url))`: the factory's parameters read as the call's arguments,
-  a factory calling its own name read as its overload);
+  by a request factory of the project (`newCall(get(url))`, a method of the class or of a named class:
+`newCall(buildRequest(url))`; the factory's parameters read as the call's arguments, a factory calling its own name
+read as its overload); a copy of a request built in the project (`request.newBuilder().header(...)`) keeps the
+original's URL, method and body;
   `HttpUrl` builders (`toHttpUrl().newBuilder()`, `HttpUrl.Builder()`: path segments and query parameters); bodies
   from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
   `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
@@ -308,13 +312,15 @@ and take parameters as builders.
   the callers of the interface's methods (#39). A file must import `retrofit2.http` (or the interface be created on a
   Retrofit builder): JAX-RS resources use the same annotation names.
 - **Bodies**: `JSONObject().put(...)` chains (also `val o = JSONObject(); o.put(...)`), `JSONArray`, Gson
-  `JsonObject`, Jackson `createObjectNode()`, `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data
+  `JsonObject`, Jackson `createObjectNode()`, a `HashMap` / `LinkedHashMap` filled with `put` / `putAll` (only once
+something is put on it: a map filled with `map["k"] = v` stays unread rather than empty), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data
   classes, `LinkedMultiValueMap` (form); `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
 
-**Java reuse.** The detectors read the engine's model only (calls, chains, annotations), and the tables are in
-`src/lang/jvm/http/clients.json`, so the Java front end (#43) gets the same clients by lowering Java into the same
-model (`new Request.Builder()` is a call of `Request.Builder`, `X.class` a class reference). Retrofit only needs the
-annotations of interface methods and parameters and `create(X.class)` linked by `instanceOf`.
+**Java.** The detectors read the engine's model only (calls, chains, annotations), and the tables are in
+`src/lang/jvm/http/clients.json`, so Java gets the same clients by being lowered into the same model (`new
+Request.Builder()` is a call of `Request.Builder`, `X.class` a class reference); `HttpURLConnection` also reads a body
+written to a local holding the output stream (`OutputStream os = conn.getOutputStream()`, a `DataOutputStream` around
+it). See [Java](#java).
 
 **Lowering** (`src/lang/kotlin/`): the module is the file's package, and every file of a package sees the others'
 top-level declarations (`packageScope`); `import a.b.*` makes a project package's declarations names of the file, and
@@ -341,7 +347,7 @@ Declared types of parameters, properties and locals are kept, so a client's type
 data classes and other classes with typed constructor properties give body shapes, under their
 `@SerializedName`, `@Json(name = ...)`, `@SerialName` or `@JsonProperty` names (`@Transient` / `@JsonIgnore` aside).
 
-**Manifests** (`src/lang/jvm/`, shared with Java later): Gradle build scripts in the Kotlin and Groovy DSL
+**Manifests** (`src/lang/jvm/`, shared with Java): Gradle build scripts in the Kotlin and Groovy DSL
 (`implementation("g:a:v")`, `api 'g:a:v'`, `group:` / `name:` maps, `platform(...)`, `libs.x` and `libs.bundles.x`
 from `gradle/libs.versions.toml`; test configurations aside; versions from script variables and `gradle.properties`),
 and `pom.xml` (test scope and plugin dependencies aside; `${property}` versions from the pom and its parent
@@ -385,6 +391,71 @@ file. A file that does not parse is then read once more with a `;` in place of t
   than as the first argument stays a placeholder. The `PostHogConfig` host given to `PostHog.setup` is not followed.
 - AWS artifacts other than S3 and Bedrock Runtime, the AWS SDK for Kotlin and other JVM SDKs listed in `providers.json`
   are reported as `unsupported` in `coverage.sdks` (#49, #50).
+
+## Java
+
+**Status:** parsed, lowered and resolved by the Kotlin front end (#43): the HTTP clients, Retrofit and Feign declarations
+and SDK registries of [Kotlin](#kotlin) apply to Java as they are, since they read the engine's model only.
+
+**One front end for Kotlin and Java.** Android and Spring projects mix the two languages, and the code crosses between
+them: a Kotlin repository calls a Retrofit interface declared in Java, a Java activity reads a Kotlin `object`'s
+constant. The Kotlin `IrLanguage` lists Java in `alsoReads` (an `IrSource`: id, grammar, extensions, excludes, lowering),
+and `scanIr` (`src/lang/ir/scan.ts`) lowers the files of every source language the scan asks for into one module set and
+one `ProjectIndex`, the way the TypeScript checker reads TypeScript, JavaScript and HTML together:
+
+- a Java class and a Kotlin file of the same package see each other (`packageScope`), and imports, static imports and
+  star imports resolve across the two;
+- each module keeps its language (`ModuleModel.language`), so `location.language`, `stats.byLanguage` and
+  `diagnostics.languages` are per file;
+- the `maven` coverage rows are produced once, from the manifests and the imports of both languages;
+- `--language kotlin` or `--language java` reads only that language's files (as `--language typescript` does not load
+  JavaScript), so the other language's declarations are not in the index then.
+
+**Lowering** (`src/lang/java/`, grammar `tree-sitter-java`): the module is the file's package, as in Kotlin. Classes,
+interfaces, enums and records are classes (nested ones under `Outer.Inner`, seen by their simple name inside the outer
+class); `<init>` holds instance field initializers, initializer blocks and the constructor with the most parameters (the
+one the others usually delegate to: `this(DEFAULT_URL)`), the other constructors are functions of their own;
+`<clinit>` holds `static` field initializers, static blocks and enum constants (an enum constant is a field holding its
+construction). Interface fields are constants. A bare name in a method is a local or parameter, then a member of the
+class (`this.x`), then a member of an enclosing class (`Outer.x`), then an imported or package name. `new X(...)` is a
+call of `X` (`isNew`), `X.class` the class itself (so `retrofit.create(Api.class)` links like `Api::class.java`),
+`Foo::bar` a member reference, lambdas are closures, and an anonymous class with one method
+(`new Interceptor() { public Response intercept(...) }`) stands for that method; one with several has its methods lowered
+as closures of the code around it, as in Kotlin. Annotations of classes, methods, fields and parameters are kept
+(`@GET("users/{id}")`, `@RequestMapping(method = RequestMethod.POST, value = {"/a"})`, `@Query("q")`). A setter call on a
+local (`headers.setContentType(t)`) is also the property assignment Kotlin would write (`headers.contentType = t`), so
+connection settings and header maps read the same in both languages. `try (OutputStream os = conn.getOutputStream())`
+and other resources are locals. Generics, wildcards, type annotations and `var` are left out of types; primitive types
+are their boxed class (`int` is `Integer`).
+
+**Resolved:** `+` (also `+=`), `String.format`, `"...".formatted(...)`, `String.join`, `new StringBuilder(a).append(b)
+.toString()` and a `StringBuilder` local filled by statements before its `toString()`, text blocks (indentation removed
+as the compiler does), `String.valueOf(x)`, `System.getenv("X")` (also `System.getenv().getOrDefault`),
+`System.getProperty("x", "d")`, Spring `@Value("${x:default}")` on fields and constructor parameters and
+`environment.getProperty("x", "default")`, `Optional.ofNullable(x).orElse(d)` and `Objects.requireNonNullElse`, Android
+`BuildConfig.X` (with the Gradle literal), `static final` constants (also through `import static`), `switch`
+expressions (any of their results), and collection factories (`Map.of`, `Map.ofEntries`, `List.of`, `Arrays.asList`).
+POJO fields and records give body shapes, under their `@SerializedName` / `@JsonProperty` names (`transient`,
+`@Transient`, `@JsonIgnore` and `static` fields aside); `Optional<T>` and `@Nullable` fields are not required. A
+`HashMap` / `LinkedHashMap` filled with `put` is a body like `JSONObject` (a fluent map, Kotlin too).
+
+**Out of scope by default:** Maven `target/`, `.gradle/`, `buildSrc/`, `build-logic/`, test source sets (`src/test*`,
+`src/androidTest*`, `src/*Test`), `test/`, `tests/`, `*Test.java`, `*Tests.java`, `*IT.java`.
+
+**Limitations:**
+
+- As in Kotlin, clients provided by a DI framework (Spring beans, Dagger / Hilt providers) are known by their type only
+  (#46), a member inherited from a base class is only read through `this.x`, and a star import of an external package
+  does not tell which names it provides.
+- Code generated at build time is not there: Lombok builders, getters and setters, annotation processors (Dagger,
+  AutoValue, MapStruct), protobuf and OpenAPI-generated clients. An OpenAPI-generated `ApiClient` checked into the
+  repository is read like any other code.
+- A `StringBuilder` filled in a loop or in branches lists every piece appended before `toString()`, once each.
+- Overloaded methods resolve to the first one declared, as in Kotlin; overloads of constructors to the widest one.
+- The grammar does not parse an annotation between a varargs type and its `...` (`String @Nullable ... names`); such a
+  file is skipped with a `parse-error` diagnostic.
+- Apache HttpClient, the JAX-RS client, AsyncHttpClient, Unirest and Vert.x `WebClient` have no table yet; they, Lombok
+  builders and Kotlin map index sets are #65.
 
 ## JavaScript and HTML
 
@@ -613,7 +684,7 @@ Decisions:
 | Python | callers (functions, methods, constructors), manifests, `receiver-unknown` |
 | PHP | same engine, same behaviour (`tests/fixtures/php/receiver/`) |
 | TypeScript / JavaScript | callers (functions, arrow functions, methods) in the scanned files, `package.json` manifests, `receiver-unknown`; a client stored on `this` by a constructor parameter is not followed yet |
-| Kotlin | does not apply: every parameter has a type, and one that names no client stays unresolved (`typedParams`) |
+| Kotlin, Java | does not apply: every parameter has a type, and one that names no client stays unresolved (`typedParams`) |
 
 ## Keys added after a dict is built (#38)
 
@@ -674,11 +745,11 @@ call site keeps its own single value.
 
 ## How the open issues apply to each language
 
-| issue | TypeScript / JavaScript / HTML | Python | PHP | Kotlin |
+| issue | TypeScript / JavaScript / HTML | Python | PHP | Kotlin and Java |
 |---|---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt listed in `providers.json` (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json`: OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
@@ -700,12 +771,12 @@ call site keeps its own single value.
 5. Add fixtures under `tests/fixtures/<language>/` (with `expected.json` for regression patterns), a test file like
    `tests/python.test.ts` or `tests/php.test.ts`, and unit tests for the lowering and manifests.
 
-A language whose needs go beyond the IR (a type system the engine should use, like Java or C#) can implement
-`Language` directly, as TypeScript does.
+A language whose needs go beyond the IR (a type system the engine should use, like C#) can implement
+`Language` directly, as TypeScript does. A language that shares its ecosystem and its code with another (Java with
+Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered into one index.
 
 | next candidates | ecosystem | notes |
 |---|---|---|
 | Go | Go modules (`go.mod`) | `net/http`, `resty`; SDK clients are structs (`stripe.Key`, `client.Customers.New(params)`) |
 | Ruby | RubyGems (`Gemfile`) | `Net::HTTP`, `Faraday`, `HTTParty`; SDKs are mostly module-level (`Stripe::Customer.create`) |
-| Java | Maven / Gradle (shared with Kotlin) | one front end with Kotlin for mixed projects (#43); `HttpClient`, OkHttp, Retrofit annotations |
 | C# | NuGet | `HttpClient`, RestSharp, typed SDK clients |

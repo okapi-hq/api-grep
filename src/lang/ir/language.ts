@@ -159,6 +159,13 @@ export interface FluentMapSpec {
   props?: Record<string, string>;
   /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
   skip?: string[];
+  /** Methods adding every entry of their argument (`map.putAll(other)`). */
+  spread?: string[];
+  /**
+   * A general-purpose map (`HashMap`): a value only once entries are put on it. One filled some other way
+   * (`body["k"] = v` in Kotlin) stays a value the scan cannot read rather than an empty object.
+   */
+  filledOnly?: boolean;
   /** How a body built this way is sent. */
   encoding?: BodyEncoding;
 }
@@ -170,10 +177,9 @@ export interface Manifests {
   version(file: string, pkg: string, rootDir: string): string | undefined;
 }
 
-/** A language read through tree-sitter and the shared engine. */
-export interface IrLanguage {
+/** One source language of a front end: its grammar, its files and how a file lowers into the model. */
+export interface IrSource {
   id: Language;
-  ecosystem: Ecosystem;
   /** Grammar name (`python`, `php`), a key of `GRAMMARS`. */
   grammar: string;
   /**
@@ -187,6 +193,16 @@ export interface IrLanguage {
   /** Out of scope by default: tests, virtualenvs, vendored code, build output. */
   excludes: string[];
   lower(root: SyntaxNode, file: string, rootDir: string): ModuleModel;
+}
+
+/** A language read through tree-sitter and the shared engine. */
+export interface IrLanguage extends IrSource {
+  ecosystem: Ecosystem;
+  /**
+   * Other languages lowered into the same modules and `ProjectIndex` (Java with Kotlin): names resolve across them,
+   * each call keeps its file's language, and the ecosystem's coverage is computed once for all of them.
+   */
+  alsoReads?: IrSource[];
   /** Functions read module-level variables (Python globals); otherwise only module constants (PHP). */
   moduleVarsVisible: boolean;
   /** Module-level constants and functions of one file are visible in every file (PHP), not only through imports. */
@@ -227,6 +243,9 @@ export interface IrLanguage {
 
 /** A detector for one language's own patterns; it sees the call, its scope and what the callee resolved to. */
 export type IrDetector = (call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain) => IrRaw | undefined;
+
+/** The languages a front end reads: its own, then the ones it reads alongside. */
+export const sourcesOf = (lang: IrLanguage): IrSource[] => [lang, ...(lang.alsoReads ?? [])];
 
 /** Requests a module declares (one per annotated method), located at the declaration. */
 export type IrDeclarationDetector = (mod: ModuleModel, ctx: IrCtx) => IrRaw[];

@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/43",
+  "calls": [
+    {"file": "Billing.java", "line": 24, "provider": "stripe"},
+    {"file": "Billing.java", "line": 32, "provider": "stripe"},
+    {"file": "Billing.java", "line": 38, "provider": "stripe"},
+    {"file": "Billing.java", "line": 42, "provider": "aws"},
+    {"file": "Chat.java", "line": 25, "provider": "openai"},
+    {"file": "Chat.java", "line": 29, "provider": "anthropic"}
+  ]
+}

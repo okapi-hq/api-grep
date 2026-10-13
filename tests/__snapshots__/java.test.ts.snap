@@ -1,0 +1,5194 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builders and interceptors (classes, lambdas, anonymous classes) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "apikey",
+          "where": "query",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "apikey",
+          "origin": "env",
+          "shape": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "apikey": "<apikey>",
+            "city": "Ghent",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?city=Ghent&apikey=%3Capikey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "b2d5c051e2d0",
+      "location": {
+        "col": 16,
+        "file": "Interceptors.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "query": [
+        "city",
+        "apikey",
+      ],
+      "queryShape": {
+        "properties": {
+          "apikey": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+          "city": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+          "apikey",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast?city={city}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/user/repos",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "b0e339424b14",
+      "location": {
+        "col": 16,
+        "file": "Interceptors.java",
+        "language": "java",
+        "line": 43,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/user/repos",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user/repos",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "apikey",
+          "where": "query",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-github-api-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "apikey",
+          "origin": "env",
+          "shape": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-github-api-version": "2022-11-28",
+          },
+          "method": "DELETE",
+          "query": {
+            "apikey": "<apikey>",
+          },
+          "url": "https://api.github.com/user/starred/compass/ridge?apikey=%3Capikey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-github-api-version": "2022-11-28",
+      },
+      "headers": [
+        "x-github-api-version",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "eccb52c0fc28",
+      "location": {
+        "col": 9,
+        "file": "Interceptors.java",
+        "language": "java",
+        "line": 53,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/user/starred/{owner}/{repo}",
+      "provider": "github",
+      "query": [
+        "apikey",
+      ],
+      "queryShape": {
+        "properties": {
+          "apikey": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+        },
+        "required": [
+          "apikey",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user/starred/{owner}/{repo}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "text": "Quiet ember fjord nimbus jetty yonder.",
+            "to": "chloe.moreau@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/mg.example.com/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "11293082ce1c",
+      "location": {
+        "col": 9,
+        "file": "Messages.java",
+        "language": "java",
+        "line": 31,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/mg.example.com/messages",
+      "provider": "mailgun",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/mg.example.com/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "upload_preset": {
+            "enum": [
+              "avatars",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "upload_preset",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "upload_preset": "avatars",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "42fbdff6f3ec",
+      "location": {
+        "col": 9,
+        "file": "Messages.java",
+        "language": "java",
+        "line": 36,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "shape": {
+            "hint": "query",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "query": "estuary",
+          },
+          "url": "https://api.unsplash.com/search/photos?query=estuary",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.unsplash.com",
+      "hostKind": "literal",
+      "id": "54d9e164f2ae",
+      "location": {
+        "col": 16,
+        "file": "Messages.java",
+        "language": "java",
+        "line": 46,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/search/photos",
+      "provider": "unsplash",
+      "query": [
+        "query",
+      ],
+      "queryShape": {
+        "properties": {
+          "query": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.unsplash.com/search/photos",
+      "via": "wrapper:Messages.execute",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "address": {
+            "hint": "address",
+            "type": "string",
+          },
+          "method": {
+            "enum": [
+              "getBalance",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "method",
+          "address",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "address",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "address": "47 Glacier Street",
+            "method": "getBalance",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://rpc.example.com/v1/balances",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "rpc.example.com",
+      "hostKind": "literal",
+      "id": "15c02257e434",
+      "location": {
+        "col": 9,
+        "file": "Messages.java",
+        "language": "java",
+        "line": 59,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/balances",
+      "provider": "rpc.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://rpc.example.com/v1/balances",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "url",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "89603b97c633",
+      "location": {
+        "col": 16,
+        "file": "Messages.java",
+        "language": "java",
+        "line": 63,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-auth-key": "<x-auth-key>",
+          },
+          "method": "GET",
+          "query": {
+            "q": "nimbus",
+          },
+          "url": "https://api.example-podcasts.com/v1/search?q=nimbus",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-auth-key": null,
+      },
+      "headers": [
+        "x-auth-key",
+      ],
+      "host": "api.example-podcasts.com",
+      "hostKind": "literal",
+      "id": "124fb49f201c",
+      "location": {
+        "col": 16,
+        "file": "Podcasts.java",
+        "language": "java",
+        "line": 17,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-podcasts.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-podcasts.com/v1/search?q={query}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Lantern nectar island estuary grove ridge.",
+          "bodyEncoding": "raw",
+          "headers": {
+            "authorization": "<authorization>",
+            "content-type": "application/octet-stream",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-podcasts.com/v1/login",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-podcasts.com",
+      "hostKind": "literal",
+      "id": "0fb4cbf4aae3",
+      "location": {
+        "col": 9,
+        "file": "Podcasts.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/login",
+      "provider": "api.example-podcasts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-podcasts.com/v1/login",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "java": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 10,
+    },
+    "byHostKind": {
+      "literal": 9,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "java": 10,
+    },
+    "byProvider": {
+      "api.example-podcasts.com": 2,
+      "cloudinary": 1,
+      "github": 2,
+      "mailgun": 1,
+      "open-meteo": 1,
+      "rpc.example.com": 1,
+      "unknown": 1,
+      "unsplash": 1,
+    },
+    "callsFound": 10,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 7,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: HTTP clients > reads RestTemplate, RestClient and WebClient, and leaves server endpoints out 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items/8krb8z8s",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "8373ad6d0880",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 35,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "fromType": "Item",
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Item",
+      "bodySource": "type",
+      "client": "spring-rest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "id": "jmbm72o8",
+            "name": "Timber Velvet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "content-type": "application/json",
+      },
+      "headers": [
+        "authorization",
+        "content-type",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "6a6d60635ed5",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 42,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "charge": {
+            "hint": "charge",
+            "type": "string",
+          },
+        },
+        "required": [
+          "charge",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "charge",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "charge": "ultra dune",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/refunds",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "e2c918792734",
+      "location": {
+        "col": 9,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 48,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/refunds",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/refunds",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "term",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "q": "indigo",
+          },
+          "url": "https://api.example-shop.com/v1/search?q=indigo",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "965fee676cba",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 56,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-shop.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "term",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/search",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "currency": {
+            "enum": [
+              "EUR",
+            ],
+            "type": "string",
+          },
+          "sku": {
+            "hint": "sku",
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "currency",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "currency": "EUR",
+            "sku": "anchor dune",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/rates",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "69f7f326dbe0",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 63,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/rates",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/rates",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "limit",
+          "origin": "unknown",
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "50",
+          },
+          "url": "https://api.example-shop.com/v1/items?limit=50",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "1502c9df3247",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 67,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items?limit={limit}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/charges",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "d913c8f43757",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 82,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "amount": {
+            "hint": "amount",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "amount",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "amount",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "amount": 6876,
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {
+            "expand": "balance_transaction",
+          },
+          "url": "https://api.stripe.com/v1/charges/2k27megl/capture?expand=balance_transaction",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "4a15f73b1a30",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 86,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges/{id}/capture",
+      "provider": "stripe",
+      "query": [
+        "expand",
+      ],
+      "queryShape": {
+        "properties": {
+          "expand": {
+            "enum": [
+              "balance_transaction",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "expand",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges/{id}/capture",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "d73ed6f13dbb",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 98,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 6,
+      "spring-webclient": 3,
+    },
+    "byHostKind": {
+      "const": 5,
+      "literal": 4,
+    },
+    "byLanguage": {
+      "java": 9,
+    },
+    "byProvider": {
+      "api.example-shop.com": 6,
+      "stripe": 3,
+    },
+    "callsFound": 9,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: HTTP clients > reads java.net.http requests and HttpURLConnection with what is written to its output stream 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Garden nectar falcon fable orbit indigo.",
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "limit": "20",
+          },
+          "url": "https://api.example-alerts.com/v1/items?limit=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "795c590a9f2a",
+      "location": {
+        "col": 9,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 28,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-alerts.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              "20",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/items?limit=20",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "token <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.pagerduty.com/incidents",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+      },
+      "headers": [
+        "accept",
+        "authorization",
+      ],
+      "host": "api.pagerduty.com",
+      "hostKind": "literal",
+      "id": "193f257adff3",
+      "location": {
+        "col": 16,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/incidents",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.pagerduty.com/incidents",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Sable river copper juniper fjord atlas.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.pagerduty.com/incidents/0nrvsnq8",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.pagerduty.com",
+      "hostKind": "literal",
+      "id": "6745bf003511",
+      "location": {
+        "col": 9,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 44,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/incidents/{id}",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.pagerduty.com/incidents/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Lagoon grove walnut canyon grove estuary.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://events.pagerduty.com/v2/enqueue",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "events.pagerduty.com",
+      "hostKind": "const",
+      "id": "3320a6722bae",
+      "location": {
+        "col": 54,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 51,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/enqueue",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.pagerduty.com/v2/enqueue",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Anchor lagoon juniper saffron opal island.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/ping",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "64202036aa0b",
+      "location": {
+        "col": 54,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 62,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/ping",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/ping",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "2224c70e1c5a",
+      "location": {
+        "col": 54,
+        "file": "Notifier.java",
+        "language": "java",
+        "line": 71,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "java-http": 6,
+    },
+    "byHostKind": {
+      "const": 1,
+      "literal": 5,
+    },
+    "byLanguage": {
+      "java": 6,
+    },
+    "byProvider": {
+      "api.example-alerts.com": 3,
+      "pagerduty": 3,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: HTTP clients > reports each Retrofit method with the base URL, client and converter of the builder that creates the interface 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "1",
+            "size": "20",
+          },
+          "url": "https://api.example-books.com/v2/books?page=1&size=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "a23372ecc2d4",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books",
+      "provider": "api.example-books.com",
+      "query": [
+        "page",
+        "size",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+          "size": {
+            "enum": [
+              20,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+          "size",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/r22eb5nm",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "7d003c30e69c",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "fromType": "Review",
+        "properties": {
+          "star_rating": {
+            "type": "integer",
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "star_rating",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Review",
+      "bodySource": "type",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "star_rating": 262,
+            "text": "Marble lagoon anchor koala quill verdant.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "<authorization>",
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+            "x-client": "books-app",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/edbrrwyq/reviews",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+        "x-api-key": null,
+        "x-client": "books-app",
+      },
+      "headers": [
+        "accept",
+        "x-client",
+        "authorization",
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "11127b605ae2",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 30,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}/reviews",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}/reviews",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "hint": "grantType",
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "username",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "grant_type",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "username",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "estuary onyx",
+            "username": "maya38",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "23f08382ae0d",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/oauth/token",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/oauth/token",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "...image",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/8031uth6/cover",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "22cfccb5ebcd",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}/cover",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}/cover",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/kte5rtne",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "fb5d0d33422a",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 42,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-books.com/v2/search",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "b79684ca7602",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 45,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/search",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/search",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "languages": {
+      "java": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "retrofit": 7,
+    },
+    "byHostKind": {
+      "literal": 7,
+    },
+    "byLanguage": {
+      "java": 7,
+    },
+    "byProvider": {
+      "api.example-books.com": 7,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 6,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 5,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: HTTP clients > reports each mapped method of a Feign interface at its declaration 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/qon1qfbm",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "da8422d820f1",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 28,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Order",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+          },
+          "sku": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Order",
+      "bodySource": "type",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "dryRun",
+          "origin": "param",
+          "shape": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "body": {
+            "quantity": 6,
+            "sku": "estuary yonder",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "true",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=true",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "quantity": 8,
+            "sku": "indigo inlet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "false",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=false",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {
+        "idempotency-key": null,
+      },
+      "headers": [
+        "idempotency-key",
+      ],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "512fe52e21a9",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 31,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "dryRun",
+      ],
+      "queryShape": {
+        "properties": {
+          "dryRun": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "dryRun",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/y0035yvh",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "a1c361b600c2",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "status",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "page": "3",
+            "status": "active",
+          },
+          "url": "https://api.example-orders.com/v2/orders?status=active&page=3",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "433762947b08",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "status",
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "type": "integer",
+          },
+          "status": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "status",
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "state",
+          "origin": "unknown",
+          "where": "query",
+        },
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+          },
+          "method": "GET",
+          "query": {
+            "state": "active",
+          },
+          "url": "https://api.github.com/repos/glacier/summit/issues?state=active",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "00b3ddd22dbe",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 43,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [
+        "state",
+      ],
+      "queryShape": {
+        "properties": {
+          "state": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues?state={state}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Delta ridge anchor dune ridge juniper.",
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.github.com/repos/lagoon/koala/issues",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "content-type": "application/json",
+      },
+      "headers": [
+        "accept",
+        "content-type",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "641f99f1708c",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 46,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "feign": 6,
+    },
+    "byHostKind": {
+      "env": 4,
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 6,
+    },
+    "byProvider": {
+      "api.example-orders.com": 4,
+      "github": 2,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: SDK registries > reads JVM SDK clients, builders as bodies and enum models, and Maven coverage from pom.xml 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "hugo.hoshi@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "2db2db5c2cd0",
+      "location": {
+        "col": 16,
+        "file": "Billing.java",
+        "language": "java",
+        "line": 24,
+      },
+      "method": "POST",
+      "operationId": "PostCustomers",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/customers",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Customer.create",
+        "package": "com.stripe:stripe-java",
+        "version": "29.5.0",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "amount": {
+            "hint": "cents",
+            "type": "integer",
+          },
+          "currency": {
+            "enum": [
+              "eur",
+            ],
+            "type": "string",
+          },
+          "customer": {
+            "hint": "customer",
+            "type": "string",
+          },
+        },
+        "required": [
+          "amount",
+          "currency",
+          "customer",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "amount",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "customer",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "amount": 8141,
+            "currency": "eur",
+            "customer": "estuary koala",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/payment_intents",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "68d9cb87bfc9",
+      "location": {
+        "col": 16,
+        "file": "Billing.java",
+        "language": "java",
+        "line": 32,
+      },
+      "method": "POST",
+      "operationId": "PostPaymentIntents",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/payment_intents",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "PaymentIntent.create",
+        "package": "com.stripe:stripe-java",
+        "version": "29.5.0",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/payment_intents",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "customer",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers/fjord",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "86302f46b2b3",
+      "location": {
+        "col": 16,
+        "file": "Billing.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "GET",
+      "operationId": "GetCustomersCustomer",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/customers/{customer}",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Customer.retrieve",
+        "package": "com.stripe:stripe-java",
+        "version": "29.5.0",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers/{customer}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "name": {
+            "hint": "name",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "customer",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "name",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "name": "Maple Estuary",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers/quill",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "5093176ac2c2",
+      "location": {
+        "col": 16,
+        "file": "Billing.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "POST",
+      "operationId": "PostCustomersCustomer",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/customers/{customer}",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Customer.retrieve.update",
+        "package": "com.stripe:stripe-java",
+        "version": "29.5.0",
+      },
+      "urlTemplate": "https://api.stripe.com/v1/customers/{customer}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "enum": [
+              "example-invoices",
+            ],
+            "type": "string",
+          },
+          "Key": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "example-invoices",
+            "Key": "<Key>",
+          },
+          "bodyEncoding": "raw",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/yarrow/%3CKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "d789135865ba",
+      "location": {
+        "col": 9,
+        "file": "Billing.java",
+        "language": "java",
+        "line": 42,
+      },
+      "method": "PUT",
+      "operationId": "PutObject",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "putObject",
+        "package": "software.amazon.awssdk:s3",
+        "version": "2.33.0",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              300,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "content": {
+                      "enum": [
+                        "Answer briefly.",
+                      ],
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "system",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "properties": {
+                    "content": {
+                      "hint": "question",
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "user",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4.1-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "max_completion_tokens",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_completion_tokens": 300,
+            "messages": [
+              {
+                "content": "Answer briefly.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4.1-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 300,
+            "messages": [
+              {
+                "content": "Haven harbor prairie harbor lantern copper.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4.1-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "27f88dd410d3",
+      "location": {
+        "col": 16,
+        "file": "Chat.java",
+        "language": "java",
+        "line": 25,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4.1-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "com.openai:openai-java",
+        "version": "4.6.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              1024,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "question",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 1024,
+            "messages": [
+              {
+                "content": "Yarrow river compass horizon birch raven.",
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.anthropic.com",
+      "hostKind": "literal",
+      "id": "0660202ca067",
+      "location": {
+        "col": 16,
+        "file": "Chat.java",
+        "language": "java",
+        "line": 29,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "messages.create",
+        "package": "com.anthropic:anthropic-java",
+        "version": "2.9.0",
+      },
+      "urlTemplate": "https://api.anthropic.com/v1/messages",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "com.anthropic:anthropic-java",
+        "provider": "anthropic",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "com.openai:openai-java",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 4,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "com.stripe:stripe-java",
+        "provider": "stripe",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 0,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 0,
+        "imported": false,
+        "package": "com.twilio.sdk:twilio",
+        "provider": "twilio",
+        "status": "declared-not-imported",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "software.amazon.awssdk:s3",
+        "provider": "aws",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "sdk": 7,
+    },
+    "byHostKind": {
+      "literal": 7,
+    },
+    "byLanguage": {
+      "java": 7,
+    },
+    "byProvider": {
+      "anthropic": 1,
+      "aws": 1,
+      "openai": 1,
+      "stripe": 4,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 6,
+    "withDynamic": 5,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and WebClient, and leaves server endpoints out 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items/8krb8z8s",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "8373ad6d0880",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 35,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "fromType": "Item",
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Item",
+      "bodySource": "type",
+      "client": "spring-rest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "id": "jmbm72o8",
+            "name": "Timber Velvet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "content-type": "application/json",
+      },
+      "headers": [
+        "authorization",
+        "content-type",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "6a6d60635ed5",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 42,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "charge": {
+            "hint": "charge",
+            "type": "string",
+          },
+        },
+        "required": [
+          "charge",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "charge",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "charge": "ultra dune",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/refunds",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "e2c918792734",
+      "location": {
+        "col": 9,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 48,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/refunds",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/refunds",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "term",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "q": "indigo",
+          },
+          "url": "https://api.example-shop.com/v1/search?q=indigo",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "965fee676cba",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 56,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-shop.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "term",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/search",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "currency": {
+            "enum": [
+              "EUR",
+            ],
+            "type": "string",
+          },
+          "sku": {
+            "hint": "sku",
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "currency",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "currency": "EUR",
+            "sku": "anchor dune",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/rates",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "69f7f326dbe0",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 63,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/rates",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/rates",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "limit",
+          "origin": "unknown",
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "50",
+          },
+          "url": "https://api.example-shop.com/v1/items?limit=50",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "1502c9df3247",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 67,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items?limit={limit}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/charges",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "d913c8f43757",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 82,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "amount": {
+            "hint": "amount",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "amount",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "amount",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "amount": 6876,
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {
+            "expand": "balance_transaction",
+          },
+          "url": "https://api.stripe.com/v1/charges/2k27megl/capture?expand=balance_transaction",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "4a15f73b1a30",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 86,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges/{id}/capture",
+      "provider": "stripe",
+      "query": [
+        "expand",
+      ],
+      "queryShape": {
+        "properties": {
+          "expand": {
+            "enum": [
+              "balance_transaction",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "expand",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges/{id}/capture",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "d73ed6f13dbb",
+      "location": {
+        "col": 16,
+        "file": "Payments.java",
+        "language": "java",
+        "line": 98,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 6,
+      "spring-webclient": 3,
+    },
+    "byHostKind": {
+      "const": 5,
+      "literal": 4,
+    },
+    "byLanguage": {
+      "java": 9,
+    },
+    "byProvider": {
+      "api.example-shop.com": 6,
+      "stripe": 3,
+    },
+    "callsFound": 9,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: Spring, Feign and Retrofit > reports each Retrofit method with the base URL, client and converter of the builder that creates the interface 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "1",
+            "size": "20",
+          },
+          "url": "https://api.example-books.com/v2/books?page=1&size=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "a23372ecc2d4",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books",
+      "provider": "api.example-books.com",
+      "query": [
+        "page",
+        "size",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+          "size": {
+            "enum": [
+              20,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+          "size",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/r22eb5nm",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "7d003c30e69c",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "fromType": "Review",
+        "properties": {
+          "star_rating": {
+            "type": "integer",
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "star_rating",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Review",
+      "bodySource": "type",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "star_rating": 262,
+            "text": "Marble lagoon anchor koala quill verdant.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "<authorization>",
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+            "x-client": "books-app",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/edbrrwyq/reviews",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+        "x-api-key": null,
+        "x-client": "books-app",
+      },
+      "headers": [
+        "accept",
+        "x-client",
+        "authorization",
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "11127b605ae2",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 30,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}/reviews",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}/reviews",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "hint": "grantType",
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "username",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "grant_type",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "username",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "estuary onyx",
+            "username": "maya38",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "23f08382ae0d",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/oauth/token",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/oauth/token",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "...image",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/8031uth6/cover",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "22cfccb5ebcd",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}/cover",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}/cover",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-books.com/v2/books/kte5rtne",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "fb5d0d33422a",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 42,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/books/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-books.com/v2/search",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-books.com",
+      "hostKind": "literal",
+      "id": "b79684ca7602",
+      "location": {
+        "col": 5,
+        "file": "BookApi.java",
+        "language": "java",
+        "line": 45,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/search",
+      "provider": "api.example-books.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-books.com/v2/search",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "languages": {
+      "java": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "retrofit": 7,
+    },
+    "byHostKind": {
+      "literal": 7,
+    },
+    "byLanguage": {
+      "java": 7,
+    },
+    "byProvider": {
+      "api.example-books.com": 7,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 6,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 5,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: Spring, Feign and Retrofit > reports each mapped method of a Feign interface at its declaration 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/qon1qfbm",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "da8422d820f1",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 28,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Order",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+          },
+          "sku": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Order",
+      "bodySource": "type",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "dryRun",
+          "origin": "param",
+          "shape": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "body": {
+            "quantity": 6,
+            "sku": "estuary yonder",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "true",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=true",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "quantity": 8,
+            "sku": "indigo inlet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "false",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=false",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {
+        "idempotency-key": null,
+      },
+      "headers": [
+        "idempotency-key",
+      ],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "512fe52e21a9",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 31,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "dryRun",
+      ],
+      "queryShape": {
+        "properties": {
+          "dryRun": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "dryRun",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/y0035yvh",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "a1c361b600c2",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "status",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "page": "3",
+            "status": "active",
+          },
+          "url": "https://api.example-orders.com/v2/orders?status=active&page=3",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "433762947b08",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "status",
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "type": "integer",
+          },
+          "status": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "status",
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "state",
+          "origin": "unknown",
+          "where": "query",
+        },
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+          },
+          "method": "GET",
+          "query": {
+            "state": "active",
+          },
+          "url": "https://api.github.com/repos/glacier/summit/issues?state=active",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "00b3ddd22dbe",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 43,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [
+        "state",
+      ],
+      "queryShape": {
+        "properties": {
+          "state": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues?state={state}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Delta ridge anchor dune ridge juniper.",
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.github.com/repos/lagoon/koala/issues",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "content-type": "application/json",
+      },
+      "headers": [
+        "accept",
+        "content-type",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "641f99f1708c",
+      "location": {
+        "col": 5,
+        "file": "Clients.java",
+        "language": "java",
+        "line": 46,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "feign": 6,
+    },
+    "byHostKind": {
+      "env": 4,
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 6,
+    },
+    "byProvider": {
+      "api.example-orders.com": 4,
+      "github": 2,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: a mixed Kotlin and Java Android project > reads both languages into one index, leaves tests out and lists each Maven package once 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "dynamic": [
+        {
+          "name": "limit",
+          "origin": "unknown",
+          "shape": {
+            "enum": [
+              "25",
+            ],
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "TRIPS_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "25",
+          },
+          "url": "https://api.example-trips.com/v1/trips?limit=25",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-trips.com",
+      "hostKind": "env",
+      "id": "cc5fb553cd62",
+      "location": {
+        "col": 5,
+        "file": "app/src/main/java/com/example/trips/api/TripsApi.java",
+        "language": "java",
+        "line": 12,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/trips",
+      "provider": "api.example-trips.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              "25",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:TRIPS_URL}/v1/trips",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Trip",
+        "properties": {
+          "destination_code": {
+            "type": "string",
+          },
+          "nights": {
+            "type": "integer",
+          },
+        },
+        "required": [
+          "destination_code",
+          "nights",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Trip",
+      "bodySource": "type",
+      "client": "retrofit",
+      "dynamic": [],
+      "envName": "TRIPS_URL",
+      "examples": [
+        {
+          "body": {
+            "destination_code": "ridge echo",
+            "nights": 621,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-trips.com/v1/trips",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-trips.com",
+      "hostKind": "env",
+      "id": "24f857968edc",
+      "location": {
+        "col": 5,
+        "file": "app/src/main/java/com/example/trips/api/TripsApi.java",
+        "language": "java",
+        "line": 15,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/trips",
+      "provider": "api.example-trips.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:TRIPS_URL}/v1/trips",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "event": {
+            "enum": [
+              "trip_booked",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "event": "trip_booked",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://us.i.posthog.com/batch",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "us.i.posthog.com",
+      "hostKind": "literal",
+      "id": "eefcbd2b9b74",
+      "location": {
+        "col": 9,
+        "file": "app/src/main/java/com/example/trips/data/TripsRepository.kt",
+        "language": "kotlin",
+        "line": 25,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/batch",
+      "provider": "posthog",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "capture",
+        "package": "com.posthog:posthog",
+        "version": "3.8.0",
+      },
+      "urlTemplate": "https://us.i.posthog.com/batch",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "POST",
+          "query": {},
+          "url": "https://us.i.posthog.com/batch",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "us.i.posthog.com",
+      "hostKind": "literal",
+      "id": "0e8306ef74c7",
+      "location": {
+        "col": 9,
+        "file": "app/src/main/java/com/example/trips/ui/WeatherActivity.java",
+        "language": "java",
+        "line": 20,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/batch",
+      "provider": "posthog",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "capture",
+        "package": "com.posthog:posthog",
+        "version": "3.8.0",
+      },
+      "urlTemplate": "https://us.i.posthog.com/batch",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "latitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "where": "query",
+        },
+        {
+          "name": "longitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lon",
+            "type": "number",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "-7.28217",
+            "longitude": "-168.5652",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=-7.28217&longitude=-168.5652",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "const",
+      "id": "a53fa38de2d1",
+      "location": {
+        "col": 16,
+        "file": "app/src/main/java/com/example/trips/ui/WeatherActivity.java",
+        "language": "java",
+        "line": 21,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "hint": "lat",
+            "type": "number",
+          },
+          "longitude": {
+            "hint": "lon",
+            "type": "number",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 2,
+        "imported": true,
+        "package": "com.posthog:posthog",
+        "provider": "posthog",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 0,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 0,
+        "imported": false,
+        "package": "io.sentry:sentry-android",
+        "provider": "sentry",
+        "status": "declared-not-imported",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 5,
+    "filesSeen": 5,
+    "languages": {
+      "java": {
+        "filesScanned": 4,
+        "filesSeen": 4,
+      },
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.14.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 1,
+      "retrofit": 2,
+      "sdk": 2,
+    },
+    "byHostKind": {
+      "const": 1,
+      "env": 2,
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 4,
+      "kotlin": 1,
+    },
+    "byProvider": {
+      "api.example-trips.com": 2,
+      "open-meteo": 1,
+      "posthog": 2,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 5,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

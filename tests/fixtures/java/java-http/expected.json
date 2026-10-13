@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/43",
+  "calls": [
+    {"file": "Notifier.java", "line": 28, "provider": "api.example-alerts.com"},
+    {"file": "Notifier.java", "line": 37, "provider": "pagerduty"},
+    {"file": "Notifier.java", "line": 44, "provider": "pagerduty"},
+    {"file": "Notifier.java", "line": 51, "provider": "pagerduty"},
+    {"file": "Notifier.java", "line": 62, "provider": "api.example-alerts.com"},
+    {"file": "Notifier.java", "line": 71, "provider": "api.example-alerts.com"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/43",
+  "calls": [
+    {"file": "BookApi.java", "line": 24, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 27, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 30, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 34, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 38, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 42, "provider": "api.example-books.com"},
+    {"file": "BookApi.java", "line": 45, "provider": "api.example-books.com"}
+  ]
+}

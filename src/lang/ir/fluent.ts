@@ -57,6 +57,7 @@ function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: Fu
   const auth = acc.spec.auth?.[name];
   if (acc.spec.put?.includes(name) && a && b) acc.entries.push({ key: a, value: b });
   else if (acc.spec.items?.includes(name) && a) acc.items.push(a);
+  else if (acc.spec.spread?.includes(name) && a) acc.entries.push({ value: a, spread: true });
   else if (acc.spec.skip?.includes(name)) return true;
   else if (auth && a) acc.entries.push({ key: { k: "str", v: "Authorization" }, value: { k: "tmpl", parts: [{ k: "str", v: auth === "bearer" ? "Bearer " : "Basic " }, a] } });
   else return false;
@@ -74,7 +75,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   if (e.k !== "name" || depth > MAX_DEPTH) return undefined;
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
   if (b.kind !== "value" || b.assign.augmented) return undefined;
-  const inner = fluentMap(b.assign.value, b.fn, ctx, depth + 1);
+  const inner = fluentMap(b.assign.value, b.fn, ctx, depth + 1, false);
   if (!inner) return undefined;
   const acc: Acc = { spec: inner.spec, entries: [], items: [] };
   if (inner.expr.k === "dict") acc.entries.push(...inner.expr.entries.map((en) => ({ ...en, value: scopedIn(en.value, inner.fn, into), ...(en.key ? { key: scopedIn(en.key, inner.fn, into) } : {}) })));
@@ -91,7 +92,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
  * The value a chain of calls builds entry by entry (`JSONObject().put("a", 1).put("b", x).toString()`), as a dict
  * or a list read in `fn`; undefined when the expression is not one (or uses a method the spec does not list).
  */
-export function fluentMap(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): FluentValue | undefined {
+export function fluentMap(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, complete = true): FluentValue | undefined {
   if (!ctx.idx.lang.fluentMaps || (e.k !== "call" && e.k !== "name")) return undefined;
   const specs = ctx.idx.lang.fluentMaps;
   const steps: CallExpr[] = [];
@@ -108,6 +109,8 @@ export function fluentMap(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Flue
   // `.build()`, `.toString()` at the end hand back what was built
   while (steps.length > 0 && ["build", ...pass].includes(methodName(steps[steps.length - 1]!))) steps.pop();
   for (const s of steps) if (!apply(acc, methodName(s), s, fn, fn)) return undefined;
+  // the calls on a variable holding it come after: only the value as it is read is complete
+  if (complete && acc.spec.filledOnly && acc.entries.length === 0) return undefined;
   const expr: Expr = acc.spec.items ? { k: "list", items: acc.items } : { k: "dict", entries: acc.entries };
   return { spec: acc.spec, expr, fn };
 }

@@ -3,7 +3,7 @@ import type { Scoped } from "../../ir/language.js";
 import type { CallExpr, ClassDef, FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
-import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps } from "../../ir/steps.js";
+import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { chainFrom, rawOf } from "./request.js";
@@ -65,6 +65,19 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
 }
 
 /**
+ * `request.newBuilder().header("Authorization", ...)`: a copy of a request built in the project, whose own steps (its
+ * URL, method, body) come first. A `newBuilder()` on anything else stays where the chain starts.
+ */
+function copiedRequest(fc: FluentChain, spec: BuiltRequestClient, ctx: IrCtx): FluentChain {
+  const start = fc.start;
+  if (!start || start.call.fn.k !== "attr" || start.call.fn.name !== "newBuilder" || start.call.args.length > 0) return fc;
+  const base = fluentChain({ expr: start.call.fn.obj, fn: start.fn }, (c) => calleeIs(c, spec.starts) !== undefined, ctx);
+  if (!base.start || calleeIs(base.start.call, spec.starts.filter((s) => s.includes("."))) === undefined) return fc;
+  const subst = base.subst || fc.subst ? new Map([...(base.subst ?? []), ...(fc.subst ?? [])]) : undefined;
+  return { start: base.start, steps: [...base.steps, ...fc.steps], ...(subst ? { subst } : {}) };
+}
+
+/**
  * A request built with a request builder and sent by a client method (`client.newCall(request)`, `httpClient.send(request,
  * handler)`): reported at the send. The client must be the library's, or the request its builder's.
  */
@@ -73,7 +86,7 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   const index = send && send.call === call && Object.hasOwn(spec.sends, send.name) ? spec.sends[send.name] : undefined;
   const request = index !== undefined ? argAt({ call, fn }, index) : undefined;
   if (!request) return undefined;
-  const fc = fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx);
+  const fc = copiedRequest(fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx), spec, ctx);
   // `Request.Builder()` names its library; a bare `newBuilder()` (protobuf, gRPC descriptors) needs the client to
   const own = !!fc.start && calleeIs(fc.start.call, spec.starts.filter((s) => s.includes("."))) !== undefined;
   if (!own && !chainFrom(chain, spec.imports)) return undefined;

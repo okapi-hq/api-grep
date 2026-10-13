@@ -7,15 +7,15 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.13.0";
+export const SCHEMA_VERSION = "1.14.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
-  .enum(["typescript", "javascript", "html", "python", "php", "kotlin"])
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java"])
   .meta({
     id: "Language",
     description:
-      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php and kotlin.",
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, and kotlin and java together (one front end, so names resolve across the two).",
   });
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */

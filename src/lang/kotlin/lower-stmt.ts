@@ -1,7 +1,8 @@
 import type { ClassDef, Expr, FunctionDef, Param } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { lowerExpr } from "./lower-expr.js";
-import { injectedValue, modifiersOf, type Modifiers } from "./modifiers.js";
+import { injectedValue } from "../jvm/annotations.js";
+import { modifiersOf, type Modifiers } from "./modifiers.js";
 import { hook, inBlock, inFunction, nameRef, newFunction, posOf, setHooks, type KtState, type Lambda } from "./state.js";
 import { lowerType } from "./types.js";
 

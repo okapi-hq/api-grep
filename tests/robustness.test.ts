@@ -63,6 +63,19 @@ describe("files that are not code", () => {
     const excluding = await scanFixture("robustness/not-typescript", { exclude: ["*/**"] });
     expect(excluding.diagnostics).toMatchObject({ filesSeen: 1, skipped: [], complete: true });
   });
+
+  it("skips a Java file that does not parse, and survives self-referencing constants and recursive factories", async () => {
+    const r = await scanFixture("robustness/java");
+    expect(at(r, "Status.java", 19)).toMatchObject({ provider: "github", pathTemplate: "/status", location: { language: "java" } });
+    expect(r.calls.map((c) => c.location.line)).toEqual([18, 19]);
+    expect(r.diagnostics).toMatchObject({
+      filesSeen: 2,
+      filesScanned: 1,
+      skipped: [{ file: "Broken.java", reason: "parse-error" }],
+      languages: { java: { filesSeen: 2, filesScanned: 1 } },
+      complete: false,
+    });
+  });
 });
 
 describe("scan paths", () => {

@@ -9,8 +9,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python, PHP and Kotlin (HTTP clients, Retrofit and the JVM SDK registries), Java
-with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
+(inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
+Retrofit, Feign and the JVM SDK registries; `docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -41,16 +41,22 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
   see `src/lang/html/`).
-- Tree-sitter languages (Python, PHP, Kotlin): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
+- Tree-sitter languages (Python, PHP, Kotlin, Java): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
-  values are in `src/lang/jvm/`, shared with Java later; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
+  values are in `src/lang/jvm/`, shared by Kotlin and Java; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
   its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit), detectors over the IR driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
   (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
   (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
   language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`).
+- Kotlin and Java (#43): one front end. `kotlinLanguage` lists Java's `IrSource` (`src/lang/java/index.ts`) in
+  `alsoReads`; `scanIr` (`src/lang/ir/scan.ts`) lowers every source language the scan asks for into one module set and
+  one `ProjectIndex`, each module keeping its `language` (the call's `location.language`), and computes the `maven`
+  coverage once. Java lowering is `src/lang/java/` (classes, `<init>` / `<clinit>`, annotations, lambdas, anonymous
+  classes, string building, configuration reads); helpers both languages lower the same way are in `src/lang/jvm/`
+  (`calls.ts`, `annotations.ts`, `paths.ts`).
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template,string-template}.ts`.
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
@@ -85,7 +91,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -113,5 +119,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   and #31 (Retrofit interfaces, `retrofit.ts` / `retrofit-link.ts`, URLs resolved by RFC 3986 in
   `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
   Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
-  #49, other JVM SDKs and builder forms #50, Java #43, DI-provided clients #46.
-- Next language candidates (Go, Ruby, Java, C#) and what each needs are listed at the end of `docs/languages.md`.
+  #49, other JVM SDKs and builder forms #50, DI-provided clients #46.
+- Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) is done; more Java clients
+  (Apache HttpClient, JAX-RS client), Lombok builders and Kotlin map index sets are #65.
+- Next language candidates (Go, Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

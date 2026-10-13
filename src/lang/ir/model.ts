@@ -4,6 +4,8 @@
  * language needs a lowering, its client and SDK tables, and nothing else.
  */
 
+import type { Language } from "../../report/schema.js";
+
 export interface Pos {
   /** 1-based line and column, like the TypeScript report. */
   line: number;
@@ -163,6 +165,8 @@ export interface ImportRef {
 export interface ModuleModel {
   /** Absolute path. */
   file: string;
+  /** The file's language, when its front end reads several (Kotlin and Java): the language of its calls. */
+  language?: Language;
   /** Python: dotted module name from the scanned root (`app.services.billing`); PHP: the namespace; Kotlin: the package. */
   name: string;
   imports: Map<string, ImportRef>;
