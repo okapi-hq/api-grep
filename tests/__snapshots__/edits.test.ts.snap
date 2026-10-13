@@ -1,5 +1,313 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`edited request arguments: kotlin > reads map["k"] = v on a HashMap and a mutableMapOf, optional in a branch unless every branch sets it 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "status": {
+            "enum": [
+              "draft",
+            ],
+            "type": "string",
+          },
+          "title": {
+            "hint": "title",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "title": "Linen Xenon",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-notes.com/v1/notes",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "status": "draft",
+            "title": "Maple Onyx",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-notes.com/v1/notes",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-notes.com",
+      "hostKind": "literal",
+      "id": "f9b80c408605",
+      "location": {
+        "col": 9,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 24,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes",
+      "provider": "api.example-notes.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-notes.com/v1/notes",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "id": {
+            "hint": "id",
+            "type": "string",
+          },
+          "pinned": {
+            "type": "boolean",
+          },
+          "title": {
+            "hint": "title",
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "title",
+          "pinned",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "id",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "id": "vro0byjh",
+            "pinned": true,
+            "title": "Indigo Quiet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.example-notes.com/v1/notes/1rq784if",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "id": "5opab86w",
+            "pinned": false,
+            "title": "Fjord Meadow",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.example-notes.com/v1/notes/mbkaf5vm",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-notes.com",
+      "hostKind": "literal",
+      "id": "34be6b476c37",
+      "location": {
+        "col": 9,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 35,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes/{id}",
+      "provider": "api.example-notes.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-notes.com/v1/notes/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "unirest",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "query",
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "tag",
+          "origin": "param",
+          "shape": {
+            "hint": "tag",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {
+            "q": "marble",
+            "tag": "timber",
+          },
+          "url": "https://api.example-notes.com/v1/search?q=marble&tag=timber",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-notes.com",
+      "hostKind": "literal",
+      "id": "eb279123dd94",
+      "location": {
+        "col": 9,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 44,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-notes.com",
+      "query": [
+        "q",
+        "tag",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "query",
+            "type": "string",
+          },
+          "tag": {
+            "hint": "tag",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+          "tag",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-notes.com/v1/search",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 2,
+      "unirest": 1,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "kotlin": 3,
+    },
+    "byProvider": {
+      "api.example-notes.com": 3,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
 exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge and unset 1`] = `
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
@@ -381,7 +689,7 @@ exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.14.0",
+  "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
       "guzzle": 1,
@@ -1487,7 +1795,7 @@ exports[`edited request arguments: python > keeps keys set in branches, optional
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.14.0",
+  "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -2232,7 +2540,7 @@ exports[`edited request arguments: typescript and javascript > reads property as
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.14.0",
+  "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
       "fetch": 1,

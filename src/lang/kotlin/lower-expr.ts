@@ -1,3 +1,4 @@
+import { addBranch } from "../ir/edits.js";
 import type { Arg, CallExpr, Expr } from "../ir/model.js";
 import { buildConfigValue } from "../jvm/build-config.js";
 import { field, named as namedNodes, type SyntaxNode } from "../tree-sitter.js";
@@ -125,6 +126,8 @@ function lowerIf(n: SyntaxNode, st: KtState): Expr {
   const cond = field(n, "condition");
   if (cond) lowerExpr(cond, st);
   const [then, alt] = named(n).filter((c) => c.id !== cond?.id);
+  // keys a map gets in one branch only are optional (`ir/edits.ts`); with an `else`, exactly one branch runs
+  for (const b of [then, alt]) if (b) addBranch(st.fn, b.startIndex, b.endIndex, alt ? { id: n.startIndex, size: 2 } : undefined);
   const a = then ? hook("statement")(then, st) : unknown(n);
   const b = alt ? hook("statement")(alt, st) : ({ k: "null" } as Expr);
   return { k: "cond", then: a, else: b };
@@ -135,7 +138,10 @@ function lowerWhen(n: SyntaxNode, st: KtState): Expr {
   const subject = named(n).find((c) => c.type === "when_subject");
   for (const c of subject ? named(subject) : []) hook("statement")(c, st);
   const values: Expr[] = [];
-  for (const entry of named(n).filter((c) => c.type === "when_entry")) {
+  const entries = named(n).filter((c) => c.type === "when_entry");
+  const exhaustive = entries.some((e) => e.childrenForFieldName("condition").every((c) => !c));
+  for (const entry of entries) {
+    addBranch(st.fn, entry.startIndex, entry.endIndex, exhaustive ? { id: n.startIndex, size: entries.length } : undefined);
     const conditions = entry.childrenForFieldName("condition").filter((c): c is SyntaxNode => !!c);
     for (const c of conditions) lowerExpr(c, st);
     const body = named(entry).pop();

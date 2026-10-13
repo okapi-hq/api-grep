@@ -5,8 +5,8 @@ import { JVM_HTTP } from "../jvm/http/index.js";
 import { jvmManifests, normalizeMaven } from "../jvm/manifests.js";
 import { jvmImportRoots } from "../jvm/packages.js";
 import { JVM_REGISTRY } from "../jvm/registry/index.js";
-import { builderValue } from "../ir/builders.js";
 import { javaSource } from "../java/index.js";
+import { jvmResolveCall } from "../jvm/lombok.js";
 import { lowerKotlin } from "./lower.js";
 import { semicolonsBeforeBraces } from "./repair.js";
 
@@ -43,8 +43,9 @@ export const kotlinLanguage: IrLanguage = {
   typedParams: true,
   registry: JVM_REGISTRY,
   ...JVM_HTTP,
-  // `X.builder().a(1).build()` of an SDK's parameter class: the dict of the fields it sets
-  resolveCall: builderValue,
+  // `X.builder().a(1).build()` of an SDK's parameter class or a Lombok `@Builder` class: the dict of the fields it
+  // sets; a Lombok getter: its field
+  resolveCall: jvmResolveCall,
   passthrough: {
     functions: new Set([
       ...["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"],

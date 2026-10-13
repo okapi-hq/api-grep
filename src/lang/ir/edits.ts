@@ -64,6 +64,9 @@ function reachOf(fn: FunctionDef, offset: number, at: number | undefined): Reach
   return only?.group ? { kind: "group", branch: { ...only, group: only.group } } : { kind: "maybe" };
 }
 
+/** Whether a statement at `offset` may not run before `at` (it is in a branch or a loop body that `at` is not in). */
+export const mayNotRun = (fn: FunctionDef, offset: number, at: number | undefined): boolean => reachOf(fn, offset, at).kind !== "always";
+
 /** Per key, the branches of each exhaustive chain that set it: a key set in all of them is always sent. */
 type Coverage = Map<string, Map<number, Set<number>>>;
 

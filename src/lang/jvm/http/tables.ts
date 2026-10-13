@@ -21,6 +21,8 @@ export interface BuiltRequestClient {
 export interface BodyWrapper {
   value?: number | "receiver" | "content";
   contentType?: number | "media";
+  /** The encoding the wrapper gives (`Entity.json(x)`), when no argument names a content type. */
+  encoding?: BodyEncoding;
   none?: boolean;
 }
 

@@ -1,0 +1,2071 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies under their JSON names, and getters as fields 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "customer_id": {
+            "hint": "customer",
+            "type": "string",
+          },
+          "quantity": {
+            "enum": [
+              2,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "customer_id",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "customer_id",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "customer_id": "hg13m24s",
+            "quantity": 2,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/orders",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "f5196d970ad4",
+      "location": {
+        "col": 9,
+        "file": "Orders.java",
+        "language": "java",
+        "line": 49,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/orders",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/orders",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "source": {
+            "enum": [
+              "warehouse",
+            ],
+            "type": "string",
+          },
+          "tracking_code": {
+            "hint": "code",
+            "type": "string",
+          },
+        },
+        "required": [
+          "source",
+          "tracking_code",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "tracking_code",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "source": "warehouse",
+            "tracking_code": "6AJK3H",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/events",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "34608f503ef7",
+      "location": {
+        "col": 9,
+        "file": "Orders.java",
+        "language": "java",
+        "line": 53,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/events",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/events",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Refund",
+        "properties": {
+          "lines": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "orderId": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "orderId",
+          "lines",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Refund",
+      "bodySource": "type",
+      "client": "spring-rest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "lines": [
+              "umber cedar",
+            ],
+            "orderId": "78lvtu3l",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/refunds",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "const",
+      "id": "a6438a955293",
+      "location": {
+        "col": 9,
+        "file": "Orders.java",
+        "language": "java",
+        "line": 59,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/refunds",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/refunds",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 3,
+    },
+    "byHostKind": {
+      "const": 2,
+      "literal": 1,
+    },
+    "byLanguage": {
+      "java": 3,
+    },
+    "byProvider": {
+      "api.example-shop.com": 3,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and the Vert.x WebClient, and leaves lookalike calls out 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "async-http-client",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Yarrow marble echo summit amber canyon.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "dry_run": "false",
+          },
+          "url": "https://api.example-alerts.com/v1/batches?dry_run=false",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "675ac8c052cd",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 21,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/batches",
+      "provider": "api.example-alerts.com",
+      "query": [
+        "dry_run",
+      ],
+      "queryShape": {
+        "properties": {
+          "dry_run": {
+            "enum": [
+              "false",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "dry_run",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/batches",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "enum": [
+              "password",
+            ],
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "username",
+          "grant_type",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "async-http-client",
+      "dynamic": [
+        {
+          "name": "username",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "password",
+            "username": "olga25",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://auth.example-alerts.com/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "auth.example-alerts.com",
+      "hostKind": "literal",
+      "id": "3ba73c925ff4",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 29,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/token",
+      "provider": "auth.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://auth.example-alerts.com/token",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "async-http-client",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/silences/j51ul2fz",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "926212748061",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 33,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/silences/{id}",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/silences/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "archived": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "archived",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "unirest",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "archived": true,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+          },
+          "method": "PUT",
+          "query": {
+            "force": "true",
+          },
+          "url": "https://api.example-alerts.com/v1/alerts/nxvk85gu?force=true",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "eb6facf9d13b",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 37,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/alerts/{id}",
+      "provider": "api.example-alerts.com",
+      "query": [
+        "force",
+      ],
+      "queryShape": {
+        "properties": {
+          "force": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "force",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/alerts/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "list": {
+            "enum": [
+              "weekly",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "list",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "unirest",
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "chloe.okafor@example.com",
+            "list": "weekly",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/subscribers",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "b5a02c9fb28f",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 46,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/subscribers",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/subscribers",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "count": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+          "type": {
+            "enum": [
+              "ping",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "type",
+          "count",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "vertx-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "count": 1,
+            "type": "ping",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+            "x-source": "worker",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/events",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "x-source": "worker",
+      },
+      "headers": [
+        "x-source",
+        "authorization",
+      ],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "a3cd9db6cf6b",
+      "location": {
+        "col": 9,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 50,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/events",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/events",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "vertx-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "deep": "true",
+          },
+          "url": "https://api.example-alerts.com/v1/health?deep=true",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "cb4fb6c19d48",
+      "location": {
+        "col": 9,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 59,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/health",
+      "provider": "api.example-alerts.com",
+      "query": [
+        "deep",
+      ],
+      "queryShape": {
+        "properties": {
+          "deep": {
+            "enum": [
+              "true",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "deep",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/health",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "name": {
+            "hint": "name",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "vertx-webclient",
+      "dynamic": [
+        {
+          "name": "name",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "name": "Juniper Opal",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "http://api.example-alerts.com/v1/workers",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "24149090768a",
+      "location": {
+        "col": 9,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 65,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/workers",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "http",
+      "urlTemplate": "http://api.example-alerts.com/v1/workers",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "async-http-client",
+      "dynamic": [
+        {
+          "name": "expr",
+          "origin": "unknown",
+          "where": "method",
+        },
+        {
+          "name": "url",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "d241ae39d700",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 78,
+      },
+      "method": "DYNAMIC",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{url}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "q": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "vertx-webclient",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "q": "birch",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://search.example-alerts.com/v1/query",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "search.example-alerts.com",
+      "hostKind": "literal",
+      "id": "6068c821ad56",
+      "location": {
+        "col": 9,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 84,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/query",
+      "provider": "search.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://search.example-alerts.com/v1/query",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "unirest",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "af2c2cd35f0c",
+      "location": {
+        "col": 43,
+        "file": "Lookalikes.java",
+        "language": "java",
+        "line": 32,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "async-http-client": 4,
+      "unirest": 3,
+      "vertx-webclient": 4,
+    },
+    "byHostKind": {
+      "literal": 10,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "java": 11,
+    },
+    "byProvider": {
+      "api.example-alerts.com": 8,
+      "auth.example-alerts.com": 1,
+      "search.example-alerts.com": 1,
+      "unknown": 1,
+    },
+    "callsFound": 11,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 7,
+    "withDynamic": 7,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves resources and responses out 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "fromType": "Item",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+          },
+          "sku": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Item",
+      "bodySource": "type",
+      "client": "jaxrs-client",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "quantity": 2,
+            "sku": "ultra delta",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "notify": "true",
+          },
+          "url": "https://api.example-stock.com/v1/items?notify=true",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-stock.com",
+      "hostKind": "const",
+      "id": "2948ac0ab808",
+      "location": {
+        "col": 16,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 20,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-stock.com",
+      "query": [
+        "notify",
+      ],
+      "queryShape": {
+        "properties": {
+          "notify": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "notify",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-stock.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-stock.com/v1/items/lagoon/count",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-stock.com",
+      "hostKind": "const",
+      "id": "27e14bc1ceed",
+      "location": {
+        "col": 29,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{sku}/count",
+      "provider": "api.example-stock.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-stock.com/v1/items/{sku}/count",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "password": {
+            "hint": "password",
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "username",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "username",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "password",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "password": "<password>",
+            "username": "iris45",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://auth.example-stock.com/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "auth.example-stock.com",
+      "hostKind": "literal",
+      "id": "088581a8e2aa",
+      "location": {
+        "col": 16,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/token",
+      "provider": "auth.example-stock.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://auth.example-stock.com/token",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Restock",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+          },
+        },
+        "required": [
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Restock",
+      "bodySource": "type",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "quantity": 7,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-warehouse": "north",
+          },
+          "method": "PATCH",
+          "query": {},
+          "url": "https://api.example-stock.com/v1/items/willow",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-warehouse": "north",
+      },
+      "headers": [
+        "x-warehouse",
+      ],
+      "host": "api.example-stock.com",
+      "hostKind": "const",
+      "id": "ab4aafa57f12",
+      "location": {
+        "col": 16,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 40,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{sku}",
+      "provider": "api.example-stock.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-stock.com/v1/items/{sku}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-stock.com/v1/items/velvet",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-stock.com",
+      "hostKind": "const",
+      "id": "5ce087646b41",
+      "location": {
+        "col": 9,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 44,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{sku}",
+      "provider": "api.example-stock.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-stock.com/v1/items/{sku}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-stock.com/v1/items/velvet",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-stock.com",
+      "hostKind": "const",
+      "id": "8d3013ccd70a",
+      "location": {
+        "col": 16,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 48,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{sku}",
+      "provider": "api.example-stock.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-stock.com/v1/items/{sku}",
+      "via": "wrapper:Inventory.send",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "jaxrs-client",
+      "dynamic": [
+        {
+          "name": "method",
+          "origin": "param",
+          "where": "method",
+        },
+        {
+          "name": "url",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "449f4f0ecc8f",
+      "location": {
+        "col": 16,
+        "file": "Inventory.java",
+        "language": "java",
+        "line": 53,
+      },
+      "method": "DYNAMIC",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "jaxrs-client": 7,
+    },
+    "byHostKind": {
+      "const": 5,
+      "literal": 1,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "java": 7,
+    },
+    "byProvider": {
+      "api.example-stock.com": 5,
+      "auth.example-stock.com": 1,
+      "unknown": 1,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 4 and 5: request objects, builders, URIBuilder, entities, async and fluent 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Estuary fable saffron maple echo estuary.",
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-links.com/v1/links",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "7547a3c3365e",
+      "location": {
+        "col": 47,
+        "file": "Links.java",
+        "language": "java",
+        "line": 30,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/links",
+      "provider": "api.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/links",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "query",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "20",
+            "q": "saffron",
+          },
+          "url": "https://api.example-links.com/v1/search?q=saffron&limit=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "fb6190af9d95",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-links.com",
+      "query": [
+        "q",
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              "20",
+            ],
+            "type": "string",
+          },
+          "q": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/search",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "client_id": {
+            "hint": "id",
+            "type": "string",
+          },
+          "client_secret": {
+            "hint": "secret",
+            "type": "string",
+          },
+          "grant_type": {
+            "enum": [
+              "client_credentials",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "client_id",
+          "client_secret",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "client_id",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "client_secret",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "client_id": "bf761d8e",
+            "client_secret": "<secret>",
+            "grant_type": "client_credentials",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://auth.example-links.com/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "auth.example-links.com",
+      "hostKind": "literal",
+      "id": "2f780c5ebae5",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 48,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/oauth/token",
+      "provider": "auth.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://auth.example-links.com/oauth/token",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-reason": "expired",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-links.com/v1/links/jpcy44os",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-reason": "expired",
+      },
+      "headers": [
+        "x-reason",
+      ],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "56ea3b504794",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 53,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/links/{id}",
+      "provider": "api.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/links/{id}",
+      "via": "wrapper:Links.send",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "title": {
+            "hint": "title",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "title": "Velvet Fjord",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-links.com/v1/links/uts3i0jc/title",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "0a8ee1c581a7",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 57,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/links/{id}/title",
+      "provider": "api.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/links/{id}/title",
+      "via": "wrapper:Links.send",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "url",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "25b7412051de",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 61,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Grove timber mosaic meadow jetty fable.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-links.com/v1/events",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "3066f591cf40",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 65,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/events",
+      "provider": "api.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/events",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "list": {
+            "enum": [
+              "weekly",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "list",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "pablo.kovac@example.com",
+            "list": "weekly",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "x-source": "site",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-links.com/v1/subscribers",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-source": "site",
+      },
+      "headers": [
+        "x-source",
+      ],
+      "host": "api.example-links.com",
+      "hostKind": "const",
+      "id": "2c26b639a881",
+      "location": {
+        "col": 16,
+        "file": "Links.java",
+        "language": "java",
+        "line": 69,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/subscribers",
+      "provider": "api.example-links.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-links.com/v1/subscribers",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Kestrel jetty estuary river ultra mosaic.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.example-reports.com/v2/reports/c2prfdg6",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.example-reports.com",
+      "hostKind": "literal",
+      "id": "74f1b74a72a4",
+      "location": {
+        "col": 16,
+        "file": "Reports.java",
+        "language": "java",
+        "line": 28,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/reports/{id}",
+      "provider": "api.example-reports.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-reports.com/v2/reports/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "file": {
+            "hint": "file",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "kind": {
+            "enum": [
+              "pdf",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "kind",
+          "file",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [
+        {
+          "name": "file",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "file": "jetty/fjord.pdf",
+            "kind": "pdf",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-reports.com/v2/uploads",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-reports.com",
+      "hostKind": "literal",
+      "id": "65f52a23e590",
+      "location": {
+        "col": 9,
+        "file": "Reports.java",
+        "language": "java",
+        "line": 32,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/uploads",
+      "provider": "api.example-reports.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-reports.com/v2/uploads",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "apache-httpclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Yarrow pebble inlet inlet island marble.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-reports.com/v2/ping",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-reports.com",
+      "hostKind": "literal",
+      "id": "814d8d664a4f",
+      "location": {
+        "col": 9,
+        "file": "Reports.java",
+        "language": "java",
+        "line": 41,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/ping",
+      "provider": "api.example-reports.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-reports.com/v2/ping",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "apache-httpclient": 11,
+    },
+    "byHostKind": {
+      "const": 6,
+      "literal": 4,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "java": 11,
+    },
+    "byProvider": {
+      "api.example-links.com": 6,
+      "api.example-reports.com": 3,
+      "auth.example-links.com": 1,
+      "unknown": 1,
+    },
+    "callsFound": 11,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 8,
+    "withDynamic": 8,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

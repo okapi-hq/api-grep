@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/65",
+  "calls": [
+    {"file": "Inventory.java", "line": 20, "provider": "api.example-stock.com"},
+    {"file": "Inventory.java", "line": 27, "provider": "api.example-stock.com"},
+    {"file": "Inventory.java", "line": 34, "provider": "auth.example-stock.com"},
+    {"file": "Inventory.java", "line": 40, "provider": "api.example-stock.com"},
+    {"file": "Inventory.java", "line": 44, "provider": "api.example-stock.com"},
+    {"file": "Inventory.java", "line": 48, "provider": "api.example-stock.com"}
+  ]
+}

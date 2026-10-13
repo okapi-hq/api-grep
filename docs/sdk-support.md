@@ -11,7 +11,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | TypeScript / JavaScript (npm) | 78 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
 | Python (PyPI) | 42 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
-| Kotlin and Java (Maven) | 17 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit` |
+| Kotlin and Java (Maven) | 17 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
 
 | provider | TypeScript / JavaScript (npm) | Python (PyPI) | PHP (Composer) | Kotlin and Java (Maven) |
 |---|---|---|---|---|

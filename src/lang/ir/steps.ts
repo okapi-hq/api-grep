@@ -86,6 +86,8 @@ export interface FluentChain {
   steps: ScopedCall[];
   /** The parameters of the factories the chain went through, bound to the arguments of their calls. */
   subst?: Subst;
+  /** Without a start: the value the chain was last followed to (a parameter, an unknown call). */
+  end?: Scoped;
 }
 
 const classBinding = (b: Binding): ClassDef | undefined => (b.kind === "class" ? b.cls : undefined);
@@ -145,11 +147,12 @@ function below(e: Expr, fn: FunctionDef, ctx: IrCtx, steps: ScopedCall[], subst:
 export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: IrCtx): FluentChain {
   const steps: ScopedCall[] = [];
   const subst: Subst = new Map();
-  const done = (start?: ScopedCall): FluentChain => ({ ...(start ? { start } : {}), steps, ...(subst.size > 0 ? { subst } : {}) });
+  let end: Scoped = s;
+  const done = (start?: ScopedCall): FluentChain => ({ ...(start ? { start } : { end }), steps, ...(subst.size > 0 ? { subst } : {}) });
   let cur: Scoped | undefined = s;
   // calls down the expression are bounded by its size; hops through variables, fields and factories are counted
   for (let hops = 0; cur && hops < MAX_DEPTH && steps.length < MAX_STEPS; ) {
-    const { expr, fn }: Scoped = cur;
+    const { expr, fn }: Scoped = (end = cur);
     if (expr.k === "call" && isStart(expr)) return done({ call: expr, fn });
     // `this.buildRequest(url)`, `Requests.get(url)`: a method of the project returning the builder, not a step of it
     const made: Scoped | undefined = expr.k === "call" && factoryMethod(expr.fn, fn, ctx) ? factoryReturn(expr, fn, ctx, subst) : undefined;

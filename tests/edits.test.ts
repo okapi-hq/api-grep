@@ -34,6 +34,16 @@ describe("edited request arguments: python", () => {
   });
 });
 
+describe("edited request arguments: kotlin", () => {
+  it("reads map[\"k\"] = v on a HashMap and a mutableMapOf, optional in a branch unless every branch sets it", async () => {
+    const r = await scanFixture("kotlin/maps");
+    expect(r).toMatchSnapshot();
+    expect(keys(at(r, "Notes.kt", 24))).toEqual({ keys: ["title", "status"], required: ["title"] });
+    expect(keys(at(r, "Notes.kt", 35))).toEqual({ keys: ["id", "title", "pinned"], required: ["id", "title", "pinned"] });
+    expect(at(r, "Notes.kt", 44)).toMatchObject({ client: "unirest", query: ["q", "tag"], headers: ["x-api-key"] });
+  });
+});
+
 describe("edited request arguments: php", () => {
   it("reads $params['k'] = v, +=, array_merge and unset", async () => {
     const r = await scanFixture("php/resolve/mutated-params");

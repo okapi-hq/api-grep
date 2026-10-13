@@ -63,7 +63,8 @@ function lowerField(m: SyntaxNode, ctx: Members): void {
     if (!type) continue;
     ctx.cls.fieldTypes.set(name, type);
     if (ctx.body && !isStatic && !mods.keywords.has("transient") && !isTransient(mods.annotations)) {
-      ctx.cls.annotations.push({ name: serialName(mods.annotations) ?? name, type, optional: optionalField(type, mods.annotations) });
+      const json = serialName(mods.annotations);
+      ctx.cls.annotations.push({ name: json ?? name, type, optional: optionalField(type, mods.annotations), ...(json && json !== name ? { field: name } : {}) });
     }
   }
 }

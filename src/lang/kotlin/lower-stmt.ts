@@ -1,9 +1,10 @@
+import { addBranch } from "../ir/edits.js";
 import type { ClassDef, Expr, FunctionDef, Param } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { lowerExpr } from "./lower-expr.js";
 import { injectedValue } from "../jvm/annotations.js";
 import { modifiersOf, type Modifiers } from "./modifiers.js";
-import { hook, inBlock, inFunction, nameRef, newFunction, posOf, setHooks, type KtState, type Lambda } from "./state.js";
+import { hook, inBlock, inFunction, isLocal, nameRef, newFunction, posOf, setHooks, type KtState, type Lambda } from "./state.js";
 import { lowerType } from "./types.js";
 
 const NONE: Expr = { k: "unknown", text: "" };
@@ -140,6 +141,16 @@ export function addField(cls: ClassDef, name: string, value: Expr, fn: FunctionD
   cls.fields.set(name, [...(cls.fields.get(name) ?? []), { value, fn }]);
 }
 
+/**
+ * `body["k"] = v` on a local map: a key added to it (#38), folded into a `mutableMapOf(...)` literal by `ir/edits.ts`
+ * and read as an entry of a `HashMap()` by `ir/fluent.ts`.
+ */
+function indexSet(left: SyntaxNode, value: Expr, offset: number, st: KtState): void {
+  const [obj, key] = named(left);
+  if (obj?.type !== "identifier" || !key || !isLocal(st.scope, obj.text)) return;
+  st.fn.assigns.push({ target: obj.text, value: { k: "dict", entries: [{ key: lowerExpr(key, st), value }] }, offset, edit: "merge" });
+}
+
 /** `x = v`, `x += v`, `this.x = v`; a bare member name is the implicit `this`. */
 function lowerAssignment(n: SyntaxNode, st: KtState): void {
   const left = field(n, "left");
@@ -147,6 +158,7 @@ function lowerAssignment(n: SyntaxNode, st: KtState): void {
   const op = field(n, "operator")?.text ?? "=";
   const value = right ? lowerExpr(right, st) : undefined;
   if (!left || !value || (op !== "=" && op !== "+=")) return;
+  if (left.type === "index_expression" && op === "=") return indexSet(left, value, n.endIndex, st);
   const target = left.type === "identifier" ? nameRef(left.text, posOf(left), st) : left.type === "navigation_expression" ? lowerExpr(left, st) : undefined;
   if (target?.k === "name") st.fn.assigns.push({ target: target.name, value, offset: n.endIndex, ...(op === "+=" ? { augmented: true } : {}) });
   else if (target?.k === "attr" && target.obj.k === "this" && st.cls && op === "=") addField(st.cls.def, target.name, value, st.fn);
@@ -156,6 +168,7 @@ function lowerAssignment(n: SyntaxNode, st: KtState): void {
 
 /** `for (u in urls) { ... }`: the loop variables are names of its body. */
 function lowerFor(n: SyntaxNode, st: KtState): void {
+  addBranch(st.fn, n.startIndex, n.endIndex);
   const inner = inBlock(st);
   for (const c of named(n)) {
     if (c.type === "variable_declaration") inner.scope.names.add(named(c)[0]?.text ?? "");
@@ -190,6 +203,7 @@ export function lowerStatement(c: SyntaxNode, st: KtState): Expr {
       return NONE;
     case "while_statement":
     case "do_while_statement":
+      addBranch(st.fn, c.startIndex, c.endIndex);
       for (const x of named(c)) if (x.type !== "label" && !isComment(x)) lowerStatement(x, st);
       return NONE;
     case "type_alias":
