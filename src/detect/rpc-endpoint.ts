@@ -77,7 +77,8 @@ export function fromRpcClient(name: string, args: Expression[], reg: RegistryEnt
 function projectRpcEndpoint(project: Project, reg: RegistryEntry): Endpoint | null {
   const spec = reg.endpoint!;
   const nonHttp = spec.nonHttp ?? [];
-  const marks = [reg.package, ...(reg.aliases ?? [])];
+  const marks = spec.clientPackage ? [spec.clientPackage] : [reg.package, ...(reg.aliases ?? [])];
+  const ofClients = (pkg: string | undefined): boolean => (spec.clientPackage ? pkg === spec.clientPackage : ofEntry(pkg, reg));
   const out: Endpoint[] = [];
   for (const sf of project.getSourceFiles()) {
     if (sf.isDeclarationFile() || sf.isFromExternalLibrary() || !marks.some((m) => sf.getFullText().includes(m))) continue;
@@ -85,7 +86,7 @@ function projectRpcEndpoint(project: Project, reg: RegistryEntry): Endpoint | nu
     for (const c of nodes) {
       const name = calledName(c) ?? "";
       const client = Object.hasOwn(spec.clients, name);
-      if ((!client && !nonHttp.includes(name)) || !ofEntry(describeCallee(c).package, reg)) continue;
+      if ((!client && !nonHttp.includes(name)) || !ofClients(describeCallee(c).package)) continue;
       const endpoint = client ? fromRpcClient(name, argsOf(c), reg) : null;
       if (!endpoint) return null;
       out.push(endpoint);

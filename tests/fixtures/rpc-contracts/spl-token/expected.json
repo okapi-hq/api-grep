@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/78",
+  "calls": [
+    {"file": "payouts.ts", "line": 8, "provider": "helius", "operation": "getAccountInfo"},
+    {"file": "payouts.ts", "line": 13, "provider": "helius", "operation": "getAccountInfo"},
+    {"file": "payouts.ts", "line": 17, "provider": "helius", "operation": "sendTransaction"}
+  ]
+}

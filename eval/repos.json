@@ -51,5 +51,7 @@
   { "name": "solana-explorer", "url": "https://github.com/solana-foundation/explorer.git" },
   { "name": "grants-stack-indexer", "url": "https://github.com/gitcoinco/grants-stack-indexer.git" },
   { "name": "aave-interface", "url": "https://github.com/aave/interface.git" },
-  { "name": "safe-eth-py", "url": "https://github.com/safe-global/safe-eth-py.git", "language": "python" }
+  { "name": "safe-eth-py", "url": "https://github.com/safe-global/safe-eth-py.git", "language": "python" },
+  { "name": "simple-arbitrage", "url": "https://github.com/flashbots/simple-arbitrage.git" },
+  { "name": "uniswap-python", "url": "https://github.com/uniswap-python/uniswap-python.git", "language": "python" }
 ]
