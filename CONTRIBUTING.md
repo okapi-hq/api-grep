@@ -34,7 +34,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 |---|---|
 | `src/lang/` | language front ends: `typescript/` (wraps the pipeline below for TypeScript, JavaScript and HTML), `html/` (inline scripts, forms, template tags), `ir/` (the engine shared by tree-sitter languages), `python/`, `php/`, `kotlin/`, `jvm/` |
 | `src/lang/python/`, `src/lang/php/` | lowering, HTTP client tables (`clients.json`), SDK registries (`registry/`), manifests, import names / namespaces, language detectors (urllib, curl, streams, PSR-18, Laravel `config()`) |
-| `src/lang/kotlin/`, `src/lang/jvm/` | Kotlin lowering; what the JVM languages share: Gradle and Maven manifests, `BuildConfig`, and the HTTP clients (`jvm/http/`: OkHttp and its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit, with their tables in `clients.json`) |
+| `src/lang/kotlin/`, `src/lang/jvm/` | Kotlin lowering; what the JVM languages share: Gradle and Maven manifests, package roots, `BuildConfig`, the HTTP clients (`jvm/http/`: OkHttp and its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit, with their tables in `clients.json`) and the SDK registries (`jvm/registry/`) |
 | `src/assemble.ts` | turns what a front end resolved into a report `Call` (provider, id, `optionsOpaque`, `bodySource`), for every language |
 | `src/operation/` | protocols that name the operation outside the URL, read from the resolved request for every language: `json-rpc.ts` (#34), `graphql.ts` and `graphql-document.ts` (#35; TypeScript documents in `src/resolve/graphql-source.ts`) |
 | `src/ast/` | TypeScript: ts-morph helpers shared by every stage: unwrapping, member chains, object literals, classes, import origins |
@@ -157,7 +157,7 @@ narrow a request (`collection`, `document`). See `IrRegistryEntry` in
    `_` for `-`. `tests/unit/ir-registries.test.ts` checks both.
 3. Add a fixture in `tests/fixtures/python/sdk/` and run `pnpm gen:support`.
 
-The Python and PHP Stripe registries are derived from the TypeScript one: run
+The Python, PHP and JVM Stripe registries are derived from the TypeScript one: run
 `pnpm gen:stripe-ports` after `pnpm gen:registry stripe`.
 
 ### PHP
@@ -176,6 +176,40 @@ named arguments are keyword arguments (`bodyKwargs`, `kw:<name>`).
    [`src/lang/php/namespaces.json`](src/lang/php/namespaces.json); `tests/unit/ir-registries.test.ts`
    checks both.
 3. Add a fixture in `tests/fixtures/php/sdk/` and run `pnpm gen:support`.
+
+### Kotlin and Java (JVM)
+
+JVM registries live in `src/lang/jvm/registry/` and use the Python format; Kotlin reads them now and Java will read
+the same files. `package` is the Maven `group:artifact` and `imports` the fully qualified client classes
+(`com.anthropic.client.okhttp.AnthropicOkHttpClient`) or the packages of static APIs (`com.stripe.model`). Accessor
+calls make the key (`client.chat().completions().create(params)` is `chat.completions.create`). `instance.build` names
+the call that turns a client builder into the client (`"build"` for `S3Client.builder().region(r).build()`), and a
+`builders` entry ending in `*` matches a prefix (`set*`). `sameClassesAs` lists the artifacts that ship classes of the
+same names (the Android `firebase-messaging` and firebase-admin's `FirebaseMessaging`): where the manifests declare one
+of them and not the entry's package, the entry does not match. Parameters given as builders are described by `setters`:
+
+```json
+"setters": {
+  "packages": ["com.anthropic.models"],
+  "case": "snake",
+  "prefixes": ["add"],
+  "fields": { "addUserMessage": "messages:user", "putAdditionalHeader": "" },
+  "constants": { "Model": "kebab", "*": "snake" }
+}
+```
+
+`X.builder() ... .build()` on a class of `packages` reads as the dict of the fields its setters set (also built in
+steps on a variable, or filled by a lambda: `s3.getObject { it.bucket(b) }`). `case` turns a setter into a field
+(`snake`, `camel`, `pascal`); `prefixes` drops `set`, makes `add` append to the plural list field and `put` set a key of
+a map field; `fields` names the exceptions (`messages:user` adds `{role: "user", content: ...}`, `""` is not a body
+field); `constants` turns the enum constants of those classes into strings, with `constantRewrites` for the ids the
+case does not give (`gpt-4-1` -> `gpt-4.1`). See `SetterRules` in [`src/lang/ir/language.ts`](src/lang/ir/language.ts).
+
+1. Add the file and import it in [`src/lang/jvm/registry/index.ts`](src/lang/jvm/registry/index.ts) (`JVM_REGISTRY`).
+2. List the artifact under the provider's `packages.maven` in `providers.json`, and its package roots in
+   [`src/lang/jvm/packages.json`](src/lang/jvm/packages.json) when they are not its group id;
+   `tests/unit/ir-registries.test.ts` checks both.
+3. Add a fixture with an `expected.json` in `tests/fixtures/kotlin/sdk/` and run `pnpm gen:support`.
 
 ## Adding a language
 

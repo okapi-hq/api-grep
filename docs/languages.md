@@ -11,7 +11,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | HTML | supported | inline scripts through the type checker, forms read directly | npm (CDN scripts) | `package.json` |
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
-| Kotlin | supported: HTTP clients and Retrofit interfaces (SDK registries #33 next) | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
+| Kotlin | supported: HTTP clients, Retrofit interfaces and SDK registries | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
 
 ## Goals
 
@@ -129,10 +129,14 @@ as `IrRegistryEntry` / `IrMethodSpec` in `src/lang/ir/language.ts`:
 - `builders`: call segments that only narrow a request (`collection`, `document`, `with_raw_response`);
 - bodies from keyword arguments: `bodyKwargs`, `bodyKw` (`params=` of StripeClient), `queryKwargs`;
 - path parameter sources `kw:<name>`, `seg:<segment>:<N>`, `chain:<a>,<b>`; `arg:N` also matches the keyword argument
-  named like the placeholder.
+  named like the placeholder;
+- JVM: `imports` are fully qualified classes (`com.anthropic.client.okhttp.AnthropicOkHttpClient`) or packages
+  (`com.stripe.model`), `instance.build` names the call that turns a client builder into the client
+  (`S3Client.builder().region(r).build()`), a `builders` name ending in `*` matches a prefix (`set*`), and `setters`
+  says how parameters given as builders read as dicts (see [Kotlin](#kotlin)).
 
-The Python and PHP Stripe registries are derived from the TypeScript one (itself generated from Stripe's OpenAPI spec)
-by `pnpm gen:stripe-ports`. The other registries were written against each SDK's own request code; their notes
+The Python, PHP and JVM Stripe registries are derived from the TypeScript one (itself generated from Stripe's OpenAPI
+spec) by `pnpm gen:stripe-ports`. The other registries were written against each SDK's own request code; their notes
 (versions checked, calls that send nothing) are in each file's `$comment` and `generatedFrom`. PHP 8 named arguments
 use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 
@@ -208,10 +212,48 @@ Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params +=
 
 ## Kotlin
 
-**Status:** parsed, lowered and resolved; the HTTP clients and Retrofit service interfaces below are detected. The
-JVM SDK registries (#33) come next. Java is #43.
+**Status:** parsed, lowered and resolved; the HTTP clients and Retrofit service interfaces below are detected, and SDK
+calls through the JVM registries (#33). Java is #43; it will read the same clients and registries.
 
-**Detected** (`src/lang/jvm/http/`, tables in `clients.json`):
+**SDKs:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
+AWS SDK for Java 2.x S3 and Bedrock Runtime, Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
+`FirestoreClient`, the Android SDK), Firebase Admin Auth, Cloud Messaging and Realtime Database, Twilio, Slack, Sentry
+and PostHog (the Android / JVM facade and posthog-java). The registries are in `src/lang/jvm/registry/`, keyed by Maven
+coordinates and fully qualified classes so that Java reuses them as they are.
+
+**SDK registries** (#33): JVM SDKs build clients with factories and builders, reach resources through accessor calls,
+and take parameters as builders.
+
+- **Clients:** `AnthropicOkHttpClient.fromEnv()`, `OpenAIOkHttpClient.builder().apiKey(k).baseUrl(u).build()`
+  (`instance.build`; `baseUrl` / `endpointOverride` / `host` give the base URL through `instance.urlArg`),
+  `StripeClient(key)`, `S3Client.create()`, `Slack.getInstance().methods(token)`, a declared type (`client:
+  AnthropicClient`, also before a factory: `slack.methods(token)` with `slack: Slack`), static configuration that
+  sends nothing (`Stripe.apiKey = ...`, `Twilio.init(...)`). The Android Firebase SDKs share firebase-admin's class
+  names (`FirebaseMessaging`, `FirebaseAuth`, `FirebaseDatabase`): where the manifests declare the Android artifact and
+  not firebase-admin, those classes are not firebase-admin's (`sameClassesAs`), so `subscribeToTopic(topic)` in an app
+  is not a server call.
+- **Methods:** accessor chains (`client.chat().completions().create(params)`, `client.models.generateContent(...)` with
+  `models` a field), static resource methods (`Customer.create(params)`, `Message.creator(...).create()`), operations
+  on a retrieved object (`Customer.retrieve(id).update(params)`), Firestore references (`collection(...)`,
+  `document(...)` and query calls narrow the request). `async()` and `withRawResponse()` are left out of method keys.
+- **Builders as bodies** (`src/lang/ir/builders.ts`, the language's `resolveCall`): `X.builder() ... .build()` on a
+  class of an SDK's parameter packages (`setters.packages`) reads as the dict of the fields its setters set, so shapes,
+  path parameters (`pathFromBody`: S3's `Bucket` and `Key`, Bedrock's `modelId`) and the model read it like a dict
+  literal. A builder kept in a variable collects the setters called on it before `.build()` in the same function;
+  nested builders (`addLineItem(LineItem.builder()...build())`) are nested objects; a lambda that fills the request
+  (`s3.getObject { it.bucket(b).key(k) }`, `chatPostMessage { it.channel(c) }`) reads the same way. Field names
+  follow each SDK's rule (`setters.case`): `maxTokens` -> `max_tokens` (OpenAI, Anthropic, Slack), `setEmail` ->
+  `email` (Stripe), `bucket` -> `Bucket` (S3), as written (Bedrock, FCM); `addTool` appends to `tools`, `putMetadata(k,
+  v)` sets `metadata.k`, `addUserMessage(text)` adds `{role: "user", content: text}` to `messages` (`setters.fields`).
+- **Models:** an enum constant of the SDK (`Model.CLAUDE_SONNET_4_5`, `ChatModel.GPT_4_1_MINI`) is the model id it
+  stands for (`claude-sonnet-4-5`, `gpt-4.1-mini`: `setters.constants` and `constantRewrites`); other enum constants
+  are their snake_case value (`SessionCreateParams.Mode.SUBSCRIPTION` -> `subscription`). String overloads
+  (`.model("gpt-4o")`) and models in the path (`generateContent("gemini-2.0-flash", ...)`) are read as in Python.
+- **Coverage:** a declared and imported JVM SDK with a registry and no call found is `imported-no-calls`. An import
+  that matches the package roots of several artifacts counts for a declared one first (firebase-admin's
+  `com.google.firebase.auth` is not the Android `firebase-auth`'s when only firebase-admin is declared).
+
+**HTTP clients** (`src/lang/jvm/http/`, tables in `clients.json`):
 
 - **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (also a bare `Builder()` when the client
   is OkHttp's; `url`, verbs, `method`, `header` /
@@ -337,6 +379,12 @@ file. A file that does not parse is then read once more with a `;` in place of t
   and `@Tag` are not listed, and the keys of a `@QueryMap` / `@HeaderMap` map are only known when the map is.
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
   flavors other than the first literal are not listed.
+- SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
+  Twilio creator arguments) give no body. A builder filled in `apply { ... }`, or in steps spread over several
+  functions, is not read; keys set in a branch are not marked optional. A path id given inside a params object rather
+  than as the first argument stays a placeholder. The `PostHogConfig` host given to `PostHog.setup` is not followed.
+- AWS artifacts other than S3 and Bedrock Runtime, the AWS SDK for Kotlin and other JVM SDKs listed in `providers.json`
+  are reported as `unsupported` in `coverage.sdks` (#49, #50).
 
 ## JavaScript and HTML
 
@@ -582,15 +630,15 @@ call site keeps its own single value.
 
 | issue | TypeScript / JavaScript / HTML | Python | PHP | Kotlin |
 |---|---|---|---|---|
-| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | supabase-kt, Firebase and Sentry artifacts listed in `providers.json` (registries: #33); per-file parse / internal errors |
+| #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt listed in `providers.json` (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json`: OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, negatives (server endpoints, JAX-RS resources, gRPC) |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries with #33 |
-| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"` |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json`: OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
+| #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
 | #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`; SOAP not yet (#36) | JSON-RPC and GraphQL from the body shape | same as Python | same engine; no JSON-RPC or GraphQL fixture until the HTTP clients (#32) |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
-| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture) |
+| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 
 ## Adding a language
 

@@ -1,0 +1,28 @@
+{
+  "$comment": "posthog-java (`com.posthog.java:posthog`): `PostHog.Builder(apiKey).host(h).build()`, then `posthog.capture(distinctId, event, properties)`; events are queued and sent in batches to /batch, as by posthog-android.",
+  "package": "com.posthog.java:posthog",
+  "imports": [
+    "com.posthog.java.PostHog"
+  ],
+  "provider": "posthog",
+  "host": "us.i.posthog.com",
+  "auth": "none",
+  "generatedFrom": "manual (posthog-java PostHog and its Builder)",
+  "instance": {
+    "names": [
+      "Builder",
+      "PostHog"
+    ],
+    "urlArg": {
+      "host": "0"
+    },
+    "build": "build"
+  },
+  "methods": {
+    "capture": {"method":"POST","path":"/batch","bodyKwargs":true},
+    "identify": {"method":"POST","path":"/batch","bodyKwargs":true},
+    "alias": {"method":"POST","path":"/batch","bodyKwargs":true},
+    "set": {"method":"POST","path":"/batch","bodyKwargs":true},
+    "setOnce": {"method":"POST","path":"/batch","bodyKwargs":true}
+  }
+}

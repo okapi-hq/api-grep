@@ -1,0 +1,21 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/33",
+  "skipped": [],
+  "calls": [
+    { "file": "Ask.kt", "line": 10, "provider": "openai" },
+    { "file": "Ask.kt", "line": 14, "provider": "openai" },
+    { "file": "Assistant.kt", "line": 15, "provider": "anthropic" },
+    { "file": "Assistant.kt", "line": 24, "provider": "anthropic" },
+    { "file": "Assistant.kt", "line": 27, "provider": "anthropic" },
+    { "file": "Assistant.kt", "line": 38, "provider": "anthropic" },
+    { "file": "Chat.kt", "line": 14, "provider": "openai" },
+    { "file": "Chat.kt", "line": 23, "provider": "openai" },
+    { "file": "Chat.kt", "line": 25, "provider": "openai" },
+    { "file": "Chat.kt", "line": 27, "provider": "openai" },
+    { "file": "Models.kt", "line": 16, "provider": "google-ai" },
+    { "file": "Models.kt", "line": 18, "provider": "google-ai" },
+    { "file": "Models.kt", "line": 21, "provider": "aws-bedrock" },
+    { "file": "Models.kt", "line": 23, "provider": "aws-bedrock" },
+    { "file": "Models.kt", "line": 30, "provider": "aws-bedrock" }
+  ]
+}

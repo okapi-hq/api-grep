@@ -9,7 +9,7 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python, PHP and Kotlin (HTTP clients and Retrofit; SDK registries #33 next), Java
+(inline scripts and forms), Python, PHP and Kotlin (HTTP clients, Retrofit and the JVM SDK registries), Java
 with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
@@ -48,7 +48,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   values are in `src/lang/jvm/`, shared with Java later; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
   its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit), detectors over the IR driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
-  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds).
+  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
+  (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
+  language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`).
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template,string-template}.ts`.
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
@@ -90,7 +92,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), keys from the
   code go through `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
-  `src/lang/php/registry/` (format: `IrRegistryEntry` in `src/lang/ir/language.ts`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
+  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in
+  `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
   Composer package in `src/lang/php/namespaces.json`; Java / Kotlin package roots of a Maven `group:artifact` that are
@@ -105,5 +108,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   language; `docs/languages.md` has a table of how each is covered in TypeScript, Python and PHP.
 - Kotlin: #29 (parsing, lowering, manifests), #32 (OkHttp with interceptors, `java.net.http`, Ktor, Spring, Feign)
   and #31 (Retrofit interfaces, `retrofit.ts` / `retrofit-link.ts`, URLs resolved by RFC 3986 in
-  `src/resolve/url-reference.ts`) are done; JVM SDK registries #33, Java #43, DI-provided clients #46.
+  `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
+  Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
+  #49, other JVM SDKs and builder forms #50, Java #43, DI-provided clients #46.
 - Next language candidates (Go, Ruby, Java, C#) and what each needs are listed at the end of `docs/languages.md`.

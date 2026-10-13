@@ -1,0 +1,18 @@
+{
+  "$comment": "sentry-java and sentry-android (also used from Kotlin) send events to the DSN's ingest host (the DSN is given to `Sentry.init` / `SentryAndroid.init`, which send nothing by themselves). Only the static capture methods are calls.",
+  "package": "io.sentry:sentry",
+  "aliases": ["io.sentry:sentry-android"],
+  "imports": ["io.sentry.Sentry"],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual (the capture methods of the Python sentry-sdk registry under io.sentry.Sentry's names)",
+  "methods": {
+    "captureException": {"method":"POST","path":"/api/{projectId}/envelope/"},
+    "captureMessage": {"method":"POST","path":"/api/{projectId}/envelope/"},
+    "captureEvent": {"method":"POST","path":"/api/{projectId}/envelope/"},
+    "captureFeedback": {"method":"POST","path":"/api/{projectId}/envelope/"},
+    "captureUserFeedback": {"method":"POST","path":"/api/{projectId}/envelope/"},
+    "captureCheckIn": {"method":"POST","path":"/api/{projectId}/envelope/"}
+  }
+}

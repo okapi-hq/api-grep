@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { IrRegistryEntry } from "../../src/lang/ir/language.js";
+import { normalizeMaven } from "../../src/lang/jvm/manifests.js";
 import { kotlinLanguage } from "../../src/lang/kotlin/index.js";
 import { phpLanguage } from "../../src/lang/php/index.js";
 import { normalizeComposer } from "../../src/lang/php/manifests.js";
@@ -9,9 +10,11 @@ import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
 const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*)$/;
 
-function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer"): void {
+const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven };
+
+function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven"): void {
   const ids = new Set(PROVIDERS.map((p) => p.id));
-  const normalize = ecosystem === "pypi" ? normalizePypi : normalizeComposer;
+  const normalize = NORMALIZE[ecosystem];
   const known = new Set([...sdkPackages(ecosystem).keys()].map(normalize));
   for (const e of entries) {
     expect(ids, `${e.package}: provider ${e.provider}`).toContain(e.provider);
@@ -34,6 +37,18 @@ describe("tree-sitter language registries", () => {
 
   it("php: providers exist, packages are known, params are well formed", () => {
     checkRegistry(phpLanguage.registry, "composer");
+  });
+
+  it("jvm: providers exist, packages are known, params are well formed", () => {
+    checkRegistry(kotlinLanguage.registry, "maven");
+  });
+
+  it("jvm: imports are classes or packages, setter rules name packages of the SDK", () => {
+    for (const e of kotlinLanguage.registry) {
+      for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][\w]*(?:\.[a-z][\w]*)+(?:\.[A-Z]\w*)?$/);
+      for (const p of e.setters?.packages ?? []) expect(p, e.package).toMatch(/^[a-z][\w]*(?:\.[a-z][\w]*)+$/);
+      for (const [pattern] of e.setters?.constantRewrites ?? []) expect(() => new RegExp(pattern), e.package).not.toThrow();
+    }
   });
 
   it("php: every Composer package with a provider has its namespaces", () => {

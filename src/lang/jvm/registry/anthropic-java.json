@@ -1,0 +1,97 @@
+{
+  "$comment": "anthropic-java (also used from Kotlin): `val client = AnthropicOkHttpClient.fromEnv()` (or `.builder().apiKey(k).baseUrl(u).build()`); `client.messages().create(params)` with `MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).addUserMessage(text).build()`: the builder's setters are the JSON body (camelCase setter, snake_case field), `Model` constants are model ids. Path ids are the first argument. Keys follow the Python registry, in the Java SDK's camelCase (`stream` is `createStreaming`); `async()` and `withRawResponse()` only change how the result comes back. Beta calls also send `?beta=true`, left out of the paths as in the other registries.",
+  "package": "com.anthropic:anthropic-java",
+  "imports": [
+    "com.anthropic.client.AnthropicClient",
+    "com.anthropic.client.AnthropicClientAsync",
+    "com.anthropic.client.okhttp.AnthropicOkHttpClient",
+    "com.anthropic.client.okhttp.AnthropicOkHttpClientAsync"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (keys of the Python registry in the Java SDK's naming, checked against the anthropic-sdk-java README)",
+  "instance": {
+    "names": [
+      "fromEnv",
+      "builder",
+      "AnthropicClient",
+      "AnthropicClientAsync",
+      "AnthropicOkHttpClient",
+      "AnthropicOkHttpClientAsync"
+    ],
+    "urlArg": {
+      "baseUrl": "0"
+    },
+    "build": "build"
+  },
+  "builders": [
+    "async",
+    "withRawResponse",
+    "withOptions"
+  ],
+  "setters": {
+    "packages": [
+      "com.anthropic.models"
+    ],
+    "case": "snake",
+    "prefixes": [
+      "add"
+    ],
+    "fields": {
+      "addUserMessage": "messages:user",
+      "addUserMessageOfBlockParams": "messages:user",
+      "addAssistantMessage": "messages:assistant",
+      "addAssistantMessageOfBlockParams": "messages:assistant",
+      "addMessage": "messages",
+      "enabledThinking": "thinking",
+      "additionalHeaders": "",
+      "putAdditionalHeader": "",
+      "additionalQueryParams": "",
+      "putAdditionalQueryParam": "",
+      "additionalBodyProperties": "",
+      "putAdditionalBodyProperty": ""
+    },
+    "constants": {
+      "Model": "kebab",
+      "*": "snake"
+    }
+  },
+  "methods": {
+    "messages.create": {"method":"POST","path":"/v1/messages","bodyArg":0},
+    "messages.createStreaming": {"method":"POST","path":"/v1/messages","bodyArg":0},
+    "messages.countTokens": {"method":"POST","path":"/v1/messages/count_tokens","bodyArg":0},
+    "messages.batches.create": {"method":"POST","path":"/v1/messages/batches","bodyArg":0},
+    "messages.batches.retrieve": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}","params":{"message_batch_id":"arg:0"}},
+    "messages.batches.list": {"method":"GET","path":"/v1/messages/batches","queryArg":0},
+    "messages.batches.cancel": {"method":"POST","path":"/v1/messages/batches/{message_batch_id}/cancel","params":{"message_batch_id":"arg:0"}},
+    "messages.batches.delete": {"method":"DELETE","path":"/v1/messages/batches/{message_batch_id}","params":{"message_batch_id":"arg:0"}},
+    "messages.batches.results": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}/results","params":{"message_batch_id":"arg:0"}},
+    "beta.messages.create": {"method":"POST","path":"/v1/messages","bodyArg":0},
+    "beta.messages.createStreaming": {"method":"POST","path":"/v1/messages","bodyArg":0},
+    "beta.messages.countTokens": {"method":"POST","path":"/v1/messages/count_tokens","bodyArg":0},
+    "beta.messages.batches.create": {"method":"POST","path":"/v1/messages/batches","bodyArg":0},
+    "beta.messages.batches.retrieve": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}","params":{"message_batch_id":"arg:0"}},
+    "beta.messages.batches.list": {"method":"GET","path":"/v1/messages/batches","queryArg":0},
+    "beta.messages.batches.cancel": {"method":"POST","path":"/v1/messages/batches/{message_batch_id}/cancel","params":{"message_batch_id":"arg:0"}},
+    "beta.messages.batches.delete": {"method":"DELETE","path":"/v1/messages/batches/{message_batch_id}","params":{"message_batch_id":"arg:0"}},
+    "beta.messages.batches.results": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}/results","params":{"message_batch_id":"arg:0"}},
+    "files.upload": {"method":"POST","path":"/v1/files","encoding":"multipart","bodyArg":0},
+    "files.list": {"method":"GET","path":"/v1/files","queryArg":0},
+    "files.retrieveMetadata": {"method":"GET","path":"/v1/files/{file_id}","params":{"file_id":"arg:0"}},
+    "files.download": {"method":"GET","path":"/v1/files/{file_id}/content","params":{"file_id":"arg:0"}},
+    "files.delete": {"method":"DELETE","path":"/v1/files/{file_id}","params":{"file_id":"arg:0"}},
+    "beta.files.upload": {"method":"POST","path":"/v1/files","encoding":"multipart","bodyArg":0},
+    "beta.files.list": {"method":"GET","path":"/v1/files","queryArg":0},
+    "beta.files.retrieveMetadata": {"method":"GET","path":"/v1/files/{file_id}","params":{"file_id":"arg:0"}},
+    "beta.files.download": {"method":"GET","path":"/v1/files/{file_id}/content","params":{"file_id":"arg:0"}},
+    "beta.files.delete": {"method":"DELETE","path":"/v1/files/{file_id}","params":{"file_id":"arg:0"}},
+    "models.list": {"method":"GET","path":"/v1/models","queryArg":0},
+    "models.retrieve": {"method":"GET","path":"/v1/models/{model_id}","params":{"model_id":"arg:0"}},
+    "beta.models.list": {"method":"GET","path":"/v1/models","queryArg":0},
+    "beta.models.retrieve": {"method":"GET","path":"/v1/models/{model_id}","params":{"model_id":"arg:0"}},
+    "completions.create": {"method":"POST","path":"/v1/complete","bodyArg":0},
+    "messages.batches.resultsStreaming": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}/results","params":{"message_batch_id":"arg:0"}},
+    "beta.messages.batches.resultsStreaming": {"method":"GET","path":"/v1/messages/batches/{message_batch_id}/results","params":{"message_batch_id":"arg:0"}}
+  }
+}

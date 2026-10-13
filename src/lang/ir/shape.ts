@@ -125,6 +125,9 @@ function paramShape(p: Param, fn: FunctionDef, ctx: IrCtx, depth: number, unread
 }
 
 function callShape(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
+  // a call that stands for a value the language reads directly (a JVM builder's fields)
+  const resolved = ctx.idx.lang.resolveCall?.(e, fn, ctx);
+  if (resolved?.expr.k === "dict") return shapeOf(resolved.expr, resolved.fn, ctx, depth + 1, dynamic);
   const name = e.fn.k === "attr" ? e.fn.name : e.fn.k === "name" ? e.fn.name : undefined;
   if (name && UNWRAP_METHODS.has(name) && e.fn.k === "attr") return shapeOf(e.fn.obj, fn, ctx, depth + 1, dynamic);
   // `.strip()`, `.lower()`, `str(x)`: the same value

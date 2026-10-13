@@ -3,7 +3,8 @@ import { argAt, argOf, kwargsDict, propOf } from "./args.js";
 import type { IrMethodSpec, IrRegistryEntry, Scoped } from "./language.js";
 import type { CallExpr, FunctionDef } from "./model.js";
 import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
-import { staticKey } from "./values.js";
+import { deref, staticKey } from "./values.js";
+import { lambdaValue } from "./builders.js";
 
 /** Keyword arguments that configure the SDK call itself rather than the request body. */
 const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", "timeout", "max_retries", "request_options", "idempotency_key", "api_key", "stripe_account", "stripe_version", "options"]);
@@ -51,7 +52,8 @@ function selected(entry: IrRegistryEntry, seg: Seg, ctx: IrCtx): boolean {
 }
 
 /**
- * `client` matches a `client(...)` segment after the import root or after other calls (`Session().client(...)`); a
+ * `client` matches a `client(...)` segment after the import root or after other calls (`Session().client(...)`) or
+ * typed instances (`slack.methods(token)` with `slack: Slack`); a
  * dotted name (`firestore.client`) also the segments before it. A plain name does not match deeper in a namespace:
  * `Client` is `Anthropic\Client`, not `Anthropic\Bedrock\Client`.
  */
@@ -59,7 +61,7 @@ export function namedAt(rel: Seg[], i: number, name: string): boolean {
   const parts = name.split(".");
   const from = i - (parts.length - 1);
   if (from < 0 || !parts.every((p, j) => rel[from + j]!.name === p)) return false;
-  return rel.slice(0, from).every((s) => !!s.call);
+  return rel.slice(0, from).every(invoked);
 }
 
 /** The constructor / factory segment: the last one named in `instance.names` before the method. */
@@ -68,11 +70,21 @@ export function instanceIndex(entry: IrRegistryEntry, rel: Seg[]): number {
   return -1;
 }
 
+/** A builder segment: named in `builders`, or starting with a `set*` prefix there. */
+const isBuilder = (entry: IrRegistryEntry, name: string): boolean => (entry.builders ?? []).some((b) => (b.endsWith("*") ? name.startsWith(b.slice(0, -1)) : b === name));
+
+/** After a builder instance (`S3Client.builder().region(r).build()`), the client is what its last `build()` returns. */
+function builtIndex(entry: IrRegistryEntry, rel: Seg[], inst: number): number {
+  const build = entry.instance?.build;
+  if (!build || inst < 0) return inst;
+  for (let i = rel.length - 2; i > inst; i--) if (rel[i]!.call && rel[i]!.name === build) return i;
+  return inst;
+}
+
 function keyOf(entry: IrRegistryEntry, rel: Seg[], inst: number): string {
   const after = rel.slice(inst + 1);
-  const builders = new Set(entry.builders ?? []);
   return after
-    .filter((s, i) => i === after.length - 1 || !builders.has(s.name))
+    .filter((s, i) => i === after.length - 1 || !isBuilder(entry, s.name))
     .map((s) => s.name)
     .join(".");
 }
@@ -84,8 +96,8 @@ function matchEntry(entry: IrRegistryEntry, segs: Seg[], ctx: IrCtx): IrSdkMatch
   const inst = instanceIndex(entry, rel);
   if (inst >= 0 && !selected(entry, rel[inst]!, ctx)) return undefined;
   if (inst < 0 && entry.instance?.select) return undefined;
-  const key = keyOf(entry, rel, inst);
-  const spec = entry.methods[key];
+  const key = keyOf(entry, rel, builtIndex(entry, rel, inst));
+  const spec = Object.hasOwn(entry.methods, key) ? entry.methods[key] : undefined;
   return spec ? { entry, key, spec, segs: rel, method: rel[rel.length - 1]! } : undefined;
 }
 
@@ -132,7 +144,16 @@ function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Sco
     return positional ?? (dict ? { expr: dict, fn } : undefined);
   }
   const arg = spec.bodyArg !== undefined ? argAt(m.method, String(spec.bodyArg), ctx) : undefined;
-  return spec.bodyProp ? propOf(arg, spec.bodyProp, ctx) : arg;
+  // a lambda that fills the request's builder (`s3.getObject { it.bucket(b) }`) stands for what it sets
+  const filled = arg && m.entry.setters ? lambdaValue(arg, m.entry.setters, ctx) : undefined;
+  return spec.bodyProp ? propOf(filled ?? arg, spec.bodyProp, ctx) : (filled ?? arg);
+}
+
+/** A body built from a builder: its setters' arguments are inputs too (`builder.maxTokens(limit)` before `build()`). */
+function builtBody(m: IrSdkMatch, body: Scoped | undefined, ctx: IrCtx): Scoped[] {
+  if (!body || !m.entry.setters) return [];
+  const d = deref(body.expr, body.fn, ctx);
+  return d.expr.k === "dict" ? [d] : [];
 }
 
 /** A URL the client was built with (`WebhookClient(url).send(...)`): argument N of the instance. */
@@ -151,12 +172,20 @@ function readsArgs(spec: IrMethodSpec): boolean {
   return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
 }
 
+/** The file's manifests declare another package with the entry's class names (`sameClassesAs`) and not the entry's. */
+function otherPackage(entry: IrRegistryEntry, fn: FunctionDef, ctx: IrCtx): boolean {
+  if (!entry.sameClassesAs) return false;
+  const declared = ctx.declared?.(fn.module.file);
+  const has = (p: string): boolean => !!declared?.has(ctx.idx.lang.normalizePackage(p));
+  return entry.sameClassesAs.some(has) && ![entry.package, ...(entry.aliases ?? [])].some(has);
+}
+
 /** An SDK call: a chain from a registry's import root to one of its methods. */
 export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
   if (chain.root.kind !== "external" || chain.segs[chain.segs.length - 1]?.call !== call) return undefined;
   for (const entry of ctx.idx.lang.registry) {
     const m = matchEntry(entry, chain.segs, ctx);
-    if (!m) continue;
+    if (!m || otherPackage(entry, fn, ctx)) continue;
     const body = bodyOf(m, call, fn, ctx);
     const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
     const baseUrl = codeBaseUrl(m, ctx);
@@ -171,7 +200,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
       baseUrl,
       headers: [],
-      inputs: [...(readsArgs(m.spec) ? args : []), ...(baseUrl ? [baseUrl] : [])],
+      inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
       model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,
     };
   }

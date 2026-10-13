@@ -4,6 +4,8 @@ import { irLanguage } from "../ir/scan.js";
 import { JVM_HTTP } from "../jvm/http/index.js";
 import { jvmManifests, normalizeMaven } from "../jvm/manifests.js";
 import { jvmImportRoots } from "../jvm/packages.js";
+import { JVM_REGISTRY } from "../jvm/registry/index.js";
+import { builderValue } from "../ir/builders.js";
 import { lowerKotlin } from "./lower.js";
 import { semicolonsBeforeBraces } from "./repair.js";
 
@@ -36,9 +38,10 @@ export const kotlinLanguage: IrLanguage = {
   sharedGlobals: false,
   packageScope: true,
   typedParams: true,
-  // no SDK registry yet (#33): the coverage lists the SDKs a project declares
-  registry: [],
+  registry: JVM_REGISTRY,
   ...JVM_HTTP,
+  // `X.builder().a(1).build()` of an SDK's parameter class: the dict of the fields it sets
+  resolveCall: builderValue,
   passthrough: {
     functions: new Set(["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"]),
     methods: new Set([

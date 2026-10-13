@@ -12,8 +12,8 @@ headers, auth scheme, and a `dynamic` list of what could not be known statically
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
 checker, and Python, PHP and Kotlin through tree-sitter; a repository that mixes languages gets one
 report that says which language each call comes from. Kotlin's HTTP clients are read (OkHttp,
-`java.net.http`, Ktor, Spring, Feign, Retrofit) and its Gradle and Maven manifests list the JVM SDKs
-a project uses; the JVM SDK calls come next.
+`java.net.http`, Ktor, Spring, Feign, Retrofit), and so are its SDK calls (OpenAI, Anthropic,
+Stripe, AWS, Firebase and others), with its Gradle and Maven manifests.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
@@ -477,9 +477,17 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 
 JSON bodies come from `JSONObject().put(...)` chains, `mapOf(...)` serialized by Gson, Moshi,
 Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiValueMap` and the
-content type. The JVM SDK registries (#33) come next; Java (#43) will share these clients, which read
-the engine's model only. The Gradle and Maven manifests are read, so
-`coverage.sdks` lists the JVM SDKs a project declares (`ecosystem: "maven"`).
+content type. Java (#43) will share these clients, which read the engine's model only. The Gradle
+and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
+(`ecosystem: "maven"`).
+
+SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`, shared with Java
+later): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
+Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog
+([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+(`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
+in steps or filled by a lambda) are read as the request body, and enum constants as the model ids
+they stand for.
 
 Values are resolved through string templates, `+`, `buildString`, `String.format`,
 `const val` and other top-level properties (also from other files of the package and through
@@ -659,7 +667,8 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: the JVM SDKs are not read yet; a client injected by a DI framework (Hilt, Spring) is
+- Kotlin: AWS services other than S3 and Bedrock Runtime and other JVM SDKs are listed in
+  `coverage.sdks` only (#49, #50); a client injected by a DI framework (Hilt, Spring) is
   known by its type only, so its interceptors and base URL are not followed (#46): a Retrofit
   interface created on an injected `Retrofit` gets the project's only Retrofit builder, else an
   unknown host. The

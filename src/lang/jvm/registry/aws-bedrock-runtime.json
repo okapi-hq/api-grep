@@ -1,0 +1,30 @@
+{
+  "$comment": "AWS SDK for Java 2.x, Bedrock Runtime (also used from Kotlin): `BedrockRuntimeClient.builder().region(r).build()`; `client.converse(ConverseRequest.builder().modelId(id).messages(m).build())` or a lambda that fills the request (`client.converse { it.modelId(id) }`). The request's members are its fields; `modelId` is part of the path, as in the boto3 registry.",
+  "package": "software.amazon.awssdk:bedrockruntime",
+  "imports": ["software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient", "software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeAsyncClient"],
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the boto3 Bedrock Runtime registry under their AWS SDK for Java 2.x names)",
+  "instance": {
+    "names": ["builder", "create", "BedrockRuntimeClient", "BedrockRuntimeAsyncClient"],
+    "urlArg": { "endpointOverride": "0" },
+    "build": "build"
+  },
+  "setters": {
+    "packages": ["software.amazon.awssdk.services.bedrockruntime.model"],
+    "case": "camel",
+    "fields": { "overrideConfiguration": "" }
+  },
+  "methods": {
+    "invokeModel": {"method":"POST","path":"/model/{modelId}/invoke","bodyArg":0,"pathFromBody":["modelId"],"operationId":"InvokeModel"},
+    "invokeModelWithResponseStream": {"method":"POST","path":"/model/{modelId}/invoke-with-response-stream","bodyArg":0,"pathFromBody":["modelId"],"operationId":"InvokeModelWithResponseStream"},
+    "converse": {"method":"POST","path":"/model/{modelId}/converse","bodyArg":0,"pathFromBody":["modelId"],"operationId":"Converse"},
+    "converseStream": {"method":"POST","path":"/model/{modelId}/converse-stream","bodyArg":0,"pathFromBody":["modelId"],"operationId":"ConverseStream"},
+    "countTokens": {"method":"POST","path":"/model/{modelId}/count-tokens","bodyArg":0,"pathFromBody":["modelId"],"operationId":"CountTokens"},
+    "applyGuardrail": {"method":"POST","path":"/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply","bodyArg":0,"pathFromBody":["guardrailIdentifier","guardrailVersion"],"operationId":"ApplyGuardrail"},
+    "startAsyncInvoke": {"method":"POST","path":"/async-invoke","bodyArg":0,"operationId":"StartAsyncInvoke"},
+    "getAsyncInvoke": {"method":"GET","path":"/async-invoke/{invocationArn}","bodyArg":0,"pathFromBody":["invocationArn"],"operationId":"GetAsyncInvoke"},
+    "listAsyncInvokes": {"method":"GET","path":"/async-invoke","bodyArg":0,"operationId":"ListAsyncInvokes"}
+  }
+}

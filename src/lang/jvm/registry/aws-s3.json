@@ -1,0 +1,52 @@
+{
+  "$comment": "AWS SDK for Java 2.x, S3 (also used from Kotlin): `S3Client.builder().region(r).build()` or `S3Client.create()`; every operation takes its request builder (`PutObjectRequest.builder().bucket(b).key(k).build()`) or a lambda that fills it (`s3.getObject { it.bucket(b).key(k) }`). The request's members are its fields (`bucket` -> `Bucket`), the path is read from them, as in the boto3 registry. `endpointOverride(URI.create(...))` (MinIO, R2, LocalStack) replaces the host.",
+  "package": "software.amazon.awssdk:s3",
+  "imports": ["software.amazon.awssdk.services.s3.S3Client", "software.amazon.awssdk.services.s3.S3AsyncClient"],
+  "provider": "aws",
+  "host": "s3.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the boto3 S3 registry under their AWS SDK for Java 2.x names)",
+  "instance": {
+    "names": ["builder", "create", "crtBuilder", "crtCreate", "S3Client", "S3AsyncClient"],
+    "urlArg": { "endpointOverride": "0" },
+    "build": "build"
+  },
+  "setters": {
+    "packages": ["software.amazon.awssdk.services.s3.model"],
+    "case": "pascal",
+    "fields": { "overrideConfiguration": "" }
+  },
+  "methods": {
+    "putObject": {"method":"PUT","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"encoding":"raw","operationId":"PutObject"},
+    "getObject": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"GetObject"},
+    "getObjectAsBytes": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"GetObject"},
+    "headObject": {"method":"HEAD","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"HeadObject"},
+    "deleteObject": {"method":"DELETE","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"DeleteObject"},
+    "deleteObjects": {"method":"POST","path":"/{Bucket}?delete","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"DeleteObjects"},
+    "copyObject": {"method":"PUT","path":"/{DestinationBucket}/{DestinationKey}","bodyArg":0,"pathFromBody":["DestinationBucket","DestinationKey"],"operationId":"CopyObject"},
+    "listObjectsV2": {"method":"GET","path":"/{Bucket}?list-type=2","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"ListObjectsV2"},
+    "listObjectsV2Paginator": {"method":"GET","path":"/{Bucket}?list-type=2","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"ListObjectsV2"},
+    "listObjects": {"method":"GET","path":"/{Bucket}","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"ListObjects"},
+    "listObjectVersions": {"method":"GET","path":"/{Bucket}?versions","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"ListObjectVersions"},
+    "listBuckets": {"method":"GET","path":"/","bodyArg":0,"operationId":"ListBuckets"},
+    "createBucket": {"method":"PUT","path":"/{Bucket}","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"CreateBucket"},
+    "deleteBucket": {"method":"DELETE","path":"/{Bucket}","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"DeleteBucket"},
+    "headBucket": {"method":"HEAD","path":"/{Bucket}","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"HeadBucket"},
+    "getBucketLocation": {"method":"GET","path":"/{Bucket}?location","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"GetBucketLocation"},
+    "putBucketCors": {"method":"PUT","path":"/{Bucket}?cors","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"PutBucketCors"},
+    "putBucketPolicy": {"method":"PUT","path":"/{Bucket}?policy","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"PutBucketPolicy"},
+    "getBucketPolicy": {"method":"GET","path":"/{Bucket}?policy","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"GetBucketPolicy"},
+    "putBucketLifecycleConfiguration": {"method":"PUT","path":"/{Bucket}?lifecycle","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"PutBucketLifecycleConfiguration"},
+    "putObjectAcl": {"method":"PUT","path":"/{Bucket}/{Key}?acl","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"PutObjectAcl"},
+    "getObjectAcl": {"method":"GET","path":"/{Bucket}/{Key}?acl","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"GetObjectAcl"},
+    "putObjectTagging": {"method":"PUT","path":"/{Bucket}/{Key}?tagging","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"PutObjectTagging"},
+    "getObjectTagging": {"method":"GET","path":"/{Bucket}/{Key}?tagging","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"GetObjectTagging"},
+    "createMultipartUpload": {"method":"POST","path":"/{Bucket}/{Key}?uploads","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"CreateMultipartUpload"},
+    "uploadPart": {"method":"PUT","path":"/{Bucket}/{Key}?partNumber={PartNumber}&uploadId={UploadId}","bodyArg":0,"pathFromBody":["Bucket","Key","PartNumber","UploadId"],"encoding":"raw","operationId":"UploadPart"},
+    "completeMultipartUpload": {"method":"POST","path":"/{Bucket}/{Key}?uploadId={UploadId}","bodyArg":0,"pathFromBody":["Bucket","Key","UploadId"],"operationId":"CompleteMultipartUpload"},
+    "abortMultipartUpload": {"method":"DELETE","path":"/{Bucket}/{Key}?uploadId={UploadId}","bodyArg":0,"pathFromBody":["Bucket","Key","UploadId"],"operationId":"AbortMultipartUpload"},
+    "listMultipartUploads": {"method":"GET","path":"/{Bucket}?uploads","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"ListMultipartUploads"},
+    "listParts": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"ListParts"},
+    "restoreObject": {"method":"POST","path":"/{Bucket}/{Key}?restore","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"RestoreObject"}
+  }
+}

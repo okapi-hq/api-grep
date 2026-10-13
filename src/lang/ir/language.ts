@@ -26,13 +26,35 @@ export interface IrMethodSpec extends MethodSpec {
 }
 
 /**
+ * JVM SDKs take their parameters as builders (`MessageCreateParams.builder().maxTokens(1024).build()`): which classes
+ * are built that way and how a setter names the field it sets. A built value reads as a dict of those fields.
+ */
+export interface SetterRules {
+  /** Packages of the parameter classes (`com.anthropic.models`): `.builder() ... .build()` on a class there is a dict. */
+  packages: string[];
+  /** Field names: `snake` (`maxTokens` -> `max_tokens`), `camel` (as written), `pascal` (`bucket` -> `Bucket`). */
+  case: "snake" | "camel" | "pascal";
+  /**
+   * Setter prefixes: `set` is dropped (`setEmail` -> `email`), `add` appends to a list field in the plural (`addTool`
+   * -> `tools`), `put` sets a key of a map field (`putMetadata("k", v)` -> `metadata.k`).
+   */
+  prefixes?: ("set" | "add" | "put")[];
+  /** Setters the rules above do not name: field (`addUserMessage` -> `messages:user`, an item with that role), `""` for none. */
+  fields?: Record<string, string>;
+  /** Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`. */
+  constants?: Record<string, "kebab" | "snake">;
+  /** Rewrites of a constant's string after its case (`gpt-4-1` -> `gpt-4.1`): pattern and replacement. */
+  constantRewrites?: [string, string][];
+}
+
+/**
  * SDK registry of a tree-sitter language: the TypeScript `RegistryEntry` format with the import roots the SDK is reached
  * through, keyword-argument bodies and builder segments. `package` is the name a manifest declares (PyPI distribution).
  * Params sources add `kw:<name>`, `seg:<segment>:<N>` (argument N of a named call in the chain) and
  * `chain:<a>,<b>` (argument 0 of those calls joined with `/`: Firestore references).
  */
 export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "methods" | "commands" | "urlFromFile"> {
-  /** Dotted import roots: Python modules (`openai`, `google.genai`), PHP namespaces (`Stripe`, `OpenAI`). */
+  /** Dotted import roots: Python modules (`openai`, `google.genai`), PHP namespaces (`Stripe`, `OpenAI`), JVM classes. */
   imports: string[];
   instance?: {
     /** Constructors, factories and builder calls that return a client, by name. */
@@ -41,9 +63,19 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
     urlArg?: Record<string, string>;
     /** A factory shared by several services (`boto3.client("s3")`): the instance is this SDK's only for these values. */
     select?: { arg?: number; kw?: string; equals: string[] };
+    /** The instance is a builder (`S3Client.builder().region(r).build()`): the client is what this call after it returns. */
+    build?: string;
   };
-  /** Calls that only narrow a request (`collection`, `document`): left out of method keys. */
+  /** Calls that only narrow a request (`collection`, `document`): left out of method keys. `set*` matches a prefix. */
   builders?: string[];
+  /** JVM: parameters given as builders, read as dicts (see `SetterRules`). */
+  setters?: SetterRules;
+  /**
+   * Packages whose classes have the same names (the Android `firebase-messaging` has firebase-admin's
+   * `com.google.firebase.messaging.FirebaseMessaging`): a file whose manifests declare one of them and not this
+   * package calls theirs, so this entry does not match there.
+   */
+  sameClassesAs?: string[];
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): the call goes where it routes. */
   routeByModel?: boolean;
   methods: Record<string, IrMethodSpec>;
