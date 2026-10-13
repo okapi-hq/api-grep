@@ -200,12 +200,16 @@ A call to a model API also carries `model`: the model names the code gives, read
 branches are followed, and so is a parameter of the enclosing function: the literals its callers pass and its default
 ([#39](docs/languages.md#a-parameters-values-39)); `dynamic` says some branch could not be read. Body values and
 header values read parameters the same way; a header that can take several values lists them in
-`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`).
+`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`). A model read from an env var also
+carries `envExample`, the value the repository's example env file nearest the call documents for it (`.env.example`,
+`.env.sample`, `.env.template`, `.env.dist`, or one of them with a middle part such as `.env.local.example`), when it can be
+a model name and is no placeholder.
 
 ```yaml
     model:
       values: [gpt-4o-mini, o3]  # every name a branch can give, as the provider receives it
       env: CHAT_MODEL            # the env var that can override them
+      envExample: gpt-4.1        # what the nearest .env.example gives that var
       dynamic: false             # true: some value could not be read (hint: its name)
       from: body                 # argument | body | path
 ```
