@@ -66,6 +66,8 @@ describe("kotlin and java: Firebase for Android, supabase-kt and email SDKs (#50
     expect(at(r, "Recipes.kt", 37)).toMatchObject({ pathTemplate: "/storage/v1/object/photos/recipes/{name}.jpg" });
     expect(at(r, "Recipes.kt", 42)).toMatchObject({ pathTemplate: "/functions/v1/translate-recipe", body: { properties: { id: { type: "integer" } } } });
     expect(r.calls.some((c) => c.location.line === 40)).toBe(false);
+    // `db["tags"]` on an injected `Postgrest`: its `get` operator
+    expect(at(r, "Recipes.kt", 45)).toMatchObject({ method: "GET", pathTemplate: "/rest/v1/tags", sdk: { chain: "get.select" } });
   });
 
   it("reads SendGrid requests, Resend and Mailgun builders", async () => {

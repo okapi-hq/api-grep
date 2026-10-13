@@ -59,5 +59,11 @@
   { "name": "metasync", "url": "https://github.com/kalenjordan/metasync.git" },
   { "name": "tap-shopify", "url": "https://github.com/singer-io/tap-shopify.git", "language": "python" },
   { "name": "sgtm", "url": "https://github.com/Asana/SGTM.git", "language": "python" },
-  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" }
+  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" },
+  { "name": "feeder", "url": "https://github.com/spacecowboy/Feeder.git", "language": "kotlin" },
+  { "name": "familybot", "url": "https://github.com/AngryJKirk/familybot.git", "language": "kotlin" },
+  { "name": "edumate", "url": "https://github.com/mubashirpa/Edumate.git", "language": "kotlin" },
+  { "name": "supa-spring-kt", "url": "https://github.com/hieuwu/supa-spring-kt.git", "language": "kotlin" },
+  { "name": "firebase-quickstart-android", "url": "https://github.com/firebase/quickstart-android.git", "language": "kotlin" },
+  { "name": "langchain4j-examples", "url": "https://github.com/langchain4j/langchain4j-examples.git", "language": "java" }
 ]

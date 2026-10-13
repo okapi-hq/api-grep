@@ -40,4 +40,7 @@ class Recipes(private val client: SupabaseClient) {
     fun photoUrl(name: String) = supabase.storage.from("photos").publicUrl("recipes/$name.jpg")
 
     suspend fun translate(id: Long) = client.functions.invoke("translate-recipe", mapOf("id" to id))
+
+    // an injected plugin and its `get` operator
+    suspend fun tagged(db: Postgrest, tag: String) = db["tags"].select { filter { eq("name", tag) } }
 }

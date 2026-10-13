@@ -717,6 +717,7 @@ exports[`regression fixtures > kotlin/sdk/supabase 1`] = `
   "Recipes.kt:32 supabase POST /auth/v1/token",
   "Recipes.kt:37 supabase POST /storage/v1/object/photos/recipes/{name}.jpg",
   "Recipes.kt:42 supabase POST /functions/v1/translate-recipe",
+  "Recipes.kt:45 supabase GET /rest/v1/tags",
 ]
 `;
 

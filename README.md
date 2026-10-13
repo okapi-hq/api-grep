@@ -551,8 +551,9 @@ and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project de
 (`ecosystem: "maven"`).
 
 SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
-Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog
-([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin
+client, Azure OpenAI, LangChain4j model clients, Firebase for Android (Auth, Realtime Database, Storage, Functions),
+supabase-kt, SendGrid, Resend and Mailgun ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
 in steps or filled by a lambda) are read as the request body, and enum constants as the model ids
 they stand for.
@@ -743,8 +744,8 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: AWS services other than S3 and Bedrock Runtime and other JVM SDKs are listed in
-  `coverage.sdks` only (#49, #50); a client injected through `Lazy<T>` / `Provider<T>`, a
+- Kotlin: AWS services other than S3 and Bedrock Runtime, Spring AI and other JVM SDKs without a registry are listed in
+  `coverage.sdks` only (#49, #89); a client injected through `Lazy<T>` / `Provider<T>`, a
   multibinding or a service locator other than Koin is known by its type only (#75). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.

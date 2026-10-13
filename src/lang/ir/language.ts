@@ -245,6 +245,8 @@ export interface IrLanguage extends IrSource {
   packageScope?: boolean;
   /** Parameters declare their type (Kotlin): one whose type names no client is never listed as `injected-client`. */
   typedParams?: boolean;
+  /** `a[k]` on a library object calls this method (Kotlin `operator fun get`: `postgrest["table"]` is `postgrest.get("table")`). */
+  indexOperator?: string;
   /** Methods are overloaded (Java, Kotlin): a call runs the one of its name its arguments fit (`overloads.ts`). */
   overloads?: boolean;
   registry: IrRegistryEntry[];
