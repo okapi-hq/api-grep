@@ -106,9 +106,13 @@ function lowerBinary(n: SyntaxNode, st: KtState): Expr {
   const left = lowerExpr(l, st);
   const right = lowerExpr(r, st);
   if (op === "+") return { k: "concat", parts: [...(left.k === "concat" ? left.parts : [left]), right] };
-  if (op === "?:") return { k: "or", left, right };
+  // `u ?: continue`, `u ?: return`, `u ?: throw ...`: the right side leaves, so the value is the left one
+  if (op === "?:") return leaves(r) ? left : { k: "or", left, right };
   return unknown(n);
 }
+
+/** `continue` and `break` parse as identifiers (`continue@outer` too). */
+const leaves = (n: SyntaxNode): boolean => n.type === "return_expression" || n.type === "throw_expression" || /^(?:continue|break)(?:@\w+)?$/.test(n.text);
 
 /** `if (c) a else b` as a value: either branch. */
 function lowerIf(n: SyntaxNode, st: KtState): Expr {

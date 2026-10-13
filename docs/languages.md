@@ -211,11 +211,15 @@ the JVM SDK registries (#33) come next. Java is #43.
 
 **Detected** (`src/lang/jvm/http/`, tables in `clients.json`):
 
-- **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (`url`, verbs, `method`, `header` /
-  `addHeader`, `headers`), also built over several statements, held in a field or sent through a wrapper;
+- **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (also a bare `Builder()` when the client
+  is OkHttp's; `url`, verbs, `method`, `header` /
+  `addHeader`, `headers`), also built over several statements, held in a field, sent through a wrapper or returned
+  by a request factory of the project (`newCall(get(url))`: the factory's parameters read as the call's arguments,
+  a factory calling its own name read as its overload);
   `HttpUrl` builders (`toHttpUrl().newBuilder()`, `HttpUrl.Builder()`: path segments and query parameters); bodies
   from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
-  `MultipartBody.Builder` (multipart), the encoding from the media type.
+  `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
+  `RequestBody` class of the project writes its own bytes, so its body is opaque (`raw`, not its constructor fields).
 - **Interceptors**: the headers and query parameters an interceptor sets (a lambda, `Interceptor { }`, an
   `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
@@ -227,7 +231,8 @@ the JVM SDK registries (#33) come next. Java is #43.
   (`URL(u).openConnection()`, reported there, with `requestMethod` / `setRequestMethod`, `setRequestProperty`,
   `doOutput` and what the function writes to the output stream; a URL that is not http(s) or an env var, with no HTTP
   setting, is not a request).
-- **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient`, with the builder lambda
+- **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient` (the URL positional or
+  `urlString = ...`), with the builder lambda
   (`parameter`, `header`, `headers { append }`, `setBody`, `contentType`, `bearerAuth`, `basicAuth`, `url("...")`,
   `url { host = ...; path(...); parameters.append(...) }`, `method = HttpMethod.X`), and the client's
   `defaultRequest { url(...); header(...) }` as base URL and `clientParts` with `from: "default"`.
@@ -257,7 +262,8 @@ are its `<init>` method; constructor `val` / `var` parameters, body properties, 
 returns), getters, nested classes and `companion object` members (initialized in `<clinit>`) are its fields. A bare
 name in a method is a local or parameter first, then a member of the class (`this.name`, Kotlin's implicit receiver),
 then a top-level name. Lambdas are closures; `x.let { it }` gives `it` the value of `x`, and `run`, `with`,
-`withContext` and `lazy` stand for what their lambda returns. Annotations of functions and parameters
+`withContext` and `lazy` stand for what their lambda returns; `x ?: return` (also `continue`, `break`, `throw`) is
+`x`. Annotations of functions and parameters
 (`@GET("users/{id}")`, `@Query("page")`) are kept on `FunctionDef.annotations` / `Param.annotations` for Retrofit,
 those of a class (`@FeignClient(...)`) on `ClassDef.classAnnotations`. A property set on a local object
 (`conn.requestMethod = "POST"`) is an assignment to `conn.requestMethod`, and an anonymous object with a single
@@ -301,7 +307,8 @@ file. A file that does not parse is then read once more with a `;` in place of t
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
-  unresolved.
+  unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
+  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
   flavors other than the first literal are not listed.
 

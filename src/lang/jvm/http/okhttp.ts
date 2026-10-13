@@ -2,7 +2,7 @@ import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { CallExpr, ClassDef, FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
-import type { IrCtx, IrPair, IrRaw, Subst } from "../../ir/raw.js";
+import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { substitutionFor } from "../../ir/wrappers.js";
@@ -77,9 +77,25 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   // `Request.Builder()` names its library; a bare `newBuilder()` (protobuf, gRPC descriptors) needs the client to
   const own = !!fc.start && calleeIs(fc.start.call, spec.starts.filter((s) => s.includes("."))) !== undefined;
   if (!own && !chainFrom(chain, spec.imports)) return undefined;
-  const parts = readSteps(fc.start ? [fc.start, ...fc.steps] : [], spec.request);
+  // the client is the library's here when no start was found (`Builder()` imported as `okhttp3.Request.Builder`)
+  const parts = readSteps(fc.start ? [fc.start, ...fc.steps] : fc.steps, spec.request);
   if (spec.interceptors && call.fn.k === "attr") parts.pairs.push(...okHttpClientFacts({ expr: call.fn.obj, fn }, ctx));
-  return rawOf(call, fn, spec.client, parts, ctx, [request]);
+  // `newCall(get("https://..."))`: the factory's parameters read as the arguments of this call
+  const inner = withSubst(ctx, fc.subst);
+  const raw = ownBodyClass(rawOf(call, fn, spec.client, parts, inner, [request]), inner);
+  return fc.subst ? { ...raw, subst: new Map([...(ctx.subst ?? []), ...fc.subst]) } : raw;
+}
+
+/**
+ * `post(ProgressBody(file))`: a `RequestBody` (or `BodyPublisher`) class of the project writes its own bytes, so its
+ * constructor arguments are not the body's fields; the body is opaque.
+ */
+function ownBodyClass(raw: IrRaw, ctx: IrCtx): IrRaw {
+  const d = raw.body ? deref(raw.body.expr, raw.body.fn, ctx) : undefined;
+  if (d?.expr.k !== "call") return raw;
+  const c = calleeChain(d.expr, d.fn, ctx);
+  if (c.root.kind !== "class" || c.segs.length > 0) return raw;
+  return { ...raw, body: { expr: { k: "unknown", text: c.root.cls.name }, fn: d.fn }, encoding: raw.encoding ?? "raw" };
 }
 
 export const detectOkHttp = (call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain): IrRaw | undefined => detectBuiltRequest(JVM.okhttp, call, fn, ctx, chain);

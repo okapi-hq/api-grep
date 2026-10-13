@@ -58,3 +58,7 @@ class Notion(private val token: String) {
         bearerAuth(token)
     }
 }
+
+class Feeds(private val http: HttpClient) {
+    suspend fun latest() = http.get(urlString = "https://feeds.example.com/v2/latest.json")
+}

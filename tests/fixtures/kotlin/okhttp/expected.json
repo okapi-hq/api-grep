@@ -2,6 +2,12 @@
   "issue": "https://github.com/okapi-hq/api-grep/issues/32",
   "calls": [
     {"file": "Balances.kt", "line": 22, "provider": "rpc.example.com"},
+    {"file": "Covers.kt", "line": 13, "provider": "covers.example.com"},
+    {"file": "Drafts.kt", "line": 36, "provider": "drafts.example.com"},
+    {"file": "Factories.kt", "line": 37, "provider": "books.example.com"},
+    {"file": "Factories.kt", "line": 42, "provider": "books.example.com"},
+    {"file": "Factories.kt", "line": 58, "provider": "books.example.com"},
+    {"file": "Factories.kt", "line": 89, "provider": "books.example.com"},
     {"file": "Interceptors.kt", "line": 30, "provider": "open-meteo"},
     {"file": "Interceptors.kt", "line": 37, "provider": "github"},
     {"file": "Interceptors.kt", "line": 44, "provider": "github"},

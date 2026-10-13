@@ -59,6 +59,9 @@ export function detectKtor(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: C
     p.pairs.push(...defaults.pairs.map((x) => ({ ...x, from: "default" as const })));
   }
   applyStep(p, K.verbs[verb.name]!, { call, fn });
+  // `get(urlString = url)`: the URL as a named argument
+  const named = call.args.find((a) => a.name === "urlString" || a.name === "url");
+  if (named && !p.url) p.url = { expr: named.value, fn };
   const lambda = lambdaOf(call);
   if (lambda) readLambda(lambda, p);
   return rawOf(call, fn, K.client, p, ctx);

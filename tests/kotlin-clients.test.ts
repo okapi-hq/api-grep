@@ -27,6 +27,25 @@ describe("kotlin: OkHttp", () => {
     expect(at(r, "Interceptors.kt", 44)).toMatchObject({ method: "PUT", headers: ["authorization", "x-github-api-version"], headerValues: { "x-github-api-version": "2022-11-28" } });
     expect(at(r, "Balances.kt", 22).clientParts).toBeUndefined();
   });
+
+  it("reads requests built by project factories with the call's arguments, through an overload", async () => {
+    const r = await scanFixture("kotlin/okhttp");
+    expect(at(r, "Factories.kt", 37)).toMatchObject({ method: "GET", provider: "books.example.com", pathTemplate: "/v1/shelves/{shelfId}/books" });
+    expect(at(r, "Factories.kt", 42)).toMatchObject({ method: "POST", pathTemplate: "/v1/shelves/{shelfId}/books", bodyEncoding: "json", body: { properties: { title: { type: "string" } } } });
+    // `href ?: continue`: the URL is the left side only
+    expect(at(r, "Factories.kt", 49)).toMatchObject({ method: "HEAD", urlTemplate: "{href}" });
+    // a form body a method of the project builds
+    expect(at(r, "Factories.kt", 58)).toMatchObject({ bodyEncoding: "form", body: { properties: { grant_type: { enum: ["password"] } } } });
+    // a RequestBody class of the project: opaque, not an object of its constructor arguments
+    expect(at(r, "Factories.kt", 89)).toMatchObject({ method: "PUT", bodyEncoding: "raw", body: { type: "dynamic" }, bodySource: "unknown" });
+    // `Builder()` imported from `okhttp3.Request`, sent by an OkHttp client
+    expect(at(r, "Covers.kt", 13)).toMatchObject({ method: "GET", pathTemplate: "/v1/covers/{bookId}", headers: ["accept"] });
+  });
+
+  it("resolves a field reassigned from itself in many places without branching on each assignment", async () => {
+    const r = await scanFixture("kotlin/okhttp");
+    expect(at(r, "Drafts.kt", 36)).toMatchObject({ method: "POST", provider: "drafts.example.com", pathTemplate: "/v1/drafts" });
+  });
 });
 
 describe("kotlin: java.net.http and HttpURLConnection", () => {
@@ -57,6 +76,10 @@ describe("kotlin: Ktor client", () => {
     expect(at(r, "Catalog.kt", 48)).toMatchObject({ ...notion, pathTemplate: "/v1/pages/{id}", authScheme: "bearer" });
     expect(at(r, "Catalog.kt", 50)).toMatchObject({ ...notion, method: "POST", pathTemplate: "/v1/search", bodyEncoding: "json", body: { properties: { query: { type: "string" } } } });
     expect(at(r, "Catalog.kt", 56)).toMatchObject({ ...notion, method: "DELETE", pathTemplate: "/v1/blocks/{id}" });
+    // `get(urlString = ...)`: a named URL argument
+    expect(at(r, "Catalog.kt", 63)).toMatchObject({ method: "GET", host: "feeds.example.com", pathTemplate: "/v2/latest.json" });
+    // `HttpClient` through `import io.ktor.client.*`
+    expect(at(r, "Wildcards.kt", 11)).toMatchObject({ method: "GET", host: "forecast.example.com", query: ["city"] });
   });
 });
 

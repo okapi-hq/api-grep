@@ -63,6 +63,8 @@ exports[`regression fixtures > kotlin/ktor 1`] = `
   "Catalog.kt:48 notion GET /v1/pages/{id}",
   "Catalog.kt:50 notion POST /v1/search",
   "Catalog.kt:56 notion DELETE /v1/blocks/{id}",
+  "Catalog.kt:63 feeds.example.com GET /v2/latest.json",
+  "Wildcards.kt:11 forecast.example.com GET /v1/today",
 ]
 `;
 
@@ -71,6 +73,13 @@ exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
 exports[`regression fixtures > kotlin/okhttp 1`] = `
 [
   "Balances.kt:22 rpc.example.com POST /",
+  "Covers.kt:13 covers.example.com GET /v1/covers/{bookId}",
+  "Drafts.kt:36 drafts.example.com POST /v1/drafts",
+  "Factories.kt:37 books.example.com GET /v1/shelves/{shelfId}/books",
+  "Factories.kt:42 books.example.com POST /v1/shelves/{shelfId}/books",
+  "Factories.kt:49 unknown HEAD /",
+  "Factories.kt:58 books.example.com POST /oauth/token",
+  "Factories.kt:89 books.example.com PUT /v1/books/{bookId}/cover",
   "Interceptors.kt:30 open-meteo GET /v1/forecast",
   "Interceptors.kt:37 github GET /user/repos",
   "Interceptors.kt:44 github PUT /user/starred/{owner}/{repo}",

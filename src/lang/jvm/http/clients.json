@@ -241,6 +241,23 @@
     { "objects": ["LinkedMultiValueMap"], "put": ["add", "set"], "encoding": "form" },
     { "objects": ["HttpHeaders"], "put": ["set", "add"], "auth": { "setBearerAuth": "bearer", "setBasicAuth": "basic" }, "props": { "contentType": "Content-Type", "accept": "Accept" } }
   ],
+  "wildcardTypes": [
+    "okhttp3.OkHttpClient",
+    "okhttp3.Request",
+    "okhttp3.HttpUrl",
+    "okhttp3.Headers",
+    "okhttp3.FormBody",
+    "okhttp3.MultipartBody",
+    "okhttp3.RequestBody",
+    "okhttp3.Interceptor",
+    "java.net.http.HttpClient",
+    "java.net.http.HttpRequest",
+    "io.ktor.client.HttpClient",
+    "org.springframework.web.client.RestTemplate",
+    "org.springframework.web.client.RestClient",
+    "org.springframework.boot.web.client.RestTemplateBuilder",
+    "org.springframework.web.reactive.function.client.WebClient"
+  ],
   "constants": {
     "MediaType.APPLICATION_JSON": "application/json",
     "MediaType.APPLICATION_JSON_VALUE": "application/json",
