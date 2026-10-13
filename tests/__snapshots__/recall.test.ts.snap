@@ -227,13 +227,16 @@ exports[`regression fixtures > java/okhttp 1`] = `
 
 exports[`regression fixtures > java/request-factories 1`] = `
 [
-  "Catalog.java:22 api.example-catalog.com GET /{version}/items (wrapper:Catalog.request)",
-  "Catalog.java:22 api.example-catalog.com GET /items (wrapper:Catalog.request)",
-  "Catalog.java:27 api.example-catalog.com DELETE /{version}/items/{id} (wrapper:Catalog.request)",
-  "Catalog.java:27 api.example-catalog.com DELETE /items/{id} (wrapper:Catalog.request)",
-  "Catalog.java:31 api.example-catalog.com GET /{version}/stats",
-  "Catalog.java:31 api.example-catalog.com GET /stats",
-  "Catalog.java:44 unknown DYNAMIC /",
+  "Catalog.java:24 api.example-catalog.com GET /{version}/items (wrapper:Catalog.request)",
+  "Catalog.java:24 api.example-catalog.com GET /items (wrapper:Catalog.request)",
+  "Catalog.java:29 api.example-catalog.com DELETE /{version}/items/{id} (wrapper:Catalog.request)",
+  "Catalog.java:29 api.example-catalog.com DELETE /items/{id} (wrapper:Catalog.request)",
+  "Catalog.java:33 api.example-catalog.com GET /{version}/stats",
+  "Catalog.java:33 api.example-catalog.com GET /stats",
+  "Catalog.java:46 unknown DYNAMIC /",
+  "Catalog.java:53 api.example-catalog.com GET /{version}/names (wrapper:Catalog.fetchAll)",
+  "Catalog.java:53 api.example-catalog.com GET /names (wrapper:Catalog.fetchAll)",
+  "Catalog.java:58 unknown DYNAMIC /",
   "Ledger.java:25 api.example-ledger.com POST /v2/entries",
   "Ledger.java:25 api.example-ledger.com GET /v2/entries",
   "Ledger.java:29 api.example-ledger.com GET /v2/balances",

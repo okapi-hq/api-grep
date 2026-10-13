@@ -12,13 +12,17 @@ describe("jvm: requests started in several places, client defaults (#73)", () =>
     // a factory with two returns, the method a static-imported constant; a target host given apart; Unirest's global
     // base URL; a switch expression
     expect(summary(r)).toEqual([
-      ["Catalog.java", 22, "jaxrs-client", "GET", "https://api.example-catalog.com/{version}/items"],
-      ["Catalog.java", 22, "jaxrs-client", "GET", "https://api.example-catalog.com/items"],
-      ["Catalog.java", 27, "jaxrs-client", "DELETE", "https://api.example-catalog.com/{version}/items/{id}"],
-      ["Catalog.java", 27, "jaxrs-client", "DELETE", "https://api.example-catalog.com/items/{id}"],
-      ["Catalog.java", 31, "jaxrs-client", "GET", "https://api.example-catalog.com/{version}/stats"],
-      ["Catalog.java", 31, "jaxrs-client", "GET", "https://api.example-catalog.com/stats"],
-      ["Catalog.java", 44, "jaxrs-client", "DYNAMIC", ""],
+      ["Catalog.java", 24, "jaxrs-client", "GET", "https://api.example-catalog.com/{version}/items"],
+      ["Catalog.java", 24, "jaxrs-client", "GET", "https://api.example-catalog.com/items"],
+      ["Catalog.java", 29, "jaxrs-client", "DELETE", "https://api.example-catalog.com/{version}/items/{id}"],
+      ["Catalog.java", 29, "jaxrs-client", "DELETE", "https://api.example-catalog.com/items/{id}"],
+      ["Catalog.java", 33, "jaxrs-client", "GET", "https://api.example-catalog.com/{version}/stats"],
+      ["Catalog.java", 33, "jaxrs-client", "GET", "https://api.example-catalog.com/stats"],
+      ["Catalog.java", 46, "jaxrs-client", "DYNAMIC", ""],
+      // the response type given as an anonymous `GenericType` is not a body
+      ["Catalog.java", 53, "jaxrs-client", "GET", "https://api.example-catalog.com/{version}/names"],
+      ["Catalog.java", 53, "jaxrs-client", "GET", "https://api.example-catalog.com/names"],
+      ["Catalog.java", 58, "jaxrs-client", "DYNAMIC", ""],
       ["Ledger.java", 25, "apache-httpclient", "POST", "https://api.example-ledger.com/v2/entries"],
       ["Ledger.java", 25, "apache-httpclient", "GET", "https://api.example-ledger.com/v2/entries"],
       ["Ledger.java", 29, "apache-httpclient", "GET", "https://api.example-ledger.com/v2/balances"],
@@ -31,6 +35,7 @@ describe("jvm: requests started in several places, client defaults (#73)", () =>
     ]);
     // the alternatives of one call keep the call's id first, then distinct ones
     expect(new Set(r.calls.map((c) => c.id)).size).toBe(r.calls.length);
+    expect(r.calls.filter((c) => c.location.line === 53).every((c) => c.bodyEncoding === "none")).toBe(true);
     expect(parts(r, "Ledger.java", 29)).toEqual(["x-api-key:default", "x-tenant:interceptor"]);
     expect(at(r, "Ledger.java", 29)).toMatchObject({ authScheme: "apikey", headers: ["x-api-key", "x-tenant"] });
     expect(parts(r, "Notices.java", 29)).toEqual(["x-api-key:default"]);

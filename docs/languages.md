@@ -92,7 +92,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `edits.ts` | keys a dict gets or loses after it is built (`kwargs["k"] = v`, `.update`, `$params['k'] = $v`): folded into the variable's value where it is read |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
-| `steps.ts`, `fluent.ts` | fluent builders read from step tables (`Request.Builder().url(u).post(b)`, also through variables, fields and factories) and values built entry by entry (`JSONObject().put(k, v)`, `FormBody.Builder().add(k, v)`, `HttpHeaders().set(k, v)`) |
+| `steps.ts`, `fluent-chain.ts`, `fluent.ts` | fluent builders read from step tables (`Request.Builder().url(u).post(b)`, also through variables, fields and factories; `fluentChains` follows each return of a factory and each branch of a conditional) and values built entry by entry (`JSONObject().put(k, v)`, `FormBody.Builder().add(k, v)`, `HttpHeaders().set(k, v)`) |
 | `pairs.ts` | headers and query parameters set one at a time (builder steps, interceptors, annotated parameters), and those the client adds (`clientParts`) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `receiver.ts` | SDK calls on untyped parameters: the clients callers pass, else the one declared SDK, else `receiver-unknown` (#37) |
@@ -331,10 +331,29 @@ original's URL, method and body;
   steps (also over several statements, through fields, factories and wrappers), reported at the call that sends it.
   The client is the library's when the send is made on one of its objects, or the start call is its (a file importing
   the library, `new HttpPost(...)` resolving to it). A request read through a response (`target.request().get()
-  .getHeaders().get("X")`) is not sent again, and one started in several places (`case GET: b = c.prepareGet(u)`) has
-  a `DYNAMIC` method. A wrapper whose request comes from its callers is a wrapper: as an argument of a library client
-  (`client.execute(request)`), or a parameter declared with one of the library's request types (`requestTypes`:
-  `Invocation.Builder request` with `request.async().method(m, type)`).
+  .getHeaders().get("X")`) is not sent again. A wrapper whose request comes from its callers is a wrapper: as an
+  argument of a library client (`client.execute(request)`), or a parameter declared with one of the library's request
+  types (`requestTypes`: `Invocation.Builder request` with `request.async().method(m, type)`).
+  - **Started in several places** (#73): a request factory with several `return`s (`if (version != null) return
+    target.path(version); return target;`), a start in a Kotlin `when` / `if` or a Java `switch` expression or `?:`
+    (`val b = when (verb) { "POST" -> c.preparePost(u) else -> c.prepareGet(u) }`), and a variable assigned a start in
+    several branches with nothing called on it in between (`case POST: b = c.preparePost(u); break; default: b = ...`)
+    give one call per start, in source order, with the steps made after them (`fluentChains`,
+    `src/lang/ir/fluent-chain.ts`; `IrRaw.alternatives`). The first keeps the call's id, identical ones are reported
+    once. More than four starts are one call, the first, with a `DYNAMIC` method when their methods differ. Calls made
+    on a variable inside a `return` (`return target.path(version)`) are not steps of the value the variable has after
+    it.
+  - **What the client adds** (#73, `request-defaults.ts`): the headers of Apache's `setDefaultHeaders(List.of(new
+    BasicHeader(k, v)))` (`clientParts` `from: "default"`) and of the request interceptors given to its builder
+    (`addInterceptorFirst` / `Last`, `addRequestInterceptorFirst` / `Last`: `request.addHeader(k, v)` in a lambda or an
+    interceptor class), the headers of JAX-RS filters registered on the client or the target (`register(new
+    TokenFilter(t))`, `context.getHeaders().add(k, v)` in `filter`), both `from: "interceptor"`; Unirest's
+    `config().defaultBaseUrl(u)` (the global one for `Unirest.get(...)`, an instance's in its file; one base URL only:
+    two set for one client are left out) and `setDefaultHeader` / `addDefaultHeader` / `setDefaultBasicAuth`
+    (`from: "default"`). Apache's `execute(new HttpHost(...), request)` and `execute(HttpHost.create(url), request)`
+    give the base URL of a relative request (HttpClient 4's `(host, port, scheme)`, 5's `(scheme, host, port)`, `http`
+    unless given, the port when it is not the scheme's). Vert.x `authentication(new TokenCredentials(t))` is a bearer
+    token, `UsernamePasswordCredentials` basic.
   - **Apache HttpClient 4 and 5** (`apache-httpclient`): `client.execute(request)` (also `execute(host, request)`,
     with a response handler, and the async client's `execute(request, callback)`) of `new HttpGet(url)` ...
     `HttpOptions`, `RequestBuilder` / `ClassicRequestBuilder` / `SimpleRequestBuilder` / `SimpleHttpRequests` chains,
@@ -525,7 +544,8 @@ are their boxed class (`int` is `Integer`).
 as the compiler does), `String.valueOf(x)`, `System.getenv("X")` (also `System.getenv().getOrDefault`),
 `System.getProperty("x", "d")`, Spring `@Value("${x:default}")` on fields and constructor parameters and
 `environment.getProperty("x", "default")`, `Optional.ofNullable(x).orElse(d)` and `Objects.requireNonNullElse`, Android
-`BuildConfig.X` (with the Gradle literal), `static final` constants (also through `import static`), `switch`
+`BuildConfig.X` (with the Gradle literal), `static final` constants (also through `import static`, a library
+constant too: `import static javax.ws.rs.HttpMethod.GET`), `switch`
 expressions (any of their results), and collection factories (`Map.of`, `Map.ofEntries`, `List.of`, `Arrays.asList`).
 POJO fields and records give body shapes, under their `@SerializedName` / `@JsonProperty` names (`transient`,
 `@Transient`, `@JsonIgnore` and `static` fields aside); `Optional<T>` and `@Nullable` fields are not required. A
@@ -551,14 +571,15 @@ nested a few thousand deep still skip their file as an `internal-error`.
   also built on a variable, is the dict of the fields it sets, under their `@JsonProperty` / `@SerializedName` names
   (`@SuperBuilder` includes the base class's fields); on a `@Data`, `@Getter` or `@Value` class without the method,
   `x.getA()` / `x.isA()` reads the field `a` when the project sets it (an initializer, a constructor). `@Data`
-  classes built with `new X()` and setters give the class's field shape like any POJO. `@Singular` adders and
-  `toBuilder()` are not read.
+  classes built with `new X()` and setters give the class's field shape like any POJO. A `@Singular` field's adder
+  (`item(x)`, as `@Singular("label")` names it, else the field's name in the singular) appends to the list or, with
+  two arguments, sets a key of the map; `base.toBuilder().a(1).build()` (#73) is the dict `base` was built with, then
+  the new setters (a local `base` built with a builder).
 - A `StringBuilder` filled in a loop or in branches lists every piece appended before `toString()`, once each.
 - Overloaded methods resolve to the first one declared, as in Kotlin; overloads of constructors to the widest one.
-- Request objects of the clients above: a request built from a factory with several `return`s, or sent to an
-  `HttpHost` given apart (`execute(host, request)`), keeps the path it was built with only; Unirest's
-  `config().defaultBaseUrl(...)`, JAX-RS and Apache client filters and interceptors, Vert.x `authentication(...)` and
-  the core Vert.x `HttpClient` are not read.
+- Request objects of the clients above: a JAX-RS filter registered on a client held in a field after it is built
+  (`this.client.register(f)` in the constructor), an Unirest instance configured in another file, AsyncHttpClient's
+  request filters and the core Vert.x `HttpClient` are not read.
 
 ## JavaScript and HTML
 

@@ -7,6 +7,8 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import java.util.List;
 
 /** A JAX-RS target built by a factory with two returns, and methods given as static-imported constants. */
 class Catalog {
@@ -41,6 +43,18 @@ class Catalog {
     }
 
     private <T> T request(String method, Class<T> type, Invocation.Builder request) {
+        return request.method(method, type);
+    }
+
+    private static final GenericType<List<String>> NAMES = new GenericType<List<String>>() {
+    };
+
+    List<String> names() {
+        return fetchAll(GET, NAMES, resource().path("names").request());
+    }
+
+    // the response type, an anonymous class, is not an entity
+    private <T> T fetchAll(String method, GenericType<T> type, Invocation.Builder request) {
         return request.method(method, type);
     }
 }

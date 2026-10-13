@@ -197,6 +197,7 @@ function readRequest(spec: RequestClient, fc: Alternative, send: SendStep, sendC
 }
 
 const TYPE_TOKENS = ["GenericType", "TypeReference", "ParameterizedTypeReference"];
+const ANONYMOUS_TOKEN = new RegExp(`^new\\s+(?:[\\w.]+\\.)?(?:${TYPE_TOKENS.join("|")})\\b`);
 
 /** `Class`, `GenericType<T>` (a generic type is an index of its class). */
 function typeName(e: Expr | undefined): string | undefined {
@@ -212,6 +213,8 @@ function typeToken(s: Scoped, ctx: IrCtx): boolean {
   const d = deref(s.expr, s.fn, ctx);
   if (d.expr.k === "call") return calleeIs(d.expr, TYPE_TOKENS) !== undefined;
   if (d.expr.k === "qname") return true;
+  // `new GenericType<List<X>>() {}`: an anonymous class without methods, which Java lowers as unknown
+  if (d.expr.k === "unknown") return ANONYMOUS_TOKEN.test(d.expr.text);
   if (d.expr.k !== "name") return false;
   const b = lookup(d.expr.name, d.fn, d.expr.pos.offset, ctx.idx);
   if (b.kind === "param") return ["Class", "KClass", ...TYPE_TOKENS].includes(typeName(b.param.type) ?? "");
