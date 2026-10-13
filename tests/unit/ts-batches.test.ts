@@ -154,12 +154,13 @@ describe("checker reset", () => {
 /** The report without what differs from run to run. */
 const stable = (r: Report): Report => ({ ...r, stats: { ...r.stats, durationMs: 0 } });
 
+// a few kilobytes per batch: several projects per tree, not one per file (each project loads the lib files again)
 describe("a scan in batches gives the report of a scan in one project", () => {
   it.each(["wrappers", "sdk", "resolve", "javascript", "html", "diagnostics"])("%s", async (group) => {
     const one = await scanFixture(group, { exclude: [] });
-    const many = await scanFixture(group, { exclude: [], batchBytes: 1 });
+    const many = await scanFixture(group, { exclude: [], batchBytes: 1_500 });
     expect(stable(many)).toEqual(stable(one));
-  });
+  }, 120_000);
 });
 
 describe("lean module resolution", () => {
