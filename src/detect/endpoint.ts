@@ -3,6 +3,7 @@ import { memberChain, unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp } from "../ast/object.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
+import { fetchEndpoint } from "./fetch-endpoint.js";
 
 /**
  * The endpoint of a GraphQL client call (#54): the URL and headers given to the client's constructor
@@ -37,6 +38,15 @@ export function calledName(c: Construction): string | undefined {
 
 export const argsOf = (c: Construction): Expression[] => c.getArguments() as Expression[];
 
+/** The name a construction is listed under in `names`: the name called (`HttpLink`), or its dotted path (`Network.create`). */
+export function listedName(c: Construction, names: Record<string, unknown>): string | undefined {
+  const name = calledName(c);
+  if (name && Object.hasOwn(names, name)) return name;
+  const mc = memberChain(c.getExpression());
+  const dotted = Node.isIdentifier(mc.root) && mc.chain.length > 0 ? [mc.root.getText(), ...mc.chain].join(".") : undefined;
+  return dotted && Object.hasOwn(names, dotted) ? dotted : undefined;
+}
+
 /** What a variable holds: its initializer, in this file or the one it is imported from. */
 export function valueOf(e: Expression): Expression | undefined {
   for (const decl of declarationsOf(e)) {
@@ -65,8 +75,7 @@ export function transportsIn(e: Expression, names: Record<string, EndpointSource
     return;
   }
   if (!Node.isCallExpression(u) && !Node.isNewExpression(u)) return;
-  const name = calledName(u);
-  if (name && Object.hasOwn(names, name)) {
+  if (listedName(u, names)) {
     out.add(u);
     return;
   }
@@ -76,8 +85,12 @@ export function transportsIn(e: Expression, names: Record<string, EndpointSource
 }
 
 export function fromTransport(c: Construction, spec: Record<string, EndpointSource>): Endpoint {
-  const source = spec[calledName(c) ?? ""];
-  return source ? { url: at(argsOf(c), source.url), headers: at(argsOf(c), source.headers) } : {};
+  const name = listedName(c, spec);
+  const source = name ? spec[name] : undefined;
+  if (!source) return {};
+  // Relay's `Network.create(fetchFn)`: the `fetch` the function sends
+  if (source.fetchIn !== undefined) return fetchEndpoint(at(argsOf(c), source.fetchIn));
+  return { url: at(argsOf(c), source.url), headers: at(argsOf(c), source.headers) };
 }
 
 /** The URL and headers a client construction gives: its own, else those of the one transport in its options. */
@@ -109,9 +122,9 @@ export const ofEntry = (pkg: string | undefined, reg: RegistryEntry): boolean =>
 /** Every construction of the registry's clients and of transports from a package, with the endpoint each gives. */
 function projectEndpoints(project: Project, reg: RegistryEntry): Endpoint[] {
   const spec = reg.endpoint!;
-  const names = [...Object.keys(spec.clients), ...Object.keys(spec.transports ?? {})];
+  const transports = spec.transports ?? {};
   // a client is built where its package is imported; a transport may come from another package
-  const marks = [reg.package, ...(reg.aliases ?? []).map((a) => a.replace(/\/\*$/, "/")), ...Object.keys(spec.transports ?? {})];
+  const marks = [reg.package, ...(reg.aliases ?? []).map((a) => a.replace(/\/\*$/, "/")), ...Object.keys(transports)];
   const out: Endpoint[] = [];
   for (const sf of project.getSourceFiles()) {
     if (sf.isDeclarationFile() || sf.isFromExternalLibrary()) continue;
@@ -120,14 +133,15 @@ function projectEndpoints(project: Project, reg: RegistryEntry): Endpoint[] {
     const nodes: Construction[] = [...sf.getDescendantsOfKind(SyntaxKind.NewExpression), ...sf.getDescendantsOfKind(SyntaxKind.CallExpression)];
     for (const c of nodes) {
       const name = calledName(c) ?? "";
-      if (!names.includes(name)) continue;
+      const client = Object.hasOwn(spec.clients, name) ? spec.clients[name]! : undefined;
+      const transport = client ? undefined : listedName(c, transports);
+      if (!client && !transport) continue;
       const pkg = describeCallee(c).package;
-      if (Object.hasOwn(spec.clients, name) && ofEntry(pkg, reg)) {
-        const client = argsOf(c);
-        const url = at(client, spec.clients[name]!.url);
-        if (url) out.push({ url, headers: at(client, spec.clients[name]!.headers) });
-      } else if (pkg && spec.transports && Object.hasOwn(spec.transports, name)) {
-        const t = fromTransport(c, spec.transports);
+      if (client && ofEntry(pkg, reg)) {
+        const url = at(argsOf(c), client.url);
+        if (url) out.push({ url, headers: at(argsOf(c), client.headers) });
+      } else if (pkg && transport) {
+        const t = fromTransport(c, transports);
         if (t.url) out.push(t);
       }
     }
@@ -155,10 +169,10 @@ export function clientEndpoint(node: Construction, reg: RegistryEntry, spec: Met
   if (spec.subscription || !reg.endpoint) return {};
   if (spec.clientArg !== undefined) {
     const given = at(args, spec.clientArg);
-    if (given) {
-      const c = constructionOf(given, reg);
-      return c ? fromClient(calledName(c) ?? "", argsOf(c), reg) : {};
-    }
+    const c = given ? constructionOf(given, reg) : undefined;
+    if (c) return fromClient(calledName(c) ?? "", argsOf(c), reg);
+    // an Apollo hook's `client` option names another client than the project's; Relay's environment is the app's
+    if (given && !reg.endpoint.contextClient) return {};
   }
   for (const inst of [callee.instance, callee.rootInstance]) {
     // a default import (`import ApolloClient from "apollo-boost"`) has an empty chain

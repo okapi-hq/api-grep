@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/67",
+  "calls": [
+    {"file": "tracker.py", "line": 20, "provider": "api.example-tracker.dev", "operation": "OpenTickets"},
+    {"file": "tracker.py", "line": 27, "provider": "env:TRACKER_GRAPHQL_URL", "operation": "closeTicket"},
+    {"file": "tracker.py", "line": 31, "provider": "unknown", "operation": "TicketTitles"},
+    {"file": "shop.py", "line": 11, "provider": "shopify", "operation": "LowStock"},
+    {"file": "shop.py", "line": 16, "provider": "shopify", "operation": "shop"}
+  ]
+}

@@ -8,6 +8,8 @@ import type { Call, Operation } from "./report/schema.js";
 import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { isAstDocument } from "./resolve/graphql-ast.js";
+import { relayDocument } from "./resolve/relay-artifact.js";
+import { stringShapeOf } from "./resolve/string-template.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
@@ -76,7 +78,7 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
 }
 
 /** What names the operation in options holding the document (Apollo `{ query, variables }`, Octokit `{ query, ...vars }`). */
-const DOCUMENT_KEYS = ["query", "mutation", "document", "operationName", "extensions"];
+const DOCUMENT_KEYS = ["query", "mutation", "subscription", "document", "operationName", "extensions"];
 
 /**
  * The GraphQL document an SDK method takes as an argument; one it is not given is unknown. Of options holding it,
@@ -85,8 +87,11 @@ const DOCUMENT_KEYS = ["query", "mutation", "document", "operationName", "extens
  */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   if (sdk?.spec.documentArg === undefined) return undefined;
-  const arg = sdk.args[sdk.spec.documentArg];
+  const given = sdk.args[sdk.spec.documentArg];
+  const arg = sdk.spec.documentProp ? getProp(given, sdk.spec.documentProp, ctx) : given;
   if (!arg) return { type: "unknown" };
+  const artifact = relayDocument(arg);
+  if (artifact) return stringShapeOf(artifact);
   const options = toObjectLiteral(arg, ctx);
   if (!options || isAstDocument(options)) return shapeOf(arg, ctx).shape;
   const properties: Record<string, Shape> = {};

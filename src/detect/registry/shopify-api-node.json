@@ -1,0 +1,13 @@
+{
+  "$comment": "shopify-api-node (#67): `new Shopify({ shopName, accessToken, apiVersion }).graphql(document, variables)`. Its REST resources are not listed yet.",
+  "package": "shopify-api-node",
+  "provider": "shopify",
+  "host": "{shop}.myshopify.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against shopify-api-node 3.15)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["default", "Shopify"] },
+  "methods": {
+    "graphql": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "params": { "version": "instance:0.apiVersion" } }
+  }
+}

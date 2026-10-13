@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, type FunctionLike } from "../ast/function.js";
@@ -139,7 +139,24 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
       return c.viaType ? typeFallback(mc, 0) : c;
     }
   }
-  return typeFallback(mc, 0, decl);
+  const typed = typeFallback(mc, 0, decl);
+  return typed.package || !Node.isBindingElement(decl) ? typed : (destructuredCallee(decl, chain, depth) ?? typed);
+}
+
+/**
+ * `const { admin } = await authenticate.admin(request)`: a property of what a call returns stands, when no type says
+ * what it is (the package's types are not installed), for that call's result and the property (`admin.graphql`).
+ */
+function destructuredCallee(decl: BindingElement, chain: string[], depth: number): Callee | undefined {
+  const pattern = decl.getParent();
+  const owner = pattern.getParent();
+  if (decl.getDotDotDotToken() || !Node.isObjectBindingPattern(pattern) || !Node.isVariableDeclaration(owner)) return undefined;
+  const nameNode = decl.getPropertyNameNode() ?? decl.getNameNode();
+  const init = owner.getInitializer();
+  const u = init ? unwrap(init) : undefined;
+  if (!Node.isIdentifier(nameNode) || !u || (!Node.isCallExpression(u) && !Node.isNewExpression(u))) return undefined;
+  const c = instanceCallee(u, [nameNode.getText(), ...chain], depth + 1);
+  return c.package ? c : undefined;
 }
 
 function thisCallee(mc: Chain, depth: number): Callee {

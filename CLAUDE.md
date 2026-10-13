@@ -90,7 +90,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   expands an entity). GraphQL client libraries (#54: Apollo, urql, graphql-request, Python `gql`) are registries with
   an `endpoint` (the URL and headers of the client or its one transport, else the project's one client:
   `src/detect/endpoint.ts`, `src/lang/ir/endpoint.ts`) under the `anyHost` provider `graphql`, so a call's provider
-  is the one its URL names. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  is the one its URL names. #67 adds Relay (a transport's `fetchIn`: the one `fetch` of `Network.create(fetchFn)`,
+  `src/detect/fetch-endpoint.ts`; compiled artifacts in `src/resolve/relay-artifact.ts`), Python `sgqlc` (the endpoint
+  object called directly, key `()`; `Operation` documents read by the Python front end's `documentOf`,
+  `src/lang/python/sgqlc.ts`) and Shopify's clients, registries of the `shopify` provider with `documentArg`, as
+  Octokit's `graphql`. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP

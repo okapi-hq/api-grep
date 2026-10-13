@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/67",
+  "calls": [
+    {"file": "environment.ts", "line": 10, "provider": "unknown", "operation": "OrdersQuery"}
+  ]
+}
