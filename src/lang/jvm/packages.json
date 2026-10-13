@@ -27,7 +27,7 @@
     "com.google.cloud:google-cloud-aiplatform": ["com.google.cloud.aiplatform"],
     "com.google.cloud:google-cloud-firestore": ["com.google.cloud.firestore"],
     "com.google.cloud:google-cloud-vertexai": ["com.google.cloud.vertexai"],
-    "com.google.firebase:firebase-admin": ["com.google.firebase"],
+    "com.google.firebase:firebase-admin": ["com.google.firebase.auth", "com.google.firebase.cloud", "com.google.firebase.database", "com.google.firebase.messaging", "com.google.firebase.projectmanagement"],
     "com.google.firebase:firebase-ai": ["com.google.firebase.ai"],
     "com.google.firebase:firebase-auth": ["com.google.firebase.auth"],
     "com.google.firebase:firebase-auth-ktx": ["com.google.firebase.auth.ktx"],
@@ -80,5 +80,9 @@
     "software.amazon.awssdk:ses": ["software.amazon.awssdk.services.ses"],
     "software.amazon.awssdk:sns": ["software.amazon.awssdk.services.sns"],
     "software.amazon.awssdk:sqs": ["software.amazon.awssdk.services.sqs"]
+  },
+  "$declaredOnlyComment": "Roots shared with artifacts of the same group that are not SDKs of providers.json (Android Firebase's `com.google.firebase.FirebaseApp`, `remoteconfig`, `analytics`): they count for the artifact only where the manifests declare it.",
+  "declaredOnly": {
+    "com.google.firebase:firebase-admin": ["com.google.firebase"]
   }
 }
