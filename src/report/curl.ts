@@ -31,7 +31,8 @@ export function exampleToCurl(ex: Example): string {
 
 function header(c: Call): string {
   const via = c.via ? ` via ${c.via}` : "";
-  return printable(`# ${c.location.file}:${c.location.line} (${c.location.language})  ${c.provider} ${c.method} ${c.pathTemplate}${via}`);
+  const operation = c.operation?.name ? ` ${c.operation.name}` : "";
+  return printable(`# ${c.location.file}:${c.location.line} (${c.location.language})  ${c.provider} ${c.method} ${c.pathTemplate}${operation}${via}`);
 }
 
 /** Renders every example of every call as commented curl commands. */

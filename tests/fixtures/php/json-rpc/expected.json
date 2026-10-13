@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/34",
+  "calls": [
+    {"file": "NodeClient.php", "line": 18, "provider": "rpc.example-chain.net", "operation": "getBlockHeight"},
+    {"file": "NodeClient.php", "line": 23, "provider": "rpc.example-chain.net", "operation": "getSlot"},
+    {"file": "NodeClient.php", "line": 28, "provider": "rpc.example-chain.net", "operation": "getSlot"},
+    {"file": "NodeClient.php", "line": 33, "provider": "rpc.example-chain.net", "operation": "getSupply"},
+    {"file": "NodeClient.php", "line": 38, "provider": "rpc.example-chain.net", "operation": "getHealth"},
+    {"file": "NodeClient.php", "line": 43, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "NodeClient.php", "line": 43, "provider": "rpc.example-chain.net", "operation": "getSlot"},
+    {"file": "NodeClient.php", "line": 52, "provider": "rpc.example-chain.net", "operation": "getTransaction"},
+    {"file": "NodeClient.php", "line": 57, "provider": "rpc.example-chain.net", "operation": "get{kind}Info"}
+  ]
+}

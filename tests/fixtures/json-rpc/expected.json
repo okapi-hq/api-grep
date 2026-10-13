@@ -1,0 +1,17 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/34",
+  "calls": [
+    {"file": "node.ts", "line": 4, "provider": "rpc.example-chain.net", "operation": "getTransaction"},
+    {"file": "node.ts", "line": 12, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "node.ts", "line": 20, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "node.ts", "line": 21, "provider": "rpc.example-chain.net", "operation": "getSlot"},
+    {"file": "node.ts", "line": 22, "provider": "rpc.example-chain.net", "operation": "getBlock"},
+    {"file": "node.ts", "line": 25, "provider": "rpc.example-chain.net", "operation": "getBalance"},
+    {"file": "node.ts", "line": 25, "provider": "rpc.example-chain.net", "operation": "getSlot"},
+    {"file": "node.ts", "line": 36, "provider": "rpc.example-chain.net", "operation": "getTransaction"},
+    {"file": "node.ts", "line": 43, "provider": "rpc.example-chain.net", "operation": "get{kind}Info"},
+    {"file": "node.ts", "line": 47, "provider": "internal", "operation": "getblockcount"},
+    {"file": "audited.ts", "line": 12, "provider": "audit.example-log.com"},
+    {"file": "audited.ts", "line": 12, "provider": "rpc.example-chain.net", "operation": "getHealth"}
+  ]
+}

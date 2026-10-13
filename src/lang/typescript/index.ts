@@ -76,7 +76,7 @@ function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): C
   const calls: Call[] = [];
   for (const raw of raws) {
     try {
-      calls.push(buildCall(raw, ctx));
+      calls.push(...buildCall(raw, ctx));
     } catch (err) {
       diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
     }

@@ -8,12 +8,13 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
  * Regression fixtures: each directory with an `expected.json` lists the calls a scan must find (file, line, provider).
  * An empty list marks a negative fixture: any call there is a false call. `orUnfollowed` accepts a
  * `diagnostics.unfollowed` entry instead of a call; `todo` (an issue URL) parks a fixture whose feature is not built yet.
+ * `operation` is the `operation.name` the call must carry (a JSON-RPC method).
  */
 interface Expected {
   issue: string;
   todo?: string;
   skipped?: string[];
-  calls: { file: string; line: number; provider: string; orUnfollowed?: boolean }[];
+  calls: { file: string; line: number; provider: string; operation?: string; orUnfollowed?: boolean }[];
 }
 
 const baseline = JSON.parse(readFileSync(path.join(FIXTURES, "..", "recall-baseline.json"), "utf8")) as { recall: number; falseCalls: number };
@@ -26,7 +27,9 @@ function fixturesWithExpectations(rel = ""): string[] {
 }
 
 function found(r: Report, e: Expected["calls"][number]): boolean {
-  if (r.calls.some((c) => c.location.file === e.file && c.location.line === e.line && c.provider === e.provider)) return true;
+  const same = (c: Report["calls"][number]): boolean =>
+    c.location.file === e.file && c.location.line === e.line && c.provider === e.provider && (e.operation === undefined || c.operation?.name === e.operation);
+  if (r.calls.some(same)) return true;
   return !!e.orUnfollowed && !!r.diagnostics?.unfollowed.some((u) => u.file === e.file && u.line === e.line);
 }
 
@@ -45,7 +48,7 @@ describe("regression fixtures", () => {
       totals.expected += exp.calls.length;
       totals.matched += exp.calls.length - missing.length;
       if (exp.calls.length === 0) totals.falseCalls += r.calls.length;
-      expect(r.calls.map((c) => `${c.location.file}:${c.location.line} ${c.provider} ${c.method} ${c.pathTemplate}${c.via ? ` (${c.via})` : ""}`)).toMatchSnapshot();
+      expect(r.calls.map((c) => `${c.location.file}:${c.location.line} ${c.provider} ${c.method} ${c.pathTemplate}${c.operation ? ` ${c.operation.name}` : ""}${c.via ? ` (${c.via})` : ""}`)).toMatchSnapshot();
       if (exp.skipped) expect(r.diagnostics?.skipped.map((s) => s.file)).toEqual(exp.skipped);
       expect(missing, `missing calls in ${name} (${exp.issue})`).toEqual([]);
     });

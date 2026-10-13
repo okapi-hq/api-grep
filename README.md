@@ -217,10 +217,12 @@ that routes nowhere leaves the provider `unknown`.
 
 A call to an API that names the operation outside the URL (JSON-RPC, GraphQL, SOAP, action-style APIs such as
 AWS Query) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
-calls. The field is in the format; no protocol is detected yet: JSON-RPC
-([#34](https://github.com/okapi-hq/api-grep/issues/34)), GraphQL
+calls. JSON-RPC is recognized in every language: a JSON body with `jsonrpc` and a `method` (or a 1.0-style
+`method`, `params` and `id`) gives `protocol: json-rpc` with the method as `name`, also through a helper that builds
+the envelope (`rpc("getBalance", [address])`). GraphQL
 ([#35](https://github.com/okapi-hq/api-grep/issues/35)), SOAP and action-style APIs
-([#36](https://github.com/okapi-hq/api-grep/issues/36)) will fill it.
+([#36](https://github.com/okapi-hq/api-grep/issues/36)) are next; RPC client libraries such as viem or web3.py are
+[#52](https://github.com/okapi-hq/api-grep/issues/52).
 
 ```yaml
     operation:
