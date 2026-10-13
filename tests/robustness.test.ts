@@ -52,6 +52,19 @@ describe("scan robustness", () => {
   });
 });
 
+describe("files that are not code", () => {
+  it("leaves out .ts files that are not TypeScript (Qt translations, video) instead of failing them", async () => {
+    const warnings: string[] = [];
+    const r = await scanFixture("robustness/not-typescript", { exclude: [], onWarning: (m) => warnings.push(m) });
+    expect(warnings).toEqual([]);
+    expect(at(r, "api.ts", 2)).toMatchObject({ provider: "github", pathTemplate: "/rate_limit" });
+    expect(r.diagnostics).toMatchObject({ filesSeen: 1, filesScanned: 1, skipped: [], complete: true });
+    // nor does an --exclude list them as left out
+    const excluding = await scanFixture("robustness/not-typescript", { exclude: ["*/**"] });
+    expect(excluding.diagnostics).toMatchObject({ filesSeen: 1, skipped: [], complete: true });
+  });
+});
+
 describe("scan paths", () => {
   it("scans a directory whose name has glob characters", async () => {
     const r = await scanFixture("robustness/app [beta] (v2)");
