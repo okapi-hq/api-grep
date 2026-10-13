@@ -149,11 +149,16 @@ export function assembleCall(r: ResolvedCall): Call {
 
 /**
  * A body sent with an XML content type (`text/xml`, `application/soap+xml`) is XML, whatever value carries it (a
- * variable the scan cannot read, a builder's output). A body read as an object or an array keeps its encoding.
+ * variable the scan cannot read, a builder's output). A body read as an object or an array keeps its encoding. A body
+ * read as XML but sent with another content type (`text/html`, `application/json`) is text, not an XML document.
  */
 function withXmlEncoding(r: ResolvedCall): ResolvedCall {
   const { shape, encoding } = r.body;
-  if (encoding === "xml" || encoding === "multipart" || encoding === "none" || !isXmlContentType(r.headers.values["content-type"])) return r;
+  const contentType = r.headers.values["content-type"];
+  if (encoding === "xml" && typeof contentType === "string" && !isXmlContentType(contentType)) {
+    return { ...r, body: { ...r.body, shape: { type: "string" }, encoding: "raw" } };
+  }
+  if (encoding === "xml" || encoding === "multipart" || encoding === "none" || !isXmlContentType(contentType)) return r;
   if (!shape || shape.type === "object" || shape.type === "array") return r;
   return { ...r, body: { ...r.body, encoding: "xml" } };
 }

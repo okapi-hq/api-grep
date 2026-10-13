@@ -237,7 +237,8 @@ Action-style APIs name the operation in a query or form parameter that `provider
 
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
-by an XML library or sent with an XML content type is `xml` with its value unread.
+by an XML library or sent with an XML content type is `xml` with its value unread. HTML and SVG markup (`<p>...</p>`,
+`<html>`, `<svg>`) is not an XML body.
 
 ```yaml
     operation:

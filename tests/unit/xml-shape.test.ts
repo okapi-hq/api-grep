@@ -37,10 +37,35 @@ describe("xmlBodyShape", () => {
     expect(xmlBodyShape(text(doc))).toEqual(obj({ r: obj({ v: str("&e;&big;") }) }));
   });
 
-  it("malformed, oversized or too deep documents stay plain XML strings", () => {
-    for (const doc of ["<a><b></a>", "<a></a><b></b>", "<a/>text<b/>", `<a>${"<b>".repeat(40)}${"</b>".repeat(40)}</a>`, `<a>${"<b/>".repeat(600)}</a>`, `<a>${"x".repeat(70000)}</a>`]) {
-      expect(xmlBodyShape(text(doc)), doc.slice(0, 20)).toEqual({ type: "string" });
+});
+
+describe("xmlBodyShape: hostile, malformed and non-XML text", () => {
+  it("oversized or too deep documents, and malformed ones that declare XML, stay plain XML strings", () => {
+    const decl = '<?xml version="1.0"?>';
+    for (const doc of [`${decl}<r><v></r>`, `${decl}<r/><v/>`, `<r>${"<v>".repeat(40)}${"</v>".repeat(40)}</r>`, `<r>${"<v/>".repeat(600)}</r>`, `<r>${"x".repeat(70000)}</r>`]) {
+      expect(xmlBodyShape(text(doc)), doc.slice(0, 30)).toEqual({ type: "string" });
     }
+  });
+
+  it("malformed text with no XML declaration is not XML", () => {
+    for (const doc of ["<r><v></r>", "<r></r><v></v>", "<r/>text<v/>", "<Unclosed>", "<r><!-- never closed ><v/></r>", "<r><![CDATA[never closed]><v/></r>"]) {
+      expect(xmlBodyShape(text(doc)), doc).toBeUndefined();
+    }
+  });
+
+  it("an unterminated comment or CDATA ends the reading at once (no rescan at every `<!--`)", () => {
+    for (const unit of ["<!-- >", "<![CDATA[x]>"]) {
+      const started = performance.now();
+      expect(xmlBodyShape(text(`<r>${unit.repeat(60000 / unit.length)}</r>`))).toBeUndefined();
+      expect(performance.now() - started).toBeLessThan(50);
+    }
+  });
+
+  it("HTML and SVG markup is not an XML document, also too large to read; an API's PascalCase element is", () => {
+    for (const doc of ["<p>Hello</p>", "<html><body><h1>Hi</h1></body></html>", "<!DOCTYPE html><html><body/></html>", "<DIV><P>x</P></DIV>", '<svg width="1"><rect/></svg>', "<b>", `<html>${"<p/>".repeat(600)}</html>`]) {
+      expect(xmlBodyShape(text(doc)), doc.slice(0, 30)).toBeUndefined();
+    }
+    expect(xmlBodyShape(text("<Table><Row>1</Row></Table>"))).toEqual(obj({ Table: obj({ Row: str("1") }) }));
   });
 
   it("keys a report cannot hold are left out", () => {
@@ -77,5 +102,7 @@ describe("toXml", () => {
       `<?xml version="1.0" encoding="UTF-8"?><Req><Id>a&lt;b</Id><Line><Sku>x</Sku></Line><Line><Sku>y</Sku></Line><Empty></Empty></Req>`,
     );
     expect(toXml("<as-is/>")).toBe("<as-is/>");
+    // xmltodict's attribute and text keys are not element names
+    expect(toXml({ Req: { "@id": "1", "#text": "x", "a b": "y", Ok: "z" } })).toBe(`<?xml version="1.0" encoding="UTF-8"?><Req><Ok>z</Ok></Req>`);
   });
 });

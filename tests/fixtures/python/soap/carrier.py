@@ -35,3 +35,8 @@ def queue():
 
 def photos(tag):
     return requests.get("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "tags": tag, "format": "json"})
+
+
+def page(title):
+    html = f"<html><body><h1>{title}</h1></body></html>"
+    return requests.post("https://render.example-docs.com/pdf", data=html, headers={"Content-Type": "text/html"})

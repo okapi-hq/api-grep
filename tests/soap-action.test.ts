@@ -35,6 +35,21 @@ describe("SOAP: the action is the call's operation, the envelope an XML body (#3
     expect([46, 51].map((line) => at(r, "carrier.ts", line).bodyEncoding)).toEqual(["xml", "xml"]);
   });
 
+});
+
+describe("SOAP: XML bodies in other languages, and markup that is not XML (#36)", () => {
+  it("HTML, SVG, tag-like text and XML sent with another content type are not XML bodies", async () => {
+    const r = await scanFixture("soap");
+    for (const line of [6, 10, 11, 14, 18]) {
+      const call = at(r, "markup.ts", line);
+      expect(call.bodyEncoding, `markup.ts:${line}`).not.toBe("xml");
+      expect(call.operation, `markup.ts:${line}`).toBeUndefined();
+    }
+    expect(at(r, "markup.ts", 18)).toMatchObject({ bodyEncoding: "raw", body: { type: "string" } });
+    const py = await scanFixture("python/soap");
+    expect(at(py, "carrier.py", 42).bodyEncoding).not.toBe("xml");
+  });
+
   it("python: format() and f-string envelopes, ElementTree", async () => {
     const r = await scanFixture("python/soap");
     expect(at(r, "carrier.py", 18)).toMatchObject({ bodyEncoding: "xml", operation: { protocol: "soap", name: "CancelShipment", from: "body" } });

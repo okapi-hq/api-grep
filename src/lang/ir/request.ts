@@ -34,7 +34,7 @@ function unwrapSerializer(s: Scoped, ctx: IrCtx, depth = 0): { inner: Scoped; en
   const arg = d.expr.k === "call" ? d.expr.args[0] : undefined;
   if (enc && arg && !arg.name) return { inner: { expr: arg.value, fn: d.fn }, encoding: enc };
   // `$doc->saveXML()`, `doc.toxml()`: the document serializes itself; its text is not read
-  if (enc && !arg && d.expr.k === "call" && d.expr.fn.k === "attr") return { inner: d, encoding: enc };
+  if (enc === "xml" && !arg && d.expr.k === "call" && d.expr.fn.k === "attr") return { inner: d, encoding: enc };
   return { inner: d };
 }
 

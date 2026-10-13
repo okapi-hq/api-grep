@@ -683,6 +683,7 @@ exports[`regression fixtures > python/soap 1`] = `
   "carrier.py:29 orders.example-shop.com POST /api/orders",
   "carrier.py:33 aws POST /123456789012/jobs SendMessage",
   "carrier.py:37 flickr GET /services/rest flickr.photos.search",
+  "carrier.py:42 render.example-docs.com POST /pdf",
 ]
 `;
 
@@ -1100,6 +1101,11 @@ exports[`regression fixtures > soap 1`] = `
   "carrier.ts:56 ws.example-carrier.com POST /track/v2 SchedulePickup",
   "carrier.ts:59 ws.example-carrier.com POST /track/v2 SchedulePickup (wrapper:soapCall)",
   "carrier.ts:60 ws.example-carrier.com POST /track/v2 PickupStatus (wrapper:soapCall)",
+  "markup.ts:6 render.example-docs.com POST /pdf",
+  "markup.ts:10 notes.example-docs.com POST /notes",
+  "markup.ts:11 render.example-docs.com POST /png",
+  "markup.ts:14 notes.example-docs.com POST /tags",
+  "markup.ts:18 notes.example-docs.com POST /raw",
 ]
 `;
 

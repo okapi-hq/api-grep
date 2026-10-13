@@ -20,10 +20,11 @@ const NAME_RE = /^[A-Za-z_][\w.:-]*$/;
 /**
  * One token at a time from the current position (sticky): a comment, CDATA, a processing instruction, a declaration
  * (`<!DOCTYPE ...>`, skipped, never interpreted), a closing tag, an opening tag, or text. The alternatives inside
- * each token start with distinct characters, so matching stays linear.
+ * each token start with distinct characters, so matching stays linear; a declaration never starts like a comment or
+ * CDATA, so an unterminated one ends the reading instead of rescanning the rest of the text at every `<!--`.
  */
 const TOKEN_RE =
-  /<!--[\s\S]*?-->|<!\[CDATA\[([\s\S]*?)\]\]>|<\?[\s\S]*?\?>|<!(?:[^>[\]]|\[[^\]]*\])*>|<\/([^\s<>/]+)\s*>|<([^\s<>/!?]+)((?:[^<>"']|"[^"<]*"|'[^'<]*')*?)(\/?)>|([^<]+)/y;
+  /<!--[\s\S]*?-->|<!\[CDATA\[([\s\S]*?)\]\]>|<\?[\s\S]*?\?>|<!(?!--|\[CDATA\[)(?:[^>[\]]|\[[^\]]*\])*>|<\/([^\s<>/]+)\s*>|<([^\s<>/!?]+)((?:[^<>"']|"[^"<]*"|'[^'<]*')*?)(\/?)>|([^<]+)/y;
 
 interface Element {
   name: string;
@@ -47,8 +48,8 @@ interface Reader {
   count: number;
 }
 
-/** Applies one token; false when the document is malformed or over a cap. */
-function step(m: RegExpExecArray, r: Reader): boolean {
+/** Applies one token; false when the document is malformed, `capped` when it is over a cap. */
+function step(m: RegExpExecArray, r: Reader): boolean | "capped" {
   const top = r.stack[r.stack.length - 1]!;
   const [, cdata, close, open, , selfClosing, text] = m;
   if (cdata !== undefined) top.text += cdata;
@@ -60,7 +61,7 @@ function step(m: RegExpExecArray, r: Reader): boolean {
     if (r.stack.length === 1 || top.name !== close) return false;
     r.stack.pop();
   } else if (open !== undefined) {
-    if (++r.count > MAX_ELEMENTS || r.stack.length > MAX_DEPTH) return false;
+    if (++r.count > MAX_ELEMENTS || r.stack.length > MAX_DEPTH) return "capped";
     if (r.stack.length === 1 && top.children.length > 0) return false;
     const el: Element = { name: open, children: [], text: "" };
     top.children.push(el);
@@ -69,18 +70,37 @@ function step(m: RegExpExecArray, r: Reader): boolean {
   return true;
 }
 
-/** The root element of a document, or undefined when it cannot be read. */
-function parse(text: string): Element | undefined {
-  if (text.length > MAX_TEXT) return undefined;
+/** The root element of a document, `capped` when it is too large to read, undefined when it is malformed. */
+function parse(text: string): Element | "capped" | undefined {
+  if (text.length > MAX_TEXT) return "capped";
   const doc: Element = { name: "", children: [], text: "" };
   const r: Reader = { stack: [doc], count: 0 };
   TOKEN_RE.lastIndex = 0;
   while (TOKEN_RE.lastIndex < text.length) {
     const m = TOKEN_RE.exec(text);
-    if (!m || !step(m, r)) return undefined;
+    const applied = m ? step(m, r) : false;
+    if (applied !== true) return applied || undefined;
   }
   return r.stack.length === 1 && doc.children.length === 1 ? doc.children[0] : undefined;
 }
+
+/**
+ * HTML and SVG roots: a page, a fragment or an image the code sends is markup, not a document an XML API reads
+ * (`<p>Hello</p>`, `<html>...`, `<svg>...`). Lowercase or uppercase only: `<Table>` or `<Body>` is an API's element.
+ */
+const MARKUP_ROOTS = new Set(
+  (
+    "html head body div span p a b i u s em strong small mark sub sup br hr img picture figure figcaption h1 h2 h3 h4 " +
+    "h5 h6 ul ol li dl dt dd table thead tbody tfoot tr td th caption form input button select option textarea label " +
+    "fieldset legend section article header footer nav main aside pre code blockquote q cite script style link meta " +
+    "title iframe template slot center font video audio source canvas details summary dialog svg g path rect circle " +
+    "ellipse line polyline polygon text tspan defs use symbol"
+  ).split(" "),
+);
+
+const FIRST_ELEMENT_RE = /<([^\s<>/!?]+)/;
+
+const isMarkupRoot =(name: string): boolean => (name === name.toLowerCase() || name === name.toUpperCase()) && MARKUP_ROOTS.has(name.toLowerCase());
 
 function leafShape(el: Element, parts: Part[]): Shape {
   const t = el.text.trim();
@@ -120,14 +140,21 @@ export function looksLikeXml(text: string): boolean {
 /**
  * The body shape of a string built from parts when it is an XML document: an object holding the root element, whose
  * value holds its child elements, down to the text of the leaves (a literal value, or the computed part's name as
- * `hint`). Attributes and namespace declarations are left out. A document too large or unusual to read is a plain
- * `string`; undefined when the text is not XML.
+ * `hint`). Attributes and namespace declarations are left out. A document too large to read, or a malformed one that
+ * declares itself XML (`<?xml ...?>`), is a plain `string`. Undefined when the text is not XML: HTML or SVG markup, or
+ * text that only looks like a tag (`<b>`, `<Unclosed>`).
  */
 export function xmlBodyShape(parts: Part[]): Shape | undefined {
   const text = markedText(parts);
   if (!looksLikeXml(text)) return undefined;
-  const root = parse(text.trim());
-  if (!root || !NAME_RE.test(root.name) || !isSafeKey(root.name)) return { type: "string" };
+  const trimmed = text.trim();
+  const root = parse(trimmed);
+  // a document too large or malformed to read is named by its first tag: a large page is still HTML
+  const rootName = typeof root === "object" ? root.name : FIRST_ELEMENT_RE.exec(trimmed)?.[1];
+  if (rootName === undefined || isMarkupRoot(rootName)) return undefined;
+  if (root === undefined) return trimmed.startsWith("<?xml") ? { type: "string" } : undefined;
+  if (root === "capped") return { type: "string" };
+  if (!NAME_RE.test(root.name) || !isSafeKey(root.name)) return { type: "string" };
   return { type: "object", properties: { [root.name]: elementShape(root, parts) }, required: [root.name] };
 }
 

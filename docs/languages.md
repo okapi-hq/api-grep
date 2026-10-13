@@ -544,10 +544,16 @@ read (a parameter, a call) sent with an XML content type (`text/xml`, `applicati
 `xml` too; a body read as an object or an array keeps its encoding. Example requests write the shape back as XML
 (`application/xml`, curl `--data-raw`).
 
+Markup is not an XML document: a string whose root is an HTML or SVG element in lower or upper case (`<p>`, `<html>`,
+`<svg>`; `<Table>` is an API's element), text that only looks like a tag (`<b>`, `<Unclosed>`), and a malformed
+document with no `<?xml` declaration keep their previous encoding. A body read as XML but sent with another declared
+content type (`text/html`, `application/json`) is `raw` text.
+
 The document comes from the scanned repository: the reader in `xml-shape.ts` is a small tokenizer, not an XML
 library. It never reads a DTD (`<!DOCTYPE ...>` is skipped, its entities are never expanded; only the five predefined
-entities and character references are decoded), stops at 64 KiB, 500 elements and depth 32, and reads anything
-malformed as a plain `string` body, still `xml`.
+entities and character references are decoded), stops at 64 KiB, 500 elements and depth 32 (such a document is a
+plain `string` body, still `xml`), and stops at the first token it cannot read (an unterminated comment or CDATA
+section), so it reads a text once.
 
 **SOAP** (`src/operation/soap.ts`). A request is SOAP when it sends a `SOAPAction` header, a SOAP 1.2 content type
 (`application/soap+xml`), or an XML body whose root is an `Envelope` (any prefix). The operation's `name`:
