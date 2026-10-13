@@ -10,6 +10,11 @@
     {"file": "Ledger.java", "line": 33, "provider": "status.example-ledger.com:8443"},
     {"file": "Notices.java", "line": 29, "provider": "api.example-notices.com"},
     {"file": "Notices.java", "line": 33, "provider": "archive.example-notices.com"},
-    {"file": "Notices.java", "line": 37, "provider": "push.example-notices.com"}
+    {"file": "Notices.java", "line": 37, "provider": "push.example-notices.com"},
+    {"file": "Volumes.java", "line": 20, "provider": "api.example-volumes.com"},
+    {"file": "Volumes.java", "line": 25, "provider": "api.example-volumes.com"},
+    {"file": "Volumes.java", "line": 30, "provider": "api.example-volumes.com"},
+    {"file": "Volumes.java", "line": 34, "provider": "api.example-volumes.com"},
+    {"file": "Volumes.java", "line": 38, "provider": "api.example-volumes.com"}
   ]
 }

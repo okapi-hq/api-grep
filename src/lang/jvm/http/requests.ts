@@ -2,15 +2,15 @@ import { staticText } from "../../../resolve/parts.js";
 import type { ClientKind } from "../../../report/schema.js";
 import { calleeChain, typeChain, type Chain } from "../../ir/chain.js";
 import { evaluate } from "../../ir/evaluate.js";
-import { callsOn, scopedIn, type ScopedCall } from "../../ir/fluent.js";
+import { scopedIn, type ScopedCall } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
 import type { CallExpr, Entry, Expr, FunctionDef, ModuleModel } from "../../ir/model.js";
 import { lookup } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrRaw } from "../../ir/raw.js";
 import { applyStep, argAt, calleeIs, emptyParts, fluentChain, fluentChains, type BuilderStep, type FluentChain, type RequestParts } from "../../ir/steps.js";
-import { MAX_ALTERNATIVES } from "../../ir/fluent-chain.js";
 import { deref } from "../../ir/values.js";
 import { nameValuePairs } from "./name-value-pairs.js";
+import { alternatives, oneOf, startsVary, type Alternative } from "./request-alternatives.js";
 import { chainFilters, clientDefaults, credentialSteps, hostBase, type ClientDefaults } from "./request-defaults.js";
 import { chainFrom, rawOf } from "./request.js";
 import data from "./requests.json" with { type: "json" };
@@ -53,6 +53,7 @@ const SPECS = data.clients as unknown as RequestClient[];
 const SEND_NAMES = new Set(SPECS.flatMap((s) => Object.keys(s.sends)));
 const MAX_LINEAGE = 12;
 const BODY_METHODS = new Set(["POST", "PUT", "PATCH"]);
+const NO_BODY = new Set(["GET", "HEAD"]);
 
 const imported = new WeakMap<ModuleModel, Map<RequestClient, boolean>>();
 
@@ -131,39 +132,6 @@ function fromParam(end: Scoped | undefined, spec: RequestClient, send: SendStep,
   return typed && spec.requestTypes.includes(typeName(b.param.type) ?? "");
 }
 
-/**
- * The starts a request variable may hold where the start was found: also those assigned to it before, with nothing
- * called on it in between (`case POST: b = c.preparePost(u); break; default: b = c.prepareGet(u);`), in source order.
- */
-function assignedStarts(spec: RequestClient, start: ScopedCall): ScopedCall[] {
-  const mine = start.fn.assigns.find((a) => a.value === start.call);
-  if (!mine) return [start];
-  const names = Object.keys(spec.starts);
-  const out = [start];
-  let next = mine.offset;
-  const before = start.fn.assigns.filter((a) => a.target === mine.target && a.offset < mine.offset && !a.edit);
-  for (const a of before.reverse()) {
-    if (a.augmented || a.value.k !== "call" || calleeIs(a.value, names) === undefined) break;
-    if (callsOn(start.fn, mine.target, a.offset).some((c) => c.call.pos.offset < next)) break;
-    out.unshift({ call: a.value, fn: start.fn });
-    next = a.offset;
-  }
-  return out;
-}
-
-/** A request started in several places (a factory's returns, branches, a variable assigned in a `switch`): one chain per start, at most `MAX_ALTERNATIVES`. */
-function alternatives(spec: RequestClient, chains: FluentChain[]): FluentChain[] | undefined {
-  const out = chains.flatMap((fc) => (fc.start ? assignedStarts(spec, fc.start).map((start) => ({ ...fc, start })) : [fc]));
-  return out.length <= MAX_ALTERNATIVES ? out : undefined;
-}
-
-/** More starts than are listed, with different methods: the method of the first is not the request's. */
-function startsVary(spec: RequestClient, chains: FluentChain[]): boolean {
-  const names = Object.keys(spec.starts);
-  const method = (c: CallExpr): string | undefined => spec.starts[calleeIs(c, names)!]!.method;
-  return new Set(chains.flatMap((fc) => (fc.start ? assignedStarts(spec, fc.start) : [])).map((s) => method(s.call))).size > 1;
-}
-
 /** One step: a pair with a single argument is a map of them (Unirest `queryString(map)`). */
 function stepFor(step: BuilderStep, c: ScopedCall): BuilderStep {
   if (step.query && !argAt(c, step.query[1])) return { queryMap: step.query[0] };
@@ -180,17 +148,24 @@ function readRequest(spec: RequestClient, fc: Alternative, send: SendStep, sendC
     if (step.hostPath !== undefined && spec.clientOptions) hostPath(p, fc.start, step.hostPath, spec.clientOptions, ctx);
     if (fc.varies) [p.impliedMethod, p.method] = [undefined, { expr: { k: "unknown", text: "method" }, fn: fc.start.fn }];
   }
-  for (const c of fc.steps) {
+  // one of several starts, a GET or HEAD: a body set after them (`if (verb.permitsBody()) b.setBody(x)`) is another start's
+  const bodiless = !!fc.split && !!p.impliedMethod && NO_BODY.has(p.impliedMethod);
+  const sharedFrom = fc.steps.length - (fc.shared ?? 0);
+  fc.steps.forEach((c, i) => {
     const name = methodName(c.call);
-    if (name === undefined) continue;
+    if (name === undefined) return;
+    const keep = bodiless && i >= sharedFrom ? { body: p.body, role: p.bodyRole } : undefined;
     if (Object.hasOwn(spec.request, name)) applyStep(p, stepFor(spec.request[name]!, c), c);
+    if (keep) [p.body, p.bodyRole] = [keep.body, keep.role];
     const credentials = spec.credentials?.steps.includes(name) ? credentialSteps(argAt(c, 0), spec.credentials.classes, ctx) : undefined;
     if (credentials) applyStep(p, credentials.step, credentials.on);
     const field = spec.fields && Object.hasOwn(spec.fields, name) ? spec.fields[name]! : undefined;
-    const [k, v] = field ? [argAt(c, field[0]), argAt(c, field[1])] : [];
+    const [k, v] = field && !keep ? [argAt(c, field[0]), argAt(c, field[1])] : [];
     if (k && v) fields.push({ key: scopedIn(k.expr, k.fn, sendCall.fn), value: scopedIn(v.expr, v.fn, sendCall.fn) });
-  }
+  });
+  const keep = bodiless ? { body: p.body, role: p.bodyRole } : undefined;
   applyStep(p, send, sendCall);
+  if (keep) [p.body, p.bodyRole] = [keep.body, keep.role];
   // JAX-RS `method("GET", Version.class)`: the response type, not an entity
   if (p.body && typeToken(p.body, ctx)) p.body = undefined;
   return { p, fields };
@@ -232,9 +207,6 @@ function placeFields(p: RequestParts, fields: Entry[], fn: FunctionDef, ctx: IrC
   for (const f of fields) p.pairs.push({ where: "query", name: { expr: f.key!, fn }, value: { expr: f.value, fn } });
 }
 
-/** One request the send call may send: a chain, and whether its start is one of more than are listed. */
-type Alternative = FluentChain & { varies?: boolean };
-
 function rawFor(spec: RequestClient, fc: Alternative, send: SendStep, sent: ScopedCall, own: boolean, request: Scoped, ctx: IrCtx): IrRaw | undefined {
   const { call, fn } = sent;
   const inner = withSubst(ctx, fc.subst);
@@ -263,8 +235,8 @@ function detectWith(spec: RequestClient, call: CallExpr, fn: FunctionDef, ctx: I
   if (!found || sentBefore(spec, found.request, ctx)) return undefined;
   const first = found.chains[0]!;
   // more starts than are listed: the first chain, its method unknown when the starts' differ
-  const chains: Alternative[] = alternatives(spec, found.chains) ?? [{ ...first, varies: startsVary(spec, found.chains) }];
-  const [raw, ...rest] = chains.flatMap((fc) => rawFor(spec, fc, send, { call, fn }, own, found.request, ctx) ?? []);
+  const groups: Alternative[][] = alternatives(spec.starts, found.chains) ?? [[{ ...first, varies: startsVary(spec.starts, found.chains) }]];
+  const [raw, ...rest] = groups.flatMap((g) => oneOf(g.flatMap((fc) => rawFor(spec, fc, send, { call, fn }, own, found.request, ctx) ?? []), ctx) ?? []);
   return raw && rest.length > 0 ? { ...raw, alternatives: rest } : raw;
 }
 

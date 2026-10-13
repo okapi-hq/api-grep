@@ -334,15 +334,17 @@ original's URL, method and body;
   .getHeaders().get("X")`) is not sent again. A wrapper whose request comes from its callers is a wrapper: as an
   argument of a library client (`client.execute(request)`), or a parameter declared with one of the library's request
   types (`requestTypes`: `Invocation.Builder request` with `request.async().method(m, type)`).
-  - **Started in several places** (#73): a request factory with several `return`s (`if (version != null) return
-    target.path(version); return target;`), a start in a Kotlin `when` / `if` or a Java `switch` expression or `?:`
-    (`val b = when (verb) { "POST" -> c.preparePost(u) else -> c.prepareGet(u) }`), and a variable assigned a start in
-    several branches with nothing called on it in between (`case POST: b = c.preparePost(u); break; default: b = ...`)
-    give one call per start, in source order, with the steps made after them (`fluentChains`,
-    `src/lang/ir/fluent-chain.ts`; `IrRaw.alternatives`). The first keeps the call's id, identical ones are reported
-    once. More than four starts are one call, the first, with a `DYNAMIC` method when their methods differ. Calls made
-    on a variable inside a `return` (`return target.path(version)`) are not steps of the value the variable has after
-    it.
+  - **Started in several places** (#73, `fluentChains` in `src/lang/ir/fluent-chain.ts`, `request-alternatives.ts`):
+    a start in a Kotlin `when` / `if` or a Java `switch` expression or `?:` (`val b = when (verb) { "POST" ->
+    c.preparePost(u) else -> c.prepareGet(u) }`), and a variable assigned a start in several branches with nothing
+    called on it in between (`case POST: b = c.preparePost(u); break; default: b = ...`), give one call per start, in
+    source order, with the steps made after them (`IrRaw.alternatives`; the first keeps the call's id, identical ones
+    are reported once). A body or form field set after the split (`if (verb.permitsBody()) b.setBody(x)`) is not the
+    GET's or HEAD's. A request factory with several `return`s (`if (version != null) return target.path(version);
+    return target;`) is one call, as a URL helper with several returns is in TypeScript: the first return with a
+    literal host, else the first, with a `DYNAMIC` method when the returns' methods differ. More than four starts are
+    one call, the first, with a `DYNAMIC` method when their methods differ. Calls made on a variable inside a `return`
+    (`return target.path(version)`) are not steps of the value the variable has after it.
   - **What the client adds** (#73, `request-defaults.ts`): the headers of Apache's `setDefaultHeaders(List.of(new
     BasicHeader(k, v)))` (`clientParts` `from: "default"`) and of the request interceptors given to its builder
     (`addInterceptorFirst` / `Last`, `addRequestInterceptorFirst` / `Last`: `request.addHeader(k, v)` in a lambda or an
@@ -576,7 +578,11 @@ nested a few thousand deep still skip their file as an `internal-error`.
   two arguments, sets a key of the map; `base.toBuilder().a(1).build()` (#73) is the dict `base` was built with, then
   the new setters (a local `base` built with a builder).
 - A `StringBuilder` filled in a loop or in branches lists every piece appended before `toString()`, once each.
-- Overloaded methods resolve to the first one declared, as in Kotlin; overloads of constructors to the widest one.
+- A call of an overloaded method runs the overload its arguments fit (#73, `src/lang/ir/overloads.ts`, the language's
+  `overloads` flag; Kotlin too): by count (named arguments by name, defaults and varargs counted), then by the types
+  of literal arguments and of typed parameters and locals; an overload calling its own name delegates to another.
+  Several left, or none, and the call is not followed (no wrapper, no factory). Overloads of constructors resolve to
+  the widest one.
 - Request objects of the clients above: a JAX-RS filter registered on a client held in a field after it is built
   (`this.client.register(f)` in the constructor), an Unirest instance configured in another file, AsyncHttpClient's
   request filters and the core Vert.x `HttpClient` are not read.

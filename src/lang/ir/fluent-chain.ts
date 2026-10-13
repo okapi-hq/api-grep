@@ -5,6 +5,7 @@ import type { Scoped } from "./language.js";
 import type { CallExpr, ClassDef, Expr, FunctionDef } from "./model.js";
 import { classField, classMethod, lookup, receiverClass, type Binding } from "./project.js";
 import type { IrCtx, Subst } from "./raw.js";
+import { overloadFor } from "./overloads.js";
 import { substitutionFor } from "./wrappers.js";
 
 const MAX_DEPTH = 8;
@@ -25,6 +26,13 @@ export interface FluentChain {
   subst?: Subst;
   /** Without a start: the value the chain was last followed to (a parameter, an unknown call). */
   end?: Scoped;
+  /**
+   * The branches of conditionals the chain went through (`fluentChains`): chains that differ only by the return of a
+   * factory they went through have the same one.
+   */
+  branch?: string;
+  /** After a conditional: how many of the last steps are made after it, on whichever branch's value. */
+  shared?: number;
 }
 
 const classBinding = (b: Binding): ClassDef | undefined => (b.kind === "class" ? b.cls : undefined);
@@ -49,7 +57,8 @@ function factoryMethod(callee: Expr, fn: FunctionDef, ctx: IrCtx): FunctionDef |
 /** The project function a call runs, when it may be a factory (`fun client() = ...`, `by lazy { ... }`, `this.request(url)`). */
 function factoryOf(call: CallExpr, fn: FunctionDef, ctx: IrCtx): FunctionDef | undefined {
   const named = call.fn.k === "fnref" ? call.fn.fn : call.fn.k === "name" ? functionBinding(lookup(call.fn.name, fn, call.pos.offset, ctx.idx)) : factoryMethod(call.fn, fn, ctx);
-  return named ? overload(named, fn) : undefined;
+  const target = named && call.fn.k !== "fnref" ? overloadFor(named, call, fn, ctx) : named;
+  return target ? overload(target, fn) : undefined;
 }
 
 /**
@@ -87,6 +96,10 @@ interface Walk {
   steps: ScopedCall[];
   subst: Subst;
   hops: number;
+  /** The conditional branches taken so far (`0.1.`). */
+  branch: string;
+  /** How many steps were found before the first conditional: those made after it in the code. */
+  sharedFrom?: number;
 }
 
 /** The next value down a chain: a variable's value (and the calls made on it), a parameter's argument, a field. */
@@ -115,18 +128,28 @@ function branchesOf(e: Expr & { k: "cond" }): Expr[] {
 }
 
 /** Where a branching walk splits: the branches of a conditional, the returns of a factory with several. */
-function forksAt(cur: Scoped, ctx: IrCtx, w: Walk): Scoped[] | undefined {
-  if (cur.expr.k === "cond") return branchesOf(cur.expr).map((expr) => ({ expr, fn: cur.fn }));
+function forksAt(cur: Scoped, ctx: IrCtx, w: Walk): { values: Scoped[]; conditional: boolean } | undefined {
+  if (cur.expr.k === "cond") return { values: branchesOf(cur.expr).map((expr) => ({ expr, fn: cur.fn })), conditional: true };
   if (cur.expr.k !== "call") return undefined;
   const target = factoryOf(cur.expr, cur.fn, ctx);
-  return target && target.returns.length > 1 ? factoryReturns(cur.expr, cur.fn, ctx, w, MAX_ALTERNATIVES + 1) : undefined;
+  const values = target && target.returns.length > 1 ? factoryReturns(cur.expr, cur.fn, ctx, w, MAX_ALTERNATIVES + 1) : undefined;
+  return values ? { values, conditional: false } : undefined;
+}
+
+/** The walk down one branch of a fork: a conditional's branches are told apart, a factory's returns are not. */
+function forked(w: Walk, i: number, conditional: boolean): Walk {
+  const branch = conditional ? `${w.branch}${i}.` : w.branch;
+  return { steps: [...w.steps], subst: new Map(w.subst), hops: w.hops + 1, branch, sharedFrom: conditional ? (w.sharedFrom ?? w.steps.length) : w.sharedFrom };
 }
 
 function finish(w: Walk, start: ScopedCall | undefined, end: Scoped): FluentChain {
+  const shared = w.sharedFrom === undefined ? undefined : expandApplied(w.steps.slice(w.steps.length - w.sharedFrom)).length;
   return {
     ...(start ? { start } : { end }),
     steps: expandApplied(start ? [...appliedSteps(start.call.applied), ...w.steps] : w.steps),
     ...(w.subst.size > 0 ? { subst: w.subst } : {}),
+    ...(w.branch ? { branch: w.branch } : {}),
+    ...(shared !== undefined ? { shared } : {}),
   };
 }
 
@@ -142,7 +165,9 @@ function walk(from: Scoped, w: Walk, isStart: (c: CallExpr) => boolean, ctx: IrC
     }
     const forks = branching ? forksAt(cur, ctx, w) : undefined;
     if (forks) {
-      for (const f of forks) if (out.length <= MAX_ALTERNATIVES) walk(f, { steps: [...w.steps], subst: new Map(w.subst), hops: w.hops + 1 }, isStart, ctx, out, branching);
+      forks.values.forEach((f, i) => {
+        if (out.length <= MAX_ALTERNATIVES) walk(f, forked(w, i, forks.conditional), isStart, ctx, out, branching);
+      });
       return;
     }
     // `this.buildRequest(url)`, `Requests.get(url)`: a method of the project returning the builder, not a step of it
@@ -170,7 +195,7 @@ function walk(from: Scoped, w: Walk, isStart: (c: CallExpr) => boolean, ctx: IrC
  */
 export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: IrCtx): FluentChain {
   const out: FluentChain[] = [];
-  walk(s, { steps: [], subst: new Map(), hops: 0 }, isStart, ctx, out, false);
+  walk(s, { steps: [], subst: new Map(), hops: 0, branch: "" }, isStart, ctx, out, false);
   return out[0]!;
 }
 
@@ -181,6 +206,6 @@ export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: I
  */
 export function fluentChains(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: IrCtx): FluentChain[] {
   const out: FluentChain[] = [];
-  walk(s, { steps: [], subst: new Map(), hops: 0 }, isStart, ctx, out, true);
+  walk(s, { steps: [], subst: new Map(), hops: 0, branch: "" }, isStart, ctx, out, true);
   return out;
 }

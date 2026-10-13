@@ -518,8 +518,8 @@ Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiV
 content type; a `HashMap` or `mutableMapOf()` filled with `map["k"] = v` in Kotlin; in Java also `Map.of(...)`, a
 `HashMap` filled with `put`, POJOs, records and Lombok `@Builder` chains (`Payload.builder().name(n).build()`, under
 the fields' JSON names, with `@Singular` adders and `toBuilder()` copies), and Lombok getters read as their fields. A
-request started in several places (a factory with several `return`s, a `when` / `switch` over starts) is one call per
-start, up to four. The Gradle
+request started in the branches of a `when` / `switch` is one call per start, up to four; a request factory with
+several `return`s is one call, as a helper is; an overloaded method is the one its arguments fit. The Gradle
 and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
 (`ecosystem: "maven"`).
 

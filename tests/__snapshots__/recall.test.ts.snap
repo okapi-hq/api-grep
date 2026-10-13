@@ -228,17 +228,12 @@ exports[`regression fixtures > java/okhttp 1`] = `
 exports[`regression fixtures > java/request-factories 1`] = `
 [
   "Catalog.java:24 api.example-catalog.com GET /{version}/items (wrapper:Catalog.request)",
-  "Catalog.java:24 api.example-catalog.com GET /items (wrapper:Catalog.request)",
   "Catalog.java:29 api.example-catalog.com DELETE /{version}/items/{id} (wrapper:Catalog.request)",
-  "Catalog.java:29 api.example-catalog.com DELETE /items/{id} (wrapper:Catalog.request)",
   "Catalog.java:33 api.example-catalog.com GET /{version}/stats",
-  "Catalog.java:33 api.example-catalog.com GET /stats",
   "Catalog.java:46 unknown DYNAMIC /",
   "Catalog.java:53 api.example-catalog.com GET /{version}/names (wrapper:Catalog.fetchAll)",
-  "Catalog.java:53 api.example-catalog.com GET /names (wrapper:Catalog.fetchAll)",
   "Catalog.java:58 unknown DYNAMIC /",
-  "Ledger.java:25 api.example-ledger.com POST /v2/entries",
-  "Ledger.java:25 api.example-ledger.com GET /v2/entries",
+  "Ledger.java:25 api.example-ledger.com DYNAMIC /v2/entries",
   "Ledger.java:29 api.example-ledger.com GET /v2/balances",
   "Ledger.java:33 status.example-ledger.com:8443 GET /health",
   "Notices.java:29 api.example-notices.com GET /v1/notices",
@@ -246,6 +241,18 @@ exports[`regression fixtures > java/request-factories 1`] = `
   "Notices.java:37 push.example-notices.com POST /v1/publish",
   "Notices.java:45 unknown PUT /",
   "Notices.java:45 unknown GET /",
+  "Uploads.java:27 unknown GET /",
+  "Uploads.java:27 unknown POST /",
+  "Volumes.java:20 api.example-volumes.com GET /v1/volumes/{name} (wrapper:Volumes.request)",
+  "Volumes.java:25 api.example-volumes.com DELETE /v1/volumes/{name} (wrapper:Volumes.request)",
+  "Volumes.java:30 api.example-volumes.com POST /v1/volumes/create (wrapper:Volumes.request)",
+  "Volumes.java:34 api.example-volumes.com PUT /v1/volumes/{name}/labels/archived (wrapper:Volumes.tag)",
+  "Volumes.java:38 api.example-volumes.com GET /v1/volumes/{name}/hits (wrapper:Volumes.tag)",
+  "Volumes.java:42 unknown DYNAMIC /",
+  "Volumes.java:46 unknown DYNAMIC /",
+  "Volumes.java:50 unknown DYNAMIC /",
+  "Volumes.java:55 api.example-volumes.com PUT /v1/volumes/{name}/labels/{label}",
+  "Volumes.java:59 api.example-volumes.com GET /v1/volumes/{name}/hits",
 ]
 `;
 
@@ -449,14 +456,22 @@ exports[`regression fixtures > kotlin/okhttp 1`] = `
 
 exports[`regression fixtures > kotlin/request-starts 1`] = `
 [
+  "Pages.kt:8 api.example-pages.com GET /v1/pages (wrapper:Pages.fetch)",
+  "Pages.kt:10 api.example-pages.com DELETE /v1/pages (wrapper:Pages.fetch)",
+  "Pages.kt:12 api.example-pages.com DELETE /v1/archive (wrapper:Pages.fetch)",
+  "Pages.kt:16 api.example-pages.com GET /{path}",
+  "Pages.kt:18 api.example-pages.com DELETE /{path}",
+  "Pages.kt:20 api.example-pages.com GET /v1/notes/{text}",
+  "Pages.kt:22 api.example-pages.com DELETE /v1/notes/{id}",
   "Relay.kt:22 unknown POST /",
   "Relay.kt:22 unknown DELETE /",
   "Relay.kt:22 unknown GET /",
   "Relay.kt:25 api.example-relay.com POST /v1/copies/{id}",
   "Relay.kt:25 api.example-relay.com GET /v1/items/{id}",
-  "Relay.kt:27 example-relay.com GET /ping",
-  "Relay.kt:27 api.example-relay.com POST /ping",
+  "Relay.kt:27 api.example-relay.com DYNAMIC /ping",
   "Relay.kt:44 unknown DYNAMIC /",
+  "Uploads.kt:15 unknown PUT /",
+  "Uploads.kt:15 unknown GET /",
 ]
 `;
 

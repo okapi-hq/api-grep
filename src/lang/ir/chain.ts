@@ -1,4 +1,5 @@
 import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
+import { overloadFor } from "./overloads.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { injectedCall, injectedField, paramValue } from "./injected.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
@@ -173,7 +174,8 @@ function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Cha
   if (injected) return valueChain(injected.expr, injected.fn, ctx, depth + 1);
   const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
-    if (c.root.kind === "function") return factoryResult(c.root.fn, e, fn, ctx, depth);
+    const target = c.root.kind === "function" ? overloadFor(c.root.fn, e, fn, ctx) : undefined;
+    if (c.root.kind === "function") return target ? factoryResult(target, e, fn, ctx, depth) : UNKNOWN;
     if (c.root.kind === "class") return { root: { kind: "instance", cls: c.root.cls }, segs: [] };
     return UNKNOWN;
   }
@@ -218,5 +220,9 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
 
 /** What a call invokes: the callee's chain with the call on its last member (factories are not followed). */
 export function calleeChain(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Chain {
-  return attach(valueChain(call.fn, fn, ctx), call, fn, ctx.subst);
+  const c = valueChain(call.fn, fn, ctx);
+  if (c.root.kind !== "function" || c.segs.length > 0) return attach(c, call, fn, ctx.subst);
+  // an overloaded method: the one the arguments fit, else not known
+  const target = overloadFor(c.root.fn, call, fn, ctx);
+  return target ? { root: { kind: "function", fn: target }, segs: [] } : UNKNOWN;
 }
