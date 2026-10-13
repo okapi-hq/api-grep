@@ -75,7 +75,7 @@ function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
     host: m.spec.host ?? m.entry.host,
     inlinePath: m.entry.inlinePathLiterals,
     basePath: m.entry.basePath,
-    baseUrl: raw.baseUrl,
+    baseUrl: raw.baseUrl?.expr.k === "null" ? undefined : raw.baseUrl,
     envHints: ctx.envHints,
     evaluate: (s) => urlParts(s, ctx),
     urlParts: (s) => baseUrlParts(s, ctx),
