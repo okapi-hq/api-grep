@@ -272,7 +272,9 @@ original's URL, method and body;
   `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
   factories). They are in `query` / `headers` and `authScheme` like any other, and listed in `clientParts` with
-  `from: "interceptor"`. `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
+  `from: "interceptor"`. Headers set on a response (`chain.proceed(...).newBuilder()`, `Response.Builder()`) and
+  one-argument reads (`request.header("X")`) are not the request's. A header set in a branch of the interceptor
+  (`if (url.contains(...))`) is still listed for every call. `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
   Retrofit reads the client of `.client(okHttp)` with it.
 - **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
   `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
@@ -437,7 +439,12 @@ as the compiler does), `String.valueOf(x)`, `System.getenv("X")` (also `System.g
 expressions (any of their results), and collection factories (`Map.of`, `Map.ofEntries`, `List.of`, `Arrays.asList`).
 POJO fields and records give body shapes, under their `@SerializedName` / `@JsonProperty` names (`transient`,
 `@Transient`, `@JsonIgnore` and `static` fields aside); `Optional<T>` and `@Nullable` fields are not required. A
-`HashMap` / `LinkedHashMap` filled with `put` is a body like `JSONObject` (a fluent map, Kotlin too).
+`HashMap` / `LinkedHashMap` filled with `put` is a body like `JSONObject` (a fluent map, Kotlin too); `new HashMap<>(16)`
+is a capacity, and a key it `remove`s is not required. `new byte[] {...}` is binary data, not a list.
+tree-sitter-java does not parse an annotated varargs type (`String @Nullable ... ids`): a file that fails to parse
+is parsed again with those annotations blanked out (same length, `src/lang/java/repair.ts`). Operator chains (`+`,
+`&&`) are lowered in a loop, so thousands-long generated concatenations do not run out of stack; other constructs
+nested a few thousand deep still skip their file as an `internal-error`.
 
 **Out of scope by default:** Maven `target/`, `.gradle/`, `buildSrc/`, `build-logic/`, test source sets (`src/test*`,
 `src/androidTest*`, `src/*Test`), `test/`, `tests/`, `*Test.java`, `*Tests.java`, `*IT.java`.
