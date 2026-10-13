@@ -688,6 +688,10 @@
           "description": "Environment variable the model is read from; `values` holds its default in the code, if any.",
           "type": "string"
         },
+        "envExample": {
+          "description": "The value the repository's example env file nearest the call (`.env.example`, `.env.sample`, …) gives `env`; not a value the code gives.",
+          "type": "string"
+        },
         "dynamic": {
           "type": "boolean",
           "description": "Some value could not be read statically (a parameter, a call result): `values` may be incomplete."

@@ -62,3 +62,14 @@ describe("models: typescript", () => {
     expect(at(r, "frameworks.ts", 17)).toMatchObject({ provider: "google-ai", model: { values: ["gemini-2.5-pro"] } });
   });
 });
+
+describe("models: example env files", () => {
+  it("gives a model read from a variable the value its nearest example env file documents", async () => {
+    const r = await scanFixture("python/env-examples", { exclude: [] });
+    expect(at(r, "app.py", 9).model).toEqual({ values: [], env: "CHAT_MODEL", envExample: "gpt-4o-mini", dynamic: false, from: "body" });
+    expect(at(r, "app.py", 13).model).toMatchObject({ values: ["text-embedding-3-large"], env: "EMBED_MODEL", envExample: "text-embedding-3-small" });
+    expect(at(r, "service/worker.py", 9).model).toMatchObject({ env: "CHAT_MODEL", envExample: "claude-sonnet-4-5" });
+    // a placeholder documents nothing
+    expect(at(r, "app.py", 17).model).not.toHaveProperty("envExample");
+  });
+});

@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.11.0";
+export const SCHEMA_VERSION = "1.12.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -133,6 +133,10 @@ export const ModelSchema = z
       .array(z.string())
       .describe("Model names the code gives, literally or as a default (an environment variable's, a function's returns, every branch of a condition)."),
     env: z.string().optional().describe("Environment variable the model is read from; `values` holds its default in the code, if any."),
+    envExample: z
+      .string()
+      .optional()
+      .describe("The value the repository's example env file nearest the call (`.env.example`, `.env.sample`, …) gives `env`; not a value the code gives."),
     dynamic: z.boolean().describe("Some value could not be read statically (a parameter, a call result): `values` may be incomplete."),
     hint: z.string().optional().describe("Identifier the unread value comes from (`get_model`, `settings.model`)."),
     from: z

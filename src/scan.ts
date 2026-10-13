@@ -6,6 +6,7 @@ import type { Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit } from "./git.js";
 import { errorText } from "./lang/files.js";
 import { selectLanguages } from "./lang/index.js";
+import { readEnvExamples, withEnvExamples } from "./model/env-examples.js";
 import type { LanguageScanResult } from "./lang/types.js";
 import { SCHEMA_URL, SCHEMA_VERSION, type Call, type Language, type Report, type SdkCoverage, type Stats } from "./report/schema.js";
 import { DiagnosticsCollector } from "./report/diagnostics.js";
@@ -133,7 +134,7 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   const diag = new DiagnosticsCollector(opts.onWarning);
   const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
   const found = await scanLanguages(rootDir, opts, diag, changed);
-  const built = onePerRequest(sortCalls(found.calls));
+  const built = withEnvExamples(onePerRequest(sortCalls(found.calls)), readEnvExamples(rootDir));
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
   return {
