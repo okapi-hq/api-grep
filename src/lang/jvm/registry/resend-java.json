@@ -1,0 +1,42 @@
+{
+  "$comment": "resend-java (also used from Kotlin): `val resend = Resend(key)`, then a service (`resend.emails().send(params)`); parameters are builders (`CreateEmailOptions.builder().from(f).to(t).subject(s).html(h).build()`), read as the JSON body in snake_case. Keys of the PHP Resend registry.",
+  "package": "com.resend:resend-java",
+  "imports": ["com.resend.Resend"],
+  "provider": "resend",
+  "host": "api.resend.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (resend-java services, paths of the PHP resend registry)",
+  "instance": { "names": ["Resend"] },
+  "setters": {
+    "packages": ["com.resend.services"],
+    "case": "snake"
+  },
+  "methods": {
+    "emails.send": {"method":"POST","path":"/emails","bodyArg":0,"operationId":"sendEmail"},
+    "emails.get": {"method":"GET","path":"/emails/{email_id}","pathArgs":[0],"operationId":"getEmail"},
+    "emails.list": {"method":"GET","path":"/emails","operationId":"listEmails"},
+    "emails.update": {"method":"PATCH","path":"/emails/{id}","bodyArg":0,"pathFromBody":["id"],"operationId":"updateEmail"},
+    "emails.cancel": {"method":"POST","path":"/emails/{email_id}/cancel","pathArgs":[0],"operationId":"cancelEmail"},
+    "batch.send": {"method":"POST","path":"/emails/batch","bodyArg":0,"operationId":"sendBatch"},
+    "batch.create": {"method":"POST","path":"/emails/batch","bodyArg":0,"operationId":"sendBatch"},
+    "domains.create": {"method":"POST","path":"/domains","bodyArg":0,"operationId":"createDomain"},
+    "domains.get": {"method":"GET","path":"/domains/{domain_id}","pathArgs":[0],"operationId":"getDomain"},
+    "domains.list": {"method":"GET","path":"/domains","operationId":"listDomains"},
+    "domains.verify": {"method":"POST","path":"/domains/{domain_id}/verify","pathArgs":[0],"operationId":"verifyDomain"},
+    "domains.remove": {"method":"DELETE","path":"/domains/{domain_id}","pathArgs":[0],"operationId":"deleteDomain"},
+    "apiKeys.create": {"method":"POST","path":"/api-keys","bodyArg":0,"operationId":"createApiKey"},
+    "apiKeys.list": {"method":"GET","path":"/api-keys","operationId":"listApiKeys"},
+    "apiKeys.remove": {"method":"DELETE","path":"/api-keys/{api_key_id}","pathArgs":[0],"operationId":"deleteApiKey"},
+    "audiences.create": {"method":"POST","path":"/audiences","bodyArg":0,"operationId":"createAudience"},
+    "audiences.get": {"method":"GET","path":"/audiences/{audience_id}","pathArgs":[0],"operationId":"getAudience"},
+    "audiences.list": {"method":"GET","path":"/audiences","operationId":"listAudiences"},
+    "audiences.remove": {"method":"DELETE","path":"/audiences/{audience_id}","pathArgs":[0],"operationId":"deleteAudience"},
+    "contacts.create": {"method":"POST","path":"/audiences/{audience_id}/contacts","bodyArg":0,"pathFromBody":["audience_id"],"operationId":"createContact"},
+    "contacts.list": {"method":"GET","path":"/audiences/{audience_id}/contacts","pathArgs":[0],"operationId":"listContacts"},
+    "contacts.get": {"method":"GET","path":"/audiences/{audience_id}/contacts/{id}","bodyArg":0,"pathFromBody":["audience_id","id"],"operationId":"getContact"},
+    "contacts.update": {"method":"PATCH","path":"/audiences/{audience_id}/contacts/{id}","bodyArg":0,"pathFromBody":["audience_id","id"],"operationId":"updateContact"},
+    "contacts.remove": {"method":"DELETE","path":"/audiences/{audience_id}/contacts/{id}","bodyArg":0,"pathFromBody":["audience_id","id"],"operationId":"deleteContact"},
+    "broadcasts.create": {"method":"POST","path":"/broadcasts","bodyArg":0,"operationId":"createBroadcast"},
+    "broadcasts.send": {"method":"POST","path":"/broadcasts/{broadcast_id}/send","bodyArg":0,"pathFromBody":["broadcast_id"],"operationId":"sendBroadcast"}
+  }
+}

@@ -55,10 +55,20 @@ export interface SetterRules {
   fields?: Record<string, string>;
   /** Setters adding one item to a list field, or one key to a map field when given two arguments (Lombok `@Singular`: `tag(t)` -> `tags`). */
   items?: Record<string, string>;
-  /** Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`. */
-  constants?: Record<string, "kebab" | "snake">;
+  /**
+   * Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`;
+   * `lower`: constants named in Pascal case (`ChatRole.User` -> `user`).
+   */
+  constants?: Record<string, "kebab" | "snake" | "lower">;
   /** Rewrites of a constant's string after its case (`gpt-4-1` -> `gpt-4.1`): pattern and replacement. */
   constantRewrites?: [string, string][];
+  /**
+   * Kotlin data classes of those packages are built by their constructor's named arguments, read as the fields they
+   * set (`ChatCompletionRequest(model = m, maxTokens = 100)` -> `model`, `max_tokens`).
+   */
+  constructors?: boolean;
+  /** Classes of those packages that stand for their one argument (`ModelId("gpt-4o")` -> `"gpt-4o"`). */
+  wrappers?: string[];
 }
 
 /**
@@ -177,6 +187,8 @@ export interface FluentMapSpec {
   auth?: Record<string, "bearer" | "basic">;
   /** Properties set on a variable holding the object (`headers.contentType = ...`): the entry each sets. */
   props?: Record<string, string>;
+  /** Methods setting one entry from their argument (`request.setEndpoint("mail/send")` -> `endpoint`). */
+  setters?: Record<string, string>;
   /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
   skip?: string[];
   /** Methods adding every entry of their argument (`map.putAll(other)`). */

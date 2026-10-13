@@ -1,0 +1,25 @@
+{
+  "$comment": "mailgun-java (also used from Kotlin): `MailgunClient.config(key).createApi(MailgunMessagesApi::class.java)` (or an injected `MailgunMessagesApi`), then `sendMessage(domain, Message.builder().from(f).to(t).subject(s).text(x).build())`: the message's builder fields are the multipart form, the domain is in the path. The EU host is given as the first argument of the two-argument `config(baseUrl, key)`, which is not told apart from `config(key)`: the host is the US one.",
+  "package": "com.mailgun:mailgun-java",
+  "imports": ["com.mailgun.client.MailgunClient", "com.mailgun.api.v3.MailgunMessagesApi", "com.mailgun.api.v3.MailgunDomainsApi", "com.mailgun.api.v3.MailgunEventsApi"],
+  "provider": "mailgun",
+  "host": "api.mailgun.net",
+  "auth": "basic",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (mailgun-java API interfaces, paths of the PHP mailgun registry)",
+  "instance": { "names": ["createApi", "createAsyncApi", "MailgunMessagesApi", "MailgunDomainsApi", "MailgunEventsApi"] },
+  "setters": {
+    "packages": ["com.mailgun.model"],
+    "case": "camel"
+  },
+  "methods": {
+    "sendMessage": {"method":"POST","path":"/v3/{domain}/messages","pathArgs":[0],"bodyArg":1,"encoding":"multipart","operationId":"sendMessage"},
+    "sendMessageAsync": {"method":"POST","path":"/v3/{domain}/messages","pathArgs":[0],"bodyArg":1,"encoding":"multipart","operationId":"sendMessage"},
+    "sendMIMEMessage": {"method":"POST","path":"/v3/{domain}/messages.mime","pathArgs":[0],"bodyArg":1,"encoding":"multipart","operationId":"sendMIMEMessage"},
+    "getStoredMessage": {"method":"GET","path":"/v3/domains/{domain}/messages/{storage_id}","pathArgs":[0,1],"operationId":"getStoredMessage"},
+    "getDomainsList": {"method":"GET","path":"/v4/domains","operationId":"getDomainsList"},
+    "getSingleDomain": {"method":"GET","path":"/v4/domains/{domain}","pathArgs":[0],"operationId":"getSingleDomain"},
+    "getEvents": {"method":"GET","path":"/v3/{domain}/events","pathArgs":[0],"operationId":"getEvents"},
+    "getAllEvents": {"method":"GET","path":"/v3/{domain}/events","pathArgs":[0],"operationId":"getEvents"}
+  }
+}

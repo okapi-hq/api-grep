@@ -68,7 +68,9 @@ function unset(acc: Acc, key: Expr): void {
 function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: FunctionDef): boolean {
   const [a, b] = positional(call).map((x) => scopedIn(x, fn, into));
   const auth = acc.spec.auth?.[name];
-  if (acc.spec.put?.includes(name) && a && b) acc.entries.push({ key: a, value: b });
+  const setter = acc.spec.setters && Object.hasOwn(acc.spec.setters, name) ? acc.spec.setters[name] : undefined;
+  if (setter && a) acc.entries.push({ key: { k: "str", v: setter }, value: a });
+  else if (acc.spec.put?.includes(name) && a && b) acc.entries.push({ key: a, value: b });
   else if (acc.spec.items?.includes(name) && a) acc.items.push(a);
   else if (acc.spec.spread?.includes(name) && a) acc.entries.push({ value: a, spread: true });
   else if (acc.spec.remove?.includes(name) && a) unset(acc, positional(call)[0]!);
@@ -87,7 +89,8 @@ function entriesIn(dict: Expr, fn: FunctionDef, into: FunctionDef): Entry[] {
 /** The constructor call or variable a chain of calls starts from, and its value so far. */
 function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: number): Acc | undefined {
   if (e.k === "call") {
-    const spec = ctx.idx.lang.fluentMaps!.find((s) => namesEnd(e.fn, s.objects));
+    // an object filled by setters (SendGrid's `Request()`) is made empty: `Request(url)` is another library's
+    const spec = ctx.idx.lang.fluentMaps!.find((s) => namesEnd(e.fn, s.objects) && (!s.setters || e.args.length === 0));
     const arg = positional(e)[0];
     // `JSONObject(mapOf(...))`: the map's entries first; `HashMap(16)` is a capacity
     return spec ? { spec, entries: arg && !spec.items && arg.k !== "num" ? [{ value: scopedIn(arg, fn, into), spread: true }] : [], items: [] } : undefined;

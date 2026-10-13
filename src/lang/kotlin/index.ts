@@ -55,8 +55,8 @@ export const kotlinLanguage: IrLanguage = {
       ...["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"],
       // Java
       ...["String.valueOf", "Objects.requireNonNull"],
-      // SDK value wrappers: Twilio `PhoneNumber(to)`
-      "PhoneNumber",
+      // SDK value wrappers: Twilio `PhoneNumber(to)`, openai-kotlin `ModelId("gpt-4o")`
+      "PhoneNumber", "ModelId", "FileId",
     ]),
     methods: new Set([
       ...["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "orEmpty"],

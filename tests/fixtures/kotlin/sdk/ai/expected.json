@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Graders.kt", "line": 11, "provider": "openai" },
+    { "file": "Graders.kt", "line": 18, "provider": "anthropic" },
+    { "file": "Graders.kt", "line": 24, "provider": "ollama" },
+    { "file": "Tutor.kt", "line": 17, "provider": "openai" },
+    { "file": "Tutor.kt", "line": 28, "provider": "openai" },
+    { "file": "Tutor.kt", "line": 30, "provider": "openai" }
+  ]
+}

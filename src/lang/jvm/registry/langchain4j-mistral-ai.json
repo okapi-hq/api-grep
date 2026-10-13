@@ -1,0 +1,24 @@
+{
+  "$comment": "LangChain4j Mistral models (`dev.langchain4j:langchain4j-mistral-ai`): `MistralAiChatModel.builder().apiKey(k).modelName(MistralAiChatModelName.MISTRAL_SMALL_LATEST).build()` is the call, its request settings the body (as in `langchain4j-open-ai.json`).",
+  "package": "dev.langchain4j:langchain4j-mistral-ai",
+  "provider": "mistral",
+  "host": "api.mistral.ai",
+  "auth": "bearer",
+  "generatedFrom": "manual (LangChain4j Mistral model builders, paths of the Python langchain-mistralai registry)",
+  "basePath": "/v1",
+  "instance": { "names": [], "urlArg": { "baseUrl": "0" } },
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.mistralai"],
+    "case": "snake",
+    "fields": {
+      "modelName": "model", "apiKey": "", "baseUrl": "", "timeout": "", "maxRetries": "", "logRequests": "", "logResponses": "", "logger": "", "httpClientBuilder": "",
+      "listeners": "", "defaultRequestParameters": "", "supportedCapabilities": ""
+    },
+    "constants": { "MistralAiChatModelName": "kebab", "MistralAiEmbeddingModelName": "kebab" }
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.mistralai.MistralAiChatModel", "dev.langchain4j.model.mistralai.MistralAiStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/v1/chat/completions","bodySelf":true,"operationId":"chat_completion_v1_chat_completions_post"} } },
+    { "imports": ["dev.langchain4j.model.mistralai.MistralAiEmbeddingModel"], "methods": { "build": {"method":"POST","path":"/v1/embeddings","bodySelf":true,"operationId":"embeddings_v1_embeddings_post"} } }
+  ]
+}

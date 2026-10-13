@@ -197,6 +197,14 @@ exports[`regression fixtures > java/di-spring 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/email 1`] = `
+[
+  "Mailer.java:25 sendgrid POST /v3/mail/send",
+  "Mailer.java:29 resend POST /emails",
+  "Mailer.java:33 mailgun POST /v3/mail.example.com/messages",
+]
+`;
+
 exports[`regression fixtures > java/feign 1`] = `
 [
   "Clients.java:28 api.example-orders.com GET /v2/orders/{id}",
@@ -336,6 +344,16 @@ exports[`regression fixtures > java/sdk 1`] = `
   "Billing.java:42 aws PUT /{Bucket}/{Key}",
   "Chat.java:25 openai POST /v1/chat/completions",
   "Chat.java:29 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > java/sdk-ai 1`] = `
+[
+  "Helpdesk.java:20 azure-openai POST /openai/deployments/{model}/chat/completions",
+  "Helpdesk.java:24 azure-openai POST /openai/deployments/{model}/embeddings",
+  "Triage.java:10 google-ai POST /v1beta/models/{model}:generateContent",
+  "Triage.java:16 mistral POST /v1/chat/completions",
+  "Triage.java:21 aws-bedrock POST /model/{modelId}/converse",
 ]
 `;
 
@@ -595,6 +613,17 @@ exports[`regression fixtures > kotlin/retrofit-shared-builder 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/sdk/ai 1`] = `
+[
+  "Graders.kt:11 openai POST /v1/chat/completions",
+  "Graders.kt:18 anthropic POST /v1/messages",
+  "Graders.kt:24 ollama POST /api/chat",
+  "Tutor.kt:17 openai POST /v1/chat/completions",
+  "Tutor.kt:28 openai POST /v1/embeddings",
+  "Tutor.kt:30 openai GET /v1/models",
+]
+`;
+
 exports[`regression fixtures > kotlin/sdk/cloud 1`] = `
 [
   "Accounts.kt:12 firebase GET /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
@@ -606,6 +635,22 @@ exports[`regression fixtures > kotlin/sdk/cloud 1`] = `
   "Storage.kt:22 aws GET /{Bucket}/{Key}",
   "Storage.kt:27 aws GET /{Bucket}",
   "Storage.kt:30 aws GET /",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/firebase-app 1`] = `
+[
+  "Journal.kt:15 firebase POST /v1/accounts:signInWithPassword",
+  "Journal.kt:17 firebase POST /v1/accounts:signUp",
+  "Journal.kt:19 firebase POST /v1/accounts:sendOobCode",
+  "Journal.kt:24 firebase PUT /entries/{id}.json",
+  "Journal.kt:26 firebase POST /entries.json",
+  "Journal.kt:28 firebase DELETE /entries/{id}.json",
+  "Journal.kt:30 firebase POST /v0/b/{bucket}/o",
+  "Journal.kt:32 firebase POST /summarizeEntry",
+  "Photos.java:12 firebase GET /v0/b/{bucket}/o/photos/{name}",
+  "Photos.java:16 firebase POST /v1/accounts:sendOobCode",
+  "Photos.java:21 firebase POST /v1/token",
 ]
 `;
 
@@ -660,6 +705,18 @@ exports[`regression fixtures > kotlin/sdk/payments 1`] = `
   "Billing.kt:35 stripe POST /v1/checkout/sessions",
   "Billing.kt:45 stripe POST /v1/payment_intents/{intent}/cancel",
   "Billing.kt:47 stripe GET /v1/customers",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/supabase 1`] = `
+[
+  "Recipes.kt:24 supabase GET /rest/v1/recipes",
+  "Recipes.kt:26 supabase POST /rest/v1/recipes",
+  "Recipes.kt:28 supabase DELETE /rest/v1/recipes",
+  "Recipes.kt:30 supabase POST /rest/v1/rpc/popular_recipes",
+  "Recipes.kt:32 supabase POST /auth/v1/token",
+  "Recipes.kt:37 supabase POST /storage/v1/object/photos/recipes/{name}.jpg",
+  "Recipes.kt:42 supabase POST /functions/v1/translate-recipe",
 ]
 `;
 

@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Recipes.kt", "line": 24, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 26, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 28, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 30, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 32, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 37, "provider": "supabase" },
+    { "file": "Recipes.kt", "line": 42, "provider": "supabase" }
+  ]
+}

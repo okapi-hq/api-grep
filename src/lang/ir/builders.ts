@@ -1,6 +1,6 @@
 import { valueChain } from "./chain.js";
 import type { Scoped, SetterRules } from "./language.js";
-import { dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
+import { dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef, type ModuleModel } from "./model.js";
 import { lookup } from "./project.js";
 import { appliedSteps } from "./applied.js";
 import { mayNotRun } from "./edits.js";
@@ -76,11 +76,13 @@ function rulesFor(cls: Expr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuild
 function constant(e: Expr, fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr | undefined {
   // a setter written in an `apply { }` lambda: its argument is read there
   if (e.k === "scoped") return constant(e.expr, e.fn, ctx, rules);
-  if ((e.k !== "attr" && e.k !== "name") || !CONSTANT.test(e.name)) return undefined;
+  if ((e.k !== "attr" && e.k !== "name") || !/^[A-Z]/.test(e.name)) return undefined;
   const path = externalPath(e, fn, ctx);
   if (!path || path.length < 2 || !inPackages(path, rules)) return undefined;
-  const style = own(rules.constants, path[path.length - 2]!) ?? own(rules.constants, "*");
-  if (!style) return undefined;
+  const named = own(rules.constants, path[path.length - 2]!);
+  const style = named ?? own(rules.constants, "*");
+  // `ChatRole.User`: only for a class the rules name, an upper-case constant for any
+  if (!style || (!CONSTANT.test(e.name) && style !== "lower") || (style === "lower" && !named)) return undefined;
   let v = path[path.length - 1]!.toLowerCase();
   if (style === "kebab") v = v.replace(/_/g, "-");
   for (const [pattern, replacement] of rules.constantRewrites ?? []) v = v.replace(new RegExp(pattern), replacement);
@@ -204,7 +206,35 @@ function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuil
  */
 export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): Scoped | undefined {
   const b = built(call, fn, ctx, project, 0);
-  return b ? { expr: dictOf(b.setters, fn, ctx, b.rules), fn } : undefined;
+  return b ? { expr: dictOf(b.setters, fn, ctx, b.rules), fn } : constructed(call, fn, ctx);
+}
+
+const dataClassFiles = new WeakMap<ModuleModel, boolean>();
+
+/** Whether the file imports from a package whose classes are built by their constructor (a cheap test for every call). */
+function importsDataClasses(mod: ModuleModel, ctx: IrCtx): boolean {
+  let known = dataClassFiles.get(mod);
+  if (known === undefined) {
+    const packages = ctx.idx.lang.registry.flatMap((r) => (r.setters?.constructors || r.setters?.wrappers ? r.setters.packages : []));
+    known = packages.length > 0 && mod.importPaths.some((p) => packages.some((pkg) => `${p.join(".")}.`.startsWith(`${pkg}.`)));
+    dataClassFiles.set(mod, known);
+  }
+  return known;
+}
+
+/**
+ * `ChatCompletionRequest(model = ModelId("gpt-4o"), maxTokens = 100)`: a data class of an SDK whose rules read
+ * constructors, as the dict of its named arguments; `ModelId("gpt-4o")`, a wrapper, as its argument.
+ */
+function constructed(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const name = call.fn.k === "name" || call.fn.k === "attr" ? call.fn.name : "";
+  if (!/^[A-Z]/.test(name) || call.args.length === 0 || call.args.some((a) => a.spread) || !importsDataClasses(fn.module, ctx)) return undefined;
+  const path = externalPath(call.fn, fn, ctx);
+  const rules = path ? ctx.idx.lang.registry.find((r) => r.setters && inPackages(path, r.setters))?.setters : undefined;
+  if (!rules) return undefined;
+  if (rules.wrappers?.includes(name)) return call.args.length === 1 ? { expr: call.args[0]!.value, fn } : undefined;
+  if (!rules.constructors || call.args.some((a) => !a.name)) return undefined;
+  return { expr: dictOf(call.args.map((a) => ({ name: a.name!, args: [{ value: a.value }] })), fn, ctx, rules), fn };
 }
 
 /** A lambda that fills a builder (`{ it.bucket(b).key(k) }`, `{ req -> req.channel(c) }`): the dict of what it sets. */

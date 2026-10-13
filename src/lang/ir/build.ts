@@ -71,7 +71,10 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   const chain = /^chain:([\w,]+)$/.exec(source);
   if (chain) {
     const names = new Set(chain[1]!.split(","));
-    const pieces = before.filter((s) => s.call && names.has(s.name)).map((s) => argOf(s, 0));
+    const segs = before.filter((s) => s.call && names.has(s.name));
+    // a root reference first (`getReference()` with no argument, then `child(path)`) adds nothing to the path
+    while (segs.length > 1 && segs[0]!.call!.args.length === 0) segs.shift();
+    const pieces = segs.map((s) => argOf(s, 0));
     if (pieces.length === 0 || pieces.some((p) => !p)) return {};
     return { parts: pieces.flatMap((p, i) => [...(i ? [{ kind: "static", text: "/" } as Part] : []), ...urlParts(p!, ctx)]) };
   }

@@ -1,0 +1,98 @@
+{
+  "$comment": "Firebase for Android (Kotlin and Java): Auth (`FirebaseAuth.getInstance()` or `Firebase.auth`, then `signInWithEmailAndPassword(e, p)` (its arguments are the `email` and `password` fields, `argFields`); the signed-in user's `getIdToken`, `sendEmailVerification`, `updatePassword`...), the Realtime Database (`FirebaseDatabase.getInstance().getReference(path).child(c).setValue(v)`, `Firebase.database.reference`; `{path}` joins the arguments of `getReference` and `child`), Storage (`FirebaseStorage.getInstance().reference.child(p).putFile(uri)`) and callable Functions (`Firebase.functions.getHttpsCallable(\"name\").call(data)`). Paths are the REST equivalents of the SDKs' requests, as in the TypeScript `firebase` registry; `signOut()` only clears the local session. firebase-admin has the same class names (`sameClassesAs`): where only firebase-admin is declared, these are its classes. Listeners (`addValueEventListener`) keep a connection open and are listed as the read they start.",
+  "provider": "firebase",
+  "generatedFrom": "manual (Android Firebase SDK methods, paths of the TypeScript firebase registry and firebase-admin.json)",
+  "sameClassesAs": ["com.google.firebase:firebase-admin"],
+  "variants": [
+    {
+      "package": "com.google.firebase:firebase-auth",
+      "aliases": ["com.google.firebase:firebase-auth-ktx"],
+      "imports": ["com.google.firebase.auth.FirebaseAuth", "com.google.firebase.auth.FirebaseUser", "com.google.firebase.Firebase", "com.google.firebase.ktx.Firebase"],
+      "host": "identitytoolkit.googleapis.com",
+      "auth": "apikey",
+      "instance": { "names": ["getInstance", "FirebaseAuth", "FirebaseUser"] },
+      "builders": ["auth", "currentUser", "getCurrentUser", "user", "getUser"],
+      "methods": {
+        "signInWithEmailAndPassword": {"method":"POST","path":"/v1/accounts:signInWithPassword?key={apiKey}","argFields":{"seg":"signInWithEmailAndPassword","fields":["email","password"]}},
+        "createUserWithEmailAndPassword": {"method":"POST","path":"/v1/accounts:signUp?key={apiKey}","argFields":{"seg":"createUserWithEmailAndPassword","fields":["email","password"]}},
+        "signInAnonymously": {"method":"POST","path":"/v1/accounts:signUp?key={apiKey}"},
+        "signInWithCredential": {"method":"POST","path":"/v1/accounts:signInWithIdp?key={apiKey}"},
+        "signInWithCustomToken": {"method":"POST","path":"/v1/accounts:signInWithCustomToken?key={apiKey}"},
+        "signInWithEmailLink": {"method":"POST","path":"/v1/accounts:signInWithEmailLink?key={apiKey}"},
+        "sendSignInLinkToEmail": {"method":"POST","path":"/v1/accounts:sendOobCode?key={apiKey}"},
+        "sendPasswordResetEmail": {"method":"POST","path":"/v1/accounts:sendOobCode?key={apiKey}","argFields":{"seg":"sendPasswordResetEmail","fields":["email"]}},
+        "confirmPasswordReset": {"method":"POST","path":"/v1/accounts:resetPassword?key={apiKey}"},
+        "verifyPasswordResetCode": {"method":"POST","path":"/v1/accounts:resetPassword?key={apiKey}"},
+        "applyActionCode": {"method":"POST","path":"/v1/accounts:update?key={apiKey}"},
+        "fetchSignInMethodsForEmail": {"method":"POST","path":"/v1/accounts:createAuthUri?key={apiKey}"},
+        "sendEmailVerification": {"method":"POST","path":"/v1/accounts:sendOobCode?key={apiKey}"},
+        "updateEmail": {"method":"POST","path":"/v1/accounts:update?key={apiKey}"},
+        "verifyBeforeUpdateEmail": {"method":"POST","path":"/v1/accounts:sendOobCode?key={apiKey}"},
+        "updatePassword": {"method":"POST","path":"/v1/accounts:update?key={apiKey}"},
+        "updateProfile": {"method":"POST","path":"/v1/accounts:update?key={apiKey}"},
+        "reauthenticate": {"method":"POST","path":"/v1/accounts:signInWithIdp?key={apiKey}"},
+        "linkWithCredential": {"method":"POST","path":"/v1/accounts:signInWithIdp?key={apiKey}"},
+        "reload": {"method":"POST","path":"/v1/accounts:lookup?key={apiKey}"},
+        "delete": {"method":"POST","path":"/v1/accounts:delete?key={apiKey}"},
+        "getIdToken": {"method":"POST","path":"/v1/token?key={apiKey}","host":"securetoken.googleapis.com"}
+      }
+    },
+    {
+      "package": "com.google.firebase:firebase-database",
+      "aliases": ["com.google.firebase:firebase-database-ktx"],
+      "imports": ["com.google.firebase.database.FirebaseDatabase", "com.google.firebase.database.DatabaseReference", "com.google.firebase.Firebase", "com.google.firebase.ktx.Firebase"],
+      "host": "{project}.firebaseio.com",
+      "auth": "bearer",
+      "inlinePathLiterals": true,
+      "instance": { "names": ["getInstance", "FirebaseDatabase", "DatabaseReference"] },
+      "builders": ["database", "reference", "getReference", "child", "orderByChild", "orderByKey", "orderByValue", "limitToFirst", "limitToLast", "startAt", "startAfter", "endAt", "endBefore", "equalTo"],
+      "methods": {
+        "setValue": {"method":"PUT","path":"/{path}.json","params":{"path":"chain:getReference,child"},"bodyArg":0},
+        "push.setValue": {"method":"POST","path":"/{path}.json","params":{"path":"chain:getReference,child"},"bodyArg":0},
+        "updateChildren": {"method":"PATCH","path":"/{path}.json","params":{"path":"chain:getReference,child"},"bodyArg":0},
+        "removeValue": {"method":"DELETE","path":"/{path}.json","params":{"path":"chain:getReference,child"}},
+        "get": {"method":"GET","path":"/{path}.json","params":{"path":"chain:getReference,child"}},
+        "addValueEventListener": {"method":"GET","path":"/{path}.json","params":{"path":"chain:getReference,child"}},
+        "addListenerForSingleValueEvent": {"method":"GET","path":"/{path}.json","params":{"path":"chain:getReference,child"}},
+        "addChildEventListener": {"method":"GET","path":"/{path}.json","params":{"path":"chain:getReference,child"}}
+      }
+    },
+    {
+      "package": "com.google.firebase:firebase-storage",
+      "aliases": ["com.google.firebase:firebase-storage-ktx"],
+      "imports": ["com.google.firebase.storage.FirebaseStorage", "com.google.firebase.storage.StorageReference", "com.google.firebase.Firebase", "com.google.firebase.ktx.Firebase"],
+      "host": "firebasestorage.googleapis.com",
+      "auth": "bearer",
+      "inlinePathLiterals": true,
+      "instance": { "names": ["getInstance", "FirebaseStorage", "StorageReference"] },
+      "builders": ["storage", "reference", "getReference", "root", "getRoot", "child"],
+      "methods": {
+        "putFile": {"method":"POST","path":"/v0/b/{bucket}/o?name={path}","params":{"path":"chain:getReference,child"},"encoding":"raw"},
+        "putBytes": {"method":"POST","path":"/v0/b/{bucket}/o?name={path}","params":{"path":"chain:getReference,child"},"bodyArg":0,"encoding":"raw"},
+        "putStream": {"method":"POST","path":"/v0/b/{bucket}/o?name={path}","params":{"path":"chain:getReference,child"},"encoding":"raw"},
+        "getDownloadUrl": {"method":"GET","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"}},
+        "getBytes": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},
+        "getFile": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},
+        "getStream": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},
+        "getMetadata": {"method":"GET","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"}},
+        "updateMetadata": {"method":"PATCH","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"},"bodyArg":0},
+        "delete": {"method":"DELETE","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"}},
+        "listAll": {"method":"GET","path":"/v0/b/{bucket}/o?prefix={path}","params":{"path":"chain:getReference,child"}},
+        "list": {"method":"GET","path":"/v0/b/{bucket}/o?prefix={path}","params":{"path":"chain:getReference,child"}}
+      }
+    },
+    {
+      "package": "com.google.firebase:firebase-functions",
+      "aliases": ["com.google.firebase:firebase-functions-ktx"],
+      "imports": ["com.google.firebase.functions.FirebaseFunctions", "com.google.firebase.Firebase", "com.google.firebase.ktx.Firebase"],
+      "host": "{region}-{projectId}.cloudfunctions.net",
+      "auth": "bearer",
+      "inlinePathLiterals": true,
+      "instance": { "names": ["getInstance", "FirebaseFunctions"] },
+      "builders": ["functions"],
+      "methods": {
+        "getHttpsCallable.call": {"method":"POST","path":"/{name}","params":{"name":"seg:getHttpsCallable:0"},"bodyArg":0}
+      }
+    }
+  ]
+}
