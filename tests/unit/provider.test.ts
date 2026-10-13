@@ -33,6 +33,16 @@ describe("providers.json", () => {
     for (const [host, id] of Object.entries(hosts)) expect(providerForHost(host), host).toBe(id);
   });
 
+  it("names the node vendors of JSON-RPC calls by their domains (#78)", () => {
+    expect(providerForHost("polygon-mainnet.infura.io")).toBe("infura");
+    expect(providerForHost("eth-mainnet.g.alchemy.com")).toBe("alchemy");
+    expect(providerForHost("eth-mainnet.alchemyapi.io")).toBe("alchemy");
+    expect(providerForHost("still-icy-pond.solana-mainnet.quiknode.pro")).toBe("quicknode");
+    expect(providerForHost("mainnet.helius-rpc.com")).toBe("helius");
+    expect(providerForHost("{network}.infura.io")).toBe("infura");
+    expect(providerForHost("infura.io.example.com")).toBeUndefined();
+  });
+
   it("prefers an exact host, then the longest suffix", () => {
     expect(providerForHost("maps.googleapis.com")).toBe("google-maps");
     expect(providerForHost("generativelanguage.googleapis.com")).toBe("google-ai");

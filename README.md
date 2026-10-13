@@ -249,6 +249,19 @@ also talk to a browser wallet (`new BrowserProvider(window.ethereum)`, viem `cus
 Web3(window.ethereum)`) or over a WebSocket or IPC socket: those calls are not HTTP requests of the app and are not
 reported, nor is a typed client (`provider: Provider`) in a project that builds one of them.
 
+Since [#78](https://github.com/okapi-hq/api-grep/issues/78), also contract objects: ethers `new Contract(address, abi,
+runner).balanceOf(owner)` (and `.staticCall()`, `.estimateGas()`, v5 `callStatic`), web3.js
+`contract.methods.balanceOf(owner).call()` / `.send()`, viem `getContract({ client }).read.balanceOf([owner])` /
+`.write`, web3.py `contract.functions.balanceOf(owner).call()` / `.transact()` / `.estimate_gas()`, `caller` and event
+`get_logs`. They send `eth_call`, `eth_estimateGas` or a transaction; an ethers function called directly is a view or a
+transaction as the ABI written in the code says, and its runner says who signs (`Wallet`: `eth_sendRawTransaction`,
+`provider.getSigner()`: `eth_sendTransaction`); a contract on a wallet's signer is not reported. The function's name is
+in `sdk.chain` (`Contract.balanceOf`). Also web3.py properties that send a request (`w3.eth.block_number`,
+`w3.eth.chain_id`, `w3.eth.gas_price`), ethers' vendor providers (`InfuraProvider`, `AlchemyProvider`,
+`QuickNodeProvider`: the host ethers builds from the network) and `getDefaultProvider`, and `@solana/spl-token` helpers
+taking a connection (`getAccount`, `transfer`). Calls to Infura, Alchemy, QuickNode and Helius hosts are named by the
+vendor (`infura`, ...), raw HTTP calls included.
+
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
 `subscribe`, `useQuery`, `useLazyQuery`, `useSuspenseQuery`, `useBackgroundQuery`, `useMutation`, `useSubscription`),
