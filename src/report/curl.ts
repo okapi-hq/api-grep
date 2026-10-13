@@ -15,7 +15,7 @@ function bodyFlags(ex: Example): string[] {
   if (ex.body === undefined || ex.bodyEncoding === "none") return [];
   if (ex.bodyEncoding === "json") return [`--data ${sq(JSON.stringify(ex.body))}`];
   // `--data-raw` / `--form-string`: a value starting with `@` or `<` is sent as written, never read from a local file
-  if (ex.bodyEncoding === "raw") return [`--data-raw ${sq(typeof ex.body === "string" ? ex.body : JSON.stringify(ex.body))}`];
+  if (ex.bodyEncoding === "raw" || ex.bodyEncoding === "xml") return [`--data-raw ${sq(typeof ex.body === "string" ? ex.body : JSON.stringify(ex.body))}`];
   const flag = ex.bodyEncoding === "form" ? "--data-urlencode" : "--form-string";
   const obj = ex.body && typeof ex.body === "object" && !Array.isArray(ex.body) ? (ex.body as Record<string, unknown>) : { body: ex.body };
   return Object.entries(obj).map(([k, v]) => `${flag} ${sq(`${k}=${typeof v === "object" && v !== null ? JSON.stringify(v) : String(v)}`)}`);

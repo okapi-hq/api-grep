@@ -4,6 +4,7 @@ import type { Shape } from "../types.js";
 import { byName, credentialPlaceholder } from "./names.js";
 import { Rng } from "./random.js";
 import { hasAlternatives, hasOptional, synth, type SynthCtx, type Variant } from "./synth.js";
+import { toXml } from "./xml.js";
 
 type Dyn = Call["dynamic"][number];
 
@@ -76,6 +77,7 @@ const CONTENT_TYPES: Record<Call["bodyEncoding"], string | undefined> = {
   form: "application/x-www-form-urlencoded",
   multipart: "multipart/form-data",
   raw: "application/octet-stream",
+  xml: "application/xml",
   none: undefined,
 };
 
@@ -119,7 +121,8 @@ function buildOne(call: Call, variant: Variant): Example {
   const bodyShape = call.body;
   const opaque = bodyShape && (bodyShape.type === "dynamic" || bodyShape.type === "unknown") && call.bodyEncoding === "json";
   const synthesized = opaque ? {} : bodyShape ? synth(bodyShape, "body", ctx) : undefined;
-  const body = synthesized === null ? undefined : synthesized;
+  const value = synthesized === null ? undefined : synthesized;
+  const body = value !== undefined && call.bodyEncoding === "xml" ? toXml(value) : value;
   const hasBody = body !== undefined && call.bodyEncoding !== "none";
   return {
     variant,

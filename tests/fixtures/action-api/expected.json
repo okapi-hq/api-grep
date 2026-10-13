@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/36",
+  "calls": [
+    {"file": "cloud.ts", "line": 5, "provider": "aws", "operation": "DescribeInstances"},
+    {"file": "cloud.ts", "line": 10, "provider": "aws", "operation": "SendMessage"},
+    {"file": "cloud.ts", "line": 19, "provider": "aws", "operation": "Subscribe"},
+    {"file": "cloud.ts", "line": 24, "provider": "flickr", "operation": "flickr.photos.search"},
+    {"file": "cloud.ts", "line": 29, "provider": "api.example-search.com"},
+    {"file": "cloud.ts", "line": 34, "provider": "aws"}
+  ]
+}

@@ -23,6 +23,13 @@ export function templateOf(shape: Shape): string | undefined {
   return parts && partsToTemplate(parts);
 }
 
+/** The parts of a string shape built by `stringShapeOf`: its one literal value, or the text it remembers. */
+export function partsOf(shape: Shape): Part[] | undefined {
+  if (shape.type !== "string") return undefined;
+  const value = shape.enum?.length === 1 ? shape.enum[0] : undefined;
+  return typeof value === "string" ? [{ kind: "static", text: value }] : templates.get(shape);
+}
+
 /**
  * The literal text of such a string with `gap` for each computed part. A GraphQL document read with `{name}`
  * placeholders would select a field `name` (a `${Fragment}` not resolved, `` `${a} ${b}` `` sent as a search query).

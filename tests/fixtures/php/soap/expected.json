@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/36",
+  "calls": [
+    {"file": "Carrier.php", "line": 22, "provider": "ws.example-carrier.com", "operation": "Rates"},
+    {"file": "Carrier.php", "line": 35, "provider": "ws.example-carrier.com", "operation": "PrintLabel"},
+    {"file": "Carrier.php", "line": 42, "provider": "orders.example-shop.com"},
+    {"file": "Carrier.php", "line": 47, "provider": "aws", "operation": "ListTopics"}
+  ]
+}

@@ -1,6 +1,7 @@
 import { addHeader, type HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { formStringShape, jsonToShape } from "../../resolve/shape-utils.js";
+import { xmlBody } from "../../resolve/xml-shape.js";
 import type { BodyResult } from "../../resolve/body.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
@@ -18,7 +19,7 @@ const ROLE_ENCODING: Partial<Record<OptionRole, BodyEncoding>> = { "body:json": 
 const calleeName = (e: Expr): string | undefined =>
   e.k === "call" ? (e.fn.k === "attr" ? e.fn.name : e.fn.k === "name" ? e.fn.name : e.fn.k === "qname" ? e.fn.path[e.fn.path.length - 1] : undefined) : undefined;
 
-/** `json.dumps(x)` / `urlencode(x)` / `json_encode($x)`: the serialized value and the encoding it implies. */
+/** `json.dumps(x)` / `urlencode(x)` / `json_encode($x)` / `$doc->saveXML()`: the serialized value and the encoding it implies. */
 function unwrapSerializer(s: Scoped, ctx: IrCtx, depth = 0): { inner: Scoped; encoding?: BodyEncoding } {
   // `val form = LinkedMultiValueMap(); form.add(...)`: the variable, whose calls build the value
   if (s.expr.k === "name" && fluentMap(s.expr, s.fn, ctx)) return { inner: s };
@@ -32,22 +33,26 @@ function unwrapSerializer(s: Scoped, ctx: IrCtx, depth = 0): { inner: Scoped; en
   const enc = qualified ? (ctx.idx.lang.serializers[qualified] ?? (name ? ctx.idx.lang.serializers[name] : undefined)) : undefined;
   const arg = d.expr.k === "call" ? d.expr.args[0] : undefined;
   if (enc && arg && !arg.name) return { inner: { expr: arg.value, fn: d.fn }, encoding: enc };
+  // `$doc->saveXML()`, `doc.toxml()`: the document serializes itself; its text is not read
+  if (enc === "xml" && !arg && d.expr.k === "call" && d.expr.fn.k === "attr") return { inner: d, encoding: enc };
   return { inner: d };
 }
 
-function stringBody(expr: Expr, fn: FunctionDef, ctx: IrCtx): Pick<BodyResult, "shape" | "encoding"> | undefined {
+function stringBody(expr: Expr, fn: FunctionDef, ctx: IrCtx): Pick<BodyResult, "shape" | "encoding" | "dynamic"> | undefined {
   if (expr.k !== "str" && expr.k !== "tmpl" && expr.k !== "concat" && expr.k !== "format") return undefined;
   const parts = evaluate(expr, fn, ctx);
   const text = staticText(parts);
   if (text !== undefined) {
     try {
-      return { shape: jsonToShape(JSON.parse(text)), encoding: "json" };
+      return { shape: jsonToShape(JSON.parse(text)), encoding: "json", dynamic: [] };
     } catch {
-      // not JSON: a form string or raw text
+      // not JSON: an XML document, a form string or raw text
     }
   }
+  const xml = xmlBody(parts);
+  if (xml) return { ...xml, encoding: "xml" };
   const form = formStringShape(parts);
-  return form ? { shape: form, encoding: "form" } : { shape: { type: "string" }, encoding: "raw" };
+  return form ? { shape: form, encoding: "form", dynamic: [] } : { shape: { type: "string" }, encoding: "raw", dynamic: [] };
 }
 
 /** How a value built entry by entry is sent (`FormBody.Builder()...`), also when a project function returns it (`params.toFormBody()`). */
@@ -68,7 +73,7 @@ export function resolveIrBody(body: Scoped | undefined, role: OptionRole | undef
   const roleEncoding = role ? ROLE_ENCODING[role] : undefined;
   const asString = stringBody(inner.expr, inner.fn, ctx);
   if (asString) {
-    return { ...asString, encoding: roleEncoding === "multipart" ? "multipart" : asString.encoding, dynamic: [], fromLiteral: true };
+    return { ...asString, encoding: roleEncoding === "multipart" ? "multipart" : asString.encoding, fromLiteral: true };
   }
   const dynamic: DynamicPart[] = [];
   const r = shapeOf(inner.expr, inner.fn, ctx, 0, dynamic);

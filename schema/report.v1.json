@@ -207,8 +207,10 @@
             "form",
             "multipart",
             "raw",
+            "xml",
             "none"
-          ]
+          ],
+          "description": "How the body is encoded: json, form (urlencoded), multipart, raw (bytes or text), xml (an XML document, SOAP envelopes included), or none."
         },
         "dynamic": {
           "type": "array",
@@ -660,8 +662,10 @@
             "form",
             "multipart",
             "raw",
+            "xml",
             "none"
-          ]
+          ],
+          "description": "How the body is encoded: json, form (urlencoded), multipart, raw (bytes or text), xml (an XML document, SOAP envelopes included), or none."
         }
       },
       "required": [

@@ -64,9 +64,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
   APIs). `assembleCalls` (`src/assemble.ts`) reads it from the resolved request through `src/operation/`, one module
   per protocol (`json-rpc.ts` reads the body shape, `graphql.ts` parses documents with the `graphql` package; an SDK
-  method's document argument is `ResolvedCall.document`), unless the front end set `ResolvedCall.operation`; `callId`
-  hashes its name; a batch is one `Call` per operation. Schema, batch decision and per-protocol status (#34 to #36) in
-  `docs/languages.md`.
+  method's document argument is `ResolvedCall.document`; `soap.ts` reads the `SOAPAction` header and the XML
+  envelope, `action.ts` the query or form parameter a provider's `operationParam` in `providers.json` names), unless
+  the front end set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. Schema,
+  batch decision and per-protocol status (#34 to #36) in `docs/languages.md`. XML bodies are `bodyEncoding: "xml"`
+  with their element structure as the shape (`src/resolve/xml-shape.ts`: a capped tokenizer that never reads a DTD or
+  expands an entity).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

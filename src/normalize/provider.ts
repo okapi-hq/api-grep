@@ -11,6 +11,8 @@ export interface ProviderInfo {
   /** SDK packages that talk to this provider, by ecosystem (npm package, PyPI distribution, Composer package, Maven `group:artifact`). */
   packages?: Partial<Record<Ecosystem, string[]>>;
   category?: string;
+  /** Action-style API: the query or form parameter that names the operation (AWS Query `Action`, Flickr `method`). */
+  operationParam?: string;
 }
 
 /** How `provider` was found: an SDK registry, the host, or (weakest) the name of the env var holding the URL. */
@@ -23,6 +25,13 @@ export function sdkPackages(ecosystem: Ecosystem): Map<string, string> {
   const out = new Map<string, string>();
   for (const p of PROVIDERS) for (const pkg of p.packages?.[ecosystem] ?? []) if (!out.has(pkg)) out.set(pkg, p.id);
   return out;
+}
+
+const OPERATION_PARAMS = new Map(PROVIDERS.flatMap((p) => (p.operationParam ? [[p.id, p.operationParam] as const] : [])));
+
+/** The parameter an action-style provider names the operation with, if it declares one. */
+export function operationParamOf(provider: string): string | undefined {
+  return OPERATION_PARAMS.get(provider);
 }
 
 const EXACT = new Map<string, string>();

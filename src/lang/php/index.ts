@@ -83,7 +83,7 @@ export const phpLanguage: IrLanguage = {
     functions: new Set(["trim", "rtrim", "ltrim", "strtolower", "strtoupper", "urlencode", "rawurlencode", "strval", "url"]),
     methods: new Set([]),
   },
-  serializers: { json_encode: "json", http_build_query: "form" },
+  serializers: { json_encode: "json", http_build_query: "form", asXML: "xml", saveXML: "xml" },
   manifests: phpManifests(),
   importRoots,
   normalizePackage: normalizeComposer,

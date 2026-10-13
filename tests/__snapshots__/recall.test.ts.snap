@@ -1,5 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`regression fixtures > action-api 1`] = `
+[
+  "cloud.ts:5 aws GET / DescribeInstances",
+  "cloud.ts:10 aws POST /123456789012/jobs SendMessage",
+  "cloud.ts:19 aws GET / Subscribe",
+  "cloud.ts:24 flickr GET /services/rest flickr.photos.search",
+  "cloud.ts:29 api.example-search.com GET /v1/find",
+  "cloud.ts:34 aws GET /{key}",
+]
+`;
+
 exports[`regression fixtures > graphql 1`] = `
 [
   "catalog.ts:26 api.example-catalog.com POST /graphql ListItems",
@@ -392,6 +403,15 @@ exports[`regression fixtures > php/sdk/sentry 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/soap 1`] = `
+[
+  "Carrier.php:22 ws.example-carrier.com POST /track/v2 Rates",
+  "Carrier.php:35 ws.example-carrier.com POST /track/v2 PrintLabel",
+  "Carrier.php:42 orders.example-shop.com POST /api/orders",
+  "Carrier.php:47 aws GET / ListTopics",
+]
+`;
+
 exports[`regression fixtures > php/wrappers/constructed-argument 1`] = `
 [
   "Upstream.php:23 unknown DYNAMIC /{path}",
@@ -653,6 +673,17 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
   "db.py:37 supabase POST /functions/v1/send-welcome",
   "db.py:42 supabase DELETE /rest/v1/tasks",
   "db.py:46 supabase GET /rest/v1/teams",
+]
+`;
+
+exports[`regression fixtures > python/soap 1`] = `
+[
+  "carrier.py:18 ws.example-carrier.com POST /track/v2 CancelShipment",
+  "carrier.py:23 ws.example-carrier.com POST /track/v2 Track",
+  "carrier.py:29 orders.example-shop.com POST /api/orders",
+  "carrier.py:33 aws POST /123456789012/jobs SendMessage",
+  "carrier.py:37 flickr GET /services/rest flickr.photos.search",
+  "carrier.py:42 render.example-docs.com POST /pdf",
 ]
 `;
 
@@ -1056,6 +1087,25 @@ exports[`regression fixtures > sdk/supabase 1`] = `
   "tasks.ts:30 supabase POST /auth/v1/token",
   "tasks.ts:33 supabase POST /storage/v1/object/avatars/{userId}/avatar.png",
   "tasks.ts:36 supabase POST /functions/v1/notify-assignee",
+]
+`;
+
+exports[`regression fixtures > soap 1`] = `
+[
+  "carrier.ts:5 ws.example-carrier.com POST /track/v2 Track",
+  "carrier.ts:14 ws.example-carrier.com POST /track/v2 CancelShipment",
+  "carrier.ts:28 ws.example-carrier.com POST /track/v2 GetRates",
+  "carrier.ts:37 orders.example-shop.com POST /api/orders",
+  "carrier.ts:46 feeds.example-shop.com POST /import",
+  "carrier.ts:51 feeds.example-shop.com POST /import",
+  "carrier.ts:56 ws.example-carrier.com POST /track/v2 SchedulePickup",
+  "carrier.ts:59 ws.example-carrier.com POST /track/v2 SchedulePickup (wrapper:soapCall)",
+  "carrier.ts:60 ws.example-carrier.com POST /track/v2 PickupStatus (wrapper:soapCall)",
+  "markup.ts:6 render.example-docs.com POST /pdf",
+  "markup.ts:10 notes.example-docs.com POST /notes",
+  "markup.ts:11 render.example-docs.com POST /png",
+  "markup.ts:14 notes.example-docs.com POST /tags",
+  "markup.ts:18 notes.example-docs.com POST /raw",
 ]
 `;
 

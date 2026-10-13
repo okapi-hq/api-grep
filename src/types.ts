@@ -201,4 +201,4 @@ export interface UrlShape {
 }
 
 export type AuthScheme = "bearer" | "apikey" | "basic" | "none" | "unknown";
-export type BodyEncoding = "json" | "form" | "multipart" | "raw" | "none";
+export type BodyEncoding = "json" | "form" | "multipart" | "raw" | "xml" | "none";

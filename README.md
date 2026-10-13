@@ -119,7 +119,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.10.0           # report format version; readers check the major
+schemaVersion: 1.13.0           # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -152,7 +152,7 @@ calls:                          # one entry per call, sorted by file, line, colu
         name: { type: string, enum: [Ada] }   # literal value from the code
         metadata: { type: object, properties: { userId: { type: string, hint: userId } }, required: [userId] }
       required: [email, name, metadata]
-    bodyEncoding: form          # json | form | multipart | raw | none
+    bodyEncoding: form          # json | form | multipart | raw | xml | none
     dynamic:                    # what could not be known statically
       - { where: body, name: email, origin: param }
       - { where: body, name: userId, origin: param }
@@ -227,9 +227,18 @@ the envelope (`rpc("getBalance", [address])`). GraphQL is recognized from the do
 a JSON body, `?query=`, a batch array, Octokit's `graphql()`), written in a string, a `gql` tagged template or an
 imported `.graphql` file: `protocol: graphql` with the operation's `name` (its root fields when anonymous), `type`, and
 `fields`, the sorted leaf paths it selects with aliases resolved and fragments inlined; a persisted query is named by
-its `operationName`. SOAP and action-style APIs ([#36](https://github.com/okapi-hq/api-grep/issues/36)) are next; RPC
-client libraries such as viem or web3.py are [#52](https://github.com/okapi-hq/api-grep/issues/52), GraphQL clients
-such as Apollo or urql [#54](https://github.com/okapi-hq/api-grep/issues/54).
+its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
+`protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
+Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
+(`Action` for AWS Query, `method` for Flickr): `protocol: action`. RPC client libraries such as viem or web3.py are
+[#52](https://github.com/okapi-hq/api-grep/issues/52), GraphQL clients such as Apollo or urql
+[#54](https://github.com/okapi-hq/api-grep/issues/54), SOAP client libraries (`SoapClient`, zeep, node-soap)
+[#58](https://github.com/okapi-hq/api-grep/issues/58).
+
+An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
+`bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
+by an XML library or sent with an XML content type is `xml` with its value unread. HTML and SVG markup (`<p>...</p>`,
+`<html>`, `<svg>`) is not an XML body.
 
 ```yaml
     operation:

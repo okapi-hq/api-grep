@@ -1,7 +1,7 @@
 import type { Operation } from "../report/schema.js";
 import type { BodyResult } from "../resolve/body.js";
-import { templateOf } from "../resolve/string-template.js";
 import type { Shape } from "../types.js";
+import { namesOf } from "./names.js";
 
 /**
  * JSON-RPC (#34): every method goes to one URL and the request body names it. A JSON body is a request when it has a
@@ -14,24 +14,6 @@ type ObjectShape = Extract<Shape, { type: "object" }>;
 /** A 1.0-style body whose `method` is an HTTP verb is a request description sent to a proxy, not a JSON-RPC call. */
 const HTTP_VERB = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$/i;
 
-interface Names {
-  names: string[];
-  dynamic: boolean;
-}
-
-function collect(s: Shape, acc: Names, depth = 0): void {
-  if (depth > 6) return;
-  if (s.type === "union") {
-    for (const member of s.anyOf) collect(member, acc, depth + 1);
-    return;
-  }
-  const values = s.type === "string" ? (s.enum ?? []).filter((v): v is string => typeof v === "string" && v !== "") : [];
-  // a computed method keeps its literal parts (`eth_{kind}`); anything else with no literal value is unknown
-  const template = s.type === "string" && values.length === 0 ? templateOf(s) : undefined;
-  if (values.length === 0) acc.dynamic = true;
-  for (const v of template ? [template] : values) if (!acc.names.includes(v)) acc.names.push(v);
-}
-
 function isStringish(s: Shape): boolean {
   if (s.type === "union") return s.anyOf.every((m) => m.type === "string" || m.type === "dynamic" || m.type === "unknown");
   return s.type === "string" || s.type === "dynamic";
@@ -43,14 +25,11 @@ function isRequest(s: Shape): s is ObjectShape {
   if (!method) return false;
   if (jsonrpc) return true;
   if (!params || !id || !isStringish(method)) return false;
-  const named: Names = { names: [], dynamic: false };
-  collect(method, named);
-  return !named.names.some((n) => HTTP_VERB.test(n));
+  return !namesOf(method).names.some((n) => HTTP_VERB.test(n));
 }
 
 function operationOf(request: ObjectShape, batch: boolean): Operation {
-  const acc: Names = { names: [], dynamic: false };
-  collect(request.properties.method!, acc);
+  const acc = namesOf(request.properties.method!);
   return {
     protocol: "json-rpc",
     name: acc.names[0] ?? null,
