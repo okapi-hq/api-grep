@@ -239,7 +239,8 @@ export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, projec
 function dslValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   const lambda = call.args.length === 1 && !call.args[0]!.name ? call.args[0]!.value : undefined;
   const name = call.fn.k === "name" || call.fn.k === "attr" ? call.fn.name : "";
-  if (lambda?.k !== "fnref" || !/^[A-Z]/.test(name)) return undefined;
+  // a lambda that assigns nothing (`Column { ... }` in Compose) fills no request: its class is not looked up
+  if (lambda?.k !== "fnref" || !lambda.fn.props?.length || !/^[A-Z]/.test(name)) return undefined;
   const rules = rulesFor(call.fn, fn, ctx);
   return rules ? lambdaValue({ expr: lambda, fn }, rules, ctx) : undefined;
 }

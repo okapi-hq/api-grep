@@ -25,6 +25,15 @@ const CLIENT_KWARGS = new Set([
 
 const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 
+/** Import roots split once per registry entry: every call of every scanned file is matched against them. */
+const SPLIT_ROOTS = new WeakMap<string[], string[][]>();
+
+function splitRoots(roots: string[]): string[][] {
+  let out = SPLIT_ROOTS.get(roots);
+  if (!out) SPLIT_ROOTS.set(roots, (out = roots.map((r) => r.split("."))));
+  return out;
+}
+
 /**
  * Segments an import root covers (`google.genai` covers `[google, genai]`), the longest root first; -1 when none
  * does. A root that is a class constructed on the spot (`new \SendGrid($key)`) covers nothing: the class is the first
@@ -33,8 +42,7 @@ const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 export function rootLength(segs: Seg[], roots: string[]): number {
   let best = -1;
   let bestParts = 0;
-  for (const root of roots) {
-    const parts = root.split(".");
+  for (const parts of splitRoots(roots)) {
     if (parts.length <= bestParts || parts.length > segs.length || !parts.every((p, i) => segs[i]!.name === p)) continue;
     const open = parts.findIndex((_, i) => invoked(segs[i]!));
     if (open >= 0 && open < parts.length - 1) continue;

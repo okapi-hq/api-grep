@@ -267,7 +267,8 @@ and take parameters as builders.
   follow each SDK's rule (`setters.case`): `maxTokens` -> `max_tokens` (OpenAI, Anthropic, Slack), `setEmail` ->
   `email` (Stripe), `bucket` -> `Bucket` (S3), as written (Bedrock, FCM); `addTool` appends to `tools`, `putMetadata(k,
   v)` sets `metadata.k`, `addUserMessage(text)` adds `{role: "user", content: text}` to `messages` (`setters.fields`).
-  A lambda given to a setter fills a nested object (`destination(d -> d.toAddresses(to))`).
+  A lambda given to a setter fills a nested object (`destination(d -> d.toAddresses(to))`); the AWS SDK's
+  `applyMutation(b -> ...)` sets the builder's own fields.
 - **AWS** (#49): the AWS SDK for Kotlin has the Java 2.x SDK's operations under the same names, so one registry per
   service holds both (`variants`: package, imports, client factories and model package of each). Its clients are
   `S3Client.fromEnvironment { region = r }` or `S3Client { ... }` (`endpointUrl = Url.parse(u)` in that lambda replaces
@@ -527,12 +528,16 @@ file. A file that does not parse is then read once more with a `;` in place of t
   a `List<T>`, Koin `bind` / `binds` and type qualifiers, and service locators other than Koin (Injekt) are not
   followed (#75).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
+- An extension function of a client type (`suspend fun S3Client.delete(...) { deleteObject(...) }`) has no receiver
+  in the lowering: its calls on `this` are not found (#86).
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
   unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
-  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
-  Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
+  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it,
+  and the classes of the SDK registries (`DynamoDbClient` under `import software.amazon.awssdk.services.dynamodb.*`,
+  `Customer` under `import com.stripe.model.*`, a request class under a star import of one of the `setters.packages`:
+  `import software.amazon.awssdk.services.dynamodb.model.*`, `src/lang/ir/project.ts`). Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
 - Retrofit: an interface created on an injected `Retrofit` follows the provider (with its qualifier, the provided
   `Retrofit.Builder` its users finish, and the injected OkHttp client's interceptors, #46); one created on a Retrofit
   of unknown origin, or never created in the project, gets the project's only `Retrofit.Builder()` when there is one,
