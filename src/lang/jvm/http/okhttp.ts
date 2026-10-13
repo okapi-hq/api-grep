@@ -33,7 +33,7 @@ function interceptorOf(arg: Scoped, ctx: IrCtx): Interceptor | undefined {
 }
 
 /** A function and the lambdas written in it, at any depth (`chain.request().let { ... }`). */
-function withClosures(fn: FunctionDef): FunctionDef[] {
+export function withClosures(fn: FunctionDef): FunctionDef[] {
   const out = [fn];
   for (let i = 0; i < out.length && out.length < 32; i++) out.push(...fn.module.allFunctions.filter((f) => f.parent === out[i] && !out.includes(f)));
   return out;
@@ -62,11 +62,15 @@ function onResponse(e: Expr, fn: FunctionDef, depth = 0): boolean {
  */
 const requestStep = (c: ScopedCall): boolean => c.call.args.length >= 2 && !(c.call.fn.k === "attr" && onResponse(c.call.fn.obj, c.fn));
 
-/** The headers and query parameters an interceptor adds to every request (`header("Authorization", ...)`, `addQueryParameter(...)`). */
-function interceptorPairs(i: Interceptor): IrPair[] {
+/**
+ * The headers and query parameters an interceptor adds to every request (`header("Authorization", ...)`,
+ * `addQueryParameter(...)`), read with the arguments of the client factories the client was built through (`outer`).
+ */
+function interceptorPairs(i: Interceptor, outer: Subst | undefined): IrPair[] {
   const parts = emptyParts();
   for (const f of withClosures(i.fn)) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
-  return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(i.subst ? { subst: i.subst } : {}), ...(i.self ? { self: i.self } : {}) }));
+  const subst = outer || i.subst ? new Map([...(outer ?? []), ...(i.subst ?? [])]) : undefined;
+  return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(subst ? { subst } : {}), ...(i.self ? { self: i.self } : {}) }));
 }
 
 /**
@@ -83,7 +87,7 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
     const first = calleeIs(step.call, names) !== undefined ? step.call.args[0] : undefined;
     const arg = first ? { expr: first.value, fn: step.fn } : undefined;
     const i = arg ? interceptorOf(arg, ctx) : undefined;
-    if (i) out.push(...interceptorPairs(i));
+    if (i) out.push(...interceptorPairs(i, fc.subst));
   }
   return out;
 }

@@ -8,6 +8,9 @@
     {"file": "Payments.kt", "line": 40, "provider": "api.example-shop.com"},
     {"file": "Payments.kt", "line": 49, "provider": "stripe"},
     {"file": "Payments.kt", "line": 51, "provider": "stripe"},
-    {"file": "Payments.kt", "line": 61, "provider": "api.example-shop.com"}
+    {"file": "Payments.kt", "line": 61, "provider": "api.example-shop.com"},
+    {"file": "Builders.kt", "line": 18, "provider": "inventory.example-shop.com"},
+    {"file": "Builders.kt", "line": 24, "provider": "inventory.example-shop.com"},
+    {"file": "Builders.kt", "line": 32, "provider": "events.example-shop.com"}
   ]
 }

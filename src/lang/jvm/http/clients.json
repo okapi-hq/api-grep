@@ -104,7 +104,12 @@
     "ByteArrayEntity": { "value": 0, "contentType": 1 },
     "UrlEncodedFormEntity": { "value": 0, "encoding": "form" },
     "Buffer.buffer": { "value": 0 },
-    "JsonObject.mapFrom": { "value": 0, "encoding": "json" }
+    "JsonObject.mapFrom": { "value": 0, "encoding": "json" },
+    "FormDataContent": { "value": 0, "encoding": "form" },
+    "MultiPartFormDataContent": { "value": 0, "encoding": "multipart" },
+    "TextContent": { "value": 0, "contentType": 1 },
+    "BodyInserters.fromFormData": { "value": 0, "encoding": "form" },
+    "BodyInserters.fromMultipartData": { "value": 0, "encoding": "multipart" }
   },
   "contentTypes": [
     { "match": "json", "encoding": "json" },
@@ -129,12 +134,14 @@
       "preparePut": { "method": "PUT", "url": 0 },
       "prepareDelete": { "method": "DELETE", "url": 0 },
       "prepareRequest": { "url": 0 },
-      "submitForm": { "method": "POST", "url": 0, "body": 1, "bodyRole": "body:form" }
+      "submitForm": { "method": "POST", "url": 0, "body": 1, "bodyRole": "body:form" },
+      "submitFormWithBinaryData": { "method": "POST", "url": 0, "body": 1, "bodyRole": "body:multipart" }
     },
     "defaults": ["defaultRequest"],
     "tables": {
       "request": {
         "url": { "url": 0, "lambda": "url" },
+        "url.takeFrom": { "url": 0 },
         "parameter": { "query": [0, 1] },
         "header": { "header": [0, 1] },
         "headers": { "lambda": "headers" },
@@ -164,7 +171,8 @@
       "clientSteps": {
         "create": { "baseUrl": 0 },
         "baseUrl": { "baseUrl": 0 },
-        "defaultHeader": { "header": [0, 1] }
+        "defaultHeader": { "header": [0, 1] },
+        "defaultHeaders": { "lambda": "headers" }
       }
     },
     {
@@ -175,7 +183,8 @@
       "clientSteps": {
         "create": { "baseUrl": 0 },
         "baseUrl": { "baseUrl": 0 },
-        "defaultHeader": { "header": [0, 1] }
+        "defaultHeader": { "header": [0, 1] },
+        "defaultHeaders": { "lambda": "headers" }
       }
     }
   ],
@@ -200,6 +209,28 @@
     "setBasicAuth": { "basic": true },
     "set": { "header": [0, 1] },
     "add": { "header": [0, 1] }
+  },
+  "requestEntity": {
+    "starts": {
+      "RequestEntity.get": { "method": "GET", "url": 0 },
+      "RequestEntity.head": { "method": "HEAD", "url": 0 },
+      "RequestEntity.options": { "method": "OPTIONS", "url": 0 },
+      "RequestEntity.delete": { "method": "DELETE", "url": 0 },
+      "RequestEntity.post": { "method": "POST", "url": 0 },
+      "RequestEntity.put": { "method": "PUT", "url": 0 },
+      "RequestEntity.patch": { "method": "PATCH", "url": 0 },
+      "RequestEntity.method": { "methodArg": 0, "url": 1 }
+    },
+    "steps": {
+      "header": { "header": [0, 1] },
+      "headers": { "headers": 0 },
+      "contentType": { "contentType": 0 },
+      "body": { "body": 0 }
+    }
+  },
+  "interceptors": {
+    "restTemplate": ["additionalInterceptors", "interceptors"],
+    "fluent": ["filter", "filters", "requestInterceptor", "requestInterceptors"]
   },
   "restTemplate": {
     "client": "spring-rest",
@@ -264,8 +295,8 @@
       "JacksonConverterFactory.create": "json",
       "asConverterFactory": "json",
       "ScalarsConverterFactory.create": "scalars",
-      "ProtoConverterFactory.create": "raw",
-      "WireConverterFactory.create": "raw",
+      "ProtoConverterFactory.create": "protobuf",
+      "WireConverterFactory.create": "protobuf",
       "SimpleXmlConverterFactory.create": "raw",
       "JaxbConverterFactory.create": "raw"
     },

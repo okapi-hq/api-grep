@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/46",
+  "calls": [
+    {"file": "Repositories.kt", "line": 11, "provider": "api.weather-example.com"},
+    {"file": "Repositories.kt", "line": 15, "provider": "internal"},
+    {"file": "Repositories.kt", "line": 19, "provider": "alerts.weather-example.com"},
+    {"file": "Repositories.kt", "line": 24, "provider": "history.weather-example.com"}
+  ]
+}

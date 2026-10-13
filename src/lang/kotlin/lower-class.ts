@@ -56,6 +56,7 @@ function lowerMemberProperty(m: SyntaxNode, st: KtState, cls: ClassDef, body: bo
   const p = propertyParts(m, st);
   if (!p.name) return;
   if (p.value) addField(cls, p.name, p.value, st.fn);
+  if (p.mods.annotations.length > 0) (cls.fieldAnnotations ??= new Map()).set(p.name, p.mods.annotations);
   if (!p.type) return;
   cls.fieldTypes.set(p.name, p.type);
   if (body && !p.hasGetter && !isTransient(p.mods.annotations)) cls.annotations.push({ name: serialName(p.mods.annotations) ?? p.name, type: p.type, optional: p.nullable || p.initialized });
@@ -145,6 +146,10 @@ function lowerClass(n: SyntaxNode, st: KtState, register: boolean): void {
   const body = kind === "class";
   const initSt: KtState = { ...st, fn: init, cls: scope, scope: { names: new Set() } };
   init.params = ctorParams(n).flatMap((p, i) => lowerCtorParam(p, i, initSt, cls, body) ?? []);
+  // `class Repo @Inject constructor(...)`: the constructor's annotations
+  const ctor = named(n).find((c) => c.type === "primary_constructor");
+  const ctorAnns = ctor ? modifiersOf(named(ctor).find((c) => c.type === "modifiers"), st).annotations : [];
+  if (ctorAnns.length > 0) init.annotations = ctorAnns;
   for (const p of init.params) initSt.scope.names.add(p.name);
   const ctx: Members = { init: initSt, methods: { ...st, cls: scope, scope: { names: new Set() } }, cls, body };
   for (const m of bodyOf(n)) lowerMember(m, ctx);

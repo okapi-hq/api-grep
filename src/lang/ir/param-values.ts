@@ -14,7 +14,7 @@ import type { IrCtx } from "./raw.js";
 /** Callers read per function: past that, a helper called from everywhere, whose values say little. */
 const MAX_CALLERS = 20;
 
-interface CallSite {
+export interface CallSite {
   call: CallExpr;
   fn: FunctionDef;
 }
@@ -26,7 +26,7 @@ const calleeName = (call: CallExpr): string | undefined =>
   call.fn.k === "name" ? call.fn.name : call.fn.k === "attr" ? call.fn.name : call.fn.k === "qname" ? call.fn.path[call.fn.path.length - 1] : undefined;
 
 /** Every call of the project by the name it calls, built once: callers are then resolved among same-named calls only. */
-function namedCalls(idx: ProjectIndex): Map<string, CallSite[]> {
+export function namedCalls(idx: ProjectIndex): Map<string, CallSite[]> {
   let byName = callsByName.get(idx);
   if (byName) return byName;
   byName = new Map();

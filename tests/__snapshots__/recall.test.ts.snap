@@ -138,6 +138,22 @@ exports[`regression fixtures > java/clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/di-dagger 1`] = `
+[
+  "Net.java:38 tracking.parcels-example.com GET /api/parcels/{id}",
+  "Net.java:51 labels.parcels-example.com GET /v1/labels/{id}",
+]
+`;
+
+exports[`regression fixtures > java/di-spring 1`] = `
+[
+  "Services.java:19 catalog.orders-example.com GET /v1/items/{id}",
+  "Services.java:33 shipping.orders-example.com GET /v1/quotes",
+  "Services.java:44 billing.orders-example.com GET /v1/invoices",
+  "Services.java:55 internal GET /v1/events",
+]
+`;
+
 exports[`regression fixtures > java/feign 1`] = `
 [
   "Clients.java:28 api.example-orders.com GET /v2/orders/{id}",
@@ -232,6 +248,10 @@ exports[`regression fixtures > java/sdk 1`] = `
 
 exports[`regression fixtures > java/spring 1`] = `
 [
+  "Builders.java:40 partners.example-shop.com GET /v1/partners/{id}",
+  "Builders.java:49 partners.example-shop.com POST /v1/partners",
+  "Builders.java:67 ledger.example-shop.com GET /v1/balance",
+  "Builders.java:80 auth.example-shop.com POST /oauth/token",
   "Payments.java:35 api.example-shop.com GET /v1/items/{id}",
   "Payments.java:42 api.example-shop.com POST /v1/items",
   "Payments.java:48 stripe POST /v1/refunds",
@@ -297,6 +317,34 @@ exports[`regression fixtures > json-rpc 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/di-ambiguous 1`] = `
+[
+  "Repositories.kt:11 api.weather-example.com GET /v1/forecast",
+  "Repositories.kt:15 internal GET /v2/tiles",
+  "Repositories.kt:19 alerts.weather-example.com GET /v1/active",
+  "Repositories.kt:24 history.weather-example.com GET /v1/{city}",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-hilt 1`] = `
+[
+  "Apis.kt:11 catalog.shelf-example.com GET /v2/books/{id}",
+  "Apis.kt:16 reviews.shelf-example.com POST /reviews",
+  "Repositories.kt:27 covers.shelf-example.com GET /v1/covers/{id}",
+  "Repositories.kt:32 uploads.shelf-example.com POST /v1/files",
+  "Repositories.kt:45 stats.shelf-example.com GET /v1/ping",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-koin 1`] = `
+[
+  "Repositories.kt:14 api.tracks-example.com GET /v1/tracks",
+  "Repositories.kt:19 api.tracks-example.com POST /v1/playlists",
+  "Repositories.kt:24 uploads.tracks-example.com GET /v1/status",
+  "Repositories.kt:31 api.tracks-example.com GET /v1/settings",
+]
+`;
+
 exports[`regression fixtures > kotlin/feign 1`] = `
 [
   "Clients.kt:23 api.example-orders.com GET /v2/orders/{id}",
@@ -310,6 +358,7 @@ exports[`regression fixtures > kotlin/feign 1`] = `
 
 exports[`regression fixtures > kotlin/java-http 1`] = `
 [
+  "Helpers.kt:9 pager.example-alerts.com PUT /v1/pages",
   "Notifier.kt:16 api.example-alerts.com POST /v1/items",
   "Notifier.kt:25 pagerduty GET /incidents",
   "Notifier.kt:32 pagerduty PUT /incidents/{id}",
@@ -327,6 +376,11 @@ exports[`regression fixtures > kotlin/ktor 1`] = `
   "Catalog.kt:50 notion POST /v1/search",
   "Catalog.kt:56 notion DELETE /v1/blocks/{id}",
   "Catalog.kt:63 feeds.example.com GET /v2/latest.json",
+  "Forms.kt:38 accounts.example-forms.com POST /oauth/token",
+  "Forms.kt:47 accounts.example-forms.com POST /api/profile",
+  "Forms.kt:51 accounts.example-forms.com POST /api/profile/avatar",
+  "Forms.kt:58 accounts.example-forms.com POST /api/settings",
+  "Forms.kt:79 reports.example-forms.com POST /v1/daily",
   "Wildcards.kt:11 forecast.example.com GET /v1/today",
 ]
 `;
@@ -343,6 +397,10 @@ exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
 
 exports[`regression fixtures > kotlin/okhttp 1`] = `
 [
+  "Applied.kt:25 notes.example.com POST /v1/notes",
+  "Applied.kt:39 notes.example.com PATCH /v1/notes/{id}/archive",
+  "Applied.kt:47 notes.example.com GET /v1/trace",
+  "Applied.kt:55 notes.example.com POST /v1/notes/{id}/tags",
   "Balances.kt:22 rpc.example.com POST /",
   "Covers.kt:13 covers.example.com GET /v1/covers/{bookId}",
   "Drafts.kt:36 drafts.example.com POST /v1/drafts",
@@ -397,7 +455,7 @@ exports[`regression fixtures > kotlin/retrofit-injected 1`] = `
 
 exports[`regression fixtures > kotlin/retrofit-shared-builder 1`] = `
 [
-  "Apis.kt:8 unknown GET /status",
+  "Apis.kt:8 api.example-sync.com GET /status",
   "Apis.kt:13 api.example-images.com GET /search",
 ]
 `;
@@ -462,6 +520,9 @@ exports[`regression fixtures > kotlin/sdk/payments 1`] = `
 
 exports[`regression fixtures > kotlin/spring 1`] = `
 [
+  "Builders.kt:18 inventory.example-shop.com GET /v1/stock/{sku}",
+  "Builders.kt:24 inventory.example-shop.com PUT /v1/reservations/{sku}",
+  "Builders.kt:32 events.example-shop.com GET /v1/recent",
   "Payments.kt:17 api.example-shop.com GET /v1/items/{id}",
   "Payments.kt:23 api.example-shop.com POST /v1/items",
   "Payments.kt:29 stripe POST /v1/refunds",

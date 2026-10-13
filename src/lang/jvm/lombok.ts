@@ -5,6 +5,7 @@ import type { CallExpr, ClassDef, Expr, FunctionDef } from "../ir/model.js";
 import { classField, classMethod, projectBases } from "../ir/project.js";
 import type { IrCtx } from "../ir/raw.js";
 import { annotationName } from "./annotations.js";
+import { httpBuilt } from "./http/bodies.js";
 
 /**
  * Lombok writes code at build time that the scan never sees: `@Builder` classes get `X.builder().a(1).build()`, and
@@ -60,7 +61,7 @@ function lombokGetter(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | und
   return { expr: { k: "attr", obj, name: field, pos: call.fn.pos }, fn };
 }
 
-/** The JVM's `resolveCall`: an SDK or Lombok builder's fields, a Lombok getter's field. */
+/** The JVM's `resolveCall`: an SDK or Lombok builder's fields, a Lombok getter's field, a body built by a library helper. */
 export function jvmResolveCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
-  return builderValue(call, fn, ctx, lombokRules) ?? lombokGetter(call, fn, ctx);
+  return builderValue(call, fn, ctx, lombokRules) ?? lombokGetter(call, fn, ctx) ?? httpBuilt(call, fn);
 }

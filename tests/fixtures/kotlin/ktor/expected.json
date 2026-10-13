@@ -8,6 +8,11 @@
     {"file": "Catalog.kt", "line": 50, "provider": "notion"},
     {"file": "Catalog.kt", "line": 56, "provider": "notion"},
     {"file": "Catalog.kt", "line": 63, "provider": "feeds.example.com"},
-    {"file": "Wildcards.kt", "line": 11, "provider": "forecast.example.com"}
+    {"file": "Wildcards.kt", "line": 11, "provider": "forecast.example.com"},
+    {"file": "Forms.kt", "line": 38, "provider": "accounts.example-forms.com"},
+    {"file": "Forms.kt", "line": 47, "provider": "accounts.example-forms.com"},
+    {"file": "Forms.kt", "line": 51, "provider": "accounts.example-forms.com"},
+    {"file": "Forms.kt", "line": 58, "provider": "accounts.example-forms.com"},
+    {"file": "Forms.kt", "line": 79, "provider": "reports.example-forms.com"}
   ]
 }

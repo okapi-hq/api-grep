@@ -65,8 +65,11 @@ export interface RetrofitTables {
   baseUrl: string[];
   client: string[];
   converter: string[];
-  /** Converter factories and what they write: `scalars` writes strings and primitives as text, other types go on. */
-  converters: Record<string, BodyEncoding | "scalars">;
+  /**
+   * Converter factories and what they write: `scalars` writes strings and primitives as text, `protobuf` generated
+   * messages as bytes; other types go on to the next converter.
+   */
+  converters: Record<string, BodyEncoding | "scalars" | "protobuf">;
   scalars: string[];
   rawBodies: string[];
 }
@@ -81,6 +84,10 @@ export interface JvmTables {
   spring: FluentClient[];
   springRequest: Steps;
   springHeaders: Steps;
+  /** `RequestEntity.post(uri).header(...).body(x)`, sent by `exchange(entity, ...)`. */
+  requestEntity: { starts: Steps; steps: Steps };
+  /** Builder steps that add request interceptors (RestTemplate, RestClient) or exchange filters (WebClient). */
+  interceptors: { restTemplate: string[]; fluent: string[] };
   restTemplate: ClientSpec;
   entities: string[];
   feign: FeignTables;

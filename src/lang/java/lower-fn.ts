@@ -83,6 +83,8 @@ export function lowerMethod(n: SyntaxNode, st: JState, closure: boolean): Functi
   const fn = newFunction(n.childForFieldName("name")?.text ?? "anonymous", st.mod, n, extra);
   st.mod.allFunctions.push(fn);
   fn.params = lowerParams(n.childForFieldName("parameters") ?? undefined, { ...st, fn });
+  const returnType = lowerType(n.childForFieldName("type") ?? undefined, st);
+  if (returnType) fn.returnType = returnType;
   const body = n.childForFieldName("body");
   if (body) hook("statement")(body, inFunction(st, fn, closure));
   return fn;

@@ -1,5 +1,5 @@
 import { addBranch } from "../ir/edits.js";
-import type { Arg, CallExpr, Expr } from "../ir/model.js";
+import type { Arg, CallExpr, Expr, FunctionDef, Pos } from "../ir/model.js";
 import { buildConfigValue } from "../jvm/build-config.js";
 import { field, named as namedNodes, type SyntaxNode } from "../tree-sitter.js";
 import { isEnvMap } from "../jvm/calls.js";
@@ -82,6 +82,16 @@ export function lowerArgs(n: SyntaxNode | undefined, st: KtState): Arg[] {
   });
 }
 
+/**
+ * `x.apply { url(u) }` / `x.also { it.url(u) }` stand for `x` (`calls.ts`), and their lambda's calls are steps on it:
+ * kept on the call `x` is (`Request.Builder().apply { ... }`), or recorded as a call on the variable (`b.apply { ... }`).
+ */
+function applied(fn: Expr, args: Arg[], pos: Pos, lambda: FunctionDef, st: KtState): void {
+  if (fn.k !== "attr" || (fn.name !== "apply" && fn.name !== "also")) return;
+  if (fn.obj.k === "call") (fn.obj.applied ??= []).push(lambda);
+  else if (fn.obj.k === "name") st.fn.calls.push({ k: "call", fn, args, pos, applied: [lambda] });
+}
+
 /** A call; a trailing lambda is its last argument. Calls are recorded in the current function as they are met. */
 function lowerCall(n: SyntaxNode, st: KtState): Expr {
   let kids = named(n);
@@ -96,6 +106,7 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   const lambda = lambdaNode ? hook("lambda")(lambdaNode, st) : undefined;
   if (lambda) args.push({ value: { k: "fnref", fn: lambda.fn } });
   const pos = posOf(n);
+  if (lambda) applied(fn, args, pos, lambda.fn, st);
   const value = special(fn, args, lambda, pos);
   if (value) return value;
   const targs = kids.find((c) => c.type === "type_arguments");

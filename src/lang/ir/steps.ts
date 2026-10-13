@@ -1,9 +1,13 @@
 import { callsOn, scopedIn, type ScopedCall } from "./fluent.js";
 import type { OptionRole, Scoped } from "./language.js";
 import { dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "./model.js";
+import { appliedSteps, expandApplied, lambdaCalls, lambdaOf } from "./applied.js";
 import { classField, classMethod, lookup, receiverClass, type Binding } from "./project.js";
+import { injectedCall, injectedField, paramValue } from "./injected.js";
 import type { IrCtx, IrPair, Subst } from "./raw.js";
 import { substitutionFor } from "./wrappers.js";
+
+export { lambdaCalls, lambdaOf };
 
 const MAX_DEPTH = 8;
 /** Calls read on one builder: far more than any request needs, and a bound for generated code. */
@@ -129,12 +133,13 @@ function below(e: Expr, fn: FunctionDef, ctx: IrCtx, steps: ScopedCall[], subst:
     // `this.client`, `ApiClient.client` (an `object` or companion member)
     const owner = e.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : e.obj.k === "name" ? classBinding(lookup(e.obj.name, fn, e.pos.offset, ctx.idx)) : undefined;
     const values = owner ? classField(owner, e.name, ctx.idx) : [];
+    if (values.length === 0 && e.obj.k === "this") return injectedField(owner, e.name, ctx);
     return values.length === 1 ? { expr: values[0]!.value, fn: values[0]!.fn } : undefined;
   }
-  if (e.k === "call") return factoryReturn(e, fn, ctx, subst);
+  if (e.k === "call") return factoryReturn(e, fn, ctx, subst) ?? injectedCall(e, fn, ctx);
   if (e.k !== "name") return undefined;
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
-  if (b.kind === "param") return subst.get(b.param) ?? ctx.subst?.get(b.param);
+  if (b.kind === "param") return subst.get(b.param) ?? paramValue(b.param, b.fn, ctx);
   if (b.kind !== "value" || b.assign.augmented) return undefined;
   steps.unshift(...callsOn(b.fn, e.name, b.assign.offset).filter((c) => b.fn !== fn || c.call.pos.offset < e.pos.offset));
   return { expr: b.assign.value, fn: b.fn };
@@ -143,12 +148,17 @@ function below(e: Expr, fn: FunctionDef, ctx: IrCtx, steps: ScopedCall[], subst:
 /**
  * The calls a fluent value is built with: `Request.Builder().url(u).post(b).build()` is the start `Builder()` and the
  * steps `url`, `post`, `build`, also through variables (`val b = Request.Builder(); b.header(...)`) and fields.
+ * Steps inside Kotlin `apply { ... }` and `also { ... }` are steps too.
  */
 export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: IrCtx): FluentChain {
   const steps: ScopedCall[] = [];
   const subst: Subst = new Map();
   let end: Scoped = s;
-  const done = (start?: ScopedCall): FluentChain => ({ ...(start ? { start } : { end }), steps, ...(subst.size > 0 ? { subst } : {}) });
+  const done = (start?: ScopedCall): FluentChain => ({
+    ...(start ? { start } : { end }),
+    steps: expandApplied(start ? [...appliedSteps(start.call.applied), ...steps] : steps),
+    ...(subst.size > 0 ? { subst } : {}),
+  });
   let cur: Scoped | undefined = s;
   // calls down the expression are bounded by its size; hops through variables, fields and factories are counted
   for (let hops = 0; cur && hops < MAX_DEPTH && steps.length < MAX_STEPS; ) {
@@ -207,15 +217,6 @@ export function applyStep(p: RequestParts, step: BuilderStep, c: ScopedCall): vo
     for (let i = 0; i + 1 < args.length; i += 2) p.pairs.push({ where: "header", name: { expr: args[i]!, fn: c.fn }, value: { expr: args[i + 1]!, fn: c.fn } });
   }
 }
-
-/** The lambda a call ends with (`get(url) { ... }`, `headers { ... }`). */
-export function lambdaOf(call: CallExpr): FunctionDef | undefined {
-  const last = call.args[call.args.length - 1]?.value;
-  return last?.k === "fnref" ? last.fn : undefined;
-}
-
-/** The calls a lambda makes, in order (`parameter(...)`, `header(...)`, `it.setBearerAuth(...)`). */
-export const lambdaCalls = (fn: FunctionDef): ScopedCall[] => [...fn.calls].sort((a, b) => a.pos.offset - b.pos.offset).map((call) => ({ call, fn }));
 
 /** `parameters.append` before `append`: a call on a named object can have a step of its own. */
 function stepOf(call: CallExpr, table: Record<string, BuilderStep>): BuilderStep | undefined {

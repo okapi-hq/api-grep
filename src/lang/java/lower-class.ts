@@ -57,6 +57,7 @@ function lowerField(m: SyntaxNode, ctx: Members): void {
   for (const d of declarators(m)) {
     const name = d.childForFieldName("name")?.text;
     if (!name) continue;
+    if (mods.annotations.length > 0) (ctx.cls.fieldAnnotations ??= new Map()).set(name, mods.annotations);
     const v = d.childForFieldName("value");
     const value = injectedValue(mods.annotations) ?? (v ? lowerExpr(v, st) : undefined);
     if (value) addField(ctx.cls, name, value, st.fn);
@@ -166,6 +167,9 @@ function lowerClass(n: SyntaxNode, st: JState, register: boolean): void {
   const ctor = n.type === "record_declaration" ? n : widestConstructor(members);
   const base: JState = { ...st, cls: scope, scope: { names: new Set() }, builders: new Map() };
   init.params = lowerParams(ctor?.childForFieldName("parameters") ?? undefined, { ...base, fn: init });
+  // `@Autowired public Repo(...)`, `@Inject Repo(...)`: the constructor's annotations
+  const ctorAnns = ctor && ctor !== n ? modifiersOf(modifiersNode(ctor), base).annotations : [];
+  if (ctorAnns.length > 0) init.annotations = ctorAnns;
   const ctx: Members = {
     init: { ...base, fn: init, scope: { names: new Set(init.params.map((p) => p.name)) } },
     clinit: { ...base, fn: clinit },
