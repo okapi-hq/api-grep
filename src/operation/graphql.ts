@@ -173,12 +173,12 @@ function queryOperations(r: ResolvedCall): Operation[] {
 
 /**
  * A document argument: the document itself, or the options holding it (Octokit `graphql({ query })`, Apollo
- * `client.mutate({ mutation })`, graphql-request `request({ document })`).
+ * `client.mutate({ mutation })`, Relay `requestSubscription(env, { subscription })`, graphql-request `request({ document })`).
  */
 function documentEnvelope(d: Shape): Envelope {
   if (d.type !== "object") return { query: d, hinted: true, persisted: false };
-  const { query, mutation, document } = d.properties;
-  return bodyEnvelope({ ...d, properties: { ...d.properties, query: query ?? mutation ?? document ?? { type: "unknown" } } }, "graphql");
+  const { query, mutation, subscription, document } = d.properties;
+  return bodyEnvelope({ ...d, properties: { ...d.properties, query: query ?? mutation ?? subscription ?? document ?? { type: "unknown" } } }, "graphql");
 }
 
 /**

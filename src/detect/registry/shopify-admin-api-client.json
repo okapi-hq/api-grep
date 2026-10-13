@@ -1,0 +1,15 @@
+{
+  "$comment": "Shopify's Admin API client (#67): `createAdminApiClient({ storeDomain, apiVersion, accessToken }).request(document, { variables })`, also `fetch` and `requestStream`. Keys keep the factory's name, so only a client it built matches. The store is the code's: its host stays `{shop}.myshopify.com`.",
+  "package": "@shopify/admin-api-client",
+  "provider": "shopify",
+  "host": "{shop}.myshopify.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @shopify/admin-api-client 1.0)",
+  "inlinePathLiterals": true,
+  "instance": { "names": [] },
+  "methods": {
+    "createAdminApiClient.request": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "createAdminApiClient.fetch": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "createAdminApiClient.requestStream": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } }
+  }
+}

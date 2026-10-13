@@ -82,6 +82,8 @@ export interface MethodSpec {
   bodyArg?: number;
   /** Argument holding a GraphQL document, or an object with its `query` (Octokit `graphql(query, variables)`). */
   documentArg?: number;
+  /** The document is this property of the document argument (Shopify `client.query({ data })`). */
+  documentProp?: string;
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];
@@ -147,6 +149,11 @@ export interface MethodSpec {
 export interface EndpointSource {
   url?: string;
   headers?: string;
+  /**
+   * The function at this position sends the requests (Relay's `Network.create(fetchFn)`): the URL and headers of the one
+   * `fetch` it makes, also through the functions it calls.
+   */
+  fetchIn?: string;
 }
 
 /**
@@ -186,6 +193,11 @@ export interface EndpointSpec {
    * (`node`: `eth_sendTransaction`).
    */
   signers?: Record<string, { provider?: string; signs: "local" | "node" }>;
+  /**
+   * The client a call is given comes from the app's context (Relay's environment, from `useRelayEnvironment()` or a
+   * prop): one the scan cannot read is the project's one client, as for a call that names none.
+   */
+  contextClient?: boolean;
 }
 
 export interface RegistryEntry {
