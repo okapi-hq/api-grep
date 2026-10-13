@@ -1,0 +1,24 @@
+{
+  "$comment": "Shopify's Node libraries (#67): `new shopify.clients.Graphql({ session }).request(document, { variables })` (`@shopify/shopify-api`, also `shopify.api.clients` of the Express app package) and `admin.graphql(document, { variables })` from `authenticate.admin(request)` (the Remix and React Router app packages). The shop is the session's: its host stays `{shop}.myshopify.com`.",
+  "package": "@shopify/shopify-api",
+  "aliases": ["@shopify/shopify-app-express", "@shopify/shopify-app-remix", "@shopify/shopify-app-react-router"],
+  "provider": "shopify",
+  "host": "{shop}.myshopify.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @shopify/shopify-api 11 and @shopify/shopify-app-remix 3)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["shopifyApi", "shopifyApp", "default"] },
+  "methods": {
+    "clients.Graphql.request": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "clients.Graphql.query": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "documentProp": "data", "params": { "version": "instance:0.apiVersion" } },
+    "api.clients.Graphql.request": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "api.clients.Graphql.query": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "documentProp": "data", "params": { "version": "instance:0.apiVersion" } },
+    "clients.Storefront.request": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "clients.Storefront.query": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "documentProp": "data", "params": { "version": "instance:0.apiVersion" } },
+    "api.clients.Storefront.request": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "api.clients.Storefront.query": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "documentProp": "data", "params": { "version": "instance:0.apiVersion" } },
+    "admin.graphql": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables" },
+    "storefront.graphql": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables" },
+    "graphql": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables" }
+  }
+}

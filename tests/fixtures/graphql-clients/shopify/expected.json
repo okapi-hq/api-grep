@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/67",
+  "calls": [
+    {"file": "app.teas.tsx", "line": 5, "provider": "shopify", "operation": "ListTeas"},
+    {"file": "app.teas.tsx", "line": 15, "provider": "shopify", "operation": "Restock"},
+    {"file": "sync.ts", "line": 7, "provider": "shopify", "operation": "RecentOrders"},
+    {"file": "sync.ts", "line": 12, "provider": "shopify", "operation": "TagOrder"},
+    {"file": "sync.ts", "line": 17, "provider": "shopify", "operation": "Menu"},
+    {"file": "clients.ts", "line": 10, "provider": "shopify", "operation": "InventoryLevel"},
+    {"file": "clients.ts", "line": 12, "provider": "shopify", "operation": "CreateCart"},
+    {"file": "clients.ts", "line": 17, "provider": "shopify", "operation": "ShopName"}
+  ]
+}

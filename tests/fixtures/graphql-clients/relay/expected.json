@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/67",
+  "calls": [
+    {"file": "Garden.tsx", "line": 8, "provider": "api.example-garden.dev", "operation": "PlantListQuery"},
+    {"file": "Garden.tsx", "line": 11, "provider": "api.example-garden.dev", "operation": "SeedListQuery"},
+    {"file": "Garden.tsx", "line": 13, "provider": "api.example-garden.dev", "operation": "CompostQuery"},
+    {"file": "Garden.tsx", "line": 16, "provider": "api.example-garden.dev", "operation": "WaterPlantMutation"},
+    {"file": "Garden.tsx", "line": 22, "provider": "api.example-garden.dev", "operation": "HarvestMutation"},
+    {"file": "Garden.tsx", "line": 25, "provider": "api.example-garden.dev", "operation": "ForecastQuery"},
+    {"file": "Garden.tsx", "line": 28, "provider": "unknown", "operation": "FrostAlertSubscription"}
+  ]
+}
