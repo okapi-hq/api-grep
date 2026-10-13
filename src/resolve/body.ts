@@ -3,7 +3,7 @@ import { constructedName, isUndefinedLiteral, unwrap } from "../ast/expr.js";
 import { bindingElementValue, declarationsOf, importedVariable, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
-import { stringShapeOf } from "./string-template.js";
+import { partsOf, stringShapeOf } from "./string-template.js";
 import { xmlBody } from "./xml-shape.js";
 import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
@@ -271,7 +271,8 @@ export function resolveBody(expr: Expression | undefined, ctx: EvalCtx = {}, def
   const dynamic: DynamicPart[] = [];
   const r = shapeOf(inner, ctx, 0, dynamic);
   // a string held by a variable or a parameter (`body: envelope`): an XML document is read like a literal one
-  const xml = r.shape.type === "string" ? xmlBody(evaluate(u, ctx)) : undefined;
+  const held = partsOf(r.shape);
+  const xml = held ? xmlBody(held) : undefined;
   if (xml) return { ...xml, encoding: "xml", fromLiteral: true };
   let shape = r.shape;
   if (keys && keys.length > 0 && shape.type === "object") {
