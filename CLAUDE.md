@@ -121,7 +121,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
   Composer package in `src/lang/php/namespaces.json`; Java / Kotlin package roots of a Maven `group:artifact` that are
-  not its group id in `src/lang/jvm/packages.json`.
+  not its group id in `src/lang/jvm/packages.json` (`declaredOnly`: roots shared with non-SDK artifacts of the group,
+  counted only where the manifests declare the package).
 - The server's archives are hostile input too: never write anything but regular files and directories, never log a
   path, a query value or anything from an archive, and never pass the server's environment to a scan.
 - Comments explain why, briefly; match the surrounding code.

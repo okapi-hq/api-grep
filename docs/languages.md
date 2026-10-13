@@ -273,6 +273,10 @@ and take parameters as builders.
 - **Coverage:** a declared and imported JVM SDK with a registry and no call found is `imported-no-calls`. An import
   that matches the package roots of several artifacts counts for a declared one first (firebase-admin's
   `com.google.firebase.auth` is not the Android `firebase-auth`'s when only firebase-admin is declared).
+  firebase-admin's roots are its own packages (`auth`, `cloud`, `database`, `messaging`, `projectmanagement`); the
+  root of `com.google.firebase`, shared with Android Firebase (`FirebaseApp`, `analytics`, `crashlytics`,
+  `remoteconfig`), counts for it only where the manifests declare it (`declaredOnly` in `src/lang/jvm/packages.json`,
+  #62), so an Android app is not reported as importing the server SDK.
 
 **HTTP clients** (`src/lang/jvm/http/`, tables in `clients.json`):
 
