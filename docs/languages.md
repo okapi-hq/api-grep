@@ -109,8 +109,10 @@ A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, 
 
 A language can also give `declarations` (requests an annotated declaration describes, located at the declaration:
 Feign, Retrofit), `instanceOf` (calls that return an instance of a project class they name, `retrofit.create(Api::class.java)`:
-the methods called on it are the interface's, so their callers' arguments are known), `fluentMaps` (constructors and methods that build a map, a list or a body entry by entry) and
-`constants` (library constants with a known value, `MediaType.APPLICATION_JSON`). The engine builds `scoped`
+the methods called on it are the interface's, so their callers' arguments are known), `fluentMaps` (constructors and methods that build a map, a list or a body entry by entry),
+`constants` (library constants with a known value, `MediaType.APPLICATION_JSON`) and `injection` (what a DI container
+gives a parameter or field nothing else sets, and container lookups such as Koin's `get<T>()`: the JVM's, see
+[Kotlin](#kotlin); the engine asks it wherever a parameter has no substituted argument, `src/lang/ir/injected.ts`). The engine builds `scoped`
 expressions (an expression read in another function's scope) when it puts a request together from pieces written in
 several places.
 
@@ -279,19 +281,31 @@ original's URL, method and body;
 - **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
   `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
   (`URL(u).openConnection()`, reported there, with `requestMethod` / `setRequestMethod`, `setRequestProperty`,
-  `doOutput` and what the function writes to the output stream; a URL that is not http(s) or an env var, with no HTTP
+  `doOutput` and what the function writes to the output stream, also in project functions the connection is passed
+  to, one level (`prepare(conn)`, `send(conn, json)`, #46); a URL that is not http(s) or an env var, with no HTTP
   setting, is not a request).
 - **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient` (the URL positional or
   `urlString = ...`), with the builder lambda
   (`parameter`, `header`, `headers { append }`, `setBody`, `contentType`, `bearerAuth`, `basicAuth`, `url("...")`,
   `url { host = ...; path(...); parameters.append(...) }`, `method = HttpMethod.X`), and the client's
-  `defaultRequest { url(...); header(...) }` as base URL and `clientParts` with `from: "default"`.
+  `defaultRequest { url(...); url.takeFrom(...); header(...) }` as base URL and `clientParts` with `from: "default"`;
+  the `Authorization` of `install(Auth) { bearer { loadTokens { BearerTokens(...) } } }` and `basic { ... }` too.
+  Bodies (#46): `submitForm(url, formParameters = parameters { append(k, v) })` (form),
+  `submitFormWithBinaryData(url, formData { ... })` and `MultiPartFormDataContent(formData { ... })` (multipart),
+  `FormDataContent(Parameters.build { ... })` (form), kotlinx `buildJsonObject { put(k, v); putJsonObject(k) { ... } }`
+  and `buildJsonArray { add(...) }` (`src/lang/jvm/http/bodies.ts`).
 - **Spring** (`spring-rest`, `spring-webclient`): `RestTemplate` as a client table (`getForObject`, `getForEntity`,
   `postForObject`, `put`, `patchForObject`, `delete`, `exchange` with `HttpMethod.X` and an `HttpEntity` of body and
   `HttpHeaders`; `RestTemplateBuilder().rootUri(...)`), URLs from `UriComponentsBuilder`; `RestClient`
   (`spring-rest`) and `WebClient` (`spring-webclient`) chains ended by `retrieve` / `exchange*`, with the `baseUrl`
   and `defaultHeader` of `create(...)` / `builder()`, `uri(...)` (also a `UriBuilder` lambda), `header`,
-  `headers { it.setBearerAuth(...) }`, `contentType`, `bodyValue` / `body`.
+  `headers { it.setBearerAuth(...) }`, `contentType`, `bodyValue` / `body`. Since #46 (`spring-parts.ts`): the
+  builder's `defaultHeaders { ... }` lambda; the headers of WebClient exchange filters (`filter(...)`, a header set on
+  `ClientRequest.from(request)`) and RestClient `requestInterceptor(...)`, and of RestTemplate interceptors given to
+  `RestTemplateBuilder.additionalInterceptors(...)` / `interceptors(...)` or added where the template is made
+  (`template.getInterceptors().add(i)`, `interceptors = listOf(i)`, `RestTemplate().apply { interceptors.add(i) }`),
+  as `clientParts` with `from: "interceptor"`; `exchange(RequestEntity.post(uri).header(...).body(x), ...)` (the
+  entity's method, URL, headers and body); `BodyInserters.fromFormData(k, v).with(k, v)` (form).
 - **OpenFeign** (`feign`): one call per mapped method of a `@FeignClient` interface, at the method declaration:
   `@GetMapping` ... `@RequestMapping(method = ...)`, the `url` (a `${property:default}` reads as the property with its
   default) and `path` of the annotation, `@RequestParam`, `@RequestHeader`, `@RequestBody` (or an unannotated
@@ -358,6 +372,39 @@ original's URL, method and body;
   optional), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data classes, `LinkedMultiValueMap` (form);
   `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
 
+**Clients a DI container provides** (#46, `src/lang/jvm/di/`, the language's `injection`): a parameter or field
+nothing in the code sets gets the value of the binding a container gives it, so a client injected by its type keeps
+its builder's base URL, interceptors and default headers.
+
+- **Bindings** (`providers.ts`, indexed once per scan): Dagger / Hilt `@Provides` functions (their declared return
+  type, else the type their body builds: `OkHttpClient.Builder()...build()` is an `OkHttpClient`, a project factory's
+  return type) and `@Binds` (the implementation class, constructed); Spring `@Bean` methods and stereotype classes
+  (`@Component`, `@Service`, ...); CDI `@Produces`; classes with an `@Inject` constructor; Koin definitions
+  (`single { ... }`, `factory<T> { ... }`, `single(named("x")) { ... }`, `singleOf(::Repo)`) in files importing
+  `org.koin`.
+- **Injection points** (`inject.ts`): the parameters of providers, of `@Inject` / `@Autowired` methods and of the
+  constructor of a class the container builds (`@Inject constructor`, a stereotype); fields annotated `@Inject`,
+  `@Autowired` or `@Resource` (`@Inject lateinit var client: OkHttpClient`); Koin lookups (`get()` in a definition's
+  constructor call, `get<T>()`, `by inject()` and `= get()` on a typed property). A constructor parameter of a class
+  built only in providers (`@Provides fun repo(c: OkHttpClient) = Repo(c)`, `single { Repo(get()) }`) reads the
+  provider's argument. A Spring `@Value` parameter of a bean method reads its configuration value.
+- **Which binding**: one of the injection point's own container (a Koin lookup never gets a Dagger binding: a Ktor
+  backend next to an Android app), of the same type (the imported class, else the type as written), selected by
+  qualifiers: `@Named("x")`, Spring `@Qualifier("x")` (also a bean name), and project annotations annotated
+  `@Qualifier` (`@Qualifier annotation class Authed`). A Dagger injection point without a qualifier only sees
+  unqualified bindings; a Spring one sees every bean of the type, then the `@Primary` one, then the bean named like the
+  parameter or field. Several bindings left (two flavors' modules, two unnamed beans), or none: nothing is attached,
+  the call keeps its unknown parts (`tests/fixtures/kotlin/di-ambiguous/`).
+- A provider never injects its own parameters (`@Named("raw") client: OkHttpClient` in an `OkHttpClient` provider), and
+  each parameter is resolved once per scan.
+
+**Builder steps in `apply { }`** (Kotlin, #46): `Request.Builder().apply { url(u); header(k, v) }.build()`,
+`builder.apply { ... }` on a variable, `OkHttpClient.Builder().apply { addInterceptor(i) }` and
+`JSONObject().apply { put(k, v) }`: the calls of the lambda made on the receiver (bare, on `this`, or on `it` in
+`also { }`) are steps of the value, in place (`CallExpr.applied`, `src/lang/ir/applied.ts`). Client factories
+(`fun client(token: String) = OkHttpClient.Builder().addInterceptor(TokenInterceptor(token)).build()`) read their
+interceptors' values with the caller's arguments.
+
 **Java.** The detectors read the engine's model only (calls, chains, annotations), and the tables are in
 `src/lang/jvm/http/clients.json`, so Java gets the same clients by being lowered into the same model (`new
 Request.Builder()` is a call of `Request.Builder`, `X.class` a class reference); `HttpURLConnection` also reads a body
@@ -408,11 +455,10 @@ file. A file that does not parse is then read once more with a `;` in place of t
 
 **Limitations:**
 
-- Clients injected by a DI framework (Hilt `@Provides`, Spring beans) are known by their type only: their
-  interceptors, default headers and base URL are not followed.
-- Ktor `submitForm(formParameters = ...)`, `buildJsonObject { }` bodies, `RequestEntity` builders, WebClient
-  `defaultHeaders { }` lambdas, RestTemplate interceptors and builder steps inside `apply { }` are not read (#46, with
-  DI-provided clients).
+- DI (#46): `Lazy<T>` / `Provider<T>` injection points (and a Retrofit `callFactory { lazyClient.get().newCall(it) }`),
+  multibindings (`@IntoSet`, `Set<Interceptor>`), Spring beans injected by an interface their class implements or as
+  a `List<T>`, Koin `bind` / `binds` and type qualifiers, and service locators other than Koin (Injekt) are not
+  followed (#75).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
@@ -420,15 +466,17 @@ file. A file that does not parse is then read once more with a `;` in place of t
   unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
   `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
   Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
-- Retrofit: an interface created on an injected `Retrofit` (a Hilt `@Provides` parameter), or never created in the
-  project, gets the project's only `Retrofit.Builder()` when there is one (a second builder, such as a provided
-  `Retrofit.Builder` its users finish, makes it ambiguous), else an unknown host (`{baseUrl}`); the
-  builder of a DI provider and its injected OkHttp client are #46. `@QueryName` (a parameter name without a value)
+- Retrofit: an interface created on an injected `Retrofit` follows the provider (with its qualifier, the provided
+  `Retrofit.Builder` its users finish, and the injected OkHttp client's interceptors, #46); one created on a Retrofit
+  of unknown origin, or never created in the project, gets the project's only `Retrofit.Builder()` when there is one,
+  else an unknown host (`{baseUrl}`). `create()` without a class reads the function's return type or the variable's
+  declared type (`fun api(r: Retrofit): Api = r.create()`). A protobuf or Wire converter only writes generated
+  messages: a body of a project class, a collection or a scalar goes to the next converter. `@QueryName` (a parameter name without a value)
   and `@Tag` are not listed, and the keys of a `@QueryMap` / `@HeaderMap` map are only known when the map is.
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
   flavors other than the first literal are not listed.
 - SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
-  Twilio creator arguments) give no body. A builder filled in `apply { ... }`, or in steps spread over several
+  Twilio creator arguments) give no body. An SDK builder filled in `apply { ... }`, or in steps spread over several
   functions, is not read; keys set in a branch are not marked optional. A path id given inside a params object rather
   than as the first argument stays a placeholder. The `PostHogConfig` host given to `PostHog.setup` is not followed.
 - AWS artifacts other than S3 and Bedrock Runtime, the AWS SDK for Kotlin and other JVM SDKs listed in `providers.json`
@@ -493,9 +541,9 @@ nested a few thousand deep still skip their file as an `internal-error`.
 
 **Limitations:**
 
-- As in Kotlin, clients provided by a DI framework (Spring beans, Dagger / Hilt providers) are known by their type only
-  (#46), a member inherited from a base class is only read through `this.x`, and a star import of an external package
-  does not tell which names it provides.
+- As in Kotlin, clients provided by a DI container (Spring beans, Dagger / Hilt providers) follow their binding when one
+  fits (#46, `tests/fixtures/java/di-spring/`, `tests/fixtures/java/di-dagger/`), a member inherited from a base class
+  is only read through `this.x`, and a star import of an external package does not tell which names it provides.
 - Code generated at build time is not there: annotation processors (Dagger, AutoValue, MapStruct), protobuf and
   OpenAPI-generated clients. An OpenAPI-generated `ApiClient` checked into the repository is read like any other code.
   Lombok is read from the class's annotations instead (`src/lang/jvm/lombok.ts`, the JVM `resolveCall`): on a project
@@ -844,7 +892,7 @@ call site keeps its own single value.
 |---|---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt listed in `providers.json` (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |

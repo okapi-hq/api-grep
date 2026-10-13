@@ -1,7 +1,8 @@
-import type { FunctionDef, ModuleModel } from "../ir/model.js";
+import type { Annotation, FunctionDef, ModuleModel } from "../ir/model.js";
 import { named, type SyntaxNode } from "../tree-sitter.js";
 import "./lower-class.js";
 import { lowerFunction, lowerStatement } from "./lower-stmt.js";
+import { modifiersOf } from "./modifiers.js";
 import { hook, newFunction, type KtState } from "./state.js";
 
 const identifiers = (n: SyntaxNode | undefined): string[] => (n ? named(n).filter((c) => c.type === "identifier") : []).map((c) => c.text);
@@ -18,6 +19,25 @@ function lowerImport(n: SyntaxNode, mod: ModuleModel): void {
   }
   const alias = named(n).find((c) => c.type === "identifier")?.text;
   mod.imports.set(alias ?? path[path.length - 1]!, { path });
+}
+
+/**
+ * `@Qualifier annotation class Authed`: the grammar reads an annotation class without a body as annotated identifiers
+ * (`annotation class Authed`). It is a class of the file with those annotations: a DI qualifier is one.
+ */
+function annotationClass(n: SyntaxNode, st: KtState): boolean {
+  const annotations: Annotation[] = [];
+  let cur = n;
+  while (cur.type === "annotated_expression") {
+    annotations.push(...modifiersOf(cur, st).annotations);
+    cur = named(cur)[named(cur).length - 1] ?? cur;
+  }
+  const words = cur.type === "infix_expression" ? named(cur).map((c) => (c.type === "identifier" ? c.text : "")) : [];
+  if (words.length !== 3 || words[0] !== "annotation" || words[1] !== "class" || !words[2]) return false;
+  const name = words[2];
+  const qname = st.mod.name ? `${st.mod.name}.${name}` : name;
+  st.mod.classes.set(name, { name, qname, bases: [], methods: new Map(), fields: new Map(), fieldTypes: new Map(), annotations: [], module: st.mod, classAnnotations: annotations });
+  return true;
 }
 
 function lowerTop(c: SyntaxNode, st: KtState): void {
@@ -40,7 +60,7 @@ function lowerTop(c: SyntaxNode, st: KtState): void {
     case "object_declaration":
       return hook("classDecl")(c, st, true);
     default:
-      lowerStatement(c, st);
+      if (!annotationClass(c, st)) lowerStatement(c, st);
   }
 }
 

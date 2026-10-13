@@ -72,10 +72,10 @@ describe("kotlin: Retrofit created on an injected Retrofit", () => {
     expect(at(r, "NotesApi.kt", 16)).toMatchObject({ bodyEncoding: "raw", headerValues: { "content-type": "application/x-protobuf" } });
   });
 
-  it("leaves the host unknown when the project makes another Retrofit.Builder (a provided builder its users finish)", async () => {
+  it("follows a provided Retrofit.Builder its users finish, not the project's other builder (#46)", async () => {
     const r = await scanFixture("kotlin/retrofit-shared-builder");
     expect(r.calls.map((c) => [c.location.file, c.location.line, c.urlTemplate])).toEqual([
-      ["Apis.kt", 8, "{baseUrl}/status"],
+      ["Apis.kt", 8, "https://api.example-sync.com/status"],
       ["Apis.kt", 13, "https://api.example-images.com/search"],
     ]);
   });

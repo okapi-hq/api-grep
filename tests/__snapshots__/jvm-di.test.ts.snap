@@ -1,0 +1,1216 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JVM: clients a DI container provides (#46) > attaches nothing when several providers fit, or the class is also built by hand 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "city": "Ghent",
+          },
+          "url": "https://api.weather-example.com/v1/forecast?city=Ghent",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.weather-example.com",
+      "hostKind": "literal",
+      "id": "279381fc3ef9",
+      "location": {
+        "col": 34,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "api.weather-example.com",
+      "query": [
+        "city",
+      ],
+      "queryShape": {
+        "properties": {
+          "city": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.weather-example.com/v1/forecast?city={city}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "/v2/tiles",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "relative",
+      "id": "d95b2afab89c",
+      "location": {
+        "col": 27,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/tiles",
+      "provider": "internal",
+      "query": [],
+      "urlTemplate": "v2/tiles",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://alerts.weather-example.com/v1/active",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "alerts.weather-example.com",
+      "hostKind": "literal",
+      "id": "f911163334f8",
+      "location": {
+        "col": 28,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 19,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/active",
+      "provider": "alerts.weather-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://alerts.weather-example.com/v1/active",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://history.weather-example.com/v1/Bologna",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "history.weather-example.com",
+      "hostKind": "literal",
+      "id": "0b0d4eeb93e3",
+      "location": {
+        "col": 33,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/{city}",
+      "provider": "history.weather-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://history.weather-example.com/v1/{city}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "ktor": 2,
+      "okhttp": 2,
+    },
+    "byHostKind": {
+      "literal": 3,
+      "relative": 1,
+    },
+    "byLanguage": {
+      "kotlin": 4,
+    },
+    "byProvider": {
+      "alerts.weather-example.com": 1,
+      "api.weather-example.com": 1,
+      "history.weather-example.com": 1,
+      "internal": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in Java: @Binds, named strings, @Inject constructors 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://tracking.parcels-example.com/api/parcels/s813bhmj",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "tracking.parcels-example.com",
+      "hostKind": "literal",
+      "id": "52191c9e3fd0",
+      "location": {
+        "col": 5,
+        "file": "Net.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/parcels/{id}",
+      "provider": "tracking.parcels-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://tracking.parcels-example.com/api/parcels/{id}",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://labels.parcels-example.com/v1/labels/ym9tdm74",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "labels.parcels-example.com",
+      "hostKind": "literal",
+      "id": "9e024e0a470e",
+      "location": {
+        "col": 16,
+        "file": "Net.java",
+        "language": "java",
+        "line": 51,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/labels/{id}",
+      "provider": "labels.parcels-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://labels.parcels-example.com/v1/labels/{id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 1,
+      "retrofit": 1,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 2,
+    },
+    "byProvider": {
+      "labels.parcels-example.com": 1,
+      "tracking.parcels-example.com": 1,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger providers, qualifiers, provided builders and injected interceptors (Kotlin) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://catalog.shelf-example.com/v2/books/emwhp5ou",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "catalog.shelf-example.com",
+      "hostKind": "literal",
+      "id": "99b6a1e49b46",
+      "location": {
+        "col": 5,
+        "file": "Apis.kt",
+        "language": "kotlin",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/books/{id}",
+      "provider": "catalog.shelf-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://catalog.shelf-example.com/v2/books/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "fromType": "Review",
+        "properties": {
+          "bookId": {
+            "type": "string",
+          },
+          "stars": {
+            "type": "integer",
+          },
+        },
+        "required": [
+          "bookId",
+          "stars",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Review",
+      "bodySource": "type",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "bookId": "dmaqsqez",
+            "stars": 137,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://reviews.shelf-example.com/reviews",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "reviews.shelf-example.com",
+      "hostKind": "literal",
+      "id": "dfc2887cc733",
+      "location": {
+        "col": 5,
+        "file": "Apis.kt",
+        "language": "kotlin",
+        "line": 16,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/reviews",
+      "provider": "reviews.shelf-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://reviews.shelf-example.com/reviews",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://covers.shelf-example.com/v1/covers/l44yolg4",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "covers.shelf-example.com",
+      "hostKind": "literal",
+      "id": "1df65b9e3613",
+      "location": {
+        "col": 29,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/covers/{id}",
+      "provider": "covers.shelf-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://covers.shelf-example.com/v1/covers/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-upload-channel",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Yarrow quill zephyr amber canyon hollow.",
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+            "x-upload-channel": "mobile",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://uploads.shelf-example.com/v1/files",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "x-upload-channel": "mobile",
+      },
+      "headers": [
+        "authorization",
+        "x-upload-channel",
+      ],
+      "host": "uploads.shelf-example.com",
+      "hostKind": "literal",
+      "id": "3dee34fa642f",
+      "location": {
+        "col": 32,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 32,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/files",
+      "provider": "uploads.shelf-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://uploads.shelf-example.com/v1/files",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://stats.shelf-example.com/v1/ping",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "stats.shelf-example.com",
+      "hostKind": "literal",
+      "id": "19e191365e47",
+      "location": {
+        "col": 18,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 45,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/ping",
+      "provider": "stats.shelf-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://stats.shelf-example.com/v1/ping",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 3,
+      "retrofit": 2,
+    },
+    "byHostKind": {
+      "literal": 5,
+    },
+    "byLanguage": {
+      "kotlin": 5,
+    },
+    "byProvider": {
+      "catalog.shelf-example.com": 1,
+      "covers.shelf-example.com": 1,
+      "reviews.shelf-example.com": 1,
+      "stats.shelf-example.com": 1,
+      "uploads.shelf-example.com": 1,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, constructions with get(), singleOf and by inject() 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-client": "android",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.tracks-example.com/v1/tracks",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-client": "android",
+      },
+      "headers": [
+        "x-client",
+      ],
+      "host": "api.tracks-example.com",
+      "hostKind": "literal",
+      "id": "6c8226ae3612",
+      "location": {
+        "col": 28,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 14,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/tracks",
+      "provider": "api.tracks-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tracks-example.com/v1/tracks",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "name",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Velvet Dune",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-client": "android",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.tracks-example.com/v1/playlists",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-client": "android",
+      },
+      "headers": [
+        "x-client",
+      ],
+      "host": "api.tracks-example.com",
+      "hostKind": "literal",
+      "id": "e7d78384bbfa",
+      "location": {
+        "col": 40,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 19,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/playlists",
+      "provider": "api.tracks-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tracks-example.com/v1/playlists",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-upload-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-upload-key": "<x-upload-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://uploads.tracks-example.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-upload-key": null,
+      },
+      "headers": [
+        "x-upload-key",
+      ],
+      "host": "uploads.tracks-example.com",
+      "hostKind": "literal",
+      "id": "abcf4d37d93f",
+      "location": {
+        "col": 20,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "uploads.tracks-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://uploads.tracks-example.com/v1/status",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-client": "android",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.tracks-example.com/v1/settings",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-client": "android",
+      },
+      "headers": [
+        "x-client",
+      ],
+      "host": "api.tracks-example.com",
+      "hostKind": "literal",
+      "id": "0330a96db690",
+      "location": {
+        "col": 26,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 31,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/settings",
+      "provider": "api.tracks-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tracks-example.com/v1/settings",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "ktor": 3,
+      "okhttp": 1,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "kotlin": 4,
+    },
+    "byProvider": {
+      "api.tracks-example.com": 3,
+      "uploads.tracks-example.com": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 1,
+    "withDynamic": 0,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Primary, @Qualifier, the bean named like the field, @Value parameters (Java) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://catalog.orders-example.com/v1/items/8nnfjz6u",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "catalog.orders-example.com",
+      "hostKind": "literal",
+      "id": "d35d3193f406",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 19,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "catalog.orders-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://catalog.orders-example.com/v1/items/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "zip",
+          "origin": "unknown",
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "zip": "88709",
+          },
+          "url": "https://shipping.orders-example.com/v1/quotes?zip=88709",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "shipping.orders-example.com",
+      "hostKind": "literal",
+      "id": "220c7afae64b",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 33,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/quotes",
+      "provider": "shipping.orders-example.com",
+      "query": [
+        "zip",
+      ],
+      "queryShape": {
+        "properties": {
+          "zip": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "zip",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://shipping.orders-example.com/v1/quotes?zip={zip}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-tenant",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "envName": "billing.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "orders",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://billing.orders-example.com/v1/invoices",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "orders",
+      },
+      "headers": [
+        "x-tenant",
+      ],
+      "host": "billing.orders-example.com",
+      "hostKind": "env",
+      "id": "b6fed1d8169b",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 44,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/invoices",
+      "provider": "billing.orders-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:billing.url}/v1/invoices",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "/v1/events",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "relative",
+      "id": "02908bd38959",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 55,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/events",
+      "provider": "internal",
+      "query": [],
+      "urlTemplate": "/v1/events",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 2,
+      "spring-webclient": 2,
+    },
+    "byHostKind": {
+      "env": 1,
+      "literal": 2,
+      "relative": 1,
+    },
+    "byLanguage": {
+      "java": 4,
+    },
+    "byProvider": {
+      "billing.orders-example.com": 1,
+      "catalog.orders-example.com": 1,
+      "internal": 1,
+      "shipping.orders-example.com": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

@@ -412,6 +412,383 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
       "urlTemplate": "https://feeds.example.com/v2/latest.json",
     },
     {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "enum": [
+              "password",
+            ],
+            "type": "string",
+          },
+          "password": {
+            "hint": "password",
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "username",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "username",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "password",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "password",
+            "password": "<password>",
+            "username": "chloe61",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://accounts.example-forms.com/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "accounts.example-forms.com",
+      "hostKind": "literal",
+      "id": "98c9a595b63d",
+      "location": {
+        "col": 57,
+        "file": "Forms.kt",
+        "language": "kotlin",
+        "line": 38,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/oauth/token",
+      "provider": "accounts.example-forms.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://accounts.example-forms.com/oauth/token",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "display_name": {
+            "hint": "name",
+            "type": "string",
+          },
+        },
+        "required": [
+          "display_name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "display_name",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "display_name": "Delta Koala",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://accounts.example-forms.com/api/profile",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "accounts.example-forms.com",
+      "hostKind": "literal",
+      "id": "f3abebfafe12",
+      "location": {
+        "col": 40,
+        "file": "Forms.kt",
+        "language": "kotlin",
+        "line": 47,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/profile",
+      "provider": "accounts.example-forms.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://accounts.example-forms.com/api/profile",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "caption": {
+            "hint": "caption",
+            "type": "string",
+          },
+          "image": {
+            "hint": "bytes",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "caption",
+          "image",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "caption",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "image",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "caption": "Linen Compass",
+            "image": "lagoon kestrel",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://accounts.example-forms.com/api/profile/avatar",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "accounts.example-forms.com",
+      "hostKind": "literal",
+      "id": "9ef2f7c9ceb6",
+      "location": {
+        "col": 61,
+        "file": "Forms.kt",
+        "language": "kotlin",
+        "line": 51,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/profile/avatar",
+      "provider": "accounts.example-forms.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://accounts.example-forms.com/api/profile/avatar",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "notifications": {
+            "properties": {
+              "email": {
+                "enum": [
+                  true,
+                ],
+                "type": "boolean",
+              },
+            },
+            "required": [
+              "email",
+            ],
+            "type": "object",
+          },
+          "theme": {
+            "hint": "theme",
+            "type": "string",
+          },
+        },
+        "required": [
+          "theme",
+          "notifications",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "theme",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "notifications": {
+              "email": true,
+            },
+            "theme": "yarrow yarrow",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://accounts.example-forms.com/api/settings",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "accounts.example-forms.com",
+      "hostKind": "literal",
+      "id": "58508380c18f",
+      "location": {
+        "col": 43,
+        "file": "Forms.kt",
+        "language": "kotlin",
+        "line": 58,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/settings",
+      "provider": "accounts.example-forms.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://accounts.example-forms.com/api/settings",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://reports.example-forms.com/v1/daily",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "reports.example-forms.com",
+      "hostKind": "literal",
+      "id": "8f912b70ea2b",
+      "location": {
+        "col": 27,
+        "file": "Forms.kt",
+        "language": "kotlin",
+        "line": 79,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/daily",
+      "provider": "reports.example-forms.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://reports.example-forms.com/v1/daily",
+    },
+    {
       "authScheme": "none",
       "bodyEncoding": "none",
       "bodySource": "none",
@@ -479,12 +856,12 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 2,
-    "filesSeen": 2,
+    "filesScanned": 3,
+    "filesSeen": 3,
     "languages": {
       "kotlin": {
-        "filesScanned": 2,
-        "filesSeen": 2,
+        "filesScanned": 3,
+        "filesSeen": 3,
       },
     },
     "skipped": [],
@@ -494,26 +871,28 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "ktor": 8,
+      "ktor": 13,
     },
     "byHostKind": {
-      "literal": 8,
+      "literal": 13,
     },
     "byLanguage": {
-      "kotlin": 8,
+      "kotlin": 13,
     },
     "byProvider": {
+      "accounts.example-forms.com": 4,
       "api.example-catalog.com": 3,
       "feeds.example.com": 1,
       "forecast.example.com": 1,
       "notion": 3,
+      "reports.example-forms.com": 1,
     },
-    "callsFound": 8,
+    "callsFound": 13,
     "durationMs": 0,
-    "filesScanned": 2,
+    "filesScanned": 3,
     "redacted": 0,
-    "withBodyShape": 2,
-    "withDynamic": 4,
+    "withBodyShape": 6,
+    "withDynamic": 8,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -524,6 +903,261 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-notes-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Ember pebble zephyr yonder raven compass.",
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "x-notes-client": "notes-mobile",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://notes.example.com/v1/notes",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "x-notes-client": "notes-mobile",
+      },
+      "headers": [
+        "accept",
+        "x-notes-client",
+      ],
+      "host": "notes.example.com",
+      "hostKind": "literal",
+      "id": "22cd6108a3ea",
+      "location": {
+        "col": 32,
+        "file": "Applied.kt",
+        "language": "kotlin",
+        "line": 25,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes",
+      "provider": "notes.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://notes.example.com/v1/notes",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-notes-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-notes-client": "notes-mobile",
+          },
+          "method": "PATCH",
+          "query": {},
+          "url": "https://notes.example.com/v1/notes/qu1khs92/archive",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-notes-client": "notes-mobile",
+      },
+      "headers": [
+        "x-notes-client",
+      ],
+      "host": "notes.example.com",
+      "hostKind": "literal",
+      "id": "e06f7aff7a82",
+      "location": {
+        "col": 9,
+        "file": "Applied.kt",
+        "language": "kotlin",
+        "line": 39,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes/{id}/archive",
+      "provider": "notes.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://notes.example.com/v1/notes/{id}/archive",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-trace",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-trace": "on",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://notes.example.com/v1/trace",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-trace": "on",
+      },
+      "headers": [
+        "x-trace",
+      ],
+      "host": "notes.example.com",
+      "hostKind": "literal",
+      "id": "ac789bbdb498",
+      "location": {
+        "col": 19,
+        "file": "Applied.kt",
+        "language": "kotlin",
+        "line": 47,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/trace",
+      "provider": "notes.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://notes.example.com/v1/trace",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "pinned": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+          "tag": {
+            "hint": "tag",
+            "type": "string",
+          },
+        },
+        "required": [
+          "tag",
+          "pinned",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-notes-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "tag",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "pinned": true,
+            "tag": "prairie",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-notes-client": "notes-mobile",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://notes.example.com/v1/notes/nsyfdi9b/tags",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-notes-client": "notes-mobile",
+      },
+      "headers": [
+        "x-notes-client",
+      ],
+      "host": "notes.example.com",
+      "hostKind": "literal",
+      "id": "8f48c10626e9",
+      "location": {
+        "col": 9,
+        "file": "Applied.kt",
+        "language": "kotlin",
+        "line": 55,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes/{id}/tags",
+      "provider": "notes.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://notes.example.com/v1/notes/{id}/tags",
+    },
     {
       "authScheme": "apikey",
       "body": {
@@ -1488,12 +2122,12 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 6,
-    "filesSeen": 6,
+    "filesScanned": 7,
+    "filesSeen": 7,
     "languages": {
       "kotlin": {
-        "filesScanned": 6,
-        "filesSeen": 6,
+        "filesScanned": 7,
+        "filesSeen": 7,
       },
     },
     "skipped": [],
@@ -1503,14 +2137,14 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "okhttp": 16,
+      "okhttp": 20,
     },
     "byHostKind": {
-      "literal": 14,
+      "literal": 18,
       "unknown": 2,
     },
     "byLanguage": {
-      "kotlin": 16,
+      "kotlin": 20,
     },
     "byProvider": {
       "books.example.com": 4,
@@ -1519,17 +2153,18 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
       "drafts.example.com": 1,
       "github": 2,
       "mailgun": 1,
+      "notes.example.com": 4,
       "open-meteo": 1,
       "rpc.example.com": 1,
       "unknown": 2,
       "unsplash": 1,
     },
-    "callsFound": 16,
+    "callsFound": 20,
     "durationMs": 0,
-    "filesScanned": 6,
+    "filesScanned": 7,
     "redacted": 0,
-    "withBodyShape": 5,
-    "withDynamic": 13,
+    "withBodyShape": 8,
+    "withDynamic": 15,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -1987,6 +2622,168 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-warehouse",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-warehouse": "north",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://inventory.example-shop.com/v1/stock/quartz",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-warehouse": "north",
+      },
+      "headers": [
+        "x-warehouse",
+      ],
+      "host": "inventory.example-shop.com",
+      "hostKind": "literal",
+      "id": "fa40feba1f70",
+      "location": {
+        "col": 39,
+        "file": "Builders.kt",
+        "language": "kotlin",
+        "line": 18,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/stock/{sku}",
+      "provider": "inventory.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://inventory.example-shop.com/v1/stock/{sku}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-warehouse",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-request-source": "kotlin",
+            "x-warehouse": "north",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://inventory.example-shop.com/v1/reservations/maple",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-request-source": "kotlin",
+        "x-warehouse": "north",
+      },
+      "headers": [
+        "x-request-source",
+        "x-warehouse",
+      ],
+      "host": "inventory.example-shop.com",
+      "hostKind": "literal",
+      "id": "c9bb36ef7dd4",
+      "location": {
+        "col": 16,
+        "file": "Builders.kt",
+        "language": "kotlin",
+        "line": 24,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/reservations/{sku}",
+      "provider": "inventory.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://inventory.example-shop.com/v1/reservations/{sku}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://events.example-shop.com/v1/recent",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "events.example-shop.com",
+      "hostKind": "literal",
+      "id": "de102b91f0b7",
+      "location": {
+        "col": 20,
+        "file": "Builders.kt",
+        "language": "kotlin",
+        "line": 32,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/recent",
+      "provider": "events.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.example-shop.com/v1/recent",
+    },
     {
       "authScheme": "none",
       "bodyEncoding": "none",
@@ -2457,12 +3254,12 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 1,
-    "filesSeen": 1,
+    "filesScanned": 2,
+    "filesSeen": 2,
     "languages": {
       "kotlin": {
-        "filesScanned": 1,
-        "filesSeen": 1,
+        "filesScanned": 2,
+        "filesSeen": 2,
       },
     },
     "skipped": [],
@@ -2472,25 +3269,27 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "spring-rest": 5,
-      "spring-webclient": 3,
+      "spring-rest": 7,
+      "spring-webclient": 4,
     },
     "byHostKind": {
-      "literal": 8,
+      "literal": 11,
     },
     "byLanguage": {
-      "kotlin": 8,
+      "kotlin": 11,
     },
     "byProvider": {
       "api.example-shop.com": 5,
+      "events.example-shop.com": 1,
+      "inventory.example-shop.com": 2,
       "stripe": 3,
     },
-    "callsFound": 8,
+    "callsFound": 11,
     "durationMs": 0,
-    "filesScanned": 1,
+    "filesScanned": 2,
     "redacted": 0,
     "withBodyShape": 3,
-    "withDynamic": 5,
+    "withDynamic": 7,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -2501,6 +3300,51 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
 {
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Opal meadow ember harbor echo juniper.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://pager.example-alerts.com/v1/pages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "pager.example-alerts.com",
+      "hostKind": "literal",
+      "id": "426c2b5185d4",
+      "location": {
+        "col": 20,
+        "file": "Helpers.kt",
+        "language": "kotlin",
+        "line": 9,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/pages",
+      "provider": "pager.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://pager.example-alerts.com/v1/pages",
+    },
     {
       "authScheme": "bearer",
       "body": {
@@ -2747,12 +3591,12 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 1,
-    "filesSeen": 1,
+    "filesScanned": 2,
+    "filesSeen": 2,
     "languages": {
       "kotlin": {
-        "filesScanned": 1,
-        "filesSeen": 1,
+        "filesScanned": 2,
+        "filesSeen": 2,
       },
     },
     "skipped": [],
@@ -2762,23 +3606,24 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "java-http": 5,
+      "java-http": 6,
     },
     "byHostKind": {
-      "literal": 5,
+      "literal": 6,
     },
     "byLanguage": {
-      "kotlin": 5,
+      "kotlin": 6,
     },
     "byProvider": {
       "api.example-alerts.com": 2,
+      "pager.example-alerts.com": 1,
       "pagerduty": 3,
     },
-    "callsFound": 5,
+    "callsFound": 6,
     "durationMs": 0,
-    "filesScanned": 1,
+    "filesScanned": 2,
     "redacted": 0,
-    "withBodyShape": 3,
+    "withBodyShape": 4,
     "withDynamic": 1,
   },
   "tool": "api-grep",

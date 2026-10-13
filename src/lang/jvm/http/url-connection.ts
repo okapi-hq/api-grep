@@ -1,11 +1,12 @@
 import { partsToTemplate } from "../../../resolve/parts.js";
-import type { Chain } from "../../ir/chain.js";
+import { calleeChain, type Chain } from "../../ir/chain.js";
 import { evaluate } from "../../ir/evaluate.js";
 import { callsOn } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
 import { children, exprText, type CallExpr, type Expr, type FunctionDef } from "../../ir/model.js";
-import type { IrCtx, IrRaw } from "../../ir/raw.js";
+import type { IrCtx, IrRaw, Subst } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, type RequestParts } from "../../ir/steps.js";
+import { substitutionFor } from "../../ir/wrappers.js";
 import { rawOf } from "./request.js";
 
 const WRITES = ["write", "writeBytes", "print", "println"];
@@ -55,9 +56,29 @@ function configure(p: RequestParts, fn: FunctionDef, v: { name: string; offset: 
   return output;
 }
 
+/** A function of the project the connection is passed to (`writeBody(conn, json)`), its parameter and the call's arguments. */
+interface Helper {
+  fn: FunctionDef;
+  v: { name: string; offset: number };
+  subst: Subst;
+}
+
+/** `writeBody(conn, json)`, `this.sign(conn)`: project functions given the connection after it is opened (one level). */
+function helpers(fn: FunctionDef, v: { name: string; offset: number }, ctx: IrCtx): Helper[] {
+  const out: Helper[] = [];
+  for (const c of fn.calls) {
+    const i = c.pos.offset > v.offset ? c.args.findIndex((a) => !a.name && a.value.k === "name" && a.value.name === v.name) : -1;
+    const target = i >= 0 ? calleeChain(c, fn, ctx) : undefined;
+    const param = target?.root.kind === "function" && target.segs.length === 0 ? target.root.fn.params[i] : undefined;
+    if (target?.root.kind === "function" && param && target.root.fn !== fn) out.push({ fn: target.root.fn, v: { name: param.name, offset: -1 }, subst: substitutionFor(target.root.fn, c, fn) });
+  }
+  return out.slice(0, 4);
+}
+
 /**
  * `URL(u).openConnection()` (`HttpURLConnection`), reported where the connection is opened: the method, headers and
- * body come from what the same function does with it. Without a method, a connection that writes a body POSTs.
+ * body come from what the same function does with it, or a project function it passes the connection to. Without a
+ * method, a connection that writes a body POSTs.
  */
 export function detectUrlConnection(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain): IrRaw | undefined {
   const last = chain.segs[chain.segs.length - 1];
@@ -65,11 +86,17 @@ export function detectUrlConnection(call: CallExpr, fn: FunctionDef, ctx: IrCtx,
   const p = emptyParts();
   p.url = { expr: call.fn.obj, fn };
   const v = connectionVar(call, fn);
-  const output = v ? configure(p, fn, v) : false;
+  const helped = v ? helpers(fn, v, ctx) : [];
+  let output = v ? configure(p, fn, v) : false;
+  for (const h of helped) output = configure(p, h.fn, h.v) || output;
   // `getResource(...).openConnection()` is not a request: an http(s) URL, or the HTTP settings of a connection, tell
   const text = partsToTemplate(evaluate(p.url.expr, fn, ctx));
   if (!/^(?:https?:\/\/|\{env:)/i.test(text) && !p.method && p.pairs.length === 0) return undefined;
-  p.body = v && (output || p.method) ? written(fn, v.offset) : undefined;
+  const writes = v && (output || p.method);
+  p.body = writes ? (written(fn, v.offset) ?? helped.map((h) => written(h.fn, h.v.offset)).find((b) => !!b)) : undefined;
   if (!p.method) p.impliedMethod = output || p.body ? "POST" : "GET";
-  return rawOf(call, fn, "java-http", p, ctx);
+  const raw = rawOf(call, fn, "java-http", p, ctx);
+  // the helpers' parameters read as the arguments this function gives them
+  const subst = new Map(helped.flatMap((h) => [...h.subst]));
+  return subst.size > 0 ? { ...raw, subst: new Map([...(ctx.subst ?? []), ...subst]) } : raw;
 }

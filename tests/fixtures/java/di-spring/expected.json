@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/46",
+  "calls": [
+    {"file": "Services.java", "line": 19, "provider": "catalog.orders-example.com"},
+    {"file": "Services.java", "line": 33, "provider": "shipping.orders-example.com"},
+    {"file": "Services.java", "line": 44, "provider": "billing.orders-example.com"},
+    {"file": "Services.java", "line": 55, "provider": "internal"}
+  ]
+}

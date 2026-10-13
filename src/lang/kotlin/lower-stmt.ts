@@ -41,8 +41,13 @@ export function lowerFunction(n: SyntaxNode, st: KtState, closure: boolean): Fun
   const extra: Partial<FunctionDef> = { cls: st.cls?.def, ...(closure ? { parent: st.fn, inherits: ["*"] } : {}) };
   const fn = newFunction(field(n, "name")?.text ?? "anonymous", st.mod, n, { ...extra, ...(mods.annotations.length ? { annotations: mods.annotations } : {}) });
   st.mod.allFunctions.push(fn);
-  fn.params = lowerParams(named(n).find((c) => c.type === "function_value_parameters"), { ...st, fn });
-  lowerBody(named(n).find((c) => c.type === "function_body"), inFunction(st, fn, closure));
+  const kids = named(n);
+  const paramsAt = kids.findIndex((c) => c.type === "function_value_parameters");
+  fn.params = lowerParams(kids[paramsAt], { ...st, fn });
+  // the type after the parameters (a receiver type comes before the name)
+  const returnType = paramsAt >= 0 ? lowerType(kids.slice(paramsAt + 1).find((c) => c.type.endsWith("_type"))).type : undefined;
+  if (returnType) fn.returnType = returnType;
+  lowerBody(kids.find((c) => c.type === "function_body"), inFunction(st, fn, closure));
   return fn;
 }
 
@@ -116,6 +121,8 @@ export function propertyParts(n: SyntaxNode, st: KtState): PropertyParts {
   if (setter) accessor(setter, st, `set-${id?.text ?? ""}`);
   const lowered = init ? lowerExpr(init, st) : delegate ? lowerExpr(delegate, st) : getter ? accessor(getter, st, `get-${id?.text ?? ""}`) : undefined;
   const value = injectedValue(mods.annotations) ?? lowered;
+  // `val client: HttpClient by inject()`, `= get()`: a Koin lookup of the declared type
+  if (type && value?.k === "call" && !value.typeArgs && value.fn.k === "name" && (value.fn.name === "inject" || value.fn.name === "get")) value.typeArgs = [type];
   return {
     ...(id?.type === "identifier" ? { name: id.text } : {}),
     destructured: multi ? named(multi).flatMap((v) => named(v)[0]?.text ?? []) : [],

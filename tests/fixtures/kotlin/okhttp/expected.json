@@ -14,6 +14,10 @@
     {"file": "Messages.kt", "line": 20, "provider": "mailgun"},
     {"file": "Messages.kt", "line": 25, "provider": "cloudinary"},
     {"file": "Messages.kt", "line": 35, "provider": "unsplash"},
-    {"file": "Messages.kt", "line": 41, "provider": "cloudinary"}
+    {"file": "Messages.kt", "line": 41, "provider": "cloudinary"},
+    {"file": "Applied.kt", "line": 25, "provider": "notes.example.com"},
+    {"file": "Applied.kt", "line": 39, "provider": "notes.example.com"},
+    {"file": "Applied.kt", "line": 47, "provider": "notes.example.com"},
+    {"file": "Applied.kt", "line": 55, "provider": "notes.example.com"}
   ]
 }

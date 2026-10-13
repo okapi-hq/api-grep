@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/46",
+  "calls": [
+    {"file": "Apis.kt", "line": 11, "provider": "catalog.shelf-example.com"},
+    {"file": "Apis.kt", "line": 16, "provider": "reviews.shelf-example.com"},
+    {"file": "Repositories.kt", "line": 27, "provider": "covers.shelf-example.com"},
+    {"file": "Repositories.kt", "line": 32, "provider": "uploads.shelf-example.com"},
+    {"file": "Repositories.kt", "line": 45, "provider": "stats.shelf-example.com"}
+  ]
+}

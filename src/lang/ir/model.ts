@@ -76,6 +76,11 @@ export interface CallExpr {
   isNew?: boolean;
   /** Type arguments as written (Kotlin `retrofit.create<Api>()`), as type expressions. */
   typeArgs?: Expr[];
+  /**
+   * Lambdas run on this call's value by Kotlin `apply { ... }` / `also { ... }`, which stand for the value itself:
+   * their calls on it are steps of a builder (`Request.Builder().apply { url(u) }`).
+   */
+  applied?: FunctionDef[];
 }
 
 export interface Assign {
@@ -138,6 +143,8 @@ export interface FunctionDef {
   /** Offsets of blocks that may not run (branches, loop bodies, handlers), for the keys a dict gets there. */
   branches?: Branch[];
   annotations?: Annotation[];
+  /** The declared return type (`fun client(): OkHttpClient`), what a DI provider provides. */
+  returnType?: Expr;
 }
 
 export interface ClassDef {
@@ -161,6 +168,8 @@ export interface ClassDef {
   module: ModuleModel;
   /** Annotations of the class itself (JVM: `@FeignClient(url = ...)`). */
   classAnnotations?: Annotation[];
+  /** Annotations of fields declared in the class body (JVM: `@Inject lateinit var client: OkHttpClient`). */
+  fieldAnnotations?: Map<string, Annotation[]>;
 }
 
 export interface ImportRef {

@@ -494,12 +494,17 @@ the same package see each other, imports resolve across the two, and each call k
 language. The clients and SDK registries below apply to both; in Java, `new X(...)` is a call of `X`
 and `Api.class` a class reference.
 
+A client injected by a DI container keeps its base URL, interceptors and default headers: Dagger / Hilt `@Provides`
+and `@Binds`, `@Inject` constructors and fields, Spring `@Bean` methods and stereotypes (`@Primary`, bean names), Koin
+definitions and lookups (`single { ... }`, `singleOf(::Repo)`, `get()`, `by inject()`), selected by `@Named` and
+`@Qualifier` annotations. When several bindings fit and nothing tells them apart, none is attached.
+
 | client | patterns |
 |---|---|
-| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class) on every call it makes |
-| `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body) |
-| Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, the client's `defaultRequest { url(...); header(...) }` |
-| Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity`, `UriComponentsBuilder` URLs), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl` and `defaultHeader` of their builder |
+| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class) on every call it makes |
+| `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body, also in a helper the connection is passed to) |
+| Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, `submitForm(url, formParameters = parameters { ... })`, `FormDataContent`, `MultiPartFormDataContent(formData { ... })`, kotlinx `buildJsonObject { ... }` bodies; the client's `defaultRequest { url(...); header(...) }` and `install(Auth) { bearer { ... } }` |
+| Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity` or a `RequestEntity`, `UriComponentsBuilder` URLs, the headers of its interceptors), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl`, `defaultHeader`, `defaultHeaders { }` and filters of their builder; `BodyInserters.fromFormData(...)` |
 | OpenFeign | `@FeignClient(url = "\${x:default}")` interfaces with `@GetMapping` / `@PostMapping` / `@RequestMapping`, `@RequestParam`, `@RequestHeader`, `@RequestBody`, `@SpringQueryMap`; Feign `@RequestLine` / `@Headers` interfaces given to `Feign.builder().target(...)`; one call per method, at its declaration |
 | Retrofit | service interfaces (`@GET` ... `@OPTIONS`, `@HTTP`, `@Path`, `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers`, `@Body`, `@FormUrlEncoded` with `@Field` / `@FieldMap`, `@Multipart` with `@Part` / `@PartMap`, `@Url`), one call per method at its declaration, resolved against the `baseUrl(...)` of the `Retrofit.Builder()` whose `create(Api::class.java)` / `create<Api>()` made it (one call per base URL), as Retrofit resolves it (a leading `/` replaces the base path, the base's query string is dropped); the interceptors of `.client(okHttp)`; the converters choose the body encoding |
 | Apache HttpClient 4 and 5 | `client.execute(new HttpPost(url))` with `setHeader` / `addHeader` / `setEntity` on the request (also over several statements and through a wrapper), `RequestBuilder` / `ClassicRequestBuilder` / `SimpleRequestBuilder` chains (`addParameter` is a form body for a POST, a query otherwise), the async client's `execute(request, callback)`, the fluent `Request.Post(url).bodyString(...).execute()`; `StringEntity` (with its `ContentType`), `UrlEncodedFormEntity` of `BasicNameValuePair`s, `MultipartEntityBuilder`, `URIBuilder` URLs |
@@ -710,14 +715,11 @@ package. `--changed-since` scans have no coverage section.
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: AWS services other than S3 and Bedrock Runtime and other JVM SDKs are listed in
-  `coverage.sdks` only (#49, #50); a client injected by a DI framework (Hilt, Spring) is
-  known by its type only, so its interceptors and base URL are not followed (#46): a Retrofit
-  interface created on an injected `Retrofit` gets the project's only Retrofit builder, else an
-  unknown host. The
+  `coverage.sdks` only (#49, #50); a client injected through `Lazy<T>` / `Provider<T>`, a
+  multibinding or a service locator other than Koin is known by its type only (#75). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
-  Java: interceptors and clients provided by DI frameworks are known by their type only, as in
-  Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
+  Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
   processors are not run ([docs/languages.md](docs/languages.md#java)).
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share

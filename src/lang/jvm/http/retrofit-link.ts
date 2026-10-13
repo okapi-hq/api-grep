@@ -19,7 +19,9 @@ export interface RetrofitBuild {
 /** `retrofit.create(Api::class.java)`, `retrofit.create<Api>()`, `Feign.builder().target(Api::class.java, url)`: the project class. */
 export function createdClass(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth = 0): ClassDef | undefined {
   if (call.fn.k !== "attr" || calleeIs(call, [...R.creates, ...JVM.feign.targets]) === undefined) return undefined;
-  const ref = call.typeArgs?.[0] ?? call.args.find((a) => !a.name && !a.spread)?.value;
+  // `fun api(retrofit: Retrofit): Api = retrofit.create()`, `val api: Api = retrofit.create()`: the declared type
+  const declared = () => (fn.returns.includes(call) ? fn.returnType : fn.assigns.find((a) => a.value === call)?.type);
+  const ref = call.typeArgs?.[0] ?? call.args.find((a) => !a.name && !a.spread)?.value ?? declared();
   if (!ref || ref.k === "call") return undefined;
   // the depth of the chain being resolved: `val api = retrofit.create(api)` must not recurse forever
   const c = valueChain(ref, fn, ctx, depth + 1);

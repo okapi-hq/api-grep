@@ -7,6 +7,7 @@ import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
 import { fluentMap } from "./fluent.js";
+import { paramValue } from "./injected.js";
 import type { CallExpr, Entry, Expr, FunctionDef, Param } from "./model.js";
 import { callerCtx, paramSources } from "./param-values.js";
 import { argFor, exprText } from "./model.js";
@@ -104,7 +105,7 @@ function nameShape(e: Expr & { k: "name" }, fn: FunctionDef, ctx: IrCtx, depth: 
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
   if (b.kind === "value" && !b.assign.augmented) return shapeOf(b.assign.value, b.fn, ctx, depth + 1, dynamic);
   if (b.kind === "param") {
-    const sub = ctx.subst?.get(b.param);
+    const sub = paramValue(b.param, b.fn, ctx);
     if (sub) return shapeOf(sub.expr, sub.fn, ctx, depth + 1, dynamic);
     const typed = b.param.type ? typeShape(b.param.type, b.fn, ctx) : undefined;
     const unread: ShapeResult = typed

@@ -1785,6 +1785,267 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
       "bodyEncoding": "none",
       "bodySource": "none",
       "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-partner",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-partner": "shop-web",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://partners.example-shop.com/v1/partners/cx2cfdk4",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-partner": "shop-web",
+      },
+      "headers": [
+        "x-partner",
+      ],
+      "host": "partners.example-shop.com",
+      "hostKind": "literal",
+      "id": "e72b67819bab",
+      "location": {
+        "col": 16,
+        "file": "Builders.java",
+        "language": "java",
+        "line": 40,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/partners/{id}",
+      "provider": "partners.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://partners.example-shop.com/v1/partners/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Item",
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Item",
+      "bodySource": "type",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-partner",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "id": "8xfq635v",
+            "name": "Quill Koala",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-partner": "shop-web",
+            "x-trace": "<x-trace>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://partners.example-shop.com/v1/partners",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-partner": "shop-web",
+        "x-trace": null,
+      },
+      "headers": [
+        "x-trace",
+        "x-partner",
+      ],
+      "host": "partners.example-shop.com",
+      "hostKind": "literal",
+      "id": "4fd02dca87cc",
+      "location": {
+        "col": 16,
+        "file": "Builders.java",
+        "language": "java",
+        "line": 49,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/partners",
+      "provider": "partners.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://partners.example-shop.com/v1/partners",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-ledger-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-ledger-client": "shop",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://ledger.example-shop.com/v1/balance",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-ledger-client": "shop",
+      },
+      "headers": [
+        "x-ledger-client",
+      ],
+      "host": "ledger.example-shop.com",
+      "hostKind": "literal",
+      "id": "39ddd8aabcb9",
+      "location": {
+        "col": 16,
+        "file": "Builders.java",
+        "language": "java",
+        "line": 67,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/balance",
+      "provider": "ledger.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://ledger.example-shop.com/v1/balance",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "enum": [
+              "client_credentials",
+            ],
+            "type": "string",
+          },
+          "scope": {
+            "hint": "scope",
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "scope",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-shop-region",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "scope",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "client_credentials",
+            "scope": "pebble raven",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+            "x-shop-region": "eu",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://auth.example-shop.com/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "x-shop-region": "eu",
+      },
+      "headers": [
+        "authorization",
+        "x-shop-region",
+      ],
+      "host": "auth.example-shop.com",
+      "hostKind": "literal",
+      "id": "e4103f953028",
+      "location": {
+        "col": 16,
+        "file": "Builders.java",
+        "language": "java",
+        "line": 80,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/oauth/token",
+      "provider": "auth.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://auth.example-shop.com/oauth/token",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
       "dynamic": [
         {
           "name": "id",
@@ -2452,12 +2713,12 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 2,
-    "filesSeen": 2,
+    "filesScanned": 3,
+    "filesSeen": 3,
     "languages": {
       "java": {
-        "filesScanned": 2,
-        "filesSeen": 2,
+        "filesScanned": 3,
+        "filesSeen": 3,
       },
     },
     "skipped": [],
@@ -2467,26 +2728,29 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "spring-rest": 8,
-      "spring-webclient": 3,
+      "spring-rest": 11,
+      "spring-webclient": 4,
     },
     "byHostKind": {
       "const": 5,
-      "literal": 6,
+      "literal": 10,
     },
     "byLanguage": {
-      "java": 11,
+      "java": 15,
     },
     "byProvider": {
       "api.example-shop.com": 8,
+      "auth.example-shop.com": 1,
+      "ledger.example-shop.com": 1,
+      "partners.example-shop.com": 2,
       "stripe": 3,
     },
-    "callsFound": 11,
+    "callsFound": 15,
     "durationMs": 0,
-    "filesScanned": 2,
+    "filesScanned": 3,
     "redacted": 0,
-    "withBodyShape": 6,
-    "withDynamic": 8,
+    "withBodyShape": 8,
+    "withDynamic": 10,
   },
   "tool": "api-grep",
   "version": "<version>",

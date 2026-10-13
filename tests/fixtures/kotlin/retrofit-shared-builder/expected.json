@@ -1,7 +1,7 @@
 {
   "issue": "https://github.com/okapi-hq/api-grep/issues/31",
   "calls": [
-    {"file": "Apis.kt", "line": 8, "provider": "unknown"},
+    {"file": "Apis.kt", "line": 8, "provider": "api.example-sync.com"},
     {"file": "Apis.kt", "line": 13, "provider": "api.example-images.com"}
   ]
 }

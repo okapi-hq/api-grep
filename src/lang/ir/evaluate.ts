@@ -3,6 +3,7 @@ import type { DynamicOrigin, Part, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { braceParts, printfParts, type FormatArgs } from "./format.js";
 import { instanceField } from "./instance.js";
+import { injectedField, paramValue } from "./injected.js";
 import { argFor, dottedPath, type Arg, type CallExpr, type Expr, type FunctionDef } from "./model.js";
 import { bindingOfPath, classField, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSelf, withSubst, type IrCtx, type Subst } from "./raw.js";
@@ -49,7 +50,7 @@ function renameSingle(parts: Part[], name: string): Part[] {
 
 function evalBinding(b: Binding, e: Expr & { k: "name" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
   if (b.kind === "param") {
-    const sub = ctx.subst?.get(b.param);
+    const sub = paramValue(b.param, b.fn, ctx);
     if (sub) return evaluate(sub.expr, sub.fn, ctx, depth + 1);
     // a parameter nobody substituted: its literal default (`base_url="https://api.gladia.io"`) is the best static guess
     const dflt = b.param.default ? evaluate(b.param.default, b.fn, ctx, depth + 1) : undefined;
@@ -71,11 +72,14 @@ function evalAttr(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: n
   if (constant !== undefined) return [{ kind: "static", text: constant }];
   if (e.obj.k === "this" && fn.cls) {
     // `self.base_url` set in the constructor (or a class attribute / property default), on the object's own class first
-    for (const f of classField(receiverClass(fn, ctx.self, ctx.idx)!, e.name, ctx.idx)) {
+    const cls = receiverClass(fn, ctx.self, ctx.idx)!;
+    const fields = classField(cls, e.name, ctx.idx);
+    for (const f of fields) {
       const parts = evaluate(f.value, f.fn, ctx, depth + 1);
       if (parts.some((p) => p.kind !== "dynamic")) return markConst(parts);
     }
-    return dyn(e, "unknown");
+    const injected = fields.length === 0 ? injectedField(cls, e.name, ctx) : undefined;
+    return injected ? evaluate(injected.expr, injected.fn, ctx, depth + 1) : dyn(e, "unknown");
   }
   const member = memberValue(e, fn, ctx, depth);
   if (member) return member;
