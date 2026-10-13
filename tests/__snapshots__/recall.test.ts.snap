@@ -134,6 +134,26 @@ exports[`regression fixtures > kotlin/retrofit 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/retrofit-cycles 1`] = `
+[
+  "Loop.kt:7 api.example-loop.com GET /loop",
+]
+`;
+
+exports[`regression fixtures > kotlin/retrofit-injected 1`] = `
+[
+  "NotesApi.kt:12 api.example-notes.com GET /v1/notes/{id}",
+  "NotesApi.kt:16 api.example-notes.com POST /v1/notes/sync",
+]
+`;
+
+exports[`regression fixtures > kotlin/retrofit-shared-builder 1`] = `
+[
+  "Apis.kt:8 unknown GET /status",
+  "Apis.kt:13 api.example-images.com GET /search",
+]
+`;
+
 exports[`regression fixtures > kotlin/spring 1`] = `
 [
   "Payments.kt:17 api.example-shop.com GET /v1/items/{id}",

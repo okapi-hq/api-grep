@@ -261,9 +261,9 @@ JVM SDK registries (#33) come next. Java is #43.
   base URL (`baseUrl("https://host/?key=...")`) is dropped, so it is not in `query`. The interceptors of the builder's
   `.client(okHttp)` apply (`clientParts`). The converters (`addConverterFactory`) choose `bodyEncoding`: JSON for
   Gson, Moshi, Jackson and kotlinx.serialization, `raw` for a `String` or primitive body through the scalars converter,
-  a `RequestBody`, protobuf, Wire or XML. Values come from the callers of the interface's methods (#39). A file must
-  import `retrofit2.http` (or the interface be created on a Retrofit builder): JAX-RS resources use the same
-  annotation names.
+  a `RequestBody`, protobuf, Wire or XML; a `Content-Type` in `@Headers` replaces the converter's. Values come from
+  the callers of the interface's methods (#39). A file must import `retrofit2.http` (or the interface be created on a
+  Retrofit builder): JAX-RS resources use the same annotation names.
 - **Bodies**: `JSONObject().put(...)` chains (also `val o = JSONObject(); o.put(...)`), `JSONArray`, Gson
   `JsonObject`, Jackson `createObjectNode()`, `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data
   classes, `LinkedMultiValueMap` (form); `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
@@ -330,7 +330,8 @@ file. A file that does not parse is then read once more with a `;` in place of t
   `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
   Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
 - Retrofit: an interface created on an injected `Retrofit` (a Hilt `@Provides` parameter), or never created in the
-  project, gets the project's only `Retrofit.Builder()` when there is one, else an unknown host (`{baseUrl}`); the
+  project, gets the project's only `Retrofit.Builder()` when there is one (a second builder, such as a provided
+  `Retrofit.Builder` its users finish, makes it ambiguous), else an unknown host (`{baseUrl}`); the
   builder of a DI provider and its injected OkHttp client are #46. `@QueryName` (a parameter name without a value)
   and `@Tag` are not listed, and the keys of a `@QueryMap` / `@HeaderMap` map are only known when the map is.
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and

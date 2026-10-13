@@ -5,7 +5,7 @@ import type { IrCtx, IrPair, IrRaw } from "../../ir/raw.js";
 import { annArg, annName, findAnn, headerLines, literal, paramRef } from "./annotations.js";
 import { okHttpClientFacts } from "./okhttp.js";
 import { buildsFor, type RetrofitBuild } from "./retrofit-link.js";
-import { JVM } from "./tables.js";
+import { encodingOfType, JVM } from "./tables.js";
 
 const R = JVM.retrofit;
 /** The base URL of an interface no `create(...)` links to a builder: a host only known at run time, named `baseUrl`. */
@@ -82,11 +82,16 @@ function readParam(out: Params, p: Param, m: FunctionDef): void {
   }
 }
 
-/** A body's encoding: a form or multipart method, else what the first converter able to write the body's type writes. */
+/**
+ * A body's encoding: a form or multipart method, else the `Content-Type` of `@Headers` (it replaces the converter's),
+ * else what the first converter able to write the body's type writes.
+ */
 function encodingOf(m: FunctionDef, p: Params, build: RetrofitBuild | undefined): BodyEncoding | undefined {
   if (findAnn(m.annotations, [R.form])) return "form";
   if (findAnn(m.annotations, [R.multipart])) return "multipart";
   if (!p.body) return undefined;
+  const declared = headerLines(findAnn(m.annotations, [R.headers]), m).find((h) => literal(h.name.expr)?.toLowerCase() === "content-type");
+  if (declared) return encodingOfType(literal(declared.value?.expr));
   const type = p.bodyType ? dottedPath(p.bodyType.k === "index" ? p.bodyType.obj : p.bodyType)?.join(".") : undefined;
   if (type && R.rawBodies.some((t) => type === t || type.endsWith(`.${t}`))) return "raw";
   const scalar = !!type && R.scalars.includes(type);

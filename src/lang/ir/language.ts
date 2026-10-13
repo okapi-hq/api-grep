@@ -181,7 +181,7 @@ export interface IrLanguage {
    * A call that returns an instance of a project class it names (`retrofit.create(Api::class.java)`,
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.
    */
-  instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => ClassDef | undefined;
+  instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number) => ClassDef | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

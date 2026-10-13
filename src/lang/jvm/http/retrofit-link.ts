@@ -17,11 +17,12 @@ export interface RetrofitBuild {
 }
 
 /** `retrofit.create(Api::class.java)`, `retrofit.create<Api>()`, `Feign.builder().target(Api::class.java, url)`: the project class. */
-export function createdClass(call: CallExpr, fn: FunctionDef, ctx: IrCtx): ClassDef | undefined {
+export function createdClass(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth = 0): ClassDef | undefined {
   if (call.fn.k !== "attr" || calleeIs(call, [...R.creates, ...JVM.feign.targets]) === undefined) return undefined;
   const ref = call.typeArgs?.[0] ?? call.args.find((a) => !a.name && !a.spread)?.value;
   if (!ref || ref.k === "call") return undefined;
-  const c = valueChain(ref, fn, ctx);
+  // the depth of the chain being resolved: `val api = retrofit.create(api)` must not recurse forever
+  const c = valueChain(ref, fn, ctx, depth + 1);
   return c.root.kind === "class" && c.segs.length === 0 ? c.root.cls : undefined;
 }
 
@@ -68,8 +69,13 @@ export function readBuild(retrofit: Scoped, ctx: IrCtx): RetrofitBuild | undefin
 
 interface Links {
   byClass: Map<ClassDef, RetrofitBuild[]>;
-  /** Every Retrofit the project builds: the one a receiver of unknown origin is, when there is only one. */
+  /** Every Retrofit the project builds. */
   all: RetrofitBuild[];
+  /**
+   * The Retrofit a receiver of unknown origin is: the project's only build, when it makes a single
+   * `Retrofit.Builder()`. Another builder (a DI-provided `Retrofit.Builder` its users finish) leaves it unknown.
+   */
+  only?: RetrofitBuild;
 }
 
 const cache = new WeakMap<ModuleModel[], Links>();
@@ -87,8 +93,10 @@ function index(ctx: IrCtx): Links {
   if (found) return found;
   const links: Links = { byClass: new Map(), all: [] };
   const creates: { call: CallExpr; fn: FunctionDef; cls: ClassDef }[] = [];
+  let builders = 0;
   for (const fn of mods.flatMap((m) => m.allFunctions)) {
     for (const call of fn.calls) {
+      if (calleeIs(call, R.builders) !== undefined) builders++;
       if (calleeIs(call, ["build"]) !== undefined && call.fn.k === "attr") {
         const b = readBuild({ expr: call, fn }, ctx);
         if (b) add(links.all, b);
@@ -97,9 +105,10 @@ function index(ctx: IrCtx): Links {
       if (cls) creates.push({ call, fn, cls });
     }
   }
+  if (builders === 1 && links.all.length === 1) links.only = links.all[0];
   for (const c of creates) {
     const receiver = c.call.fn.k === "attr" ? { expr: c.call.fn.obj, fn: c.fn } : undefined;
-    const b = (receiver && readBuild(receiver, ctx)) ?? (links.all.length === 1 ? links.all[0] : undefined);
+    const b = (receiver && readBuild(receiver, ctx)) ?? links.only;
     const list = links.byClass.get(c.cls) ?? [];
     if (b) add(list, b);
     links.byClass.set(c.cls, list);
@@ -116,5 +125,5 @@ export function buildsFor(cls: ClassDef, ctx: IrCtx): { builds: RetrofitBuild[];
   const links = index(ctx);
   const own = links.byClass.get(cls) ?? [];
   if (own.length > 0) return { builds: own, linked: true };
-  return { builds: links.all.length === 1 ? links.all : [], linked: false };
+  return { builds: links.only ? [links.only] : [], linked: false };
 }

@@ -63,3 +63,26 @@ describe("kotlin: Retrofit parameters and builders", () => {
     expect(at(r, "Weather.kt", 12)).toMatchObject({ query: ["q"], authScheme: "none" });
   });
 });
+
+describe("kotlin: Retrofit created on an injected Retrofit", () => {
+  it("uses the project's only Retrofit.Builder, read through comments between the steps of its chain", async () => {
+    const r = await scanFixture("kotlin/retrofit-injected");
+    expect(at(r, "NotesApi.kt", 12)).toMatchObject({ urlTemplate: "https://api.example-notes.com/v1/notes/{id}" });
+    // a Content-Type in @Headers is what the body is sent as, whatever the converter
+    expect(at(r, "NotesApi.kt", 16)).toMatchObject({ bodyEncoding: "raw", headerValues: { "content-type": "application/x-protobuf" } });
+  });
+
+  it("leaves the host unknown when the project makes another Retrofit.Builder (a provided builder its users finish)", async () => {
+    const r = await scanFixture("kotlin/retrofit-shared-builder");
+    expect(r.calls.map((c) => [c.location.file, c.location.line, c.urlTemplate])).toEqual([
+      ["Apis.kt", 8, "{baseUrl}/status"],
+      ["Apis.kt", 13, "https://api.example-images.com/search"],
+    ]);
+  });
+
+  it("stops on a value created from itself (`val api = retrofit.create(api)`) instead of failing the file", async () => {
+    const r = await scanFixture("kotlin/retrofit-cycles");
+    expect(r.diagnostics?.skipped).toEqual([]);
+    expect(at(r, "Loop.kt", 7)).toMatchObject({ urlTemplate: "https://api.example-loop.com/loop" });
+  });
+});
