@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "chain.ts", "line": 14, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "chain.ts", "line": 18, "provider": "eth.example-node.io", "operation": "eth_call"},
+    {"file": "chain.ts", "line": 22, "provider": "unknown", "operation": "eth_gasPrice"},
+    {"file": "chain.ts", "line": 26, "provider": "eth.example-node.io", "operation": "eth_chainId"},
+    {"file": "chain.ts", "line": 30, "provider": "eth.example-node.io", "operation": "eth_blockNumber"}
+  ]
+}

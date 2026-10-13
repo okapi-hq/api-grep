@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/52",
+  "calls": [
+    {"file": "node.ts", "line": 9, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "node.ts", "line": 11, "provider": "eth.example-node.io", "operation": "net_peerCount"},
+    {"file": "node.ts", "line": 14, "provider": "eth.example-node.io", "operation": "eth_getCode"}
+  ]
+}
