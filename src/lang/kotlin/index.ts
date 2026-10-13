@@ -54,6 +54,8 @@ export const kotlinLanguage: IrLanguage = {
   passthrough: {
     functions: new Set([
       ...["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"],
+      // AWS SDK for Kotlin endpoints (`endpointUrl = Url.parse(u)`)
+      "Url.parse",
       // Java
       ...["String.valueOf", "Objects.requireNonNull"],
       // SDK value wrappers: Twilio `PhoneNumber(to)`, openai-kotlin `ModelId("gpt-4o")`

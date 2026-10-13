@@ -98,7 +98,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
-  (`src/detect/rpc-endpoint.ts`; `irEndpoint` returns null otherwise).
+  (`src/detect/rpc-endpoint.ts`; `irEndpoint` returns null otherwise). #78: contract objects are registry keys with
+  `*` for the ABI's function (`Contract.*`, `methods.*.call`, `eth.contract.functions.*.call`; `notFunctions` lists
+  the object's own members); ethers' runner and ABI decide what a direct call sends (`src/detect/rpc-contract.ts`,
+  `contract-abi.ts`, `endpoint.signers`); vendor providers build their host from the network (`endpoint.clients.*.vendor`,
+  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`.
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
@@ -142,10 +146,13 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - Kotlin: #29 (parsing, lowering, manifests), #32 (OkHttp with interceptors, `java.net.http`, Ktor, Spring, Feign)
   and #31 (Retrofit interfaces, `retrofit.ts` / `retrofit-link.ts`, URLs resolved by RFC 3986 in
   `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
-  Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
-  #49; #50 adds openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend and Mailgun
-  and the registry fields `argFields`, `bodySelf`, `urlArg`, `setupUrl` (`src/lang/ir/setup.ts`), `setters.constructors` /
-  `wrappers`, the language trait `indexOperator`; Spring AI and the remaining forms are #89. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog) and the AWS ones of #49 (DynamoDB and its
+  enhanced client, SQS, SNS, SES, SES v2, the S3 Transfer Manager, the AWS SDK for Kotlin as `variants` of the Java
+  2.x registries, its requests built by lambdas that assign properties: `FunctionDef.props`, S3 from the SDK for
+  Java 1.x). #50 adds openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend and
+  Mailgun, the registry fields `argFields`, `bodySelf`, `urlArg`, `setupUrl` (`src/lang/ir/setup.ts`),
+  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`; Spring AI
+  and the remaining forms are #89. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,

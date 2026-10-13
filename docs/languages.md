@@ -237,7 +237,8 @@ Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params +=
 calls through the JVM registries (#33). Java is read by the same front end, into the same index ([Java](#java)).
 
 **SDKs:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
-AWS SDK for Java 2.x S3 and Bedrock Runtime, Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
+AWS (S3, Bedrock Runtime, DynamoDB, SQS, SNS, SES and SES v2 from the AWS SDK for Java 2.x and the AWS SDK for Kotlin,
+the S3 Transfer Manager and the DynamoDB Enhanced Client, S3 from the AWS SDK for Java 1.x: #49), Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
 `FirestoreClient`, the Android SDK), Firebase Admin Auth, Cloud Messaging and Realtime Database, Twilio, Slack, Sentry
 and PostHog (the Android / JVM facade and posthog-java); with #50 the community openai-kotlin client, Azure OpenAI,
 LangChain4j's OpenAI, Anthropic, Gemini, Mistral, Ollama and Bedrock models, Firebase for Android (Auth, Realtime
@@ -269,9 +270,26 @@ and take parameters as builders.
   follow each SDK's rule (`setters.case`): `maxTokens` -> `max_tokens` (OpenAI, Anthropic, Slack), `setEmail` ->
   `email` (Stripe), `bucket` -> `Bucket` (S3), as written (Bedrock, FCM); `addTool` appends to `tools`, `putMetadata(k,
   v)` sets `metadata.k`, `addUserMessage(text)` adds `{role: "user", content: text}` to `messages` (`setters.fields`).
+  A lambda given to a setter fills a nested object (`destination(d -> d.toAddresses(to))`); the AWS SDK's
+  `applyMutation(b -> ...)` sets the builder's own fields.
   A builder filled in Kotlin's `apply { ... }` (`Params.builder().apply { model(m) }.build()`, `builder.apply { ... }`
   on a variable) reads its lambda's calls as setters; a setter called in a branch or a loop body before `build()` gives
   an optional field (#50).
+- **AWS** (#49): the AWS SDK for Kotlin has the Java 2.x SDK's operations under the same names, so one registry per
+  service holds both (`variants`: package, imports, client factories and model package of each). Its clients are
+  `S3Client.fromEnvironment { region = r }` or `S3Client { ... }` (`endpointUrl = Url.parse(u)` in that lambda replaces
+  the host), and its requests are built by lambdas that assign properties: `PutObjectRequest { bucket = b; key = k }`,
+  `s3.putObject { ... }`, a nested member filled by a call with a lambda (`inferenceConfig { maxTokens = 512 }`). The
+  Kotlin lowering keeps a lambda's assignments to names it does not declare, and `this.x = v`, on `FunctionDef.props`;
+  `src/lang/ir/builders.ts` reads them as setters, and a call of a class of the parameter packages with a lambda
+  (`X { ... }`) as a built value. DynamoDB and SQS speak AWS JSON 1.0 (POST `/`, the operation in `X-Amz-Target`), SNS
+  and SES the Query protocol (`/?Action=Publish`, form fields, as the TypeScript `aws-sdk` registry writes them), SES
+  v2 REST JSON; the operation is the call's `operationId` (an SDK call carries no `operation`, in every language). The
+  DynamoDB Enhanced Client's operations (`table.putItem(item)`, on `enhanced.table(...)` or a `DynamoDbTable<T>`)
+  send a mapped object the SDK serializes: no body. The S3 Transfer Manager's body is the S3 request it wraps
+  (`bodyProp`). The SDK for Java 1.x takes the bucket and key as positional arguments (`s3.putObject(bucket, key,
+  file)`: `pathArgs`); a request object (`new PutObjectRequest(...)`) is not read. Presigners
+  (`S3Presigner`, `generatePresignedUrl`) sign locally and send nothing.
 - **More forms** (#50): Kotlin data classes of an SDK built by named constructor arguments
   (`ChatCompletionRequest(model = ModelId("gpt-4o"), maxTokens = 100)`: `setters.constructors`; `ModelId(...)` and
   `OpenAIHost(baseUrl = u)` stand for their argument, `setters.wrappers`); Pascal-case constants (`ChatRole.User` ->
@@ -530,12 +548,16 @@ file. A file that does not parse is then read once more with a `;` in place of t
   a `List<T>`, Koin `bind` / `binds` and type qualifiers, and service locators other than Koin (Injekt) are not
   followed (#75).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
+- An extension function of a client type (`suspend fun S3Client.delete(...) { deleteObject(...) }`) has no receiver
+  in the lowering: its calls on `this` are not found (#86).
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
   unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
-  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
-  Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
+  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it,
+  and the classes of the SDK registries (`DynamoDbClient` under `import software.amazon.awssdk.services.dynamodb.*`,
+  `Customer` under `import com.stripe.model.*`, a request class under a star import of one of the `setters.packages`:
+  `import software.amazon.awssdk.services.dynamodb.model.*`, `src/lang/ir/project.ts`). Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
 - Retrofit: an interface created on an injected `Retrofit` follows the provider (with its qualifier, the provided
   `Retrofit.Builder` its users finish, and the injected OkHttp client's interceptors, #46); one created on a Retrofit
   of unknown origin, or never created in the project, gets the project's only `Retrofit.Builder()` when there is one,
@@ -547,9 +569,11 @@ file. A file that does not parse is then read once more with a `;` in place of t
   flavors other than the first literal are not listed.
 - SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
   Azure OpenAI options, a DynamoDB-mapped item) give no body. An SDK builder filled in steps spread over several
-  functions is not read. SendGrid's `Request` method is not read (listed as POST). Spring AI and other JVM SDKs listed
-  in `providers.json` without a registry are reported as `unsupported` in `coverage.sdks`; AWS artifacts other than S3
-  and Bedrock Runtime and the AWS SDK for Kotlin are #49 (#89 for the rest).
+  functions is not read. SendGrid's `Request` method is not read (listed as POST).
+- Spring AI and other JVM SDKs listed in `providers.json` without a registry are reported as `unsupported` in
+  `coverage.sdks` (#89). AWS services without a registry (Lambda, Kinesis, the SDK for Java 1.x's clients other than
+  S3) are not in `providers.json`. The DynamoDB Enhanced Client's table name and item, and the AWS SDK for Kotlin's
+  sealed-class values (`AttributeValue.S(v)`, `ConversationRole.User`), are not read.
 
 ## Java
 
@@ -716,7 +740,7 @@ operation?: {
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects, properties and vendor providers #78 |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi #85 |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
@@ -766,9 +790,37 @@ one-value enum:
     receiver of another type, `token: Contract`, is not one) uses the project's client when it builds exactly one,
     else an unknown host; it gives no call when the project builds a wallet or socket client of that library, or no
     client at all while the library has wallet clients (TypeScript; Python keeps such calls with an unknown host).
-  - Not covered yet: contract objects (`new ethers.Contract(...).balanceOf()`, `w3.eth.contract(...).functions.x().call()`,
-    `eth_call` behind ABI-defined names), web3.py properties (`w3.eth.block_number`), ethers' vendor providers
-    (`InfuraProvider`, `AlchemyProvider`), wagmi, and `@solana/spl-token` helpers (#78).
+  - **Contract objects** (#78): the ABI names a contract's functions, so a registry key holds `*` for one (`Contract.*`,
+    `methods.*.call`, `getContract.read.*`, `eth.contract.functions.*.call`), never one of the object's own members
+    (`notFunctions`: `connect`, `interface`, `on`). The call says what it sends where it can: web3.js `.call()` /
+    `.send()` / `.estimateGas()`, viem `.read` / `.simulate` (`eth_call` through the public client of `client`) and
+    `.write` (a transaction through its wallet client), ethers `.staticCall()`, `.estimateGas()`, v5 `callStatic`,
+    `queryFilter` (`eth_getLogs`), web3.py `.call()`, `.transact()`, `.estimate_gas()`, `caller`, event `get_logs`. An
+    ethers function called directly (`token.balanceOf(owner)`, `src/detect/rpc-contract.ts`) sends `eth_call` for a
+    view and a transaction otherwise: the ABI written in the code says which (human-readable signatures or JSON
+    fragments, also through `new Interface(abi)` / `parseAbi`, `src/detect/contract-abi.ts`), and the runner who
+    signs (`endpoint.signers`): a provider only reads (a transaction through it throws, no call), `new Wallet(key,
+    provider)` signs in the app (`eth_sendRawTransaction`), `provider.getSigner()` has the node sign
+    (`eth_sendTransaction`); an ABI or a runner the scan cannot read lists what it may send as `alternatives`. A
+    contract on a browser wallet's provider or signer, or on no runner, gives no call; one on a runner the scan does
+    not follow (a parameter, a helper's result) uses the project's one client as a typed call does.
+  - **The contract's function** stays in `sdk.chain` (`Contract.balanceOf`, `eth.contract.functions.balanceOf.call`):
+    `operation.name` is the RPC method on the wire, as for every JSON-RPC call, and no new report field is needed.
+  - **Properties** (#78): web3.py attribute reads that send a request (`w3.eth.block_number`, `chain_id`,
+    `gas_price`, `accounts`, `max_priority_fee`, `syncing`, `net.version`, `client_version`) are `property` entries;
+    the Python lowering records reads of those names (`FunctionDef.reads`) as calls without arguments, which match
+    property entries only (`w3.eth.get_balance` handed over as a function sends nothing).
+  - **Node vendors** (#78): ethers' `InfuraProvider`, `AlchemyProvider` and `QuickNodeProvider` build their URL from
+    the network (`endpoint.clients.*.vendor`, the hosts copied from ethers 5.7 and 6.13, `src/detect/rpc-vendor.ts`);
+    a network the table does not list or the scan cannot read keeps the vendor's domain (`{network}.infura.io`).
+    `getDefaultProvider(url)` is a JsonRpcProvider, `getDefaultProvider("mainnet")` spreads requests over several
+    vendors (unknown host). `providers.json` names Infura, Alchemy, QuickNode and Helius by their domains, for raw HTTP
+    calls too.
+  - **`@solana/spl-token`** helpers taking a Connection first (`getAccount`, `getMint`, `transfer`, `mintTo`), with
+    the project's one Connection for a typed parameter (`endpoint.clientPackage`).
+  - Not covered yet (#85): clients kept in a cache or handed in a context (`getProvider(chainId)` returning a record
+    entry, `useConnection()`), wagmi actions and hooks, TypeChain factories, `contract.connect(signer)`, contracts
+    typed as parameters, ABIs imported from JSON files.
 - **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
   clients (#32).
 
@@ -1051,8 +1103,8 @@ call site keeps its own single value.
 |---|---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt Postgrest, Auth, Storage and Functions, Firebase for Android Auth, Realtime Database, Storage and Functions (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), AWS in #49, Spring AI in #89 |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33, #49 and #50 (`tests/fixtures/kotlin/sdk/`, `tests/fixtures/java/aws/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), more AWS services and the AWS SDK for Kotlin (#49), Spring AI in #89 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
 | #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |

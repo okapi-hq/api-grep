@@ -1,0 +1,54 @@
+{
+  "$comment": "SES API v2 from the AWS SDK for Java 2.x (`SesV2Client.builder().region(r).build()`, `ses.sendEmail(SendEmailRequest.builder().fromEmailAddress(f).destination(d).content(c).build())`) and the AWS SDK for Kotlin (`SesV2Client { region = r }`). SES v2 is a REST JSON API: the request's members are the JSON body (`fromEmailAddress` -> `FromEmailAddress`), the identity or template it names is in the path.",
+  "provider": "aws",
+  "host": "email.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SES API v2 reference under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:sesv2",
+      "imports": ["software.amazon.awssdk.services.sesv2.SesV2Client", "software.amazon.awssdk.services.sesv2.SesV2AsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "SesV2Client", "SesV2AsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.sesv2.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:sesv2",
+      "imports": ["aws.sdk.kotlin.services.sesv2.SesV2Client"],
+      "instance": {
+        "names": ["fromEnvironment", "SesV2Client"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "SesV2Client": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.sesv2.model"], "case": "pascal" }
+    }
+  ],
+  "methods": {
+    "sendEmail": {"method":"POST","path":"/v2/email/outbound-emails","bodyArg":0,"operationId":"SendEmail"},
+    "sendBulkEmail": {"method":"POST","path":"/v2/email/outbound-bulk-emails","bodyArg":0,"operationId":"SendBulkEmail"},
+    "createEmailIdentity": {"method":"POST","path":"/v2/email/identities","bodyArg":0,"operationId":"CreateEmailIdentity"},
+    "getEmailIdentity": {"method":"GET","path":"/v2/email/identities/{EmailIdentity}","bodyArg":0,"pathFromBody":["EmailIdentity"],"operationId":"GetEmailIdentity"},
+    "deleteEmailIdentity": {"method":"DELETE","path":"/v2/email/identities/{EmailIdentity}","bodyArg":0,"pathFromBody":["EmailIdentity"],"operationId":"DeleteEmailIdentity"},
+    "listEmailIdentities": {"method":"POST","path":"/v2/email/list-identities","bodyArg":0,"operationId":"ListEmailIdentities"},
+    "createEmailTemplate": {"method":"POST","path":"/v2/email/templates","bodyArg":0,"operationId":"CreateEmailTemplate"},
+    "getEmailTemplate": {"method":"GET","path":"/v2/email/templates/{TemplateName}","bodyArg":0,"pathFromBody":["TemplateName"],"operationId":"GetEmailTemplate"},
+    "updateEmailTemplate": {"method":"PUT","path":"/v2/email/templates/{TemplateName}","bodyArg":0,"pathFromBody":["TemplateName"],"operationId":"UpdateEmailTemplate"},
+    "deleteEmailTemplate": {"method":"DELETE","path":"/v2/email/templates/{TemplateName}","bodyArg":0,"pathFromBody":["TemplateName"],"operationId":"DeleteEmailTemplate"},
+    "listEmailTemplates": {"method":"GET","path":"/v2/email/templates","bodyArg":0,"operationId":"ListEmailTemplates"},
+    "createContactList": {"method":"POST","path":"/v2/email/contact-lists","bodyArg":0,"operationId":"CreateContactList"},
+    "deleteContactList": {"method":"DELETE","path":"/v2/email/contact-lists/{ContactListName}","bodyArg":0,"pathFromBody":["ContactListName"],"operationId":"DeleteContactList"},
+    "listContactLists": {"method":"GET","path":"/v2/email/contact-lists","bodyArg":0,"operationId":"ListContactLists"},
+    "createContact": {"method":"POST","path":"/v2/email/contact-lists/{ContactListName}/contacts","bodyArg":0,"pathFromBody":["ContactListName"],"operationId":"CreateContact"},
+    "listContacts": {"method":"POST","path":"/v2/email/contact-lists/{ContactListName}/contacts/list","bodyArg":0,"pathFromBody":["ContactListName"],"operationId":"ListContacts"},
+    "createConfigurationSet": {"method":"POST","path":"/v2/email/configuration-sets","bodyArg":0,"operationId":"CreateConfigurationSet"},
+    "deleteConfigurationSet": {"method":"DELETE","path":"/v2/email/configuration-sets/{ConfigurationSetName}","bodyArg":0,"pathFromBody":["ConfigurationSetName"],"operationId":"DeleteConfigurationSet"},
+    "getAccount": {"method":"GET","path":"/v2/email/account","bodyArg":0,"operationId":"GetAccount"},
+    "putAccountDetails": {"method":"POST","path":"/v2/email/account/details","bodyArg":0,"operationId":"PutAccountDetails"}
+  }
+}

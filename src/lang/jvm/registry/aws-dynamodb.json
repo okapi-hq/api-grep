@@ -1,0 +1,63 @@
+{
+  "$comment": "DynamoDB from the AWS SDK for Java 2.x (`DynamoDbClient.builder().region(r).build()`, `ddb.putItem(PutItemRequest.builder().tableName(t).item(item).build())` or a lambda that fills the request) and the AWS SDK for Kotlin (`DynamoDbClient { region = r }`, `PutItemRequest { tableName = t; item = values }`). DynamoDB speaks the AWS JSON 1.0 protocol: every operation is a POST to `/` that names itself in the `X-Amz-Target` header (`DynamoDB_20120810.PutItem`), reported as `operationId`; the request's members are the JSON body (`tableName` -> `TableName`, `AttributeValue.builder().s(v)` -> `{S: v}`).",
+  "provider": "aws",
+  "host": "dynamodb.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the DynamoDB API reference, 2012-08-10, under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:dynamodb",
+      "imports": ["software.amazon.awssdk.services.dynamodb.DynamoDbClient", "software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "DynamoDbClient", "DynamoDbAsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.dynamodb.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:dynamodb",
+      "imports": ["aws.sdk.kotlin.services.dynamodb.DynamoDbClient"],
+      "instance": {
+        "names": ["fromEnvironment", "DynamoDbClient"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "DynamoDbClient": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.dynamodb.model"], "case": "pascal" }
+    }
+  ],
+  "methods": {
+    "putItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"PutItem"},
+    "getItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"GetItem"},
+    "updateItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"UpdateItem"},
+    "deleteItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"DeleteItem"},
+    "query": {"method":"POST","path":"/","bodyArg":0,"operationId":"Query"},
+    "queryPaginator": {"method":"POST","path":"/","bodyArg":0,"operationId":"Query"},
+    "scan": {"method":"POST","path":"/","bodyArg":0,"operationId":"Scan"},
+    "scanPaginator": {"method":"POST","path":"/","bodyArg":0,"operationId":"Scan"},
+    "batchGetItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"BatchGetItem"},
+    "batchWriteItem": {"method":"POST","path":"/","bodyArg":0,"operationId":"BatchWriteItem"},
+    "transactGetItems": {"method":"POST","path":"/","bodyArg":0,"operationId":"TransactGetItems"},
+    "transactWriteItems": {"method":"POST","path":"/","bodyArg":0,"operationId":"TransactWriteItems"},
+    "executeStatement": {"method":"POST","path":"/","bodyArg":0,"operationId":"ExecuteStatement"},
+    "batchExecuteStatement": {"method":"POST","path":"/","bodyArg":0,"operationId":"BatchExecuteStatement"},
+    "executeTransaction": {"method":"POST","path":"/","bodyArg":0,"operationId":"ExecuteTransaction"},
+    "createTable": {"method":"POST","path":"/","bodyArg":0,"operationId":"CreateTable"},
+    "deleteTable": {"method":"POST","path":"/","bodyArg":0,"operationId":"DeleteTable"},
+    "describeTable": {"method":"POST","path":"/","bodyArg":0,"operationId":"DescribeTable"},
+    "updateTable": {"method":"POST","path":"/","bodyArg":0,"operationId":"UpdateTable"},
+    "listTables": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListTables"},
+    "listTablesPaginator": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListTables"},
+    "describeTimeToLive": {"method":"POST","path":"/","bodyArg":0,"operationId":"DescribeTimeToLive"},
+    "updateTimeToLive": {"method":"POST","path":"/","bodyArg":0,"operationId":"UpdateTimeToLive"},
+    "createBackup": {"method":"POST","path":"/","bodyArg":0,"operationId":"CreateBackup"},
+    "describeContinuousBackups": {"method":"POST","path":"/","bodyArg":0,"operationId":"DescribeContinuousBackups"},
+    "tagResource": {"method":"POST","path":"/","bodyArg":0,"operationId":"TagResource"},
+    "untagResource": {"method":"POST","path":"/","bodyArg":0,"operationId":"UntagResource"},
+    "listTagsOfResource": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListTagsOfResource"},
+    "describeLimits": {"method":"POST","path":"/","bodyArg":0,"operationId":"DescribeLimits"}
+  }
+}

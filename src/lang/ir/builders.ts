@@ -1,6 +1,6 @@
 import { valueChain } from "./chain.js";
 import type { Scoped, SetterRules } from "./language.js";
-import { dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef, type ModuleModel } from "./model.js";
+import { children, dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
 import { appliedSteps } from "./applied.js";
 import { mayNotRun } from "./edits.js";
@@ -25,7 +25,12 @@ interface Setter {
   args: Arg[];
   /** Called in a branch or a loop body before `build()`: the field may not be sent. */
   optional?: boolean;
+  /** Where it is written: orders the setters of a lambda read from its calls and its property assignments. */
+  offset?: number;
 }
+
+/** Bare calls with a lambda that run code rather than fill a nested builder (`run { ... }`, `repeat(3) { ... }`). */
+const SCOPE_FUNCTIONS = new Set(["run", "with", "apply", "also", "let", "repeat", "require", "check", "lazy", "launch", "async", "runBlocking", "runCatching", "buildString", "buildList", "buildMap", "coroutineScope", "supervisorScope", "withContext"]);
 
 /** `X.builder()`: the class `X` it builds, else undefined. */
 const startOf = (e: Expr): Expr | undefined => (e.k === "call" && e.fn.k === "attr" && STARTS.has(e.fn.name) && e.args.length === 0 ? e.fn.obj : undefined);
@@ -130,18 +135,27 @@ function fieldOf(name: string, rules: SetterRules): Field | undefined {
 
 const str = (v: string): Expr => ({ k: "str", v });
 
+/** `applyMutation(b -> b.key(k))` (AWS SDK for Java 2.x): the lambda's setters are the builder's own. */
+function mutated(setters: Setter[], fn: FunctionDef): Setter[] {
+  return setters.flatMap((s) => {
+    const a = s.name === "applyMutation" && s.args.length === 1 ? s.args[0]!.value : undefined;
+    return a?.k === "fnref" && a.fn.params.length === 1 ? settersIn(lambdaSetters(a.fn), a.fn, fn) : [s];
+  });
+}
+
 /** The setters as a dict: one entry per field, list fields gathering their `add` items, map fields their `put` keys. */
 function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr {
   const entries: Entry[] = [];
   const byField = new Map<string, Entry>();
   const always = new Set<string>();
-  for (const s of setters) {
+  for (const s of mutated(setters, fn)) {
     const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
     const f = named?.kind === "item" ? { ...named, kind: b ? ("put" as const) : ("add" as const) } : named;
     if (!f || !a) continue;
     if (!s.optional) always.add(f.field);
-    const value = constant(a, fn, ctx, rules) ?? a;
+    // a nested request filled by a lambda (`inferenceConfig(c -> c.maxTokens(512))`, `inferenceConfig { maxTokens = 512 }`)
+    const value = constant(a, fn, ctx, rules) ?? nestedLambda(a, ctx, rules) ?? a;
     let entry = byField.get(f.field);
     if (f.kind === "set" || !entry) {
       entry = { key: str(f.field), value: f.kind === "add" ? { k: "list", items: [] } : f.kind === "set" ? value : { k: "dict", entries: [] } };
@@ -167,9 +181,45 @@ function steps(fn: FunctionDef, name: string, from: number, to: number): Setter[
     // `b.apply { model(m) }` on the variable stands for the lambda's calls
     const own = c.applied && (c.fn.name === "apply" || c.fn.name === "also") ? [] : [{ name: c.fn.name, args: c.args }];
     const optional = mayNotRun(fn, c.pos.offset, Number.isFinite(to) ? to : undefined);
-    out.push(...[...own, ...appliedSetters(c)].map((s) => (optional ? { ...s, optional } : s)));
+    out.push(...[...own, ...appliedSetters(c)].map((s) => ({ ...s, offset: c.pos.offset, ...(optional ? { optional } : {}) })));
   }
   return out;
+}
+
+/** Calls inside another call's arguments or a property's value (`listOf(Message { ... })`): not steps of the lambda. */
+function innerCalls(lambda: FunctionDef): Set<Expr> {
+  const inner = new Set<Expr>();
+  const walk = (e: Expr, top: boolean): void => {
+    if (e.k === "call" && !top) inner.add(e);
+    if (e.k !== "fnref" && e.k !== "scoped") children(e).forEach((c) => walk(c, false));
+  };
+  for (const c of lambda.calls) c.args.forEach((a) => walk(a.value, false));
+  for (const p of lambda.props ?? []) walk(p.value, false);
+  return inner;
+}
+
+/**
+ * What a lambda filling a builder sets, in order: calls on its parameter (`{ it.bucket(b) }`), and in Kotlin the
+ * properties it assigns on its receiver (`{ bucket = b }`) and the nested builders it fills (`{ inferenceConfig { ... } }`).
+ */
+function lambdaSetters(lambda: FunctionDef): Setter[] {
+  const param = lambda.params.length === 1 ? lambda.params[0]!.name : undefined;
+  const out = param ? steps(lambda, param, -1, Number.POSITIVE_INFINITY) : [];
+  const inner = lambda.calls.some((c) => c.fn.k === "name") ? innerCalls(lambda) : new Set<Expr>();
+  for (const c of lambda.calls) {
+    const name = c.fn.k === "name" ? c.fn.name : "";
+    const nested = /^[a-z]/.test(name) && !SCOPE_FUNCTIONS.has(name) && c.args.length === 1 && c.args[0]!.value.k === "fnref";
+    if (nested && !inner.has(c)) out.push({ name, args: c.args, offset: c.pos.offset });
+  }
+  for (const p of lambda.props ?? []) out.push({ name: p.name, args: [{ value: p.value }], offset: p.offset });
+  return out.sort((a, b) => (a.offset ?? 0) - (b.offset ?? 0));
+}
+
+/** A lambda given to a setter: the dict of the nested builder it fills, read in the lambda's scope. */
+function nestedLambda(e: Expr, ctx: IrCtx, rules: SetterRules): Expr | undefined {
+  if (e.k !== "fnref" || e.fn.params.length > 1) return undefined;
+  const setters = lambdaSetters(e.fn);
+  return setters.length > 0 ? { k: "scoped", expr: dictOf(setters, e.fn, ctx, rules), fn: e.fn } : undefined;
 }
 
 /** Setters written in `from`, read in `into`. */
@@ -206,42 +256,37 @@ function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuil
  */
 export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): Scoped | undefined {
   const b = built(call, fn, ctx, project, 0);
-  return b ? { expr: dictOf(b.setters, fn, ctx, b.rules), fn } : constructed(call, fn, ctx);
+  return b ? { expr: dictOf(b.setters, fn, ctx, b.rules), fn } : dslValue(call, fn, ctx);
 }
 
-const dataClassFiles = new WeakMap<ModuleModel, boolean>();
-
-/** Whether the file imports from a package whose classes are built by their constructor (a cheap test for every call). */
-function importsDataClasses(mod: ModuleModel, ctx: IrCtx): boolean {
-  let known = dataClassFiles.get(mod);
-  if (known === undefined) {
-    const packages = ctx.idx.lang.registry.flatMap((r) => (r.setters?.constructors || r.setters?.wrappers ? r.setters.packages : []));
-    known = packages.length > 0 && mod.importPaths.some((p) => packages.some((pkg) => `${p.join(".")}.`.startsWith(`${pkg}.`)));
-    dataClassFiles.set(mod, known);
-  }
-  return known;
+/** The setter rules of an SDK class written in the code (`ChatCompletionRequest`, `com.x.model.Foo`), if any. */
+export function sdkRules(cls: Expr, fn: FunctionDef, ctx: IrCtx): SetterRules | undefined {
+  return rulesFor(cls, fn, ctx);
 }
 
-/**
- * `ChatCompletionRequest(model = ModelId("gpt-4o"), maxTokens = 100)`: a data class of an SDK whose rules read
- * constructors, as the dict of its named arguments; `ModelId("gpt-4o")`, a wrapper, as its argument.
- */
-function constructed(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+/** Fields given one by one (named constructor arguments), read with the SDK's setter rules. */
+export const fieldsDict = (fields: { name: string; value: Expr }[], fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr =>
+  dictOf(
+    fields.map((f) => ({ name: f.name, args: [{ value: f.value }] })),
+    fn,
+    ctx,
+    rules,
+  );
+
+/** `PutObjectRequest { bucket = b }` (AWS SDK for Kotlin): a class of an SDK's parameter packages built by a lambda. */
+function dslValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const lambda = call.args.length === 1 && !call.args[0]!.name ? call.args[0]!.value : undefined;
   const name = call.fn.k === "name" || call.fn.k === "attr" ? call.fn.name : "";
-  if (!/^[A-Z]/.test(name) || call.args.length === 0 || call.args.some((a) => a.spread) || !importsDataClasses(fn.module, ctx)) return undefined;
-  const path = externalPath(call.fn, fn, ctx);
-  const rules = path ? ctx.idx.lang.registry.find((r) => r.setters && inPackages(path, r.setters))?.setters : undefined;
-  if (!rules) return undefined;
-  if (rules.wrappers?.includes(name)) return call.args.length === 1 ? { expr: call.args[0]!.value, fn } : undefined;
-  if (!rules.constructors || call.args.some((a) => !a.name)) return undefined;
-  return { expr: dictOf(call.args.map((a) => ({ name: a.name!, args: [{ value: a.value }] })), fn, ctx, rules), fn };
+  // a lambda that assigns nothing (`Column { ... }` in Compose) fills no request: its class is not looked up
+  if (lambda?.k !== "fnref" || !lambda.fn.props?.length || !/^[A-Z]/.test(name)) return undefined;
+  const rules = rulesFor(call.fn, fn, ctx);
+  return rules ? lambdaValue({ expr: lambda, fn }, rules, ctx) : undefined;
 }
 
 /** A lambda that fills a builder (`{ it.bucket(b).key(k) }`, `{ req -> req.channel(c) }`): the dict of what it sets. */
 export function lambdaValue(s: Scoped, rules: SetterRules, ctx: IrCtx): Scoped | undefined {
   if (s.expr.k !== "fnref") return undefined;
   const lambda = s.expr.fn;
-  const param = lambda.params[0];
-  if (!param || lambda.params.length > 1) return undefined;
-  return { expr: dictOf(steps(lambda, param.name, -1, Number.POSITIVE_INFINITY), lambda, ctx, rules), fn: lambda };
+  if (lambda.params.length !== 1) return undefined;
+  return { expr: dictOf(lambdaSetters(lambda), lambda, ctx, rules), fn: lambda };
 }

@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/78",
+  "calls": [
+    {"file": "vault.ts", "line": 15, "provider": "infura", "operation": "eth_call"},
+    {"file": "vault.ts", "line": 19, "provider": "infura", "operation": "eth_sendRawTransaction"},
+    {"file": "vault.ts", "line": 23, "provider": "infura", "operation": "eth_estimateGas"},
+    {"file": "vault.ts", "line": 27, "provider": "infura", "operation": "eth_call"},
+    {"file": "vault.ts", "line": 32, "provider": "infura", "operation": "eth_call"},
+    {"file": "vault.ts", "line": 37, "provider": "infura", "operation": "eth_sendTransaction"},
+    {"file": "vault.ts", "line": 41, "provider": "infura", "operation": "eth_getLogs"}
+  ]
+}

@@ -15,6 +15,9 @@ import { fetchEndpoint } from "./fetch-endpoint.js";
 export interface Endpoint {
   url?: Expression;
   headers?: Expression;
+  /** A URL the library builds itself (a node vendor's, #78): its host and the path before the method's. */
+  host?: string;
+  path?: string;
 }
 
 export type Construction = CallExpression | NewExpression;

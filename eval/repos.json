@@ -52,6 +52,8 @@
   { "name": "grants-stack-indexer", "url": "https://github.com/gitcoinco/grants-stack-indexer.git" },
   { "name": "aave-interface", "url": "https://github.com/aave/interface.git" },
   { "name": "safe-eth-py", "url": "https://github.com/safe-global/safe-eth-py.git", "language": "python" },
+  { "name": "simple-arbitrage", "url": "https://github.com/flashbots/simple-arbitrage.git" },
+  { "name": "uniswap-python", "url": "https://github.com/uniswap-python/uniswap-python.git", "language": "python" },
   { "name": "relay-issue-tracker", "url": "https://github.com/relayjs/relay-examples.git", "subdir": "issue-tracker" },
   { "name": "cirrus-ci-web", "url": "https://github.com/cirruslabs/cirrus-ci-web.git" },
   { "name": "shopify-app-template-remix", "url": "https://github.com/Shopify/shopify-app-template-remix.git" },
@@ -65,5 +67,9 @@
   { "name": "edumate", "url": "https://github.com/mubashirpa/Edumate.git", "language": "kotlin" },
   { "name": "supa-spring-kt", "url": "https://github.com/hieuwu/supa-spring-kt.git", "language": "kotlin" },
   { "name": "firebase-quickstart-android", "url": "https://github.com/firebase/quickstart-android.git", "language": "kotlin" },
-  { "name": "langchain4j-examples", "url": "https://github.com/langchain4j/langchain4j-examples.git", "language": "java" }
+  { "name": "langchain4j-examples", "url": "https://github.com/langchain4j/langchain4j-examples.git", "language": "java" },
+  { "name": "spring-cloud-aws", "url": "https://github.com/awspring/spring-cloud-aws.git", "language": "java" },
+  { "name": "aws-sdk-kotlin-spring-example", "url": "https://github.com/hantsy/aws-sdk-kotlin-spring-example.git", "language": "kotlin" },
+  { "name": "aws-doc-sdk-examples-kotlin", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "kotlin/services", "language": "kotlin" },
+  { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" }
 ]

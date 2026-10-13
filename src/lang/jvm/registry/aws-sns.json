@@ -1,0 +1,64 @@
+{
+  "$comment": "SNS from the AWS SDK for Java 2.x (`SnsClient.builder().region(r).build()`, `sns.publish(PublishRequest.builder().topicArn(t).message(m).build())` or a lambda that fills the request) and the AWS SDK for Kotlin (`SnsClient { region = r }`, `PublishRequest { topicArn = t; message = m }`). SNS speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`, written in the path like the TypeScript `aws-sdk` registry; the request's members are form fields (`topicArn` -> `TopicArn`).",
+  "provider": "aws",
+  "host": "sns.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SNS API reference, 2010-03-31, under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:sns",
+      "imports": ["software.amazon.awssdk.services.sns.SnsClient", "software.amazon.awssdk.services.sns.SnsAsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "SnsClient", "SnsAsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.sns.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:sns",
+      "imports": ["aws.sdk.kotlin.services.sns.SnsClient"],
+      "instance": {
+        "names": ["fromEnvironment", "SnsClient"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "SnsClient": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.sns.model"], "case": "pascal" }
+    }
+  ],
+  "methods": {
+    "publish": {"method":"POST","path":"/?Action=Publish","bodyArg":0,"encoding":"form","operationId":"Publish"},
+    "publishBatch": {"method":"POST","path":"/?Action=PublishBatch","bodyArg":0,"encoding":"form","operationId":"PublishBatch"},
+    "createTopic": {"method":"POST","path":"/?Action=CreateTopic","bodyArg":0,"encoding":"form","operationId":"CreateTopic"},
+    "deleteTopic": {"method":"POST","path":"/?Action=DeleteTopic","bodyArg":0,"encoding":"form","operationId":"DeleteTopic"},
+    "listTopics": {"method":"POST","path":"/?Action=ListTopics","bodyArg":0,"encoding":"form","operationId":"ListTopics"},
+    "listTopicsPaginator": {"method":"POST","path":"/?Action=ListTopics","bodyArg":0,"encoding":"form","operationId":"ListTopics"},
+    "getTopicAttributes": {"method":"POST","path":"/?Action=GetTopicAttributes","bodyArg":0,"encoding":"form","operationId":"GetTopicAttributes"},
+    "setTopicAttributes": {"method":"POST","path":"/?Action=SetTopicAttributes","bodyArg":0,"encoding":"form","operationId":"SetTopicAttributes"},
+    "subscribe": {"method":"POST","path":"/?Action=Subscribe","bodyArg":0,"encoding":"form","operationId":"Subscribe"},
+    "unsubscribe": {"method":"POST","path":"/?Action=Unsubscribe","bodyArg":0,"encoding":"form","operationId":"Unsubscribe"},
+    "confirmSubscription": {"method":"POST","path":"/?Action=ConfirmSubscription","bodyArg":0,"encoding":"form","operationId":"ConfirmSubscription"},
+    "listSubscriptions": {"method":"POST","path":"/?Action=ListSubscriptions","bodyArg":0,"encoding":"form","operationId":"ListSubscriptions"},
+    "listSubscriptionsPaginator": {"method":"POST","path":"/?Action=ListSubscriptions","bodyArg":0,"encoding":"form","operationId":"ListSubscriptions"},
+    "listSubscriptionsByTopic": {"method":"POST","path":"/?Action=ListSubscriptionsByTopic","bodyArg":0,"encoding":"form","operationId":"ListSubscriptionsByTopic"},
+    "getSubscriptionAttributes": {"method":"POST","path":"/?Action=GetSubscriptionAttributes","bodyArg":0,"encoding":"form","operationId":"GetSubscriptionAttributes"},
+    "setSubscriptionAttributes": {"method":"POST","path":"/?Action=SetSubscriptionAttributes","bodyArg":0,"encoding":"form","operationId":"SetSubscriptionAttributes"},
+    "createPlatformApplication": {"method":"POST","path":"/?Action=CreatePlatformApplication","bodyArg":0,"encoding":"form","operationId":"CreatePlatformApplication"},
+    "createPlatformEndpoint": {"method":"POST","path":"/?Action=CreatePlatformEndpoint","bodyArg":0,"encoding":"form","operationId":"CreatePlatformEndpoint"},
+    "deleteEndpoint": {"method":"POST","path":"/?Action=DeleteEndpoint","bodyArg":0,"encoding":"form","operationId":"DeleteEndpoint"},
+    "getEndpointAttributes": {"method":"POST","path":"/?Action=GetEndpointAttributes","bodyArg":0,"encoding":"form","operationId":"GetEndpointAttributes"},
+    "setEndpointAttributes": {"method":"POST","path":"/?Action=SetEndpointAttributes","bodyArg":0,"encoding":"form","operationId":"SetEndpointAttributes"},
+    "listEndpointsByPlatformApplication": {"method":"POST","path":"/?Action=ListEndpointsByPlatformApplication","bodyArg":0,"encoding":"form","operationId":"ListEndpointsByPlatformApplication"},
+    "checkIfPhoneNumberIsOptedOut": {"method":"POST","path":"/?Action=CheckIfPhoneNumberIsOptedOut","bodyArg":0,"encoding":"form","operationId":"CheckIfPhoneNumberIsOptedOut"},
+    "getSMSAttributes": {"method":"POST","path":"/?Action=GetSMSAttributes","bodyArg":0,"encoding":"form","operationId":"GetSMSAttributes"},
+    "getSmsAttributes": {"method":"POST","path":"/?Action=GetSMSAttributes","bodyArg":0,"encoding":"form","operationId":"GetSMSAttributes"},
+    "setSMSAttributes": {"method":"POST","path":"/?Action=SetSMSAttributes","bodyArg":0,"encoding":"form","operationId":"SetSMSAttributes"},
+    "setSmsAttributes": {"method":"POST","path":"/?Action=SetSMSAttributes","bodyArg":0,"encoding":"form","operationId":"SetSMSAttributes"},
+    "tagResource": {"method":"POST","path":"/?Action=TagResource","bodyArg":0,"encoding":"form","operationId":"TagResource"},
+    "untagResource": {"method":"POST","path":"/?Action=UntagResource","bodyArg":0,"encoding":"form","operationId":"UntagResource"},
+    "listTagsForResource": {"method":"POST","path":"/?Action=ListTagsForResource","bodyArg":0,"encoding":"form","operationId":"ListTagsForResource"}
+  }
+}

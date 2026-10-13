@@ -143,8 +143,37 @@ function wildcardMember(mod: ModuleModel, name: string, idx: ProjectIndex, depth
     if (b.kind !== "external" && b.kind !== "none") return b;
   }
   // `HttpClient` under `import io.ktor.client.*`: a library class the language lists, when one wildcard can give it
-  const known = (mod.wildcards ?? []).filter((w) => idx.lang.wildcardTypes?.has([...w, name].join(".")));
-  return known.length === 1 ? { kind: "external", path: [...known[0]!, name] } : undefined;
+  const wildcards = mod.wildcards ?? [];
+  const known = wildcards.filter((w) => idx.lang.wildcardTypes?.has([...w, name].join(".")) || sdkClass(idx.lang, w, name));
+  // a parameter class of an SDK (`PutItemRequest` under `...dynamodb.model.*`), when no listed class has the name
+  const params = known.length === 0 && /^[A-Z]/.test(name) ? wildcards.filter((w) => sdkParamPackage(idx.lang, w)) : known;
+  return params.length === 1 ? { kind: "external", path: [...params[0]!, name] } : undefined;
+}
+
+const sdkNames = new WeakMap<IrLanguage, { classes: Set<string>; packages: string[] }>();
+
+function sdkNamesOf(lang: IrLanguage): { classes: Set<string>; packages: string[] } {
+  let known = sdkNames.get(lang);
+  if (!known) {
+    known = { classes: new Set(lang.registry.flatMap((r) => r.imports)), packages: lang.registry.flatMap((r) => r.setters?.packages ?? []) };
+    sdkNames.set(lang, known);
+  }
+  return known;
+}
+
+/**
+ * `DynamoDbClient` under `import software.amazon.awssdk.services.dynamodb.*`, `Customer` under `import
+ * com.stripe.model.*`: a class an SDK registry imports, or a class of a package it imports.
+ */
+function sdkClass(lang: IrLanguage, pkg: string[], name: string): boolean {
+  const { classes } = sdkNamesOf(lang);
+  return classes.has([...pkg, name].join(".")) || (/^[A-Z]/.test(name) && classes.has(pkg.join(".")));
+}
+
+/** `import software.amazon.awssdk.services.dynamodb.model.*`: a package of an SDK's parameter classes (`setters.packages`). */
+function sdkParamPackage(lang: IrLanguage, pkg: string[]): boolean {
+  const p = pkg.join(".");
+  return sdkNamesOf(lang).packages.some((s) => p === s || p.startsWith(`${s}.`));
 }
 
 /**

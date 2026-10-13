@@ -26,6 +26,15 @@ const CLIENT_KWARGS = new Set([
 
 const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 
+/** Import roots split once per registry entry: every call of every scanned file is matched against them. */
+const SPLIT_ROOTS = new WeakMap<string[], string[][]>();
+
+function splitRoots(roots: string[]): string[][] {
+  let out = SPLIT_ROOTS.get(roots);
+  if (!out) SPLIT_ROOTS.set(roots, (out = roots.map((r) => r.split("."))));
+  return out;
+}
+
 /**
  * Segments an import root covers (`google.genai` covers `[google, genai]`), the longest root first; -1 when none
  * does. A root that is a class constructed on the spot (`new \SendGrid($key)`) covers nothing: the class is the first
@@ -34,8 +43,7 @@ const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 export function rootLength(segs: Seg[], roots: string[]): number {
   let best = -1;
   let bestParts = 0;
-  for (const root of roots) {
-    const parts = root.split(".");
+  for (const parts of splitRoots(roots)) {
     if (parts.length <= bestParts || parts.length > segs.length || !parts.every((p, i) => segs[i]!.name === p)) continue;
     const open = parts.findIndex((_, i) => invoked(segs[i]!));
     if (open >= 0 && open < parts.length - 1) continue;
@@ -99,8 +107,20 @@ function matchEntry(entry: IrRegistryEntry, segs: Seg[], ctx: IrCtx): IrSdkMatch
   if (inst >= 0 && !selected(entry, rel[inst]!, ctx)) return undefined;
   if (inst < 0 && entry.instance?.select) return undefined;
   const key = keyOf(entry, rel, builtIndex(entry, rel, inst));
-  const spec = Object.hasOwn(entry.methods, key) ? entry.methods[key] : undefined;
+  const spec = Object.hasOwn(entry.methods, key) ? entry.methods[key] : wildcardSpec(entry, key);
   return spec ? { entry, key, spec, segs: rel, method: rel[rel.length - 1]! } : undefined;
+}
+
+const wildcards = new WeakMap<IrRegistryEntry, [string[], IrMethodSpec][]>();
+
+/** A key with a contract's function in it (`eth.contract.functions.*.call`, #78): `*` stands for one name. */
+function wildcardSpec(entry: IrRegistryEntry, key: string): IrMethodSpec | undefined {
+  let list = wildcards.get(entry);
+  if (!list) wildcards.set(entry, (list = Object.entries(entry.methods).flatMap(([k, s]) => (k.includes("*") ? [[k.split("."), s] as [string[], IrMethodSpec]] : []))));
+  if (list.length === 0) return undefined;
+  const parts = key.split(".");
+  const not = entry.notFunctions ?? [];
+  return list.find(([p]) => p.length === parts.length && p.every((x, i) => (x === "*" ? !not.includes(parts[i]!) : x === parts[i])))?.[1];
 }
 
 /** The base URL the code gives the client: an argument of a call named in `instance.urlArg`, or of the call itself. */
@@ -207,7 +227,8 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
   if (chain.root.kind !== "external" || chain.segs[chain.segs.length - 1]?.call !== call) return undefined;
   for (const entry of ctx.idx.lang.registry) {
     const m = matchEntry(entry, chain.segs, ctx);
-    if (!m || otherPackage(entry, fn, ctx)) continue;
+    // a property read matches a property entry, a call a method: `w3.eth.get_balance` handed over is no request
+    if (!m || !!m.spec.property !== !!call.property || otherPackage(entry, fn, ctx)) continue;
     const body = bodyOf(m, call, fn, ctx);
     const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
     const endpoint = entry.endpoint ? irEndpoint(m, ctx) : undefined;

@@ -249,6 +249,19 @@ also talk to a browser wallet (`new BrowserProvider(window.ethereum)`, viem `cus
 Web3(window.ethereum)`) or over a WebSocket or IPC socket: those calls are not HTTP requests of the app and are not
 reported, nor is a typed client (`provider: Provider`) in a project that builds one of them.
 
+Since [#78](https://github.com/okapi-hq/api-grep/issues/78), also contract objects: ethers `new Contract(address, abi,
+runner).balanceOf(owner)` (and `.staticCall()`, `.estimateGas()`, v5 `callStatic`), web3.js
+`contract.methods.balanceOf(owner).call()` / `.send()`, viem `getContract({ client }).read.balanceOf([owner])` /
+`.write`, web3.py `contract.functions.balanceOf(owner).call()` / `.transact()` / `.estimate_gas()`, `caller` and event
+`get_logs`. They send `eth_call`, `eth_estimateGas` or a transaction; an ethers function called directly is a view or a
+transaction as the ABI written in the code says, and its runner says who signs (`Wallet`: `eth_sendRawTransaction`,
+`provider.getSigner()`: `eth_sendTransaction`); a contract on a wallet's signer is not reported. The function's name is
+in `sdk.chain` (`Contract.balanceOf`). Also web3.py properties that send a request (`w3.eth.block_number`,
+`w3.eth.chain_id`, `w3.eth.gas_price`), ethers' vendor providers (`InfuraProvider`, `AlchemyProvider`,
+`QuickNodeProvider`: the host ethers builds from the network) and `getDefaultProvider`, and `@solana/spl-token` helpers
+taking a connection (`getAccount`, `transfer`). Calls to Infura, Alchemy, QuickNode and Helius hosts are named by the
+vendor (`infura`, ...), raw HTTP calls included.
+
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
 `subscribe`, `useQuery`, `useLazyQuery`, `useSuspenseQuery`, `useBackgroundQuery`, `useMutation`, `useSubscription`),
@@ -550,13 +563,15 @@ several `return`s is one call, as a helper is; an overloaded method is the one i
 and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
 (`ecosystem: "maven"`).
 
-SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
-Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin
-client, Azure OpenAI, LangChain4j model clients, Firebase for Android (Auth, Realtime Database, Storage, Functions),
-supabase-kt, SendGrid, Resend and Mailgun ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): the official OpenAI and Anthropic Java SDKs, Stripe,
+AWS (S3, the S3 Transfer Manager, DynamoDB and its enhanced client, SQS, SNS, SES, SES v2 and Bedrock Runtime from the
+AWS SDK for Java 2.x and the AWS SDK for Kotlin; S3 from the AWS SDK for Java 1.x), Google Gen AI, Firestore and
+Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin client, Azure OpenAI, LangChain4j model
+clients, Firebase for Android (Auth, Realtime Database, Storage, Functions), supabase-kt, SendGrid, Resend and Mailgun
+([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
-in steps or filled by a lambda) are read as the request body, and enum constants as the model ids
-they stand for.
+in steps or filled by a lambda, and the AWS SDK for Kotlin's `PutObjectRequest { bucket = b }`) are read as the
+request body, and enum constants as the model ids they stand for.
 
 Values are resolved through string templates, `+`, `buildString`, `String.format`,
 `const val` and other top-level properties (also from other files of the package and through
@@ -744,8 +759,8 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: AWS services other than S3 and Bedrock Runtime, Spring AI and other JVM SDKs without a registry are listed in
-  `coverage.sdks` only (#49, #89); a client injected through `Lazy<T>` / `Provider<T>`, a
+- Kotlin: the JVM SDKs without a registry (Spring AI, [sdk-support.md](docs/sdk-support.md)) are listed in
+  `coverage.sdks` only (#89); a client injected through `Lazy<T>` / `Provider<T>`, a
   multibinding or a service locator other than Koin is known by its type only (#75). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.

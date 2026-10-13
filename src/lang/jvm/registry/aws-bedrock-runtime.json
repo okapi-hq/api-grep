@@ -1,21 +1,35 @@
 {
   "$comment": "AWS SDK for Java 2.x, Bedrock Runtime (also used from Kotlin): `BedrockRuntimeClient.builder().region(r).build()`; `client.converse(ConverseRequest.builder().modelId(id).messages(m).build())` or a lambda that fills the request (`client.converse { it.modelId(id) }`). The request's members are its fields; `modelId` is part of the path, as in the boto3 registry.",
-  "package": "software.amazon.awssdk:bedrockruntime",
-  "imports": ["software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient", "software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeAsyncClient"],
+  "$variants": "The AWS SDK for Kotlin has the same operations: `BedrockRuntimeClient { region = r }`, `ConverseRequest { modelId = m; inferenceConfig { maxTokens = 512 } }`.",
   "provider": "aws-bedrock",
   "host": "bedrock-runtime.{region}.amazonaws.com",
   "auth": "unknown",
-  "generatedFrom": "manual (operations of the boto3 Bedrock Runtime registry under their AWS SDK for Java 2.x names)",
-  "instance": {
-    "names": ["builder", "create", "BedrockRuntimeClient", "BedrockRuntimeAsyncClient"],
-    "urlArg": { "endpointOverride": "0" },
-    "build": "build"
-  },
-  "setters": {
-    "packages": ["software.amazon.awssdk.services.bedrockruntime.model"],
-    "case": "camel",
-    "fields": { "overrideConfiguration": "" }
-  },
+  "generatedFrom": "manual (operations of the boto3 Bedrock Runtime registry under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:bedrockruntime",
+      "imports": ["software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient", "software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeAsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "BedrockRuntimeClient", "BedrockRuntimeAsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.bedrockruntime.model"],
+        "case": "camel",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:bedrockruntime",
+      "imports": ["aws.sdk.kotlin.services.bedrockruntime.BedrockRuntimeClient"],
+      "instance": {
+        "names": ["fromEnvironment", "BedrockRuntimeClient"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "BedrockRuntimeClient": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.bedrockruntime.model"], "case": "camel" }
+    }
+  ],
   "methods": {
     "invokeModel": {"method":"POST","path":"/model/{modelId}/invoke","bodyArg":0,"pathFromBody":["modelId"],"operationId":"InvokeModel"},
     "invokeModelWithResponseStream": {"method":"POST","path":"/model/{modelId}/invoke-with-response-stream","bodyArg":0,"pathFromBody":["modelId"],"operationId":"InvokeModelWithResponseStream"},

@@ -1,4 +1,5 @@
 import { builderValue } from "../ir/builders.js";
+import { constructedValue } from "../ir/constructed.js";
 import { valueChain } from "../ir/chain.js";
 import type { Scoped, SetterRules } from "../ir/language.js";
 import type { CallExpr, ClassDef, Expr, FunctionDef } from "../ir/model.js";
@@ -80,5 +81,5 @@ function lombokGetter(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | und
 
 /** The JVM's `resolveCall`: an SDK or Lombok builder's fields, a Lombok getter's field, a body built by a library helper. */
 export function jvmResolveCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
-  return builderValue(call, fn, ctx, lombokRules) ?? lombokGetter(call, fn, ctx) ?? httpBuilt(call, fn);
+  return builderValue(call, fn, ctx, lombokRules) ?? constructedValue(call, fn, ctx) ?? lombokGetter(call, fn, ctx) ?? httpBuilt(call, fn);
 }

@@ -1,0 +1,54 @@
+{
+  "$comment": "SES (the v1 API) from the AWS SDK for Java 2.x (`SesClient.builder().region(r).build()`, `ses.sendEmail(SendEmailRequest.builder().source(s).destination(d).message(m).build())`) and the AWS SDK for Kotlin (`SesClient { region = r }`, `SendEmailRequest { source = s; destination { toAddresses = listOf(to) } }`). SES speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`, written in the path like the TypeScript `aws-sdk` registry; the request's members are form fields (`source` -> `Source`).",
+  "provider": "aws",
+  "host": "email.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SES API reference, 2010-12-01, under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:ses",
+      "imports": ["software.amazon.awssdk.services.ses.SesClient", "software.amazon.awssdk.services.ses.SesAsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "SesClient", "SesAsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.ses.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:ses",
+      "imports": ["aws.sdk.kotlin.services.ses.SesClient"],
+      "instance": {
+        "names": ["fromEnvironment", "SesClient"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "SesClient": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.ses.model"], "case": "pascal" }
+    }
+  ],
+  "methods": {
+    "sendEmail": {"method":"POST","path":"/?Action=SendEmail","bodyArg":0,"encoding":"form","operationId":"SendEmail"},
+    "sendRawEmail": {"method":"POST","path":"/?Action=SendRawEmail","bodyArg":0,"encoding":"form","operationId":"SendRawEmail"},
+    "sendTemplatedEmail": {"method":"POST","path":"/?Action=SendTemplatedEmail","bodyArg":0,"encoding":"form","operationId":"SendTemplatedEmail"},
+    "sendBulkTemplatedEmail": {"method":"POST","path":"/?Action=SendBulkTemplatedEmail","bodyArg":0,"encoding":"form","operationId":"SendBulkTemplatedEmail"},
+    "verifyEmailIdentity": {"method":"POST","path":"/?Action=VerifyEmailIdentity","bodyArg":0,"encoding":"form","operationId":"VerifyEmailIdentity"},
+    "verifyEmailAddress": {"method":"POST","path":"/?Action=VerifyEmailAddress","bodyArg":0,"encoding":"form","operationId":"VerifyEmailAddress"},
+    "verifyDomainIdentity": {"method":"POST","path":"/?Action=VerifyDomainIdentity","bodyArg":0,"encoding":"form","operationId":"VerifyDomainIdentity"},
+    "verifyDomainDkim": {"method":"POST","path":"/?Action=VerifyDomainDkim","bodyArg":0,"encoding":"form","operationId":"VerifyDomainDkim"},
+    "deleteIdentity": {"method":"POST","path":"/?Action=DeleteIdentity","bodyArg":0,"encoding":"form","operationId":"DeleteIdentity"},
+    "listIdentities": {"method":"POST","path":"/?Action=ListIdentities","bodyArg":0,"encoding":"form","operationId":"ListIdentities"},
+    "listIdentitiesPaginator": {"method":"POST","path":"/?Action=ListIdentities","bodyArg":0,"encoding":"form","operationId":"ListIdentities"},
+    "getIdentityVerificationAttributes": {"method":"POST","path":"/?Action=GetIdentityVerificationAttributes","bodyArg":0,"encoding":"form","operationId":"GetIdentityVerificationAttributes"},
+    "listVerifiedEmailAddresses": {"method":"POST","path":"/?Action=ListVerifiedEmailAddresses","bodyArg":0,"encoding":"form","operationId":"ListVerifiedEmailAddresses"},
+    "createTemplate": {"method":"POST","path":"/?Action=CreateTemplate","bodyArg":0,"encoding":"form","operationId":"CreateTemplate"},
+    "updateTemplate": {"method":"POST","path":"/?Action=UpdateTemplate","bodyArg":0,"encoding":"form","operationId":"UpdateTemplate"},
+    "deleteTemplate": {"method":"POST","path":"/?Action=DeleteTemplate","bodyArg":0,"encoding":"form","operationId":"DeleteTemplate"},
+    "getTemplate": {"method":"POST","path":"/?Action=GetTemplate","bodyArg":0,"encoding":"form","operationId":"GetTemplate"},
+    "listTemplates": {"method":"POST","path":"/?Action=ListTemplates","bodyArg":0,"encoding":"form","operationId":"ListTemplates"},
+    "getSendQuota": {"method":"POST","path":"/?Action=GetSendQuota","bodyArg":0,"encoding":"form","operationId":"GetSendQuota"},
+    "getSendStatistics": {"method":"POST","path":"/?Action=GetSendStatistics","bodyArg":0,"encoding":"form","operationId":"GetSendStatistics"}
+  }
+}
