@@ -84,21 +84,41 @@ function findTsconfig(dir: string): string | undefined {
   return undefined;
 }
 
+/** The first `bytes` of a regular file, or undefined when it cannot be read (a FIFO named `x.ts` would never answer). */
+function head(file: string, bytes: number): Buffer | undefined {
+  try {
+    if (!statSync(file).isFile()) return undefined;
+    const buf = Buffer.alloc(bytes);
+    const fd = openSync(file, "r");
+    try {
+      return buf.subarray(0, readSync(fd, buf, 0, bytes, 0));
+    } finally {
+      closeSync(fd);
+    }
+  } catch {
+    return undefined;
+  }
+}
+
 /** A minified file has very long lines: one over 2,000 characters in its first 8 KB. A file that cannot be read is not. */
 function looksMinified(file: string): boolean {
   try {
     if (statSync(file).size < 8_000) return false;
-    const buf = Buffer.alloc(8_192);
-    const fd = openSync(file, "r");
-    try {
-      readSync(fd, buf, 0, buf.length, 0);
-    } finally {
-      closeSync(fd);
-    }
-    return buf.toString("utf8").split("\n").some((l) => l.length > 2_000);
   } catch {
     return false;
   }
+  return !!head(file, 8_192)?.toString("utf8").split("\n").some((l) => l.length > 2_000);
+}
+
+/**
+ * `.ts` is also the extension of Qt Linguist translations (XML) and MPEG transport streams (binary): neither is
+ * TypeScript, and parsing one only yields syntax errors. A file that cannot be read is left to the parser.
+ */
+function notTypeScript(file: string): boolean {
+  const buf = head(file, 512);
+  if (!buf) return false;
+  if (buf.includes(0)) return true;
+  return /^\uFEFF?\s*(?:<\?xml|<!DOCTYPE|<TS\s)/.test(buf.toString("utf8"));
 }
 
 const extensionsOf = (languages: CheckerLanguage[]): string[] => languages.flatMap((l) => EXTENSIONS[l]);
@@ -106,7 +126,13 @@ const extensionsOf = (languages: CheckerLanguage[]): string[] => languages.flatM
 /** Files of the checker's languages in scope (an `--include` glob only ever selects these extensions). */
 export function tsFiles(dir: string, include: string[] | undefined, exclude: string[] = [], languages: CheckerLanguage[] = ["typescript"]): string[] {
   const files = languageFiles(dir, extensionsOf(languages), include, [...DEFAULT_EXCLUDES, ...exclude]);
-  return files.filter((f) => !/\.(?:c|m)?jsx?$/.test(f) || !looksMinified(f));
+  return files.filter((f) => !looksLikeBuildOrData(f));
+}
+
+/** Minified JavaScript, or a `.ts` file that is not TypeScript: in scope by its extension, not by its content. */
+function looksLikeBuildOrData(file: string): boolean {
+  if (/\.(?:c|m)?jsx?$/.test(file)) return looksMinified(file);
+  return /\.[cm]?ts$/.test(file) && notTypeScript(file);
 }
 
 /** Files under `dir`, also once symlinks are resolved: a committed symlink cannot pull in a file from elsewhere on disk. */
@@ -183,6 +209,6 @@ export function loadProject(opts: LoadOptions): Loaded {
   const files = selectFiles(project, dir, opts, exclude);
   // an unreadable file is already reported as such
   const kept = new Set<string>([...files.map((sf) => sf.getFilePath() as string), ...html.keys(), ...unreadable.map((u) => u.path)]);
-  const leftOut = leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, extensionsOf(languages), DEFAULT_EXCLUDES, kept);
+  const leftOut = leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, extensionsOf(languages), DEFAULT_EXCLUDES, kept, (f) => !looksLikeBuildOrData(f));
   return { project, files, html, envHints: readEnvHints(dir), leftOut, unreadable };
 }

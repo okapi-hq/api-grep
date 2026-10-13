@@ -47,13 +47,14 @@ export function languageFiles(dir: string, extensions: string[], include: string
 
 /**
  * Files the default file set would scan but --exclude / --include removed; test files and build output are out of
- * scope, and `kept` holds the files scanned or already reported (unreadable).
+ * scope, and `kept` holds the files scanned or already reported (unreadable). `inScope` drops files the default file
+ * set leaves out by their content (minified JavaScript, a `.ts` file that is not TypeScript).
  */
-export function leftOutFiles(sel: FileSelection, extensions: string[], defaultExcludes: string[], kept: Set<string>): LeftOut[] {
+export function leftOutFiles(sel: FileSelection, extensions: string[], defaultExcludes: string[], kept: Set<string>, inScope: Matcher = () => true): LeftOut[] {
   if (!sel.include?.length && !sel.exclude?.length) return [];
   const excluded = globMatcher(sel.dir, sel.exclude);
   return languageFiles(sel.dir, extensions, undefined, defaultExcludes)
-    .filter((f) => !kept.has(f))
+    .filter((f) => !kept.has(f) && inScope(f))
     .map((f) => ({ file: relativePosix(sel.dir, f), reason: excluded?.(f) ? "excluded" : "not-included" }));
 }
 
