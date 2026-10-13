@@ -4,6 +4,7 @@ import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { getProp } from "../ast/object.js";
 import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint } from "./endpoint.js";
+import { rpcEndpoint } from "./rpc-endpoint.js";
 import type { Registry } from "./registry/index.js";
 
 function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
@@ -63,14 +64,16 @@ function ownBaseUrl(args: Expression[], spec: MethodSpec): Expression | undefine
  * graphql-request's own `request(url, document, variables)` takes the endpoint first, or one object with its `url`:
  * the endpoint, and the method's arguments after it.
  */
-function endpointFirst(all: Expression[], spec: MethodSpec, callee: Callee): { url?: Expression; args: Expression[] } {
-  if (!spec.endpointFirst || callee.instance || callee.viaType || !(isNamedImport(callee) || callee.importedName === "*")) return { args: all };
+function endpointFirst(all: Expression[], spec: MethodSpec, callee: Callee): { url?: Expression; client?: Expression; args: Expression[] } {
+  if (!(spec.endpointFirst || spec.clientFirst) || callee.instance || callee.viaType || !(isNamedImport(callee) || callee.importedName === "*")) return { args: all };
+  // viem/actions `getBalance(client, { address })`: the client, and the method's arguments after it
+  if (spec.clientFirst) return { client: all[0], args: all.slice(1) };
   const first = all[0] ? unwrap(all[0]) : undefined;
   if (first && Node.isObjectLiteralExpression(first)) return { url: getProp(first, "url"), args: all };
   return { url: all[0], args: all.slice(1) };
 }
 
-function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall {
+function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall | null {
   const own = endpointFirst(node.getArguments() as Expression[], spec, callee);
   const args = own.args;
   const raw: RawCall = {
@@ -97,15 +100,20 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
-  if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own.url);
+  if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }
 
-/** A GraphQL client call: the endpoint and headers its client was built with, and the request's own headers. */
-function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, url: Expression | undefined): RawCall {
-  const endpoint = url ? { url } : clientEndpoint(node, reg, spec, callee, raw.sdk!.args);
+/**
+ * A GraphQL or JSON-RPC client call: the endpoint and headers its client was built with, and the request's own
+ * headers; none for a JSON-RPC client that does not read as HTTP (a browser wallet).
+ */
+function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, own: { url?: Expression; client?: Expression }): RawCall | null {
+  const args = raw.sdk!.args;
+  const endpoint = own.url ? { url: own.url } : reg.endpoint!.nonHttp ? rpcEndpoint(node, reg, spec, callee, args, own.client) : clientEndpoint(node, reg, spec, callee, args);
+  if (!endpoint) return null;
   if (endpoint.url) raw.baseUrlExpr = endpoint.url;
   if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
   if (spec.headersArg !== undefined) raw.headersExpr = raw.sdk!.args[spec.headersArg];

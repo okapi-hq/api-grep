@@ -2,7 +2,9 @@ import { assembleCalls, type ResolvedCall } from "./assemble.js";
 import { getProp, toObjectLiteral } from "./ast/object.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
-import type { Call } from "./report/schema.js";
+import { at } from "./detect/endpoint.js";
+import { rpcClientOperation } from "./operation/json-rpc.js";
+import type { Call, Operation } from "./report/schema.js";
 import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { isAstDocument } from "./resolve/graphql-ast.js";
@@ -95,6 +97,13 @@ function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   return { type: "object", properties, required: [] };
 }
 
+/** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */
+function rpcOperation(sdk: RawCall["sdk"], ctx: EvalCtx): Operation | undefined {
+  if (!sdk || (sdk.spec.rpc === undefined && sdk.spec.rpcArg === undefined)) return undefined;
+  const arg = sdk.spec.rpcArg !== undefined ? at(sdk.args, sdk.spec.rpcArg) : undefined;
+  return rpcClientOperation(sdk.spec, arg ? shapeOf(arg, ctx).shape : undefined);
+}
+
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -128,6 +137,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
     optionsOpaque: raw.optionsOpaque,
     model: raw.modelExpr ? shapeOf(raw.modelExpr, ctx).shape : undefined,
     document: documentOf(sdk, ctx),
+    operation: rpcOperation(sdk, ctx),
     routeByModel: sdk?.routeByModel,
     clientFrom: raw.clientFrom,
   });
