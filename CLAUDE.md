@@ -98,7 +98,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
-  (`src/detect/rpc-endpoint.ts`; `irEndpoint` returns null otherwise).
+  (`src/detect/rpc-endpoint.ts`; `irEndpoint` returns null otherwise). #78: contract objects are registry keys with
+  `*` for the ABI's function (`Contract.*`, `methods.*.call`, `eth.contract.functions.*.call`; `notFunctions` lists
+  the object's own members); ethers' runner and ABI decide what a direct call sends (`src/detect/rpc-contract.ts`,
+  `contract-abi.ts`, `endpoint.signers`); vendor providers build their host from the network (`endpoint.clients.*.vendor`,
+  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`.
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

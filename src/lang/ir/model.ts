@@ -81,6 +81,8 @@ export interface CallExpr {
    * their calls on it are steps of a builder (`Request.Builder().apply { url(u) }`).
    */
   applied?: FunctionDef[];
+  /** An attribute read that sends a request (web3.py `w3.eth.block_number`, #78): matches registry `property` entries only. */
+  property?: boolean;
 }
 
 export interface Assign {
@@ -131,6 +133,8 @@ export interface FunctionDef {
   returns: Expr[];
   /** Calls lexically in the body, nested functions aside. */
   calls: CallExpr[];
+  /** Attribute reads named like a registry `property` entry, as calls without arguments (see `CallExpr.property`). */
+  reads?: CallExpr[];
   module: ModuleModel;
   cls?: ClassDef;
   /** Enclosing function: closures read its names. */

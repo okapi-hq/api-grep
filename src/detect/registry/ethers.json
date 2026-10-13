@@ -1,22 +1,36 @@
 {
-  "$comment": "ethers v5 and v6 (#52): a JsonRpcProvider sends JSON-RPC to the URL it is built with. A BrowserProvider (v5 Web3Provider) talks to the wallet and a WebSocketProvider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire.",
+  "$comment": "ethers v5 and v6 (#52): a JsonRpcProvider sends JSON-RPC to the URL it is built with. A BrowserProvider (v5 Web3Provider) talks to the wallet and a WebSocketProvider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire. A node vendor's provider (`InfuraProvider`, `AlchemyProvider`, `QuickNodeProvider`, #78) builds its URL from the network, as the `hosts` copied from ethers 6.13 and 5.7 say; `getDefaultProvider(url)` is a JsonRpcProvider, with a network name it spreads requests over several vendors. A Contract (#78) sends what its runner can: a provider only reads (`eth_call`), a Wallet signs in the app (`eth_sendRawTransaction`), `provider.getSigner()` has the node sign (`eth_sendTransaction`); a function called directly is a view or a transaction as the ABI written in the code says, either when it does not. `*` in a key is one of the ABI's functions, never one of `notFunctions`.",
   "package": "ethers",
-  "aliases": ["@ethersproject/providers"],
+  "aliases": ["@ethersproject/providers", "@ethersproject/contracts"],
   "provider": "json-rpc",
   "host": "{rpcEndpoint}",
   "auth": "unknown",
   "generatedFrom": "manual (checked against ethers 5.7 and 6.13)",
   "inlinePathLiterals": true,
-  "instance": { "names": ["JsonRpcProvider", "StaticJsonRpcProvider"] },
+  "instance": { "names": ["JsonRpcProvider", "StaticJsonRpcProvider", "getDefaultProvider", "InfuraProvider", "AlchemyProvider", "QuickNodeProvider"] },
   "endpoint": {
     "clients": {
       "JsonRpcProvider": { "url": "0" },
-      "StaticJsonRpcProvider": { "url": "0" }
+      "StaticJsonRpcProvider": { "url": "0" },
+      "getDefaultProvider": { "url": "0", "urlOrNetwork": true },
+      "InfuraProvider": { "vendor": { "network": "0", "default": "mainnet", "hosts": { "mainnet": "mainnet.infura.io", "homestead": "mainnet.infura.io", "goerli": "goerli.infura.io", "sepolia": "sepolia.infura.io", "arbitrum": "arbitrum-mainnet.infura.io", "arbitrum-goerli": "arbitrum-goerli.infura.io", "arbitrum-sepolia": "arbitrum-sepolia.infura.io", "base": "base-mainnet.infura.io", "base-sepolia": "base-sepolia.infura.io", "bnb": "bnbsmartchain-mainnet.infura.io", "bnbt": "bnbsmartchain-testnet.infura.io", "linea": "linea-mainnet.infura.io", "linea-sepolia": "linea-sepolia.infura.io", "matic": "polygon-mainnet.infura.io", "matic-amoy": "polygon-amoy.infura.io", "matic-mumbai": "polygon-mumbai.infura.io", "maticmum": "polygon-mumbai.infura.io", "optimism": "optimism-mainnet.infura.io", "optimism-goerli": "optimism-goerli.infura.io", "optimism-sepolia": "optimism-sepolia.infura.io" }, "host": "{network}.infura.io", "path": "/v3/{projectId}"  } },
+      "AlchemyProvider": { "vendor": { "network": "0", "default": "mainnet", "hosts": { "mainnet": "eth-mainnet.alchemyapi.io", "homestead": "eth-mainnet.alchemyapi.io", "goerli": "eth-goerli.g.alchemy.com", "sepolia": "eth-sepolia.g.alchemy.com", "arbitrum": "arb-mainnet.g.alchemy.com", "arbitrum-goerli": "arb-goerli.g.alchemy.com", "arbitrum-sepolia": "arb-sepolia.g.alchemy.com", "base": "base-mainnet.g.alchemy.com", "base-goerli": "base-goerli.g.alchemy.com", "base-sepolia": "base-sepolia.g.alchemy.com", "matic": "polygon-mainnet.g.alchemy.com", "matic-amoy": "polygon-amoy.g.alchemy.com", "matic-mumbai": "polygon-mumbai.g.alchemy.com", "maticmum": "polygon-mumbai.g.alchemy.com", "optimism": "opt-mainnet.g.alchemy.com", "optimism-goerli": "opt-goerli.g.alchemy.com", "optimism-sepolia": "opt-sepolia.g.alchemy.com" }, "host": "{network}.g.alchemy.com", "path": "/v2/{apiKey}"  } },
+      "QuickNodeProvider": { "vendor": { "network": "0", "default": "mainnet", "hosts": { "mainnet": "ethers.quiknode.pro", "goerli": "ethers.ethereum-goerli.quiknode.pro", "sepolia": "ethers.ethereum-sepolia.quiknode.pro", "holesky": "ethers.ethereum-holesky.quiknode.pro", "arbitrum": "ethers.arbitrum-mainnet.quiknode.pro", "arbitrum-goerli": "ethers.arbitrum-goerli.quiknode.pro", "arbitrum-sepolia": "ethers.arbitrum-sepolia.quiknode.pro", "base": "ethers.base-mainnet.quiknode.pro", "base-goerli": "ethers.base-goerli.quiknode.pro", "bnb": "ethers.bsc.quiknode.pro", "bnbt": "ethers.bsc-testnet.quiknode.pro", "matic": "ethers.matic.quiknode.pro", "matic-mumbai": "ethers.matic-testnet.quiknode.pro", "optimism": "ethers.optimism.quiknode.pro", "optimism-goerli": "ethers.optimism-goerli.quiknode.pro", "optimism-sepolia": "ethers.optimism-sepolia.quiknode.pro", "xdai": "ethers.xdai.quiknode.pro" }, "host": "{network}.quiknode.pro", "path": "/{token}"  } }
     },
-    "nonHttp": ["BrowserProvider", "Web3Provider", "WebSocketProvider", "IpcProvider", "IpcSocketProvider", "SocketProvider"],
-    "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider"]
+    "nonHttp": ["BrowserProvider", "Web3Provider", "WebSocketProvider", "IpcProvider", "IpcSocketProvider", "SocketProvider", "InfuraWebSocketProvider", "AlchemyWebSocketProvider", "getWebSocketProvider"],
+    "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider", "FallbackProvider", "InfuraProvider", "AlchemyProvider", "QuickNodeProvider"],
+    "signers": { "Wallet": { "provider": "1", "signs": "local" }, "getSigner": { "signs": "node" } }
   },
+  "notFunctions": ["addListener", "address", "attach", "callStatic", "connect", "deployed", "deploymentTransaction", "emit", "estimateGas", "fallback", "filters", "functions", "getAddress", "getDeployedCode", "getEvent", "getFunction", "interface", "listenerCount", "listeners", "off", "on", "once", "populateTransaction", "provider", "queryFilter", "removeAllListeners", "removeListener", "resolvedAddress", "runner", "signer", "target", "then", "toString", "valueOf", "waitForDeployment"],
   "methods": {
+    "Contract.*": { "method": "POST", "path": "", "contract": "auto", "runnerArg": "2", "abiArg": "1" },
+    "Contract.functions.*": { "method": "POST", "path": "", "contract": "auto", "runnerArg": "2", "abiArg": "1" },
+    "Contract.*.send": { "method": "POST", "path": "", "contract": "send", "runnerArg": "2" },
+    "Contract.*.staticCall": { "method": "POST", "path": "", "rpc": "eth_call", "runnerArg": "2" },
+    "Contract.callStatic.*": { "method": "POST", "path": "", "rpc": "eth_call", "runnerArg": "2" },
+    "Contract.*.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "runnerArg": "2" },
+    "Contract.estimateGas.*": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "runnerArg": "2" },
+    "Contract.queryFilter": { "method": "POST", "path": "", "rpc": "eth_getLogs", "runnerArg": "2" },
     "broadcastTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
     "call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
     "estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },

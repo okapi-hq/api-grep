@@ -97,3 +97,15 @@ describe("resolveProvider", () => {
     for (const h of ["api.example.com", "localhost.example.com", undefined]) expect(isLocalhost(h), String(h)).toBe(false);
   });
 });
+
+describe("node vendors (#78)", () => {
+  it("names the node vendors of JSON-RPC calls by their domains", () => {
+    expect(providerForHost("polygon-mainnet.infura.io")).toBe("infura");
+    expect(providerForHost("eth-mainnet.g.alchemy.com")).toBe("alchemy");
+    expect(providerForHost("eth-mainnet.alchemyapi.io")).toBe("alchemy");
+    expect(providerForHost("still-icy-pond.solana-mainnet.quiknode.pro")).toBe("quicknode");
+    expect(providerForHost("mainnet.helius-rpc.com")).toBe("helius");
+    expect(providerForHost("{network}.infura.io")).toBe("infura");
+    expect(providerForHost("infura.io.example.com")).toBeUndefined();
+  });
+});

@@ -52,6 +52,8 @@
   { "name": "grants-stack-indexer", "url": "https://github.com/gitcoinco/grants-stack-indexer.git" },
   { "name": "aave-interface", "url": "https://github.com/aave/interface.git" },
   { "name": "safe-eth-py", "url": "https://github.com/safe-global/safe-eth-py.git", "language": "python" },
+  { "name": "simple-arbitrage", "url": "https://github.com/flashbots/simple-arbitrage.git" },
+  { "name": "uniswap-python", "url": "https://github.com/uniswap-python/uniswap-python.git", "language": "python" },
   { "name": "relay-issue-tracker", "url": "https://github.com/relayjs/relay-examples.git", "subdir": "issue-tracker" },
   { "name": "cirrus-ci-web", "url": "https://github.com/cirruslabs/cirrus-ci-web.git" },
   { "name": "shopify-app-template-remix", "url": "https://github.com/Shopify/shopify-app-template-remix.git" },
