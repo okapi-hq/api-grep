@@ -296,7 +296,9 @@ operation?: {
 - `operationId` keeps its meaning, the OpenAPI operation id from an SDK registry; `operation` is about the wire
   protocol.
 - **Identity.** `id` hashes the file, line and column and, when the call has one, `operation.name`: `getTransaction`
-  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids.
+  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids, also the
+  `#n` index of a request a wrapper sends beside a JSON-RPC one (`onePerRequest` in `src/scan.ts` counts every request
+  from the place for them, a batch once).
 - **Batches: one `Call` per operation.** A request that sends several operations together (a JSON-RPC array, a GraphQL
   batch array) gives one `Call` per operation, at the request's location, each with its own `id` and `batch: true`;
   the same operation twice in one batch is one call. Every field but `operation` and `id` describes the HTTP request,

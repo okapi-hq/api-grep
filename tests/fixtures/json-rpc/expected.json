@@ -10,6 +10,8 @@
     {"file": "node.ts", "line": 25, "provider": "rpc.example-chain.net", "operation": "getSlot"},
     {"file": "node.ts", "line": 36, "provider": "rpc.example-chain.net", "operation": "getTransaction"},
     {"file": "node.ts", "line": 43, "provider": "rpc.example-chain.net", "operation": "get{kind}Info"},
-    {"file": "node.ts", "line": 47, "provider": "internal", "operation": "getblockcount"}
+    {"file": "node.ts", "line": 47, "provider": "internal", "operation": "getblockcount"},
+    {"file": "audited.ts", "line": 12, "provider": "audit.example-log.com"},
+    {"file": "audited.ts", "line": 12, "provider": "rpc.example-chain.net", "operation": "getHealth"}
   ]
 }

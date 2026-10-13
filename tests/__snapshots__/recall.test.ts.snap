@@ -36,6 +36,12 @@ exports[`regression fixtures > javascript/node 1`] = `
 
 exports[`regression fixtures > json-rpc 1`] = `
 [
+  "audited.ts:7 audit.example-log.com POST /v1/events",
+  "audited.ts:8 rpc.example-chain.net POST / getHealth",
+  "audited.ts:9 audit.example-log.com POST /v1/events",
+  "audited.ts:12 audit.example-log.com POST /v1/events (wrapper:audited)",
+  "audited.ts:12 rpc.example-chain.net POST / getHealth (wrapper:audited)",
+  "audited.ts:12 audit.example-log.com POST /v1/events (wrapper:audited)",
   "node.ts:4 rpc.example-chain.net POST / getTransaction",
   "node.ts:12 rpc.example-chain.net POST / getBalance",
   "node.ts:20 rpc.example-chain.net POST / getBalance (wrapper:rpc)",

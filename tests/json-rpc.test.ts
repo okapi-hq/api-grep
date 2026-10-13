@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { callId } from "../src/assemble.js";
 import type { Report } from "../src/report/schema.js";
 import { at, scanFixture } from "./fixture-helpers.js";
 
@@ -49,5 +50,19 @@ describe("JSON-RPC: the method is the call's operation (#34)", () => {
     expect(operations(r, "NodeClient.php", 43).map((o) => o?.name)).toEqual(["getBalance", "getSlot"]);
     expect(at(r, "NodeClient.php", 52).operation?.alternatives).toEqual(["getTransaction", "getSignatureStatuses"]);
     expect(at(r, "NodeClient.php", 57).operation).toMatchObject({ name: "get{kind}Info", dynamic: true });
+  });
+});
+
+describe("JSON-RPC beside ordinary requests", () => {
+  it("ordinary requests a helper sends beside a JSON-RPC one keep their ids", async () => {
+    const r = await scanFixture("json-rpc");
+    const fromCaller = r.calls.filter((c) => c.location.file === "audited.ts" && c.location.line === 12);
+    const loc = fromCaller[0]!.location;
+    // before the method was reported, the three requests were the 0th, 1st and 2nd from this place
+    expect(fromCaller.map((c) => [c.operation?.name ?? null, c.id])).toEqual([
+      [null, callId(loc)],
+      ["getHealth", callId(loc, 0, "getHealth")],
+      [null, callId(loc, 2)],
+    ]);
   });
 });
