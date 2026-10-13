@@ -75,6 +75,8 @@ describe("JSON-RPC client libraries of EVM nodes (#52)", () => {
   it("a dApp's wallet clients, and typed clients of a project that builds only those, are not reported", async () => {
     const r = await scanFixture("rpc-clients/wallets");
     expect(r.calls).toEqual([]);
+    // `key.toString()` on a typed `PublicKey` is no registry method (an inherited key once crashed the call)
+    expect(r.diagnostics?.droppedCalls).toEqual([]);
   });
 });
 

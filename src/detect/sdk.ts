@@ -134,12 +134,13 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
   if (!reg) return null;
   if (Node.isNewExpression(node)) {
     const name = exportedChain(callee).join(".");
-    const spec = reg.commands?.[name];
+    // own keys only: `toString` or `constructor` on a client is not a registry method
+    const spec = reg.commands && Object.hasOwn(reg.commands, name) ? reg.commands[name] : undefined;
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
-    const spec = reg.methods[key];
+    const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
     if (spec) return buildRaw(node, reg, key, spec, callee);
   }
   return null;

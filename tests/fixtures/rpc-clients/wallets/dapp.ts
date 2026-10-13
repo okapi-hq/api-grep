@@ -2,6 +2,7 @@ import { BrowserProvider, type Contract, type Provider } from "ethers";
 import { createWalletClient, custom, webSocket, createPublicClient, type PublicClient } from "viem";
 import { mainnet } from "viem/chains";
 import Web3 from "web3";
+import type { PublicKey } from "@solana/web3.js";
 
 // A dApp talks to the user's wallet extension, not to a node over HTTP: none of these is an outbound request.
 const injected = (window as any).ethereum;
@@ -29,4 +30,9 @@ export async function viaClient(client: PublicClient) {
 // a contract's own method is not the provider's
 export async function viaContract(token: Contract, address: string) {
   return token.getBalance(address);
+}
+
+// a method every object has is not a registry method
+export function label(key: PublicKey) {
+  return key.toString();
 }
