@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/65",
+  "calls": [
+    {"file": "Alerts.java", "line": 21, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 29, "provider": "auth.example-alerts.com"},
+    {"file": "Alerts.java", "line": 33, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 37, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 46, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 50, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 59, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 65, "provider": "api.example-alerts.com"},
+    {"file": "Alerts.java", "line": 84, "provider": "search.example-alerts.com"},
+    {"file": "Lookalikes.java", "line": 32, "provider": "api.example-alerts.com"}
+  ]
+}

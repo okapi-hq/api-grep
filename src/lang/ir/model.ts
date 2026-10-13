@@ -151,7 +151,13 @@ export interface ClassDef {
   /** Declared types of fields (Python class annotations, PHP typed and promoted properties). */
   fieldTypes: Map<string, Expr>;
   /** Field order with optionality, for request bodies built from a class (dataclass, TypedDict, pydantic). */
-  annotations: { name: string; type: Expr; optional: boolean }[];
+  annotations: {
+    name: string;
+    type: Expr;
+    optional: boolean;
+    /** The field's name in the code, when it is serialized under another one (`@JsonProperty("user_id") userId`). */
+    field?: string;
+  }[];
   module: ModuleModel;
   /** Annotations of the class itself (JVM: `@FeignClient(url = ...)`). */
   classAnnotations?: Annotation[];

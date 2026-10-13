@@ -106,6 +106,38 @@ exports[`regression fixtures > html/site 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/apache 1`] = `
+[
+  "Links.java:30 api.example-links.com POST /v1/links",
+  "Links.java:38 api.example-links.com GET /v1/search",
+  "Links.java:48 auth.example-links.com POST /oauth/token",
+  "Links.java:53 api.example-links.com DELETE /v1/links/{id} (wrapper:Links.send)",
+  "Links.java:57 api.example-links.com POST /v1/links/{id}/title (wrapper:Links.send)",
+  "Links.java:61 unknown GET /",
+  "Links.java:65 api.example-links.com POST /v1/events",
+  "Links.java:69 api.example-links.com POST /v1/subscribers",
+  "Reports.java:28 api.example-reports.com PUT /v2/reports/{id}",
+  "Reports.java:32 api.example-reports.com POST /v2/uploads",
+  "Reports.java:41 api.example-reports.com POST /v2/ping",
+]
+`;
+
+exports[`regression fixtures > java/clients 1`] = `
+[
+  "Alerts.java:21 api.example-alerts.com POST /v1/batches",
+  "Alerts.java:29 auth.example-alerts.com POST /token",
+  "Alerts.java:33 api.example-alerts.com DELETE /v1/silences/{id}",
+  "Alerts.java:37 api.example-alerts.com PUT /v1/alerts/{id}",
+  "Alerts.java:46 api.example-alerts.com POST /v1/subscribers",
+  "Alerts.java:50 api.example-alerts.com POST /v1/events",
+  "Alerts.java:59 api.example-alerts.com GET /v1/health",
+  "Alerts.java:65 api.example-alerts.com POST /v1/workers",
+  "Alerts.java:78 unknown DYNAMIC /",
+  "Alerts.java:84 search.example-alerts.com POST /v1/query",
+  "Lookalikes.java:32 api.example-alerts.com GET /v1/status",
+]
+`;
+
 exports[`regression fixtures > java/feign 1`] = `
 [
   "Clients.java:28 api.example-orders.com GET /v2/orders/{id}",
@@ -125,6 +157,26 @@ exports[`regression fixtures > java/java-http 1`] = `
   "Notifier.java:51 pagerduty POST /v2/enqueue",
   "Notifier.java:62 api.example-alerts.com POST /v1/ping",
   "Notifier.java:71 api.example-alerts.com GET /v1/status",
+]
+`;
+
+exports[`regression fixtures > java/jaxrs 1`] = `
+[
+  "Inventory.java:20 api.example-stock.com POST /v1/items",
+  "Inventory.java:27 api.example-stock.com GET /v1/items/{sku}/count",
+  "Inventory.java:34 auth.example-stock.com POST /token",
+  "Inventory.java:40 api.example-stock.com PATCH /v1/items/{sku}",
+  "Inventory.java:44 api.example-stock.com DELETE /v1/items/{sku}",
+  "Inventory.java:48 api.example-stock.com GET /v1/items/{sku} (wrapper:Inventory.send)",
+  "Inventory.java:53 unknown DYNAMIC /",
+]
+`;
+
+exports[`regression fixtures > java/lombok 1`] = `
+[
+  "Orders.java:49 api.example-shop.com POST /v1/orders",
+  "Orders.java:53 api.example-shop.com POST /v1/events",
+  "Orders.java:59 api.example-shop.com POST /v1/refunds",
 ]
 `;
 
@@ -276,6 +328,14 @@ exports[`regression fixtures > kotlin/ktor 1`] = `
   "Catalog.kt:56 notion DELETE /v1/blocks/{id}",
   "Catalog.kt:63 feeds.example.com GET /v2/latest.json",
   "Wildcards.kt:11 forecast.example.com GET /v1/today",
+]
+`;
+
+exports[`regression fixtures > kotlin/maps 1`] = `
+[
+  "Notes.kt:24 api.example-notes.com POST /v1/notes",
+  "Notes.kt:35 api.example-notes.com PUT /v1/notes/{id}",
+  "Notes.kt:44 api.example-notes.com GET /v1/search",
 ]
 `;
 

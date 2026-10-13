@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/65",
+  "calls": [
+    {"file": "Notes.kt", "line": 24, "provider": "api.example-notes.com"},
+    {"file": "Notes.kt", "line": 35, "provider": "api.example-notes.com"},
+    {"file": "Notes.kt", "line": 44, "provider": "api.example-notes.com"}
+  ]
+}

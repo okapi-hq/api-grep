@@ -46,11 +46,14 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
   values are in `src/lang/jvm/`, shared by Kotlin and Java; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
-  its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit), detectors over the IR driven by `clients.json`, with the
+  its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit; request objects sent by a call, `requests.ts` over
+  `requests.json`: Apache HttpClient, JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`), detectors over the IR
+  driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
   (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
   (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
-  language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`).
+  language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`; Lombok `@Builder` classes and
+  getters of the project in `src/lang/jvm/lombok.ts`).
 - Kotlin and Java (#43): one front end. `kotlinLanguage` lists Java's `IrSource` (`src/lang/java/index.ts`) in
   `alsoReads`; `scanIr` (`src/lang/ir/scan.ts`) lowers every source language the scan asks for into one module set and
   one `ProjectIndex`, each module keeping its `language` (the call's `location.language`), and computes the `maven`
@@ -124,6 +127,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
   Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
   #49, other JVM SDKs and builder forms #50, DI-provided clients #46.
-- Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) is done; more Java clients
-  (Apache HttpClient, JAX-RS client), Lombok builders and Kotlin map index sets are #65.
+- Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
+  JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`, Lombok builders and getters, Kotlin `map["k"] = v`) are
+  done.
 - Next language candidates (Go, Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

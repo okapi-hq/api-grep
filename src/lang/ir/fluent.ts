@@ -1,3 +1,4 @@
+import { mayNotRun } from "./edits.js";
 import type { FluentMapSpec } from "./language.js";
 import { dottedPath, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
@@ -71,6 +72,12 @@ function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: Fu
   return true;
 }
 
+/** The entries of a dict written in `fn`, read in `into`. */
+function entriesIn(dict: Expr, fn: FunctionDef, into: FunctionDef): Entry[] {
+  if (dict.k !== "dict") return [];
+  return dict.entries.map((en) => ({ ...en, value: scopedIn(en.value, fn, into), ...(en.key ? { key: scopedIn(en.key, fn, into) } : {}) }));
+}
+
 /** The constructor call or variable a chain of calls starts from, and its value so far. */
 function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: number): Acc | undefined {
   if (e.k === "call") {
@@ -85,9 +92,19 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   const inner = fluentMap(b.assign.value, b.fn, ctx, depth + 1, false);
   if (!inner) return undefined;
   const acc: Acc = { spec: inner.spec, entries: [], items: [] };
-  if (inner.expr.k === "dict") acc.entries.push(...inner.expr.entries.map((en) => ({ ...en, value: scopedIn(en.value, inner.fn, into), ...(en.key ? { key: scopedIn(en.key, inner.fn, into) } : {}) })));
+  acc.entries.push(...entriesIn(inner.expr, inner.fn, into));
   if (inner.expr.k === "list") acc.items.push(...inner.expr.items.map((i) => scopedIn(i, inner.fn, into)));
-  for (const c of callsOn(b.fn, e.name, b.assign.offset)) if (c.call.pos.offset < e.pos.offset || b.fn !== fn) apply(acc, methodName(c.call), c.call, c.fn, into);
+  const before = (offset: number): boolean => offset < e.pos.offset || b.fn !== fn;
+  const steps: { at: number; run: () => void }[] = callsOn(b.fn, e.name, b.assign.offset)
+    .filter((c) => before(c.call.pos.offset))
+    .map((c) => ({ at: c.call.pos.offset, run: () => void apply(acc, methodName(c.call), c.call, c.fn, into) }));
+  // `body["k"] = v` (Kotlin, lowered as an edit): an entry put on the map, in order with the calls
+  const sets = acc.spec.put ? b.fn.assigns.filter((a) => a.edit === "merge" && a.target === e.name && a.offset > b.assign.offset && before(a.offset)) : [];
+  for (const a of sets) {
+    const optional = mayNotRun(b.fn, a.offset, b.fn === fn ? e.pos.offset : undefined);
+    steps.push({ at: a.offset, run: () => void acc.entries.push(...entriesIn(a.value, b.fn, into).map((en) => (optional ? { ...en, optional } : en))) });
+  }
+  for (const s of steps.sort((x, y) => x.at - y.at)) s.run();
   for (const [prop, entry] of Object.entries(acc.spec.props ?? {})) {
     const set = b.fn.assigns.find((a) => a.target === `${e.name}.${prop}` && a.offset > b.assign.offset);
     if (set) acc.entries.push({ key: { k: "str", v: entry }, value: scopedIn(set.value, b.fn, into) });

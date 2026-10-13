@@ -13,7 +13,8 @@ TypeScript, JavaScript and the inline scripts and forms of HTML pages through th
 checker, and Python, PHP, Kotlin and Java through tree-sitter; a repository that mixes languages gets one
 report that says which language each call comes from. Kotlin and Java are read together, so a
 Kotlin file calling a Retrofit interface declared in Java resolves; their HTTP clients are read
-(OkHttp, `java.net.http`, `HttpURLConnection`, Ktor, Spring, Feign, Retrofit), and so are their SDK
+(OkHttp, `java.net.http`, `HttpURLConnection`, Ktor, Spring, Feign, Retrofit, Apache HttpClient, the JAX-RS
+client, AsyncHttpClient, Unirest, Vert.x `WebClient`), and so are their SDK
 calls (OpenAI, Anthropic, Stripe, AWS, Firebase and others), with the Gradle and Maven manifests.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
@@ -132,7 +133,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | html | python | php | kotlin | java
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit (Kotlin, Java), sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -501,10 +502,17 @@ and `Api.class` a class reference.
 | Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity`, `UriComponentsBuilder` URLs), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl` and `defaultHeader` of their builder |
 | OpenFeign | `@FeignClient(url = "\${x:default}")` interfaces with `@GetMapping` / `@PostMapping` / `@RequestMapping`, `@RequestParam`, `@RequestHeader`, `@RequestBody`, `@SpringQueryMap`; Feign `@RequestLine` / `@Headers` interfaces given to `Feign.builder().target(...)`; one call per method, at its declaration |
 | Retrofit | service interfaces (`@GET` ... `@OPTIONS`, `@HTTP`, `@Path`, `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers`, `@Body`, `@FormUrlEncoded` with `@Field` / `@FieldMap`, `@Multipart` with `@Part` / `@PartMap`, `@Url`), one call per method at its declaration, resolved against the `baseUrl(...)` of the `Retrofit.Builder()` whose `create(Api::class.java)` / `create<Api>()` made it (one call per base URL), as Retrofit resolves it (a leading `/` replaces the base path, the base's query string is dropped); the interceptors of `.client(okHttp)`; the converters choose the body encoding |
+| Apache HttpClient 4 and 5 | `client.execute(new HttpPost(url))` with `setHeader` / `addHeader` / `setEntity` on the request (also over several statements and through a wrapper), `RequestBuilder` / `ClassicRequestBuilder` / `SimpleRequestBuilder` chains (`addParameter` is a form body for a POST, a query otherwise), the async client's `execute(request, callback)`, the fluent `Request.Post(url).bodyString(...).execute()`; `StringEntity` (with its `ContentType`), `UrlEncodedFormEntity` of `BasicNameValuePair`s, `MultipartEntityBuilder`, `URIBuilder` URLs |
+| JAX-RS client | `client.target(url).path(...).queryParam(...).request(...).header(...).post(Entity.json(body))`, `get()`, `method("PATCH", entity)`, `buildPost(entity).invoke()`, `async()`, through `WebTarget` and `Invocation.Builder` variables; `Entity.json` / `form` / `entity(x, type)`, `Form().param(...)`; JAX-RS resources (`@Path` classes) are endpoints, not calls |
+| AsyncHttpClient | `client.preparePost(url).setHeader(...).addQueryParam(...).setBody(...).execute()`, `addFormParam`, `executeRequest(new RequestBuilder("POST").setUrl(...).build())` |
+| Unirest | `Unirest.post(url).header(...).queryString(...).body(...).asJson()` (every `as*` call), `field(k, v)` form bodies, `basicAuth`; `routeParam` placeholders stay in the path |
+| Vert.x `WebClient` | `client.post(port, host, uri)` / `get(host, uri)` / `getAbs(url)` with `putHeader`, `addQueryParam`, `bearerTokenAuthentication`, sent by `send`, `sendJson`, `sendJsonObject`, `sendForm`, `sendMultipartForm` (also the RxJava and Mutiny variants); the default host, port and TLS of the client's `WebClientOptions` |
 
 JSON bodies come from `JSONObject().put(...)` chains, `mapOf(...)` serialized by Gson, Moshi,
 Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiValueMap` and the
-content type; in Java also `Map.of(...)`, a `HashMap` filled with `put`, POJOs and records. The Gradle
+content type; a `HashMap` or `mutableMapOf()` filled with `map["k"] = v` in Kotlin; in Java also `Map.of(...)`, a
+`HashMap` filled with `put`, POJOs, records and Lombok `@Builder` chains (`Payload.builder().name(n).build()`, under
+the fields' JSON names), and Lombok getters read as their fields. The Gradle
 and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
 (`ecosystem: "maven"`).
 
@@ -709,8 +717,8 @@ package. `--changed-since` scans have no coverage section.
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java: interceptors and clients provided by DI frameworks are known by their type only, as in
-  Kotlin; Lombok-generated builders and setters and annotation processors are not run
-  ([docs/languages.md](docs/languages.md#java)).
+  Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
+  processors are not run ([docs/languages.md](docs/languages.md#java)).
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
@@ -718,8 +726,8 @@ package. `--changed-since` scans have no coverage section.
 
 ## Evaluation
 
-The scanner is measured on 45 open-source repositories listed in
-[`eval/repos.json`](eval/repos.json): 20 TypeScript, 6 Python, 7 PHP, 6 Kotlin and 5 Java (a `language` entry
+The scanner is measured on 48 open-source repositories listed in
+[`eval/repos.json`](eval/repos.json): 20 TypeScript, 6 Python, 7 PHP, 6 Kotlin and 8 Java (a `language` entry
 scans that language only). Results are in [`eval/results.md`](eval/results.md).
 
 ```sh

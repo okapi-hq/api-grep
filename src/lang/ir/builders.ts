@@ -48,9 +48,12 @@ const own = <T>(table: Record<string, T> | undefined, key: string): T | undefine
 
 const inPackages = (path: string[], rules: SetterRules): boolean => rules.packages.some((p) => path.join(".").startsWith(`${p}.`));
 
-function rulesFor(cls: Expr, fn: FunctionDef, ctx: IrCtx): SetterRules | undefined {
+/** The setter rules of a project class built with `X.builder()` (Lombok `@Builder`), when the language knows them. */
+export type ProjectBuilders = (cls: Expr, fn: FunctionDef, ctx: IrCtx) => SetterRules | undefined;
+
+function rulesFor(cls: Expr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): SetterRules | undefined {
   const path = externalPath(cls, fn, ctx);
-  return path ? ctx.idx.lang.registry.find((r) => r.setters && inPackages(path, r.setters))?.setters : undefined;
+  return path ? ctx.idx.lang.registry.find((r) => r.setters && inPackages(path, r.setters))?.setters : project?.(cls, fn, ctx);
 }
 
 /** `Model.CLAUDE_SONNET_4_5` -> `"claude-sonnet-4-5"`, `ChatModel.GPT_4_1` -> `"gpt-4.1"`, for the enum classes the rules name. */
@@ -138,13 +141,16 @@ function steps(fn: FunctionDef, name: string, from: number, to: number): Setter[
   return out;
 }
 
-/** `X.builder() ... .build()`, or a variable holding `X.builder() ...` with steps before `.build()`, for a class of an SDK with setter rules. */
-export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+/**
+ * `X.builder() ... .build()`, or a variable holding `X.builder() ...` with steps before `.build()`, for a class of an SDK
+ * with setter rules or a project class `project` gives rules for.
+ */
+export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): Scoped | undefined {
   if (call.fn.k !== "attr" || call.fn.name !== "build" || call.args.length > 0) return undefined;
   const { root, setters } = setterChain(call.fn.obj);
   const cls = startOf(root);
   if (cls) {
-    const rules = rulesFor(cls, fn, ctx);
+    const rules = rulesFor(cls, fn, ctx, project);
     return rules ? { expr: dictOf(setters, fn, ctx, rules), fn } : undefined;
   }
   if (root.k !== "name") return undefined;
@@ -152,7 +158,7 @@ export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scope
   if (b.kind !== "value" || b.fn !== fn) return undefined;
   const start = setterChain(b.assign.value);
   const varCls = startOf(start.root);
-  const rules = varCls ? rulesFor(varCls, fn, ctx) : undefined;
+  const rules = varCls ? rulesFor(varCls, fn, ctx, project) : undefined;
   if (!rules) return undefined;
   const all = [...start.setters, ...steps(fn, root.name, b.assign.offset, call.pos.offset), ...setters];
   return { expr: dictOf(all, fn, ctx, rules), fn };

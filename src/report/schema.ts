@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.14.0";
+export const SCHEMA_VERSION = "1.15.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -48,13 +48,18 @@ export const ClientSchema = z
     "spring-webclient",
     "feign",
     "retrofit",
+    "apache-httpclient",
+    "jaxrs-client",
+    "async-http-client",
+    "unirest",
+    "vertx-webclient",
     "sdk",
     "framework",
   ])
   .meta({
     id: "Client",
     description:
-      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method). Any language: sdk (a registry), framework (a framework helper).",
+      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Any language: sdk (a registry), framework (a framework helper).",
   });
 
 export const ShapeSchema: z.ZodType<Shape> = z
