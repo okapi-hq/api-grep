@@ -1,4 +1,5 @@
 import { assembleCalls, type ResolvedCall } from "./assemble.js";
+import { getProp, toObjectLiteral } from "./ast/object.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
@@ -71,11 +72,25 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme: scheme };
 }
 
-/** The GraphQL document an SDK method takes as an argument; one it is not given is unknown. */
+/** What names the operation in options holding the document (Apollo `{ query, variables }`, Octokit `{ query, ...vars }`). */
+const DOCUMENT_KEYS = ["query", "mutation", "document", "operationName", "extensions"];
+
+/**
+ * The GraphQL document an SDK method takes as an argument; one it is not given is unknown. Of options holding it,
+ * only the keys naming the operation are read: the variables are the body's, and reading them here would search the
+ * callers of the hook they are written in, a reference search the body leaves out.
+ */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   if (sdk?.spec.documentArg === undefined) return undefined;
   const arg = sdk.args[sdk.spec.documentArg];
-  return arg ? shapeOf(arg, ctx).shape : { type: "unknown" };
+  if (!arg) return { type: "unknown" };
+  if (!toObjectLiteral(arg, ctx)) return shapeOf(arg, ctx).shape;
+  const properties: Record<string, Shape> = {};
+  for (const key of DOCUMENT_KEYS) {
+    const value = getProp(arg, key, ctx);
+    if (value) properties[key] = shapeOf(value, ctx).shape;
+  }
+  return { type: "object", properties, required: [] };
 }
 
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */

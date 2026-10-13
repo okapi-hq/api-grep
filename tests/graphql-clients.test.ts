@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { Identifier } from "ts-morph";
+import { describe, expect, it, vi } from "vitest";
 import { scan } from "../src/scan.js";
 import { at, scanFixture } from "./fixture-helpers.js";
 
@@ -86,6 +87,35 @@ describe("GraphQL client libraries in Python, and bounds (#54)", () => {
         ["Loop", "unknown"],
       ]);
     } finally {
+      fs.rmSync(repo, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("GraphQL client libraries: the cost of a large app (#54)", () => {
+  it("the variables next to a document are not looked up in the callers of their function", async () => {
+    const repo = fs.mkdtempSync(path.join(os.tmpdir(), "api-grep-graphql-clients-"));
+    const refs = vi.spyOn(Identifier.prototype, "findReferencesAsNodes");
+    try {
+      const source = [
+        'import { ApolloClient, gql } from "@apollo/client";',
+        'const client = new ApolloClient({ uri: "https://api.example-shop.com/graphql" });',
+        "export function loadItem(itemId: string) {",
+        "  return client.query({ query: gql`query Item($id: ID!) { item(id: $id) { id } }`, variables: { id: itemId } });",
+        "}",
+        'loadItem("first");',
+      ];
+      fs.writeFileSync(path.join(repo, "items.ts"), source.join("\n"));
+      const r = await scan({ dir: repo, examples: 0 });
+      // the call in `loadItem`, and the one its caller makes through it
+      expect(r.calls.map((c) => [c.location.line, c.provider, c.operation?.name])).toEqual([
+        [4, "api.example-shop.com", "Item"],
+        [6, "api.example-shop.com", "Item"],
+      ]);
+      expect(r.calls[1]?.body).toMatchObject({ properties: { id: { type: "string", enum: ["first"] } } });
+      expect(refs).not.toHaveBeenCalled();
+    } finally {
+      refs.mockRestore();
       fs.rmSync(repo, { recursive: true, force: true });
     }
   });
