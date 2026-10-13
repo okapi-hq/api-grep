@@ -1,0 +1,12 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/56",
+  "calls": [
+    {"file": "invoices.tsx", "line": 10, "provider": "api.example-invoicing.com", "operation": "GetInvoice"},
+    {"file": "invoices.tsx", "line": 18, "provider": "api.example-invoicing.com", "operation": "ListInvoices"},
+    {"file": "invoices.tsx", "line": 22, "provider": "api.example-invoicing.com", "operation": "PayInvoice"},
+    {"file": "invoices.tsx", "line": 26, "provider": "unknown", "operation": "InvoiceUpdated"},
+    {"file": "invoices.tsx", "line": 30, "provider": "api.example-invoicing.com", "operation": "PayInvoice"},
+    {"file": "invoices.tsx", "line": 33, "provider": "api.example-invoicing.com", "operation": "viewer"},
+    {"file": "invoices.tsx", "line": 37, "provider": "api.example-invoicing.com"}
+  ]
+}

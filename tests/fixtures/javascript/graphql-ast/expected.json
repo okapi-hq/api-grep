@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/56",
+  "calls": [
+    {"file": "catalog.js", "line": 66, "provider": "api.example-store.com", "operation": "GetProduct"},
+    {"file": "catalog.js", "line": 74, "provider": "api.example-store.com", "operation": "Stock"}
+  ]
+}

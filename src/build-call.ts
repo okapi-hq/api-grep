@@ -5,6 +5,7 @@ import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
 import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
+import { isAstDocument } from "./resolve/graphql-ast.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
@@ -84,7 +85,8 @@ function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   if (sdk?.spec.documentArg === undefined) return undefined;
   const arg = sdk.args[sdk.spec.documentArg];
   if (!arg) return { type: "unknown" };
-  if (!toObjectLiteral(arg, ctx)) return shapeOf(arg, ctx).shape;
+  const options = toObjectLiteral(arg, ctx);
+  if (!options || isAstDocument(options)) return shapeOf(arg, ctx).shape;
   const properties: Record<string, Shape> = {};
   for (const key of DOCUMENT_KEYS) {
     const value = getProp(arg, key, ctx);

@@ -225,8 +225,9 @@ AWS Query) carries `operation`, and its `id` includes `operation.name`: two oper
 calls. JSON-RPC is recognized in every language: a JSON body with `jsonrpc` and a `method` (or a 1.0-style
 `method`, `params` and `id`) gives `protocol: json-rpc` with the method as `name`, also through a helper that builds
 the envelope (`rpc("getBalance", [address])`). GraphQL is recognized from the document a request sends (`query` in
-a JSON body, `?query=`, a batch array, Octokit's `graphql()`), written in a string, a `gql` tagged template or an
-imported `.graphql` file: `protocol: graphql` with the operation's `name` (its root fields when anonymous), `type`, and
+a JSON body, `?query=`, a batch array, Octokit's `graphql()`), written in a string, a `gql` tagged template, an
+imported `.graphql` file or a codegen AST object (`{"kind":"Document","definitions":[...]}`, also through `print()`):
+`protocol: graphql` with the operation's `name` (its root fields when anonymous), `type`, and
 `fields`, the sorted leaf paths it selects with aliases resolved and fragments inlined; a persisted query is named by
 its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.

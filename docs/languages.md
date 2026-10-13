@@ -538,7 +538,7 @@ operation?: {
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
-| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python), Relay, Shopify and `sgqlc` #67; bound diagnostic #55, AST documents and arguments #56 |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay, Shopify and `sgqlc` #67; bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
 ### JSON-RPC (#34)
@@ -592,7 +592,15 @@ document with the `graphql` package's parser (no schema, no network):
   calls (gql.tada, the codegen client preset), and `.graphql` / `.gql` files imported by a relative path (`import Doc
   from "./doc.graphql"`, a named import keeps that operation, `require`), with graphql-tag/loader's `#import` lines
   followed four files deep. An imported file is read only inside the scanned directory, symlinks resolved, like a
-  config file. Python and PHP read documents in strings, f-strings, concatenations and heredocs through the shared
+  config file.
+- **Documents written as their AST** (#56, `src/resolve/graphql-ast.ts`): an object literal with `kind: "Document"`
+  and `definitions`, as graphql-codegen writes them (typed-document-node, the client preset, the React Apollo
+  plugin's `documentMode: documentNode`: `export const GetOrderDocument = {"kind":"Document",...} as unknown as
+  DocumentNode<...>`) and as Babel plugins precompile `gql` tags (unquoted keys, `loc`), is read as the text graphql-js
+  prints for it, then parsed like any document. Another document's definitions spread or concatenated in
+  (`...OrderFieldsFragmentDoc.definitions`, `[op].concat(Fragment.definitions)`) are followed four documents deep,
+  each once. `print(doc)` from `graphql` (also `@apollo/client`) sends the text of the document it is given, written
+  in any of the forms above. The client preset's `graphql("query ...")` calls are read from their text, as before. Python and PHP read documents in strings, f-strings, concatenations and heredocs through the shared
   engine. A part the scan cannot compute (a `${Fragment}` from a package, a value) is left out of the document
   before it is parsed, so it never reads as a field or as an operation of its own (`` `${city} ${kind}` `` is not a
   document selecting `city` and `kind`); a computed operation name leaves the name unknown.
@@ -632,8 +640,12 @@ document with the `graphql` package's parser (no schema, no network):
   selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
   code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
   once each. Past a bound `fields` is left out (not cut short) and `name` / `type` come from the document's header
-  when it has one; a diagnostic for this needs a schema change (#55).
-- **Not covered**: codegen documents written as an AST object and literal arguments of selected fields (#56).
+  when it has one; a diagnostic for this needs a schema change (#55). An AST document is read only while every
+  definition is a JSON-like literal (strings, numbers, booleans, `null`, arrays, objects; `__proto__` keys dropped),
+  within 4,000,000 characters, 200,000 values and 128 levels of nesting; otherwise its first operation's type and
+  name are kept, and its fields left out. The text it prints to has the bounds above.
+- **Not covered**: literal arguments of selected fields (#56, a schema change); AST documents built by code
+  (`Object.assign`, a definition pushed after the literal) and Python documents written as `graphql-core` nodes.
 
 ### SOAP and action-style APIs (#36)
 
@@ -787,7 +799,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`, Apollo, urql and graphql-request (#54); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 
