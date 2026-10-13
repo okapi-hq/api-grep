@@ -60,18 +60,32 @@ function sortCalls(calls: Call[]): Call[] {
 /**
  * One call per request per call site: a wrapper that reaches the same request twice (a retry, two branches building it)
  * gives it once; different requests from one call site keep distinct ids.
+ *
+ * A call with an operation name counts among the calls of that name at its place. A call without one counts among
+ * every request sent from its place, a batch once (its calls differ only by operation), so its id is the one it had
+ * before operations were reported even when a wrapper sends a JSON-RPC request from the same place.
  */
 export function onePerRequest(calls: Call[]): Call[] {
   const seen = new Set<string>();
-  const perSite = new Map<string, number>();
+  const perId = new Map<string, number>();
+  const perPlace = new Map<string, number>();
+  const indexOfRequest = new Map<string, number>();
   return calls.flatMap((c) => {
-    const { id, ...request } = c;
-    const key = `${id}:${JSON.stringify(request)}`;
+    const { id, operation, ...request } = c;
+    const place = `${c.location.file}:${c.location.line}:${c.location.col}`;
+    const sent = `${place}:${JSON.stringify(request)}`;
+    const key = `${id}:${JSON.stringify(operation ?? null)}:${sent}`;
     if (seen.has(key)) return [];
     seen.add(key);
-    const n = perSite.get(id) ?? 0;
-    perSite.set(id, n + 1);
-    return [n === 0 ? c : { ...c, id: callId(c.location, n, c.operation?.name) }];
+    if (!indexOfRequest.has(sent)) {
+      const atPlace = perPlace.get(place) ?? 0;
+      perPlace.set(place, atPlace + 1);
+      indexOfRequest.set(sent, atPlace);
+    }
+    const named = operation?.name;
+    const n = named ? (perId.get(id) ?? 0) : indexOfRequest.get(sent)!;
+    if (named) perId.set(id, n + 1);
+    return [n === 0 ? c : { ...c, id: callId(c.location, n, named) }];
   });
 }
 

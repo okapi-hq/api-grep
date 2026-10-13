@@ -2,6 +2,7 @@ import { isSafeKey } from "../../record-keys.js";
 import { staticText } from "../../resolve/parts.js";
 import { paramValues } from "../../resolve/param-shape.js";
 import { unionOf } from "../../resolve/shape-utils.js";
+import { stringShapeOf } from "../../resolve/string-template.js";
 import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
@@ -46,10 +47,8 @@ function literalShape(e: Expr, fn: FunctionDef, ctx: IrCtx): Shape | undefined {
       return { type: "null" };
     case "tmpl":
     case "concat":
-    case "format": {
-      const text = staticText(evaluate(e, fn, ctx));
-      return text !== undefined ? { type: "string", enum: [text] } : { type: "string" };
-    }
+    case "format":
+      return stringShapeOf(evaluate(e, fn, ctx));
     default:
       return undefined;
   }

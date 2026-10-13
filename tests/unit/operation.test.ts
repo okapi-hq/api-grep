@@ -62,4 +62,11 @@ describe("one call per request, with operations", () => {
     const calls = onePerRequest([first, second]);
     expect(calls.map((c) => c.id)).toEqual([callId(loc, 0, "getBalance"), callId(loc, 1, "getBalance")]);
   });
+
+  it("a request without an operation keeps its index among every request from its place, a batch counted once", () => {
+    const plain = (event: string) => ({ ...assembleCall(resolved()), headers: [event] });
+    const batch = (name: string) => assembleCall(resolved(rpc(name, { batch: true })));
+    const calls = onePerRequest([plain("x-before"), { ...assembleCall(resolved(rpc("getHealth"))), headers: ["x-single"] }, batch("getBalance"), batch("getSlot"), plain("x-after")]);
+    expect(calls.map((c) => c.id)).toEqual([callId(loc), callId(loc, 0, "getHealth"), callId(loc, 0, "getBalance"), callId(loc, 0, "getSlot"), callId(loc, 3)]);
+  });
 });
