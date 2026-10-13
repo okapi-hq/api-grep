@@ -95,7 +95,15 @@ export interface IrRaw {
   model?: Scoped;
   /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
   clientFrom?: ClientFrom;
+  /**
+   * Other requests the same call may send (a request factory with several returns, a request started in several
+   * branches): each is a call of its own at the same place.
+   */
+  alternatives?: IrRaw[];
 }
+
+/** A detected call and the other requests it may send. */
+export const withAlternatives = (raw: IrRaw): IrRaw[] => (raw.alternatives ? [{ ...raw, alternatives: undefined }, ...raw.alternatives] : [raw]);
 
 export function withSubst(ctx: IrCtx, subst: Subst | undefined): IrCtx {
   if (!subst || subst.size === 0) return ctx;

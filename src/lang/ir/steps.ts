@@ -1,17 +1,11 @@
-import { callsOn, scopedIn, type ScopedCall } from "./fluent.js";
+import { scopedIn, type ScopedCall } from "./fluent.js";
 import type { OptionRole, Scoped } from "./language.js";
-import { dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "./model.js";
-import { appliedSteps, expandApplied, lambdaCalls, lambdaOf } from "./applied.js";
-import { classField, classMethod, lookup, receiverClass, type Binding } from "./project.js";
-import { injectedCall, injectedField, paramValue } from "./injected.js";
-import type { IrCtx, IrPair, Subst } from "./raw.js";
-import { substitutionFor } from "./wrappers.js";
+import { dottedPath, type CallExpr, type Expr, type FunctionDef } from "./model.js";
+import { lambdaCalls, lambdaOf } from "./applied.js";
+import type { IrPair } from "./raw.js";
 
 export { lambdaCalls, lambdaOf };
-
-const MAX_DEPTH = 8;
-/** Calls read on one builder: far more than any request needs, and a bound for generated code. */
-const MAX_STEPS = 400;
+export { fluentChain, fluentChains, type FluentChain } from "./fluent-chain.js";
 
 /**
  * What one call of a fluent request or URL builder sets from its arguments (`.url(u)`, `.header(k, v)`,
@@ -81,105 +75,6 @@ const positional = (c: ScopedCall): Expr[] => c.call.args.filter((a) => !a.name 
 export function argAt(c: ScopedCall, i: number | undefined): Scoped | undefined {
   const a = i !== undefined ? positional(c)[i] : undefined;
   return a ? { expr: a, fn: c.fn } : undefined;
-}
-
-export interface FluentChain {
-  /** The call the chain starts from (`Request.Builder()`), when one of the start names was found. */
-  start?: ScopedCall;
-  /** The calls after it, in order, those made on a variable holding the builder included. */
-  steps: ScopedCall[];
-  /** The parameters of the factories the chain went through, bound to the arguments of their calls. */
-  subst?: Subst;
-  /** Without a start: the value the chain was last followed to (a parameter, an unknown call). */
-  end?: Scoped;
-}
-
-const classBinding = (b: Binding): ClassDef | undefined => (b.kind === "class" ? b.cls : undefined);
-
-/**
- * A function calling its own name delegates to an overload (`fun get(url: String) = get(url.toHttpUrl())`), which the
- * name does not resolve to: the other function of that name in the same scope.
- */
-function overload(target: FunctionDef, from: FunctionDef): FunctionDef {
-  if (target !== from) return target;
-  return target.module.allFunctions.find((f) => f !== target && f.name === target.name && f.cls === target.cls && f.parent === target.parent) ?? target;
-}
-
-/**
- * What a factory of the project returns (`fun client() = OkHttpClient.Builder()...`, `by lazy { ... }`), when it has
- * one return; its parameters stand for the call's arguments (`fun get(url: String) = Request.Builder().url(url)`).
- */
-function factoryReturn(call: CallExpr, fn: FunctionDef, ctx: IrCtx, subst: Subst): Scoped | undefined {
-  const named = call.fn.k === "fnref" ? call.fn.fn : call.fn.k === "name" ? functionBinding(lookup(call.fn.name, fn, call.pos.offset, ctx.idx)) : factoryMethod(call.fn, fn, ctx);
-  const target = named ? overload(named, fn) : undefined;
-  if (!target || target.returns.length !== 1) return undefined;
-  for (const [p, v] of substitutionFor(target, call, fn)) subst.set(p, v);
-  return { expr: target.returns[0]!, fn: target };
-}
-
-const functionBinding = (b: Binding): FunctionDef | undefined => (b.kind === "function" ? b.fn : undefined);
-
-/** A method of the class the code runs in (`this.buildRequest(url)`, a bare call in Java and Kotlin) or of a named class (`Requests.get(url)`). */
-function factoryMethod(callee: Expr, fn: FunctionDef, ctx: IrCtx): FunctionDef | undefined {
-  if (callee.k !== "attr") return undefined;
-  const owner = callee.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : callee.obj.k === "name" ? classBinding(lookup(callee.obj.name, fn, callee.pos.offset, ctx.idx)) : undefined;
-  return owner ? classMethod(owner, callee.name, ctx.idx) : undefined;
-}
-
-/** The next value down a chain: a variable's value (and the calls made on it), a parameter's argument, a field. */
-function below(e: Expr, fn: FunctionDef, ctx: IrCtx, steps: ScopedCall[], subst: Subst): Scoped | undefined {
-  if (e.k === "scoped") return { expr: e.expr, fn: e.fn };
-  if (e.k === "attr") {
-    // `this.client`, `ApiClient.client` (an `object` or companion member)
-    const owner = e.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : e.obj.k === "name" ? classBinding(lookup(e.obj.name, fn, e.pos.offset, ctx.idx)) : undefined;
-    const values = owner ? classField(owner, e.name, ctx.idx) : [];
-    if (values.length === 0 && e.obj.k === "this") return injectedField(owner, e.name, ctx);
-    return values.length === 1 ? { expr: values[0]!.value, fn: values[0]!.fn } : undefined;
-  }
-  if (e.k === "call") return factoryReturn(e, fn, ctx, subst) ?? injectedCall(e, fn, ctx);
-  if (e.k !== "name") return undefined;
-  const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
-  if (b.kind === "param") return subst.get(b.param) ?? paramValue(b.param, b.fn, ctx);
-  if (b.kind !== "value" || b.assign.augmented) return undefined;
-  steps.unshift(...callsOn(b.fn, e.name, b.assign.offset).filter((c) => b.fn !== fn || c.call.pos.offset < e.pos.offset));
-  return { expr: b.assign.value, fn: b.fn };
-}
-
-/**
- * The calls a fluent value is built with: `Request.Builder().url(u).post(b).build()` is the start `Builder()` and the
- * steps `url`, `post`, `build`, also through variables (`val b = Request.Builder(); b.header(...)`) and fields.
- * Steps inside Kotlin `apply { ... }` and `also { ... }` are steps too.
- */
-export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: IrCtx): FluentChain {
-  const steps: ScopedCall[] = [];
-  const subst: Subst = new Map();
-  let end: Scoped = s;
-  const done = (start?: ScopedCall): FluentChain => ({
-    ...(start ? { start } : { end }),
-    steps: expandApplied(start ? [...appliedSteps(start.call.applied), ...steps] : steps),
-    ...(subst.size > 0 ? { subst } : {}),
-  });
-  let cur: Scoped | undefined = s;
-  // calls down the expression are bounded by its size; hops through variables, fields and factories are counted
-  for (let hops = 0; cur && hops < MAX_DEPTH && steps.length < MAX_STEPS; ) {
-    const { expr, fn }: Scoped = (end = cur);
-    if (expr.k === "call" && isStart(expr)) return done({ call: expr, fn });
-    // `this.buildRequest(url)`, `Requests.get(url)`: a method of the project returning the builder, not a step of it
-    const made: Scoped | undefined = expr.k === "call" && factoryMethod(expr.fn, fn, ctx) ? factoryReturn(expr, fn, ctx, subst) : undefined;
-    if (made) {
-      cur = made;
-      hops++;
-      continue;
-    }
-    if (expr.k === "call" && expr.fn.k === "attr") {
-      steps.unshift({ call: expr, fn });
-      cur = { expr: expr.fn.obj, fn };
-      continue;
-    }
-    cur = below(expr, fn, ctx, steps, subst);
-    hops++;
-  }
-  return done();
 }
 
 /** A synthetic `Authorization` header pair: `Bearer <token>`, `Basic <credentials>`. */
