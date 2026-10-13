@@ -18,7 +18,7 @@ export function declaredPackages(rootDir: string, files: string[], packages: Pac
 }
 
 /** Packages a file loads at runtime: import / export-from declarations (not `import type`), `require()` and `import()`. */
-function importedPackages(sf: SourceFile): Set<string> {
+export function importedPackages(sf: SourceFile): Set<string> {
   const specs: string[] = [];
   for (const d of [...sf.getImportDeclarations(), ...sf.getExportDeclarations()]) {
     const spec = specifierOf(d);
@@ -44,10 +44,16 @@ export interface PageImports {
 
 /** SDK coverage of the npm packages a TypeScript / JavaScript repo declares and imports (HTML pages through CDN scripts). */
 export function sdkCoverage(rootDir: string, files: SourceFile[], calls: Call[], registry: Registry, pages: PageImports[] = [], packageJsons = new PackageJsonReader(rootDir)): Coverage {
-  const known = sdkPackages("npm");
-  const sites = new Map<string, number>();
   const imports = new Map<string, Set<string>>();
   for (const sf of files) imports.set(sf.getFilePath(), importedPackages(sf));
+  return importsCoverage(rootDir, imports, calls, registry, pages, packageJsons);
+}
+
+/** `sdkCoverage` from the packages each scanned file imports (`importedPackages`), read while its project was alive. */
+export function importsCoverage(rootDir: string, files: Map<string, Set<string>>, calls: Call[], registry: Registry, pages: PageImports[], packageJsons: PackageJsonReader): Coverage {
+  const known = sdkPackages("npm");
+  const sites = new Map<string, number>();
+  const imports = new Map(files);
   for (const p of pages) imports.set(p.file, new Set([...(imports.get(p.file) ?? []), ...p.packages]));
   for (const pkgs of imports.values()) for (const pkg of pkgs) if (known.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   const supported = (pkg: string): boolean => !!registry.byPackage(pkg) || AI_SDK_PACKAGES.has(pkg);

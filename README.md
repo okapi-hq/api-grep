@@ -327,8 +327,9 @@ api-grep serve --port 8080                            # HTTP server, see below
 | `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable); excluded files are still read to resolve imports |
 | `--no-wrappers` | disable wrapper expansion |
 
-Large monorepos need several GB of heap. The CLI re-runs itself with
-`--max-old-space-size=8192`; set `API_GREP_HEAP_MB` to change it, or to `0` to opt out.
+TypeScript and JavaScript are read in batches of files that import each other, so a large monorepo fits in a 2 GB
+heap; more heap makes the largest scans faster. The CLI re-runs itself with `--max-old-space-size=8192`; set
+`API_GREP_HEAP_MB` to change it, or to `0` to opt out.
 
 **Exit codes:** `0` complete scan, `2` partial scan (the report is still written, see
 [diagnostics](#diagnostics)), `1` fatal error (for example the directory does not exist).

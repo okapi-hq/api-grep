@@ -73,10 +73,15 @@ export class ReceiverResolver {
   private index?: Map<string, CallExpression[]>;
   private readonly results = new Map<Node, ReceiverResult>();
 
+  /**
+   * `groupOf` gives the group of files that can see each other (`lang/typescript/graph.ts`): a call in another group
+   * cannot reach the function, so only those of its group are counted against `MAX_CALLERS`.
+   */
   constructor(
     private readonly files: SourceFile[],
     readonly registry: Registry,
     private readonly declared: (file: string) => Set<string>,
+    private readonly groupOf?: (file: string) => number | undefined,
   ) {}
 
   resolve(node: CallExpression, r: Receiver): ReceiverResult {
@@ -113,7 +118,9 @@ export class ReceiverResolver {
       .filter((p) => p.getName() !== "this")
       .indexOf(r.param);
     const out = new Map<string, RawCall>();
-    for (const caller of (name ? this.callsNamed(name) : []).slice(0, MAX_CALLERS)) {
+    const group = this.groupOf?.(node.getSourceFile().getFilePath());
+    const reachable = (c: CallExpression): boolean => group === undefined || this.groupOf!(c.getSourceFile().getFilePath()) === group;
+    for (const caller of (name ? this.callsNamed(name).filter(reachable) : []).slice(0, MAX_CALLERS)) {
       const callee = describeCallee(caller);
       if (wrapperFunction(callee) !== r.fn) continue;
       const arg = caller.getArguments()[callShift(callee) + position];

@@ -28,6 +28,11 @@ export interface ScanOptions {
   wrappers?: boolean;
   /** Maximum example requests per call (default 3, 0 disables). */
   examples?: number;
+  /**
+   * TypeScript / JavaScript: bytes of source per checker project (default `BATCH_BYTES`). Files that can see each other
+   * always share one; a smaller value only lowers the peak memory of a scan.
+   */
+  batchBytes?: number;
   /** Receives one line per unreadable file and per dropped call (also listed in `diagnostics`); the scan never stops on them. */
   onWarning?: (message: string) => void;
 }

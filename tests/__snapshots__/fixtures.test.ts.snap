@@ -1304,6 +1304,25 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "source": {
             "anyOf": [
               {
+                "fromType": "Bank",
+                "properties": {
+                  "iban": {
+                    "type": "string",
+                  },
+                  "kind": {
+                    "enum": [
+                      "bank",
+                    ],
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "kind",
+                  "iban",
+                ],
+                "type": "object",
+              },
+              {
                 "fromType": "Card",
                 "properties": {
                   "expMonth": {
@@ -1323,25 +1342,6 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
                   "kind",
                   "number",
                   "expMonth",
-                ],
-                "type": "object",
-              },
-              {
-                "fromType": "Bank",
-                "properties": {
-                  "iban": {
-                    "type": "string",
-                  },
-                  "kind": {
-                    "enum": [
-                      "bank",
-                    ],
-                    "type": "string",
-                  },
-                },
-                "required": [
-                  "kind",
-                  "iban",
                 ],
                 "type": "object",
               },
@@ -1374,9 +1374,8 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
             "capture": true,
             "currency": "eur",
             "source": {
-              "expMonth": 5,
-              "kind": "card",
-              "number": "linen compass",
+              "iban": "DE89683836180889811279",
+              "kind": "bank",
             },
           },
           "bodyEncoding": "json",
@@ -1396,8 +1395,9 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
             "capture": true,
             "currency": "eur",
             "source": {
-              "iban": "DE89781177349274366898",
-              "kind": "bank",
+              "expMonth": 11,
+              "kind": "card",
+              "number": "sable quill",
             },
           },
           "bodyEncoding": "json",
@@ -1635,8 +1635,8 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "origin": "param",
           "shape": {
             "enum": [
-              "posts",
               "likes",
+              "posts",
             ],
             "type": "string",
           },
@@ -1649,7 +1649,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "headers": {},
           "method": "GET",
           "query": {},
-          "url": "https://api.example.com/users/9839/posts",
+          "url": "https://api.example.com/users/9839/likes",
           "variant": "minimal",
         },
         {
@@ -1657,7 +1657,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "headers": {},
           "method": "GET",
           "query": {},
-          "url": "https://api.example.com/users/7728/likes",
+          "url": "https://api.example.com/users/7728/posts",
           "variant": "alt",
         },
       ],
@@ -1807,8 +1807,8 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "origin": "param",
           "shape": {
             "enum": [
-              "open",
               "closed",
+              "open",
             ],
             "type": "string",
           },
@@ -1823,9 +1823,9 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "query": {
             "expand": "owner",
             "page": "5",
-            "status": "open",
+            "status": "closed",
           },
-          "url": "https://api.example.com/v1/tickets?page=5&status=open&expand=owner",
+          "url": "https://api.example.com/v1/tickets?page=5&status=closed&expand=owner",
           "variant": "minimal",
         },
         {
@@ -1835,9 +1835,9 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           "query": {
             "expand": "owner",
             "page": "4",
-            "status": "closed",
+            "status": "open",
           },
-          "url": "https://api.example.com/v1/tickets?page=4&status=closed&expand=owner",
+          "url": "https://api.example.com/v1/tickets?page=4&status=open&expand=owner",
           "variant": "alt",
         },
       ],
@@ -1874,8 +1874,8 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
           },
           "status": {
             "enum": [
-              "open",
               "closed",
+              "open",
             ],
             "type": "string",
           },
@@ -5601,18 +5601,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                             "type": "string",
                           },
                           {
-                            "fromType": "OtherString",
-                            "properties": {
-                              "length": {
-                                "type": "unknown",
-                              },
-                            },
-                            "required": [
-                              "length",
-                            ],
-                            "type": "object",
-                          },
-                          {
                             "enum": [
                               "exclude_tax",
                             ],
@@ -5623,6 +5611,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                               "include_inclusive_tax",
                             ],
                             "type": "string",
+                          },
+                          {
+                            "fromType": "OtherString",
+                            "properties": {
+                              "length": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [
+                              "length",
+                            ],
+                            "type": "object",
                           },
                         ],
                         "type": "union",
@@ -5741,18 +5741,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               "validate_location": {
                 "anyOf": [
                   {
-                    "fromType": "OtherString",
-                    "properties": {
-                      "length": {
-                        "type": "number",
-                      },
-                    },
-                    "required": [
-                      "length",
-                    ],
-                    "type": "object",
-                  },
-                  {
                     "enum": [
                       "deferred",
                     ],
@@ -5763,6 +5751,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                       "immediately",
                     ],
                     "type": "string",
+                  },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
                   },
                 ],
                 "type": "union",
@@ -5778,18 +5778,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "",
                 ],
                 "type": "string",
-              },
-              {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
               },
               {
                 "enum": [
@@ -5809,6 +5797,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 ],
                 "type": "string",
               },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
             ],
             "type": "union",
           },
@@ -5818,18 +5818,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               "properties": {
                 "type": {
                   "anyOf": [
-                    {
-                      "fromType": "OtherString",
-                      "properties": {
-                        "length": {
-                          "type": "number",
-                        },
-                      },
-                      "required": [
-                        "length",
-                      ],
-                      "type": "object",
-                    },
                     {
                       "enum": [
                         "ad_nrt",
@@ -6532,6 +6520,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                       ],
                       "type": "string",
                     },
+                    {
+                      "fromType": "OtherString",
+                      "properties": {
+                        "length": {
+                          "type": "number",
+                        },
+                      },
+                      "required": [
+                        "length",
+                      ],
+                      "type": "object",
+                    },
                   ],
                   "type": "union",
                 },
@@ -6598,20 +6598,16 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
             "source": "echo marble",
             "tax": {
               "ip_address": "164 Indigo Street",
-              "validate_location": {
-                "length": 657,
-              },
+              "validate_location": "deferred",
             },
             "tax_exempt": "",
             "tax_id_data": [
               {
-                "type": {
-                  "length": 547,
-                },
-                "value": "koala zephyr",
+                "type": "ad_nrt",
+                "value": "mosaic echo",
               },
             ],
-            "test_clock": "wander grove",
+            "test_clock": "koala zephyr",
             "validate": true,
           },
           "bodyEncoding": "form",
@@ -6661,26 +6657,20 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
             "source": "pebble dune",
             "tax": {
               "ip_address": "65 Mosaic Street",
-              "validate_location": {
-                "length": 491,
-              },
+              "validate_location": "deferred",
             },
             "tax_exempt": "",
             "tax_id_data": [
               {
-                "type": {
-                  "length": 309,
-                },
-                "value": "verdant compass",
+                "type": "ad_nrt",
+                "value": "atlas marble",
               },
               {
-                "type": {
-                  "length": 795,
-                },
-                "value": "quiet verdant",
+                "type": "ad_nrt",
+                "value": "verdant compass",
               },
             ],
-            "test_clock": "onyx amber",
+            "test_clock": "verdant quiet",
             "validate": true,
           },
           "bodyEncoding": "form",
@@ -6727,47 +6717,43 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               "default_payment_method": "horizon anchor",
               "footer": "indigo delta",
               "rendering_options": {
-                "amount_tax_display": {
-                  "length": "garden prairie",
-                },
-                "template": "lagoon ridge",
+                "amount_tax_display": "exclude_tax",
+                "template": "garden prairie",
               },
             },
             "metadata": {},
-            "name": "Falcon Lagoon",
-            "next_invoice_sequence": 30,
-            "payment_method": "sable koala",
-            "phone": "+14155552126",
+            "name": "Lagoon Ridge",
+            "next_invoice_sequence": 20,
+            "payment_method": "lagoon lagoon",
+            "phone": "+14155557746",
             "preferred_locales": [
-              "beacon lagoon",
+              "summit koala",
             ],
             "shipping": {
               "address": {
-                "city": "Lyon",
+                "city": "Graz",
                 "country": "US",
-                "line1": "26 Nectar Street",
-                "line2": "ridge hollow",
-                "postal_code": "31611",
+                "line1": "59 Garden Street",
+                "line2": "willow nectar",
+                "postal_code": "44599",
                 "state": "active",
               },
-              "name": "Beacon Xenon",
-              "phone": "+14155553905",
+              "name": "Hollow Horizon",
+              "phone": "+14155558908",
             },
-            "source": "amber indigo",
+            "source": "nectar cedar",
             "tax": {
-              "ip_address": "70 Opal Street",
-              "validate_location": "deferred",
+              "ip_address": "3 Indigo Street",
+              "validate_location": "immediately",
             },
-            "tax_exempt": {
-              "length": 823,
-            },
+            "tax_exempt": "exempt",
             "tax_id_data": [
               {
-                "type": "ad_nrt",
-                "value": "quiet timber",
+                "type": "ae_trn",
+                "value": "pebble opal",
               },
             ],
-            "test_clock": "birch ridge",
+            "test_clock": "xenon quiet",
             "validate": false,
           },
           "bodyEncoding": "form",
@@ -6907,18 +6893,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                     "tax_behavior": {
                       "anyOf": [
                         {
-                          "fromType": "OtherString",
-                          "properties": {
-                            "length": {
-                              "type": "unknown",
-                            },
-                          },
-                          "required": [
-                            "length",
-                          ],
-                          "type": "object",
-                        },
-                        {
                           "enum": [
                             "exclusive",
                           ],
@@ -6935,6 +6909,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                             "unspecified",
                           ],
                           "type": "string",
+                        },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
                         },
                       ],
                       "type": "union",
@@ -6994,13 +6980,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "application_fee_percent": {
             "anyOf": [
               {
-                "type": "number",
-              },
-              {
                 "enum": [
                   "",
                 ],
                 "type": "string",
+              },
+              {
+                "type": "number",
               },
             ],
             "type": "union",
@@ -7020,18 +7006,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "type": {
                     "anyOf": [
                       {
-                        "fromType": "OtherString",
-                        "properties": {
-                          "length": {
-                            "type": "number",
-                          },
-                        },
-                        "required": [
-                          "length",
-                        ],
-                        "type": "object",
-                      },
-                      {
                         "enum": [
                           "account",
                         ],
@@ -7042,6 +7016,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                           "self",
                         ],
                         "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
                       },
                     ],
                     "type": "union",
@@ -7061,18 +7047,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "billing_cycle_anchor": {
             "anyOf": [
               {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
-              },
-              {
                 "enum": [
                   "now",
                 ],
@@ -7083,6 +7057,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "unchanged",
                 ],
                 "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
               },
             ],
             "type": "union",
@@ -7191,25 +7177,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "cancel_at": {
             "anyOf": [
               {
-                "type": "number",
-              },
-              {
                 "enum": [
                   "",
                 ],
                 "type": "string",
-              },
-              {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
               },
               {
                 "enum": [
@@ -7228,6 +7199,21 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "min_period_end",
                 ],
                 "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+              {
+                "type": "number",
               },
             ],
             "type": "union",
@@ -7251,18 +7237,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                       "",
                     ],
                     "type": "string",
-                  },
-                  {
-                    "fromType": "OtherString",
-                    "properties": {
-                      "length": {
-                        "type": "number",
-                      },
-                    },
-                    "required": [
-                      "length",
-                    ],
-                    "type": "object",
                   },
                   {
                     "enum": [
@@ -7312,6 +7286,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                     ],
                     "type": "string",
                   },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
+                  },
                 ],
                 "type": "union",
               },
@@ -7325,18 +7311,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "collection_method": {
             "anyOf": [
               {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
-              },
-              {
                 "enum": [
                   "charge_automatically",
                 ],
@@ -7347,6 +7321,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "send_invoice",
                 ],
                 "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
               },
             ],
             "type": "union",
@@ -7481,18 +7467,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "type": {
                     "anyOf": [
                       {
-                        "fromType": "OtherString",
-                        "properties": {
-                          "length": {
-                            "type": "number",
-                          },
-                        },
-                        "required": [
-                          "length",
-                        ],
-                        "type": "object",
-                      },
-                      {
                         "enum": [
                           "account",
                         ],
@@ -7503,6 +7477,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                           "self",
                         ],
                         "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
                       },
                     ],
                     "type": "union",
@@ -7639,18 +7625,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                     "tax_behavior": {
                       "anyOf": [
                         {
-                          "fromType": "OtherString",
-                          "properties": {
-                            "length": {
-                              "type": "unknown",
-                            },
-                          },
-                          "required": [
-                            "length",
-                          ],
-                          "type": "object",
-                        },
-                        {
                           "enum": [
                             "exclusive",
                           ],
@@ -7667,6 +7641,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                             "unspecified",
                           ],
                           "type": "string",
+                        },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
                         },
                       ],
                       "type": "union",
@@ -7762,18 +7748,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "behavior": {
                     "anyOf": [
                       {
-                        "fromType": "OtherString",
-                        "properties": {
-                          "length": {
-                            "type": "number",
-                          },
-                        },
-                        "required": [
-                          "length",
-                        ],
-                        "type": "object",
-                      },
-                      {
                         "enum": [
                           "keep_as_draft",
                         ],
@@ -7790,6 +7764,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                           "void",
                         ],
                         "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
                       },
                     ],
                     "type": "union",
@@ -7808,18 +7794,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "payment_behavior": {
             "anyOf": [
-              {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
-              },
               {
                 "enum": [
                   "allow_incomplete",
@@ -7843,6 +7817,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "pending_if_incomplete",
                 ],
                 "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
               },
             ],
             "type": "union",
@@ -8217,24 +8203,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                       "anyOf": [
                         {
                           "enum": [
-                            "link",
-                          ],
-                          "type": "string",
-                        },
-                        {
-                          "fromType": "OtherString",
-                          "properties": {
-                            "length": {
-                              "type": "unknown",
-                            },
-                          },
-                          "required": [
-                            "length",
-                          ],
-                          "type": "object",
-                        },
-                        {
-                          "enum": [
                             "ach_credit_transfer",
                           ],
                           "type": "string",
@@ -8391,6 +8359,12 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                         },
                         {
                           "enum": [
+                            "link",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
                             "mb_way",
                           ],
                           "type": "string",
@@ -8521,6 +8495,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                           ],
                           "type": "string",
                         },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
+                        },
                       ],
                       "type": "union",
                     },
@@ -8532,18 +8518,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               "save_default_payment_method": {
                 "anyOf": [
                   {
-                    "fromType": "OtherString",
-                    "properties": {
-                      "length": {
-                        "type": "number",
-                      },
-                    },
-                    "required": [
-                      "length",
-                    ],
-                    "type": "object",
-                  },
-                  {
                     "enum": [
                       "off",
                     ],
@@ -8554,6 +8528,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                       "on_subscription",
                     ],
                     "type": "string",
+                  },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
                   },
                 ],
                 "type": "union",
@@ -8575,18 +8561,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "properties": {
                   "interval": {
                     "anyOf": [
-                      {
-                        "fromType": "OtherString",
-                        "properties": {
-                          "length": {
-                            "type": "number",
-                          },
-                        },
-                        "required": [
-                          "length",
-                        ],
-                        "type": "object",
-                      },
                       {
                         "enum": [
                           "day",
@@ -8611,6 +8585,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                         ],
                         "type": "string",
                       },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
                     ],
                     "type": "union",
                   },
@@ -8629,24 +8615,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "proration_behavior": {
             "anyOf": [
               {
-                "fromType": "OtherString",
-                "properties": {
-                  "length": {
-                    "type": "number",
-                  },
-                },
-                "required": [
-                  "length",
-                ],
-                "type": "object",
-              },
-              {
-                "enum": [
-                  "none",
-                ],
-                "type": "string",
-              },
-              {
                 "enum": [
                   "always_invoice",
                 ],
@@ -8657,6 +8625,24 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "create_prorations",
                 ],
                 "type": "string",
+              },
+              {
+                "enum": [
+                  "none",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
               },
             ],
             "type": "union",
@@ -8693,13 +8679,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "trial_end": {
             "anyOf": [
               {
-                "type": "number",
-              },
-              {
                 "enum": [
                   "now",
                 ],
                 "type": "string",
+              },
+              {
+                "type": "number",
               },
             ],
             "type": "union",
@@ -8715,18 +8701,6 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "properties": {
                   "missing_payment_method": {
                     "anyOf": [
-                      {
-                        "fromType": "OtherString",
-                        "properties": {
-                          "length": {
-                            "type": "number",
-                          },
-                        },
-                        "required": [
-                          "length",
-                        ],
-                        "type": "object",
-                      },
                       {
                         "enum": [
                           "cancel",
@@ -8744,6 +8718,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                           "pause",
                         ],
                         "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
                       },
                     ],
                     "type": "union",
@@ -8823,105 +8809,93 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "price_data": {
                   "currency": "usd",
                   "product": "quartz birch",
-                  "tax_behavior": {
-                    "length": "wander hollow",
-                  },
-                  "unit_amount": 5307,
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 8048,
                   "unit_amount_decimal": {
-                    "_coefficient": "tundra anchor",
-                    "_exponent": "estuary quill",
+                    "_coefficient": "hollow cedar",
+                    "_exponent": "tundra anchor",
                   },
                 },
-                "quantity": 7,
+                "quantity": 9,
                 "tax_rates": "",
               },
               {
                 "discountable": true,
                 "discounts": [
                   {
-                    "coupon": "F250C1",
-                    "discount": "marble onyx",
-                    "promotion_code": "anchor indigo",
+                    "coupon": "Z1F250",
+                    "discount": "copper ultra",
+                    "promotion_code": "marble onyx",
                   },
                   {
-                    "coupon": "SQNR27",
-                    "discount": "grove orbit",
-                    "promotion_code": "quartz fable",
+                    "coupon": "4VSQNR",
+                    "discount": "wander estuary",
+                    "promotion_code": "grove orbit",
                   },
                 ],
                 "metadata": {},
                 "period": {
                   "end": {
-                    "timestamp": 1714686714,
-                    "type": "marble compass",
+                    "timestamp": 1721524443,
+                    "type": "fable island",
                   },
                   "start": {
-                    "timestamp": 1734787696,
-                    "type": "tundra cedar",
+                    "timestamp": 1718023084,
+                    "type": "compass glacier",
                   },
                 },
-                "price": "4930",
+                "price": "7632",
                 "price_data": {
                   "currency": "usd",
-                  "product": "summit jasper",
-                  "tax_behavior": {
-                    "length": "echo copper",
-                  },
-                  "unit_amount": 9334,
+                  "product": "cedar atlas",
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 1290,
                   "unit_amount_decimal": {
-                    "_coefficient": "ultra delta",
-                    "_exponent": "nimbus sable",
+                    "_coefficient": "jasper echo",
+                    "_exponent": "copper fjord",
                   },
                 },
                 "quantity": 8,
                 "tax_rates": "",
               },
             ],
-            "application_fee_percent": 2478,
+            "application_fee_percent": "",
             "automatic_tax": {
               "enabled": true,
               "liability": {
-                "account": "beacon copper",
-                "type": {
-                  "length": 267,
-                },
+                "account": "delta nimbus",
+                "type": "account",
               },
             },
-            "billing_cycle_anchor": {
-              "length": 235,
-            },
+            "billing_cycle_anchor": "now",
             "billing_schedules": "",
             "billing_thresholds": "",
-            "cancel_at": 1708346580,
+            "cancel_at": "",
             "cancel_at_period_end": true,
             "cancellation_details": {
-              "comment": "Kestrel anchor amber zephyr garden nimbus.",
+              "comment": "Sable wander horizon beacon copper jasper.",
               "feedback": "",
-              "feedback_option": "7824",
+              "feedback_option": "2422",
             },
-            "collection_method": {
-              "length": 147,
-            },
-            "days_until_due": 98,
-            "default_payment_method": "anchor estuary",
-            "default_source": "falcon island",
+            "collection_method": "charge_automatically",
+            "days_until_due": 14,
+            "default_payment_method": "kestrel anchor",
+            "default_source": "amber zephyr",
             "default_tax_rates": "",
-            "description": "Saffron marble marble island sable compass.",
+            "description": "Garden nimbus ultra orbit jetty anchor.",
             "discounts": "",
             "expand": [
-              "glacier fjord",
-              "willow ridge",
+              "estuary falcon",
+              "island saffron",
             ],
             "invoice_settings": {
               "account_tax_ids": "",
               "custom_fields": "",
-              "description": "Lantern quartz echo harbor prairie echo.",
-              "footer": "ember prairie",
+              "description": "Marble marble island sable compass glacier.",
+              "footer": "fjord willow",
               "issuer": {
-                "account": "pebble marble",
-                "type": {
-                  "length": 445,
-                },
+                "account": "ridge lantern",
+                "type": "account",
               },
             },
             "items": [
@@ -8930,27 +8904,25 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "clear_usage": true,
                 "deleted": true,
                 "discounts": "",
-                "id": "run365e7",
+                "id": "nuaztgzm",
                 "metadata": "",
-                "plan": "nectar sable",
-                "price": "8622",
+                "plan": "marble walnut",
+                "price": "4881",
                 "price_data": {
                   "currency": "usd",
-                  "product": "onyx copper",
+                  "product": "glacier ridge",
                   "recurring": {
-                    "interval": "island meadow",
-                    "interval_count": 348,
+                    "interval": "wander dune",
+                    "interval_count": 870,
                   },
-                  "tax_behavior": {
-                    "length": "horizon fjord",
-                  },
-                  "unit_amount": 8203,
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 1284,
                   "unit_amount_decimal": {
-                    "_coefficient": "meadow ember",
-                    "_exponent": "falcon quartz",
+                    "_coefficient": "estuary nectar",
+                    "_exponent": "sable anchor",
                   },
                 },
-                "quantity": 5,
+                "quantity": 4,
                 "tax_rates": "",
               },
               {
@@ -8958,37 +8930,33 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "clear_usage": true,
                 "deleted": true,
                 "discounts": "",
-                "id": "s1jpbbdu",
+                "id": "cidmi73d",
                 "metadata": "",
-                "plan": "koala jasper",
-                "price": "8773",
+                "plan": "ember falcon",
+                "price": "3692",
                 "price_data": {
                   "currency": "usd",
-                  "product": "velvet haven",
+                  "product": "zephyr cedar",
                   "recurring": {
-                    "interval": "indigo onyx",
-                    "interval_count": 582,
+                    "interval": "sable jasper",
+                    "interval_count": 421,
                   },
-                  "tax_behavior": {
-                    "length": "willow estuary",
-                  },
-                  "unit_amount": 3341,
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 551,
                   "unit_amount_decimal": {
-                    "_coefficient": "horizon ridge",
-                    "_exponent": "juniper glacier",
+                    "_coefficient": "quiet meadow",
+                    "_exponent": "fable koala",
                   },
                 },
-                "quantity": 9,
+                "quantity": 3,
                 "tax_rates": "",
               },
             ],
             "metadata": "",
             "off_session": true,
-            "on_behalf_of": "jetty onyx",
+            "on_behalf_of": "beacon velvet",
             "pause_collection": "",
-            "payment_behavior": {
-              "length": 487,
-            },
+            "payment_behavior": "allow_incomplete",
             "payment_settings": {
               "payment_method_options": {
                 "acss_debit": "",
@@ -9004,23 +8972,17 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "us_bank_account": "",
               },
               "payment_method_types": "",
-              "save_default_payment_method": {
-                "length": 820,
-              },
+              "save_default_payment_method": "off",
             },
             "pending_invoice_item_interval": "",
-            "proration_behavior": {
-              "length": 876,
-            },
-            "proration_date": 1737998826,
+            "proration_behavior": "always_invoice",
+            "proration_date": 1757984545,
             "transfer_data": "",
-            "trial_end": 9,
+            "trial_end": "now",
             "trial_from_plan": true,
             "trial_settings": {
               "end_behavior": {
-                "missing_payment_method": {
-                  "length": 21,
-                },
+                "missing_payment_method": "cancel",
               },
             },
           },
@@ -9031,7 +8993,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "method": "POST",
           "query": {},
-          "url": "https://api.stripe.com/v1/subscriptions/luq1m1ax",
+          "url": "https://api.stripe.com/v1/subscriptions/vmue7lin",
           "variant": "full",
         },
         {
@@ -9061,7 +9023,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 "price_data": {
                   "currency": "usd",
                   "product": "valley quill",
-                  "tax_behavior": "exclusive",
+                  "tax_behavior": "inclusive",
                   "unit_amount": 9283,
                   "unit_amount_decimal": {
                     "_coefficient": "amber falcon",
@@ -9074,48 +9036,46 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 ],
               },
             ],
-            "application_fee_percent": "",
+            "application_fee_percent": 8668,
             "automatic_tax": {
               "enabled": false,
               "liability": {
-                "account": "anchor marble",
-                "type": "account",
+                "account": "marble nimbus",
+                "type": "self",
               },
             },
-            "billing_cycle_anchor": "now",
+            "billing_cycle_anchor": "unchanged",
             "billing_schedules": [
               {
                 "applies_to": [
                   {
-                    "price": "6835",
-                    "type": "sable marble",
+                    "price": "7478",
+                    "type": "marble copper",
                   },
                 ],
                 "bill_until": {
                   "duration": {
-                    "interval": "copper haven",
-                    "interval_count": "pebble river",
+                    "interval": "haven pebble",
+                    "interval_count": "river linen",
                   },
-                  "timestamp": 1739196033,
-                  "type": "ridge estuary",
+                  "timestamp": 1722966879,
+                  "type": "estuary delta",
                 },
                 "key": "<key>",
               },
             ],
             "billing_thresholds": {
-              "amount_gte": 5390,
+              "amount_gte": 1202,
               "reset_billing_cycle_anchor": false,
             },
-            "cancel_at": "",
+            "cancel_at": "max_billed_until",
             "cancel_at_period_end": true,
             "cancellation_details": {
-              "comment": "Lantern yarrow summit tundra quiet yonder.",
-              "feedback": {
-                "length": 101,
-              },
+              "comment": "Yarrow summit tundra quiet yonder lantern.",
+              "feedback": "customer_service",
               "feedback_option": "5093",
             },
-            "collection_method": "charge_automatically",
+            "collection_method": "send_invoice",
             "days_until_due": 8,
             "default_payment_method": "onyx atlas",
             "default_source": "maple willow",
@@ -9147,7 +9107,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               "footer": "anchor meadow",
               "issuer": {
                 "account": "maple marble",
-                "type": "account",
+                "type": "self",
               },
             },
             "items": [
@@ -9175,7 +9135,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                     "interval": "dune canyon",
                     "interval_count": 297,
                   },
-                  "tax_behavior": "exclusive",
+                  "tax_behavior": "inclusive",
                   "unit_amount": 6215,
                   "unit_amount_decimal": {
                     "_coefficient": "anchor meadow",
@@ -9192,10 +9152,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
             "off_session": false,
             "on_behalf_of": "onyx summit",
             "pause_collection": {
-              "behavior": "keep_as_draft",
+              "behavior": "mark_uncollectible",
               "resumes_at": 1701425810,
             },
-            "payment_behavior": "allow_incomplete",
+            "payment_behavior": "default_incomplete",
             "payment_settings": {
               "payment_method_options": {
                 "acss_debit": {
@@ -9259,27 +9219,25 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                 },
               },
               "payment_method_types": [
-                {
-                  "length": "orbit quiet",
-                },
+                "ach_debit",
               ],
-              "save_default_payment_method": "off",
+              "save_default_payment_method": "on_subscription",
             },
             "pending_invoice_item_interval": {
-              "interval": "day",
-              "interval_count": 64,
+              "interval": "month",
+              "interval_count": 151,
             },
-            "proration_behavior": "none",
-            "proration_date": 1714822788,
+            "proration_behavior": "create_prorations",
+            "proration_date": 1702564250,
             "transfer_data": {
-              "amount_percent": 6710,
-              "destination": "harbor raven",
+              "amount_percent": 729,
+              "destination": "island mosaic",
             },
-            "trial_end": "now",
+            "trial_end": 3,
             "trial_from_plan": false,
             "trial_settings": {
               "end_behavior": {
-                "missing_payment_method": "cancel",
+                "missing_payment_method": "create_invoice",
               },
             },
           },
@@ -9290,7 +9248,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "method": "POST",
           "query": {},
-          "url": "https://api.stripe.com/v1/subscriptions/oc842d28",
+          "url": "https://api.stripe.com/v1/subscriptions/0oc842d2",
           "variant": "alt",
         },
       ],

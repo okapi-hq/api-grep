@@ -117,8 +117,8 @@ export function buildProgram(): Command {
 }
 
 /**
- * Large monorepos need several GB of heap (ts-morph keeps every source file and type alive), more than node's
- * default or a global NODE_OPTIONS cap usually allows. Re-run once with `--max-old-space-size=<API_GREP_HEAP_MB>`
+ * A large monorepo fits in 2 GB (files are read in batches, see `lang/typescript/batches.ts`) but scans faster with
+ * more heap than node's default or a global NODE_OPTIONS cap usually allows. Re-run once with `--max-old-space-size=<API_GREP_HEAP_MB>`
  * (default 8192; set it to 0 to opt out) unless the flag is already on the command line. Only `scan` needs it:
  * `serve` runs each scan in its own process with that heap.
  */
