@@ -117,6 +117,8 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
   if (!endpoint) return null;
   if (endpoint.url) raw.baseUrlExpr = endpoint.url;
   if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
+  // a node vendor's client builds its URL itself (`InfuraProvider`)
+  if (endpoint.host) raw.sdk = { ...raw.sdk!, host: endpoint.host, spec: { ...spec, path: `${endpoint.path ?? ""}${spec.path}` } };
   if (spec.headersArg !== undefined) raw.headersExpr = raw.sdk!.args[spec.headersArg];
   return raw;
 }

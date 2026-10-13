@@ -150,12 +150,26 @@ export interface EndpointSource {
 }
 
 /**
+ * A node vendor's client (ethers `InfuraProvider`, #78): the library builds the URL from a network name, as its own
+ * table says. `hosts` by network name or chain id; `host` for any other (`{network}.infura.io`), so the vendor is
+ * still known; `path` after it (`/v3/{projectId}`).
+ */
+export interface VendorSource {
+  /** Where the client takes the network (`0`), and the network it uses when given none. */
+  network: string;
+  default: string;
+  hosts: Record<string, string>;
+  host: string;
+  path: string;
+}
+
+/**
  * GraphQL clients (#54) talk to whatever URL the code gives them. `clients` are their constructors and factories
  * (`new ApolloClient({ uri })`), with the option holding a transport built apart (`link`); `transports` are the
  * constructors of those (`new HttpLink({ uri })`). Python writes the positions as `kw:url|0`.
  */
 export interface EndpointSpec {
-  clients: Record<string, EndpointSource & { transport?: string }>;
+  clients: Record<string, EndpointSource & { transport?: string; vendor?: VendorSource; urlOrNetwork?: boolean }>;
   transports?: Record<string, EndpointSource>;
   /**
    * JSON-RPC clients (#52) also talk to browser wallets and sockets: with this list, a call is reported only when its

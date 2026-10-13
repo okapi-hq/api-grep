@@ -1032,6 +1032,20 @@ exports[`regression fixtures > python/rpc-clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/rpc-contracts 1`] = `
+[
+  "vault.py:14 eth.example-node.io POST / eth_call",
+  "vault.py:18 eth.example-node.io POST / eth_sendTransaction",
+  "vault.py:18 eth.example-node.io POST / eth_accounts",
+  "vault.py:22 eth.example-node.io POST / eth_estimateGas",
+  "vault.py:26 eth.example-node.io POST / eth_call",
+  "vault.py:30 eth.example-node.io POST / eth_getLogs",
+  "vault.py:34 eth.example-node.io POST / eth_blockNumber",
+  "vault.py:38 infura POST /v3/{INFURA_KEY} eth_chainId",
+  "vault.py:43 unknown POST / eth_gasPrice",
+]
+`;
+
 exports[`regression fixtures > python/sdk/firebase 1`] = `
 [
   "store.py:9 firebase GET /v1/projects/{projectId}/databases/(default)/documents/users",
@@ -1341,6 +1355,43 @@ exports[`regression fixtures > rpc-clients/web3 1`] = `
   "node.ts:7 eth.example-node.io POST / eth_getBalance",
   "node.ts:11 eth.example-node.io POST / eth_getTransactionCount",
   "node.ts:15 eth.example-node.io POST / eth_sendRawTransaction",
+]
+`;
+
+exports[`regression fixtures > rpc-contracts/ethers 1`] = `
+[
+  "vault.ts:15 infura POST /v3/{INFURA_KEY} eth_call",
+  "vault.ts:19 infura POST /v3/{INFURA_KEY} eth_sendRawTransaction",
+  "vault.ts:23 infura POST /v3/{INFURA_KEY} eth_estimateGas",
+  "vault.ts:27 infura POST /v3/{INFURA_KEY} eth_call",
+  "vault.ts:32 infura POST /v3/{INFURA_KEY} eth_call",
+  "vault.ts:37 infura POST /v3/{INFURA_KEY} eth_sendTransaction",
+  "vault.ts:41 infura POST /v3/{INFURA_KEY} eth_getLogs",
+]
+`;
+
+exports[`regression fixtures > rpc-contracts/vendors 1`] = `
+[
+  "feeds.ts:12 infura POST /v3/{projectId} eth_blockNumber",
+  "feeds.ts:13 alchemy POST /v2/{apiKey} eth_getBalance",
+  "feeds.ts:14 quicknode POST /{token} eth_gasPrice",
+  "feeds.ts:15 infura POST /v3/{projectId} eth_getTransactionCount",
+  "feeds.ts:16 unknown POST / eth_blockNumber",
+  "feeds.ts:17 eth.example-node.io POST /rpc eth_blockNumber",
+  "feeds.ts:18 alchemy POST /v2/{apiKey} eth_blockNumber",
+  "feeds.ts:23 alchemy POST /v2/{apiKey} eth_call",
+]
+`;
+
+exports[`regression fixtures > rpc-contracts/wallets 1`] = `[]`;
+
+exports[`regression fixtures > rpc-contracts/web3-viem 1`] = `
+[
+  "registry.ts:11 eth.example-node.io POST / eth_call",
+  "registry.ts:15 eth.example-node.io POST / eth_sendTransaction",
+  "registry.ts:24 alchemy POST /v2/demo eth_call",
+  "registry.ts:28 rpc.example-chain.net POST / eth_sendRawTransaction",
+  "registry.ts:32 alchemy POST /v2/demo eth_call",
 ]
 `;
 

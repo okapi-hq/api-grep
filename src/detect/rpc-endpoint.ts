@@ -2,6 +2,7 @@ import { Node, SyntaxKind, type Expression, type Project, type TypeNode } from "
 import { memberChain, unwrap } from "../ast/expr.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
+import { urlOrNetwork, vendorEndpoint } from "./rpc-vendor.js";
 import {
   argsOf,
   at,
@@ -49,6 +50,8 @@ export function fromRpcClient(name: string, args: Expression[], reg: RegistryEnt
   const spec = reg.endpoint!;
   const source = Object.hasOwn(spec.clients, name) ? spec.clients[name]! : undefined;
   if (!source) return null;
+  if (source.vendor) return vendorEndpoint(source.vendor, args);
+  if (source.urlOrNetwork) return urlOrNetwork(at(args, source.url));
   if (!source.transport) return { url: at(args, source.url), headers: at(args, source.headers) };
   const given = at(args, source.transport);
   if (!given) return null;
