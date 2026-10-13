@@ -55,7 +55,8 @@
   { "name": "relay-issue-tracker", "url": "https://github.com/relayjs/relay-examples.git", "subdir": "issue-tracker" },
   { "name": "cirrus-ci-web", "url": "https://github.com/cirruslabs/cirrus-ci-web.git" },
   { "name": "shopify-app-template-remix", "url": "https://github.com/Shopify/shopify-app-template-remix.git" },
-  { "name": "shopify-mcp", "url": "https://github.com/GeLi2001/shopify-mcp.git" },
+  { "name": "shopify-nextjs-prisma-app", "url": "https://github.com/kinngh/shopify-nextjs-prisma-app.git" },
+  { "name": "metasync", "url": "https://github.com/kalenjordan/metasync.git" },
   { "name": "tap-shopify", "url": "https://github.com/singer-io/tap-shopify.git", "language": "python" },
   { "name": "sgtm", "url": "https://github.com/Asana/SGTM.git", "language": "python" },
   { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" }
