@@ -651,7 +651,7 @@ operation?: {
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python) |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects, properties and vendor providers #78 |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay, Shopify and `sgqlc` #67; bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
@@ -703,7 +703,7 @@ one-value enum:
     client at all while the library has wallet clients (TypeScript; Python keeps such calls with an unknown host).
   - Not covered yet: contract objects (`new ethers.Contract(...).balanceOf()`, `w3.eth.contract(...).functions.x().call()`,
     `eth_call` behind ABI-defined names), web3.py properties (`w3.eth.block_number`), ethers' vendor providers
-    (`InfuraProvider`, `AlchemyProvider`), wagmi, and `@solana/spl-token` helpers.
+    (`InfuraProvider`, `AlchemyProvider`), wagmi, and `@solana/spl-token` helpers (#78).
 - **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
   clients (#32).
 
