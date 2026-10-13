@@ -119,8 +119,10 @@ function authOf(raw: IrRaw, fromHeaders: AuthScheme): AuthScheme {
 function documentOf(raw: IrRaw, ctx: IrCtx): Shape | undefined {
   const m = raw.sdk;
   if (m?.spec.documentArg === undefined) return undefined;
-  const arg = argOf(m.method, m.spec.documentArg, "document");
-  return arg ? shapeOf(arg.expr, arg.fn, ctx).shape : { type: "unknown" };
+  const arg = argOf(m.method, m.spec.documentArg, m.spec.documentKw ?? "document");
+  if (!arg) return { type: "unknown" };
+  const built = ctx.idx.lang.documentOf?.(arg, ctx);
+  return built !== undefined ? { type: "string", enum: [built] } : shapeOf(arg.expr, arg.fn, ctx).shape;
 }
 
 /** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */

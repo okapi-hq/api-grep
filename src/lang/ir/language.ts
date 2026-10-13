@@ -21,6 +21,8 @@ export interface IrMethodSpec extends MethodSpec {
   queryKwargs?: boolean;
   /** The keyword argument holding the model of a model client or an agent (`ChatOpenAI(model=...)`). */
   modelKw?: string;
+  /** The keyword argument holding the GraphQL document, when it is not `document` (sgqlc and ShopifyAPI: `query`). */
+  documentKw?: string;
   /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */
   baseUrlKw?: string[];
 }
@@ -238,6 +240,8 @@ export interface IrLanguage extends IrSource {
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.
    */
   instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number) => ClassDef | undefined;
+  /** GraphQL documents a library builds as objects (sgqlc's `Operation`): the text the object at `arg` sends. */
+  documentOf?: (arg: Scoped, ctx: IrCtx) => string | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

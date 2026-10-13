@@ -72,6 +72,40 @@ exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/relay 1`] = `
+[
+  "fetchGraphQL.ts:2 api.example-garden.dev POST /graphql null",
+  "Garden.tsx:8 api.example-garden.dev POST /graphql PlantListQuery",
+  "Garden.tsx:11 api.example-garden.dev POST /graphql SeedListQuery",
+  "Garden.tsx:13 api.example-garden.dev POST /graphql CompostQuery",
+  "Garden.tsx:16 api.example-garden.dev POST /graphql WaterPlantMutation",
+  "Garden.tsx:22 api.example-garden.dev POST /graphql HarvestMutation",
+  "Garden.tsx:25 api.example-garden.dev POST /graphql ForecastQuery",
+  "Garden.tsx:28 unknown POST / FrostAlertSubscription",
+  "RelayEnvironment.ts:4 api.example-garden.dev POST /graphql null (wrapper:fetchGraphQL)",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-unread 1`] = `
+[
+  "environment.ts:6 internal POST /api/graphql null",
+  "environment.ts:10 unknown POST / OrdersQuery",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/shopify 1`] = `
+[
+  "app.teas.tsx:5 shopify POST /admin/api/{version}/graphql.json ListTeas",
+  "app.teas.tsx:15 shopify POST /admin/api/{version}/graphql.json Restock",
+  "clients.ts:10 shopify POST /admin/api/2025-01/graphql.json InventoryLevel",
+  "clients.ts:12 shopify POST /api/2025-01/graphql.json CreateCart",
+  "clients.ts:17 shopify POST /admin/api/2024-10/graphql.json ShopName",
+  "sync.ts:7 shopify POST /admin/api/2024-07/graphql.json RecentOrders",
+  "sync.ts:12 shopify POST /admin/api/{version}/graphql.json TagOrder",
+  "sync.ts:17 shopify POST /api/2024-07/graphql.json Menu",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/urql 1`] = `
 [
   "books.tsx:13 api.example-library.org POST /graphql Books",
@@ -851,6 +885,16 @@ exports[`regression fixtures > python/graphql-clients 1`] = `
   "inventory.py:29 api.example-warehouse.io POST /graphql MovePallet",
   "inventory.py:34 env:STOCK_GRAPHQL_URL POST / StockLevels",
   "inventory.py:38 unknown POST / DockEvents",
+]
+`;
+
+exports[`regression fixtures > python/graphql-shopify-sgqlc 1`] = `
+[
+  "shop.py:11 shopify POST /admin/api/{version}/graphql.json LowStock",
+  "shop.py:16 shopify POST /admin/api/{version}/graphql.json shop",
+  "tracker.py:20 api.example-tracker.dev POST /graphql OpenTickets",
+  "tracker.py:27 env:TRACKER_GRAPHQL_URL POST / closeTicket",
+  "tracker.py:31 unknown POST / TicketTitles",
 ]
 `;
 

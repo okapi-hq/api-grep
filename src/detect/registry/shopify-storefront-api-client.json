@@ -1,0 +1,15 @@
+{
+  "$comment": "Shopify's Storefront API client (#67): `createStorefrontApiClient({ storeDomain, apiVersion, publicAccessToken }).request(document, { variables })`, also `fetch` and `requestStream`. Keys keep the factory's name, so only a client it built matches.",
+  "package": "@shopify/storefront-api-client",
+  "provider": "shopify",
+  "host": "{shop}.myshopify.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @shopify/storefront-api-client 1.0)",
+  "inlinePathLiterals": true,
+  "instance": { "names": [] },
+  "methods": {
+    "createStorefrontApiClient.request": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "createStorefrontApiClient.fetch": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
+    "createStorefrontApiClient.requestStream": { "method": "POST", "path": "/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } }
+  }
+}

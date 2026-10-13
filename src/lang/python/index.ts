@@ -20,7 +20,10 @@ import googleCloudFirestore from "./registry/google-cloud-firestore.json" with {
 import googleGenai from "./registry/google-genai.json" with { type: "json" };
 import googleGenerativeai from "./registry/google-generativeai.json" with { type: "json" };
 import groq from "./registry/groq.json" with { type: "json" };
+import { sgqlcDocument } from "./sgqlc.js";
 import gql from "./registry/gql.json" with { type: "json" };
+import sgqlc from "./registry/sgqlc.json" with { type: "json" };
+import shopify from "./registry/shopify.json" with { type: "json" };
 import solana from "./registry/solana.json" with { type: "json" };
 import web3 from "./registry/web3.json" with { type: "json" };
 import mistralai from "./registry/mistralai.json" with { type: "json" };
@@ -101,6 +104,8 @@ export const PYTHON_REGISTRY = [
   googleAdk,
   ollama,
   gql,
+  sgqlc,
+  shopify,
   web3,
   solana,
 ] as unknown as IrRegistryEntry[];
@@ -141,6 +146,7 @@ export const pythonLanguage: IrLanguage = {
   registry: PYTHON_REGISTRY,
   clients: clients.clients as unknown as ClientSpec[],
   detectors: [detectUrllib],
+  documentOf: sgqlcDocument,
   passthrough: {
     // `gql("query ...")` (the gql package) parses a document: its value is the text
     functions: new Set(["str", "quote", "quote_plus", "unquote", "escape", "gql"]),

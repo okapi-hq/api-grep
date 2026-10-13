@@ -36,6 +36,11 @@ import ollama from "./ollama.json" with { type: "json" };
 import apolloClient from "./apollo-client.json" with { type: "json" };
 import graphqlRequest from "./graphql-request.json" with { type: "json" };
 import urql from "./urql.json" with { type: "json" };
+import relay from "./relay.json" with { type: "json" };
+import shopifyApi from "./shopify-api.json" with { type: "json" };
+import shopifyAdminApiClient from "./shopify-admin-api-client.json" with { type: "json" };
+import shopifyStorefrontApiClient from "./shopify-storefront-api-client.json" with { type: "json" };
+import shopifyApiNode from "./shopify-api-node.json" with { type: "json" };
 import solanaWeb3 from "./solana-web3.json" with { type: "json" };
 import viem from "./viem.json" with { type: "json" };
 import ethers from "./ethers.json" with { type: "json" };
@@ -73,7 +78,9 @@ export function defaultRegistry(): Registry {
   // model clients and agents
   entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);
   // GraphQL clients of any API (#54)
-  entries.push(apolloClient, urql, graphqlRequest);
+  entries.push(apolloClient, urql, graphqlRequest, relay);
+  // Shopify's GraphQL clients (#67)
+  entries.push(shopifyApi, shopifyAdminApiClient, shopifyStorefrontApiClient, shopifyApiNode);
   // JSON-RPC clients of any node (#52)
   entries.push(solanaWeb3, viem, ethers, web3);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);

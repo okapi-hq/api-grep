@@ -1,0 +1,20 @@
+{
+  "$comment": "sgqlc (#67) talks to the URL its endpoint is built with: `HTTPEndpoint(url, base_headers)` (also `RequestsEndpoint`), called directly with the document: `endpoint(query, variables)`. The document is text, or an `Operation(schema.Query)` whose selections the code makes (`op.repository(...).issues.nodes.title()`), read in `operation.ts`.",
+  "package": "sgqlc",
+  "imports": ["sgqlc.endpoint.http", "sgqlc.endpoint.requests", "sgqlc"],
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against sgqlc 16)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["HTTPEndpoint", "RequestsEndpoint"] },
+  "endpoint": {
+    "clients": {
+      "HTTPEndpoint": { "url": "kw:url|0", "headers": "kw:base_headers|1" },
+      "RequestsEndpoint": { "url": "kw:url|0", "headers": "kw:base_headers|1" }
+    }
+  },
+  "methods": {
+    "()": { "method": "POST", "path": "", "documentArg": 0, "documentKw": "query", "bodyArg": 1, "bodyKw": "variables" }
+  }
+}

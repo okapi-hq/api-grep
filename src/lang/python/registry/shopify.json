@@ -1,0 +1,14 @@
+{
+  "$comment": "ShopifyAPI (#67): `shopify.GraphQL().execute(query, variables, operation_name)` on the session activated with `ShopifyResource.activate_session`. The shop and the API version are the session's: the host stays `{shop}.myshopify.com`. Its REST resources are not listed yet.",
+  "package": "ShopifyAPI",
+  "imports": ["shopify"],
+  "provider": "shopify",
+  "host": "{shop}.myshopify.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against ShopifyAPI 12)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["GraphQL"] },
+  "methods": {
+    "execute": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "documentKw": "query", "bodyArg": 1, "bodyKw": "variables" }
+  }
+}

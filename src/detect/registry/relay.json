@@ -1,0 +1,29 @@
+{
+  "$comment": "Relay (#67) talks to the endpoint of its network layer: `new Environment({ network: Network.create(fetchFn) })`, where `fetchFn` is the app's own function and the URL is that of the one `fetch` it sends. Hooks name no environment, and the one `commitMutation` / `fetchQuery` are given is the app's: the project's one network layer, else the endpoint is unknown.",
+  "package": "relay-runtime",
+  "aliases": ["react-relay"],
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against relay-runtime and react-relay 18)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["Environment"] },
+  "endpoint": {
+    "clients": {
+      "Environment": { "transport": "0.network" }
+    },
+    "transports": {
+      "Network.create": { "fetchIn": "0" }
+    },
+    "contextClient": true
+  },
+  "methods": {
+    "useLazyLoadQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1 },
+    "usePreloadedQuery": { "method": "POST", "path": "", "documentArg": 0 },
+    "useMutation": { "method": "POST", "path": "", "documentArg": 0 },
+    "useSubscription": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables", "subscription": true },
+    "commitMutation": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 1, "bodyProp": "variables", "clientArg": "0" },
+    "fetchQuery": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 2, "clientArg": "0" },
+    "requestSubscription": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 1, "bodyProp": "variables", "clientArg": "0", "subscription": true }
+  }
+}
