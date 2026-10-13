@@ -84,7 +84,9 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const dynamic: DynamicPart[] = [];
   const { url, method } = resolveTarget(raw, ctx, dynamic);
   dynamic.push(...url.dynamic);
-  const body = resolveBody(raw.bodyExpr, ctx, defaultEncoding(raw, method));
+  // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
+  // are written in are not searched for them, a reference search per function that the scan of a large app pays for
+  const body = resolveBody(raw.bodyExpr, raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });

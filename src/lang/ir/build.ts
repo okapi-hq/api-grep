@@ -131,7 +131,8 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   // an SDK call to a URL the client was built with (`WebhookClient(url).send(...)`) goes there
   const url = target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
   dynamic.push(...url.dynamic);
-  const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), ctx);
+  // GraphQL variables: the callers of the function they are written in are not searched (as in TypeScript)
+  const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), raw.sdk?.entry.endpoint ? { ...ctx, callerLevel: true } : ctx);
   if (raw.encoding && body.shape) body.encoding = raw.encoding;
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });

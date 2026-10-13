@@ -545,7 +545,9 @@ document with the `graphql` package's parser (no schema, no network):
   - graphql-request's own `request(url, document, variables, headers)` (also `{ url, document }`) takes the endpoint
     first (`endpointFirst`).
   Headers come from the client or transport and from the call (graphql-request's `requestHeaders`); `authScheme` is the
-  one they show, else `unknown` (an auth link or a `fetchOptions` callback is not read). The body is the variables.
+  one they show, else `unknown` (an auth link or a `fetchOptions` callback is not read). The body is the variables;
+  a variable that is a parameter of the hook or helper it is written in is not looked up in its callers (#39): in a
+  large React app that is a reference search per hook, for values that are mostly ids.
   The method is `POST`. Not covered yet: Relay, Shopify's clients and `sgqlc` (#67), `@vue/apollo-composable`,
   Apollo's `<Query>` components and `graphql()` HOC.
 - **Bounds.** The document comes from a hostile repository: 100,000 characters, 50,000 parser tokens, 32 levels of
