@@ -114,6 +114,9 @@ describe("jvm manifests", () => {
   it("finds an artifact's package roots, else its group", () => {
     expect(jvmImportRoots("com.twilio.sdk:twilio")).toEqual(["com.twilio"]);
     expect(jvmImportRoots("com.stripe:stripe-java")).toEqual(["com.stripe"]);
+    // the group's root is shared with Android Firebase: firebase-admin's only where it is declared
+    expect(jvmImportRoots("com.google.firebase:firebase-admin")).not.toContain("com.google.firebase");
+    expect(jvmImportRoots("com.google.firebase:firebase-admin", true)).toContain("com.google.firebase");
   });
 
   it("reads hostile manifests in linear time", () => {

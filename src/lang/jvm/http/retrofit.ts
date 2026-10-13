@@ -92,7 +92,7 @@ function encodingOf(m: FunctionDef, p: Params, build: RetrofitBuild | undefined,
   if (findAnn(m.annotations, [R.form])) return "form";
   if (findAnn(m.annotations, [R.multipart])) return "multipart";
   if (!p.body) return undefined;
-  const declared = headerLines(findAnn(m.annotations, [R.headers]), m).find((h) => literal(h.name.expr)?.toLowerCase() === "content-type");
+  const declared = headerLines(findAnn(m.annotations, [R.headers]), m, ctx).find((h) => literal(h.name.expr)?.toLowerCase() === "content-type" && literal(h.value?.expr));
   if (declared) return encodingOfType(literal(declared.value?.expr));
   const type = p.bodyType ? dottedPath(p.bodyType.k === "index" ? p.bodyType.obj : p.bodyType)?.join(".") : undefined;
   if (type && R.rawBodies.some((t) => type === t || type.endsWith(`.${t}`))) return "raw";
@@ -122,7 +122,7 @@ function methodRaw(m: FunctionDef, verb: Verb, build: RetrofitBuild | undefined,
     encoding: body ? encoding : undefined,
     query: p.query,
     headers: p.headers,
-    pairs: [...headerLines(findAnn(m.annotations, [R.headers]), m), ...p.pairs, ...client],
+    pairs: [...headerLines(findAnn(m.annotations, [R.headers]), m, ctx), ...p.pairs, ...client],
     inputs: [],
   };
 }

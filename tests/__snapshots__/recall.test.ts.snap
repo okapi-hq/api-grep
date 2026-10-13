@@ -173,6 +173,14 @@ exports[`regression fixtures > java/clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/const-names 1`] = `
+[
+  "Ledger.java:22 ledger.example.com GET /v2/entries",
+  "Ledger.java:29 balances.example.com GET /v1/balances",
+  "Ledger.java:44 ledger.example.com POST /v2/entries/{id}/close",
+]
+`;
+
 exports[`regression fixtures > java/di-dagger 1`] = `
 [
   "Net.java:38 tracking.parcels-example.com GET /api/parcels/{id}",
@@ -199,6 +207,8 @@ exports[`regression fixtures > java/feign 1`] = `
   "Clients.java:46 github POST /repos/{owner}/{repo}/issues",
 ]
 `;
+
+exports[`regression fixtures > java/firebase-admin 1`] = `[]`;
 
 exports[`regression fixtures > java/java-http 1`] = `
 [
@@ -400,6 +410,16 @@ exports[`regression fixtures > json-rpc 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/const-names 1`] = `
+[
+  "Shelf.kt:17 shelf.example.com GET /v1/items",
+  "Shelf.kt:22 shelf.example.com GET /v1/me",
+  "Shelf.kt:27 shelf.example.com GET /v1/ping",
+  "Shelf.kt:41 shelf.example.com GET /v1/items/{id}/save",
+  "Shelf.kt:47 stock.example.com GET /v1/stock",
+]
+`;
+
 exports[`regression fixtures > kotlin/di-ambiguous 1`] = `
 [
   "Repositories.kt:11 api.weather-example.com GET /v1/forecast",
@@ -438,6 +458,8 @@ exports[`regression fixtures > kotlin/feign 1`] = `
   "Clients.kt:41 github POST /repos/{owner}/{repo}/issues",
 ]
 `;
+
+exports[`regression fixtures > kotlin/firebase-android 1`] = `[]`;
 
 exports[`regression fixtures > kotlin/java-http 1`] = `
 [

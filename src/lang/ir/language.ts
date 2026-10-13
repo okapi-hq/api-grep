@@ -247,8 +247,8 @@ export interface IrLanguage extends IrSource {
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */
   serializers: Record<string, BodyEncoding>;
   manifests: Manifests;
-  /** Dotted import roots of a package (`google-genai` -> `google.genai`). */
-  importRoots(pkg: string): string[];
+  /** Dotted import roots of a package (`google-genai` -> `google.genai`); `declared` when the manifests declare it. */
+  importRoots(pkg: string, declared?: boolean): string[];
   /** The ecosystem's canonical spelling of a package name (PyPI: lower case, `-` for `_` and `.`). */
   normalizePackage(name: string): string;
 }

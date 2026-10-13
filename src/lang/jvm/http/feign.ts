@@ -39,7 +39,8 @@ function params(m: FunctionDef, path: string, sends: boolean): Params {
   for (const p of m.params) {
     const a = findAnn(p.annotations, Object.keys(F.params));
     const role = a ? F.params[annName(a)!] : undefined;
-    const name: Scoped = { expr: { k: "str", v: literal(annArg(a, ["value", "name"])) ?? p.name }, fn: m };
+    // `@RequestHeader(Names.TRACE)` names it with a constant; without a name, the parameter's
+    const name: Scoped = { expr: annArg(a, ["value", "name"]) ?? { k: "str", v: p.name }, fn: m };
     if (role === "query" && !path.includes(`{${literal(name.expr) ?? ""}}`)) out.pairs.push({ where: "query", name, value: paramRef(p, m) });
     else if (role === "header") out.pairs.push({ where: "header", name, value: paramRef(p, m) });
     else if (role === "body" || (!a && !p.annotations?.length && sends && !path.includes(`{${p.name}}`) && !out.body)) out.body = paramRef(p, m);
@@ -79,7 +80,7 @@ function methodRaw(m: FunctionDef, cls: ClassDef, client: Annotation | undefined
   const ps = params(m, parts.map((e) => literal(e) ?? "").join(""), sends);
   const baseExpr = configured(annArg(client, ["url"]));
   const call: CallExpr = { k: "call", fn: { k: "name", name: m.name, pos: m.pos }, args: [], pos: m.pos };
-  const pairs = [...headerLines(findAnn(cls.classAnnotations, [F.headers]), m), ...headerLines(findAnn(m.annotations, [F.headers]), m), ...ps.pairs];
+  const pairs = [...headerLines(findAnn(cls.classAnnotations, [F.headers]), m, ctx), ...headerLines(findAnn(m.annotations, [F.headers]), m, ctx), ...ps.pairs];
   return {
     call,
     fn: m,
