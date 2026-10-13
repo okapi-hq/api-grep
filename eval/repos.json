@@ -38,6 +38,8 @@
   { "name": "kotlinconf-app", "url": "https://github.com/JetBrains/kotlinconf-app.git", "language": "kotlin" },
   { "name": "tivi", "url": "https://github.com/chrisbanes/tivi.git", "language": "kotlin" },
   { "name": "mixit", "url": "https://github.com/mixitconf/mixit.git", "language": "kotlin" },
+  { "name": "twenty-front", "url": "https://github.com/twentyhq/twenty.git", "subdir": "packages/twenty-front" },
+  { "name": "hoppscotch-common", "url": "https://github.com/hoppscotch/hoppscotch.git", "subdir": "packages/hoppscotch-common" },
   { "name": "spring-petclinic-microservices", "url": "https://github.com/spring-petclinic/spring-petclinic-microservices.git", "language": "java" },
   { "name": "antennapod", "url": "https://github.com/AntennaPod/AntennaPod.git", "language": "java" },
   { "name": "newpipe", "url": "https://github.com/TeamNewPipe/NewPipe.git", "language": "java" },

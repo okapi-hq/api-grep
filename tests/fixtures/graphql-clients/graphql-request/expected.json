@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/54",
+  "calls": [
+    {"file": "radar.ts", "line": 8, "provider": "graph.example-weather.net", "operation": "Radar"},
+    {"file": "weather.ts", "line": 11, "provider": "graph.example-weather.net", "operation": "Forecast"},
+    {"file": "weather.ts", "line": 13, "provider": "graph.example-weather.net", "operation": "Alerts"},
+    {"file": "weather.ts", "line": 15, "provider": "stations.example-weather.net", "operation": "stations"},
+    {"file": "weather.ts", "line": 17, "provider": "graph.example-weather.net", "operation": "Sensors"},
+    {"file": "weather.ts", "line": 19, "provider": "graph.example-weather.net", "operation": "Forecast"}
+  ]
+}

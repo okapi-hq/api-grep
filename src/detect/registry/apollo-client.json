@@ -1,0 +1,35 @@
+{
+  "$comment": "Apollo Client (#54) talks to the GraphQL endpoint the code gives it: the client's `uri`, or the one HTTP link of its `link`. Hooks name no client: they use the project's one client, else the endpoint is unknown.",
+  "package": "@apollo/client",
+  "aliases": ["apollo-client", "apollo-boost", "@apollo/react-hooks", "react-apollo"],
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["ApolloClient", "default", "useApolloClient"] },
+  "endpoint": {
+    "clients": {
+      "ApolloClient": { "url": "0.uri", "headers": "0.headers", "transport": "0.link" },
+      "default": { "url": "0.uri", "headers": "0.headers", "transport": "0.link" }
+    },
+    "transports": {
+      "HttpLink": { "url": "0.uri", "headers": "0.headers" },
+      "createHttpLink": { "url": "0.uri", "headers": "0.headers" },
+      "BatchHttpLink": { "url": "0.uri", "headers": "0.headers" },
+      "createUploadLink": { "url": "0.uri", "headers": "0.headers" }
+    }
+  },
+  "methods": {
+    "query": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables" },
+    "mutate": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables" },
+    "watchQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables" },
+    "subscribe": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables", "subscription": true },
+    "useQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "clientArg": "1.client" },
+    "useLazyQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "clientArg": "1.client" },
+    "useSuspenseQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "clientArg": "1.client" },
+    "useBackgroundQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "clientArg": "1.client" },
+    "useMutation": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "clientArg": "1.client" },
+    "useSubscription": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "subscription": true }
+  }
+}

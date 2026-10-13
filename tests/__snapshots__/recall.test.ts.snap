@@ -42,6 +42,45 @@ exports[`regression fixtures > graphql 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/apollo 1`] = `
+[
+  "cakes.tsx:6 api.example-bakery.com POST /graphql ListCakes",
+  "cakes.tsx:10 api.example-bakery.com POST /graphql OrderCake",
+  "cakes.tsx:14 unknown POST / OvenStatus",
+  "cakes.tsx:19 api.example-bakery.com POST /graphql CakeById",
+  "cakes.tsx:23 api.example-bakery.com POST /graphql OrderCake",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/apollo-clients 1`] = `
+[
+  "plants.tsx:13 unknown POST / Plants",
+  "plants.tsx:15 env:ADMIN_API_URL POST /graphql Seeds",
+  "plants.tsx:17 store.example-garden.com POST /graphql plantCount",
+  "plants.tsx:19 store.example-garden.com POST /graphql null",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
+[
+  "radar.ts:8 graph.example-weather.net POST /v2/graphql Radar",
+  "weather.ts:11 graph.example-weather.net POST /v2/graphql Forecast",
+  "weather.ts:13 graph.example-weather.net POST /v2/graphql Alerts",
+  "weather.ts:15 stations.example-weather.net POST /graphql stations",
+  "weather.ts:17 graph.example-weather.net POST /v2/graphql Sensors",
+  "weather.ts:19 graph.example-weather.net POST /v2/graphql Forecast",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/urql 1`] = `
+[
+  "books.tsx:13 api.example-library.org POST /graphql Books",
+  "books.tsx:17 api.example-library.org POST /graphql Borrow",
+  "books.tsx:21 unknown POST / Returns",
+  "books.tsx:25 api.example-library.org POST /graphql Borrow",
+]
+`;
+
 exports[`regression fixtures > html/negatives 1`] = `[]`;
 
 exports[`regression fixtures > html/site 1`] = `
@@ -531,6 +570,15 @@ exports[`regression fixtures > python/graphql 1`] = `
   "tracker.py:43 api.example-tracker.dev POST /graphql SavedView",
   "tracker.py:47 api.example-tracker.dev POST /search",
   "tracker.py:51 api.example-tracker.dev POST /search",
+]
+`;
+
+exports[`regression fixtures > python/graphql-clients 1`] = `
+[
+  "inventory.py:25 api.example-warehouse.io POST /graphql ListBins",
+  "inventory.py:29 api.example-warehouse.io POST /graphql MovePallet",
+  "inventory.py:34 env:STOCK_GRAPHQL_URL POST / StockLevels",
+  "inventory.py:38 unknown POST / DockEvents",
 ]
 `;
 

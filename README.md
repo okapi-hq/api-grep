@@ -232,9 +232,20 @@ its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 c
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
 (`Action` for AWS Query, `method` for Flickr): `protocol: action`. RPC client libraries such as viem or web3.py are
-[#52](https://github.com/okapi-hq/api-grep/issues/52), GraphQL clients such as Apollo or urql
-[#54](https://github.com/okapi-hq/api-grep/issues/54), SOAP client libraries (`SoapClient`, zeep, node-soap)
+[#52](https://github.com/okapi-hq/api-grep/issues/52), SOAP client libraries (`SoapClient`, zeep, node-soap)
 [#58](https://github.com/okapi-hq/api-grep/issues/58).
+
+GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
+operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
+`subscribe`, `useQuery`, `useLazyQuery`, `useSuspenseQuery`, `useBackgroundQuery`, `useMutation`, `useSubscription`),
+urql (`client.query` / `mutation` / `subscription`, `useQuery`, `useMutation`, `useSubscription`), graphql-request
+(`GraphQLClient.request` / `rawRequest`, `request(url, document)`) and Python `gql` (`client.execute`, also through
+`async with client as session`). The endpoint and headers are those the client is built with (`new ApolloClient({
+uri })`, the one `HttpLink` of its `link`, `createClient({ url, fetchOptions })`, `new GraphQLClient(url, { headers
+})`, `Client(transport=RequestsHTTPTransport(url=..., headers=...))`), and the provider is the one that URL names, as
+for a plain HTTP call. A hook names no client: it uses the project's client when the project builds exactly one (or
+the one its `client` option names), otherwise its host stays `unknown`, as does a subscription's (they usually go
+over a WebSocket of their own).
 
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
@@ -397,7 +408,7 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*` |
+| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link) |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
 | XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
@@ -447,7 +458,7 @@ whose action is a template, an anchor or a `mailto:` are not requests.
 | httpx | module functions, `request`, `stream`, `Client` / `AsyncClient` with `base_url` and `headers`, also through `async with` |
 | aiohttp | `ClientSession(base_url)` and its verbs, `request(method, url)` |
 | urllib | `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))` (POST when there is data), `urllib3.PoolManager().request(...)` |
-| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex |
+| SDKs | registry-driven, see [docs/sdk-support.md](docs/sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex; the GraphQL client `gql` (endpoint from its transport) |
 
 Python keyword arguments are SDK bodies (`client.chat.completions.create(model=..., messages=...)`).
 Clients are followed through module variables and imports, `self.client = OpenAI()` in any method,

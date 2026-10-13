@@ -75,7 +75,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   the front end set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. Schema,
   batch decision and per-protocol status (#34 to #36) in `docs/languages.md`. XML bodies are `bodyEncoding: "xml"`
   with their element structure as the shape (`src/resolve/xml-shape.ts`: a capped tokenizer that never reads a DTD or
-  expands an entity).
+  expands an entity). GraphQL client libraries (#54: Apollo, urql, graphql-request, Python `gql`) are registries with
+  an `endpoint` (the URL and headers of the client or its one transport, else the project's one client:
+  `src/detect/endpoint.ts`, `src/lang/ir/endpoint.ts`) under the `anyHost` provider `graphql`, so a call's provider
+  is the one its URL names.
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

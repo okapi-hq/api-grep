@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
-import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
+import { isAnyHost, resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import { operationsOf } from "./operation/index.js";
 import type { BodySource, Call, ClientFrom, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
@@ -57,6 +57,7 @@ function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; qu
  */
 function providerOf(r: ResolvedCall): ResolvedProvider {
   const fromUrl = resolveProvider({ hostKind: r.url.hostKind, host: r.url.host, envName: r.url.envName });
+  if (r.sdk && isAnyHost(r.sdk.provider)) return fromUrl;
   if (r.sdk && r.codeBaseUrl && fromUrl.source && fromUrl.provider !== r.sdk.provider) return fromUrl;
   return r.sdk ? { provider: r.sdk.provider, source: "sdk" } : fromUrl;
 }

@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/54",
+  "calls": [
+    {"file": "books.tsx", "line": 13, "provider": "api.example-library.org", "operation": "Books"},
+    {"file": "books.tsx", "line": 17, "provider": "api.example-library.org", "operation": "Borrow"},
+    {"file": "books.tsx", "line": 21, "provider": "unknown", "operation": "Returns"},
+    {"file": "books.tsx", "line": 25, "provider": "api.example-library.org", "operation": "Borrow"}
+  ]
+}

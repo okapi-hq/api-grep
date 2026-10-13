@@ -1,4 +1,5 @@
 import { assembleCalls, type ResolvedCall } from "./assemble.js";
+import { getProp, toObjectLiteral } from "./ast/object.js";
 import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import type { Call } from "./report/schema.js";
@@ -54,7 +55,7 @@ function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { ur
 }
 
 function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
-  if (raw.sdk) return { names: [], values: {}, authScheme: raw.sdk.auth ?? "unknown" };
+  if (raw.sdk && !raw.sdk.anyHost) return { names: [], values: {}, authScheme: raw.sdk.auth ?? "unknown" };
   const call = resolveHeaders(raw.headersExpr, ctx);
   for (const [k, v] of raw.headerPairs ?? []) {
     const name = staticText(evaluate(k, ctx));
@@ -66,13 +67,30 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   const authScheme = definite(fromHeaders) || !raw.authHint ? fromHeaders : raw.authHint;
   // a header the call sets replaces the instance's, alternatives included
   const alternatives = { ...Object.fromEntries(Object.entries(inst.alternatives ?? {}).filter(([k]) => !(k in call.values))), ...call.alternatives };
-  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme };
+  // a GraphQL client's headers the scan does not see (an auth link, a `fetchOptions` callback) may carry credentials
+  const scheme = raw.sdk && !definite(authScheme) ? (raw.sdk.auth ?? "unknown") : authScheme;
+  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme: scheme };
 }
 
-/** The GraphQL document an SDK method takes as an argument. */
+/** What names the operation in options holding the document (Apollo `{ query, variables }`, Octokit `{ query, ...vars }`). */
+const DOCUMENT_KEYS = ["query", "mutation", "document", "operationName", "extensions"];
+
+/**
+ * The GraphQL document an SDK method takes as an argument; one it is not given is unknown. Of options holding it,
+ * only the keys naming the operation are read: the variables are the body's, and reading them here would search the
+ * callers of the hook they are written in, a reference search the body leaves out.
+ */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
-  const arg = sdk?.spec.documentArg !== undefined ? sdk.args[sdk.spec.documentArg] : undefined;
-  return arg ? shapeOf(arg, ctx).shape : undefined;
+  if (sdk?.spec.documentArg === undefined) return undefined;
+  const arg = sdk.args[sdk.spec.documentArg];
+  if (!arg) return { type: "unknown" };
+  if (!toObjectLiteral(arg, ctx)) return shapeOf(arg, ctx).shape;
+  const properties: Record<string, Shape> = {};
+  for (const key of DOCUMENT_KEYS) {
+    const value = getProp(arg, key, ctx);
+    if (value) properties[key] = shapeOf(value, ctx).shape;
+  }
+  return { type: "object", properties, required: [] };
 }
 
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
@@ -81,7 +99,9 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const dynamic: DynamicPart[] = [];
   const { url, method } = resolveTarget(raw, ctx, dynamic);
   dynamic.push(...url.dynamic);
-  const body = resolveBody(raw.bodyExpr, ctx, defaultEncoding(raw, method));
+  // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
+  // are written in are not searched for them, a reference search per function that the scan of a large app pays for
+  const body = resolveBody(raw.bodyExpr, raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });

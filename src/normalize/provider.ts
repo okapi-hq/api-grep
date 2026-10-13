@@ -13,6 +13,11 @@ export interface ProviderInfo {
   category?: string;
   /** Action-style API: the query or form parameter that names the operation (AWS Query `Action`, Flickr `method`). */
   operationParam?: string;
+  /**
+   * Client libraries of a protocol rather than of one API (GraphQL clients): a call through them has the provider its
+   * URL names, and no env var name stands for this id.
+   */
+  anyHost?: boolean;
 }
 
 /** How `provider` was found: an SDK registry, the host, or (weakest) the name of the env var holding the URL. */
@@ -28,6 +33,13 @@ export function sdkPackages(ecosystem: Ecosystem): Map<string, string> {
 }
 
 const OPERATION_PARAMS = new Map(PROVIDERS.flatMap((p) => (p.operationParam ? [[p.id, p.operationParam] as const] : [])));
+
+const ANY_HOST = new Set(PROVIDERS.filter((p) => p.anyHost).map((p) => p.id));
+
+/** A protocol's client libraries (GraphQL): the call's provider is the one its URL names, not this id. */
+export function isAnyHost(provider: string): boolean {
+  return ANY_HOST.has(provider);
+}
 
 /** The parameter an action-style provider names the operation with, if it declares one. */
 export function operationParamOf(provider: string): string | undefined {
@@ -65,7 +77,7 @@ const SERVICE_WORDS = /_(?:WEBHOOK|API|PROXY|GATEWAY|REST|GRAPHQL|INFERENCE|INGE
 
 const normalize = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 const BY_NAME = new Map<string, string>();
-for (const p of PROVIDERS) for (const key of [p.id, p.name]) if (!BY_NAME.has(normalize(key))) BY_NAME.set(normalize(key), p.id);
+for (const p of PROVIDERS) for (const key of p.anyHost ? [] : [p.id, p.name]) if (!BY_NAME.has(normalize(key))) BY_NAME.set(normalize(key), p.id);
 
 /** `OPENROUTER_BASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `SLACK_WEBHOOK_URL` -> the provider they name, if it is a known one. */
 export function providerFromEnvName(name: string | undefined): string | undefined {

@@ -1,0 +1,29 @@
+{
+  "$comment": "gql (#54) talks to the GraphQL endpoint of the transport the code builds: `Client(transport=RequestsHTTPTransport(url=..., headers=...))`, also through `async with client as session`. Subscriptions usually go through a WebSocket transport: their endpoint is not read.",
+  "package": "gql",
+  "imports": ["gql"],
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against gql 3.5)",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["Client"] },
+  "builders": ["connect_async", "connect_sync"],
+  "endpoint": {
+    "clients": {
+      "Client": { "transport": "kw:transport" }
+    },
+    "transports": {
+      "RequestsHTTPTransport": { "url": "kw:url|0", "headers": "kw:headers" },
+      "AIOHTTPTransport": { "url": "kw:url|0", "headers": "kw:headers" },
+      "HTTPXTransport": { "url": "kw:url|0", "headers": "kw:headers" },
+      "HTTPXAsyncTransport": { "url": "kw:url|0", "headers": "kw:headers" }
+    }
+  },
+  "methods": {
+    "execute": { "method": "POST", "path": "", "documentArg": 0, "bodyKw": "variable_values" },
+    "execute_async": { "method": "POST", "path": "", "documentArg": 0, "bodyKw": "variable_values" },
+    "subscribe": { "method": "POST", "path": "", "documentArg": 0, "bodyKw": "variable_values", "subscription": true },
+    "subscribe_async": { "method": "POST", "path": "", "documentArg": 0, "bodyKw": "variable_values", "subscription": true }
+  }
+}

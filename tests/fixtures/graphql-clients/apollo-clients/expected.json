@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/54",
+  "calls": [
+    {"file": "plants.tsx", "line": 13, "provider": "unknown", "operation": "Plants"},
+    {"file": "plants.tsx", "line": 15, "provider": "env:ADMIN_API_URL", "operation": "Seeds"},
+    {"file": "plants.tsx", "line": 17, "provider": "store.example-garden.com", "operation": "plantCount"},
+    {"file": "plants.tsx", "line": 19, "provider": "store.example-garden.com"}
+  ]
+}

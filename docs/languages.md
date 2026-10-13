@@ -538,7 +538,7 @@ operation?: {
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
-| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries #54, bound diagnostic #55, AST documents and arguments #56 |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python), Relay, Shopify and `sgqlc` #67; bound diagnostic #55, AST documents and arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
 ### JSON-RPC (#34)
@@ -596,17 +596,44 @@ document with the `graphql` package's parser (no schema, no network):
   engine. A part the scan cannot compute (a `${Fragment}` from a package, a value) is left out of the document
   before it is parsed, so it never reads as a field or as an operation of its own (`` `${city} ${kind}` `` is not a
   document selecting `city` and `kind`); a computed operation name leaves the name unknown.
-- **SDKs**: a TypeScript registry method names the argument holding the document with `documentArg` (Octokit
-  `graphql(query, variables)` and `graphql({ query })`, also from `@octokit/graphql`). No Python or PHP registry
-  has a GraphQL method yet.
+- **SDKs**: a registry method names the argument holding the document with `documentArg` (Octokit
+  `graphql(query, variables)` and `graphql({ query })`, also from `@octokit/graphql`; the GraphQL clients below). The
+  argument is the document, or options holding it as `query`, `mutation` (Apollo `mutate`) or `document`
+  (graphql-request). A method with `documentArg` sends a GraphQL operation whatever the scan reads of it: a document it
+  cannot read gives `name: null`, `dynamic: true`.
+- **Client libraries** (#54): Apollo Client, urql and graphql-request (`src/detect/registry/apollo-client.json`,
+  `urql.json`, `graphql-request.json`) and Python `gql` (`src/lang/python/registry/gql.json`) are registries of the
+  `graphql` provider, a protocol's clients rather than one API: `anyHost` in `providers.json` makes a call's provider
+  the one its URL names (`unknown` without one), as for a plain HTTP call, and keeps env var names such as
+  `GRAPHQL_URL` from naming it. The registry's `endpoint` says where the client takes its URL and headers
+  (`src/detect/endpoint.ts`, `src/lang/ir/endpoint.ts`):
+  - the client's construction (`new ApolloClient({ uri, headers })`, `createClient({ url, fetchOptions: { headers }
+    })`, `new GraphQLClient(url, { headers })`), followed like any SDK client through variables, imports, class
+    fields and factories;
+  - else the one transport in the option that hands it one: Apollo's `link` (through variables, arrays, `from([...])`,
+    `a.concat(b)`, `split(...)`; `HttpLink`, `createHttpLink`, `BatchHttpLink`, `createUploadLink`), `gql`'s
+    `transport` (`RequestsHTTPTransport`, `AIOHTTPTransport`, `HTTPXTransport`, `HTTPXAsyncTransport`). Two
+    transports leave the endpoint unknown;
+  - a call that names no client (a React hook, `useApolloClient()`, `useClient()`, a typed parameter) uses the
+    project's client when the scanned files build exactly one with a URL (a client with its URL, or a transport, of
+    that library); an Apollo hook's `client` option names its client instead. Otherwise the host is `unknown`,
+    never another client's;
+  - a subscription (`subscribe`, `useSubscription`, urql `subscription`) goes through the client's subscription
+    transport, usually a WebSocket link or exchange of its own: its endpoint is not read;
+  - graphql-request's own `request(url, document, variables, headers)` (also `{ url, document }`) takes the endpoint
+    first (`endpointFirst`).
+  Headers come from the client or transport and from the call (graphql-request's `requestHeaders`); `authScheme` is the
+  one they show, else `unknown` (an auth link or a `fetchOptions` callback is not read). The body is the variables;
+  a variable that is a parameter of the hook or helper it is written in is not looked up in its callers (#39): in a
+  large React app that is a reference search per hook, for values that are mostly ids.
+  The method is `POST`. Not covered yet: Relay, Shopify's clients and `sgqlc` (#67), `@vue/apollo-composable`,
+  Apollo's `<Query>` components and `graphql()` HOC.
 - **Bounds.** The document comes from a hostile repository: 100,000 characters, 50,000 parser tokens, 32 levels of
   selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
   code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
   once each. Past a bound `fields` is left out (not cut short) and `name` / `type` come from the document's header
   when it has one; a diagnostic for this needs a schema change (#55).
-- **Not covered**: client libraries that take the endpoint from their configuration (Apollo, urql, graphql-request,
-  Relay, Shopify clients, Python `gql` / `sgqlc`, #54); codegen documents written as an AST object and literal
-  arguments of selected fields (#56).
+- **Not covered**: codegen documents written as an AST object and literal arguments of selected fields (#56).
 
 ### SOAP and action-style APIs (#36)
 
@@ -760,7 +787,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`; SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same as Python | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, Octokit `graphql()`, Apollo, urql and graphql-request (#54); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 

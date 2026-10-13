@@ -1,7 +1,9 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { unwrap } from "../ast/expr.js";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { getProp } from "../ast/object.js";
-import { exportedChain } from "./callee.js";
+import { exportedChain, isNamedImport } from "./callee.js";
+import { clientEndpoint } from "./endpoint.js";
 import type { Registry } from "./registry/index.js";
 
 function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
@@ -57,8 +59,20 @@ function ownBaseUrl(args: Expression[], spec: MethodSpec): Expression | undefine
   return undefined;
 }
 
+/**
+ * graphql-request's own `request(url, document, variables)` takes the endpoint first, or one object with its `url`:
+ * the endpoint, and the method's arguments after it.
+ */
+function endpointFirst(all: Expression[], spec: MethodSpec, callee: Callee): { url?: Expression; args: Expression[] } {
+  if (!spec.endpointFirst || callee.instance || callee.viaType || !(isNamedImport(callee) || callee.importedName === "*")) return { args: all };
+  const first = all[0] ? unwrap(all[0]) : undefined;
+  if (first && Node.isObjectLiteralExpression(first)) return { url: getProp(first, "url"), args: all };
+  return { url: all[0], args: all.slice(1) };
+}
+
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall {
-  const args = node.getArguments() as Expression[];
+  const own = endpointFirst(node.getArguments() as Expression[], spec, callee);
+  const args = own.args;
   const raw: RawCall = {
     node,
     client: "sdk",
@@ -75,6 +89,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
       inlinePath: reg.inlinePathLiterals,
       basePath: reg.basePath,
       routeByModel: reg.routeByModel,
+      anyHost: !!reg.endpoint,
     },
     bodyKey: "input",
   };
@@ -82,9 +97,28 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
+  if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own.url);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
+}
+
+/** A GraphQL client call: the endpoint and headers its client was built with, and the request's own headers. */
+function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, url: Expression | undefined): RawCall {
+  const endpoint = url ? { url } : clientEndpoint(node, reg, spec, callee, raw.sdk!.args);
+  if (endpoint.url) raw.baseUrlExpr = endpoint.url;
+  if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
+  if (spec.headersArg !== undefined) raw.headersExpr = raw.sdk!.args[spec.headersArg];
+  return raw;
+}
+
+/**
+ * A GraphQL client's method is called on the client, not on what another method returns: the Observable of
+ * `client.watchQuery(...)` has a `subscribe` too, and it sends nothing more.
+ */
+function onClient(callee: Callee, reg: RegistryEntry): boolean {
+  if (!reg.endpoint || !callee.instance) return true;
+  return (reg.instance?.names ?? []).includes(callee.instance.chain.at(-1) ?? "default");
 }
 
 export function detectSdk(node: CallExpression | NewExpression, callee: Callee, registry: Registry): RawCall | null {
@@ -95,7 +129,7 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
     const spec = reg.commands?.[name];
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
-  if (!reg.methods) return null;
+  if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
     const spec = reg.methods[key];
     if (spec) return buildRaw(node, reg, key, spec, callee);

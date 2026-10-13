@@ -5,6 +5,7 @@ import type { CallExpr, FunctionDef } from "./model.js";
 import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
 import { deref, staticKey } from "./values.js";
 import { lambdaValue } from "./builders.js";
+import { irEndpoint } from "./endpoint.js";
 
 /** Keyword arguments that configure the SDK call itself rather than the request body. */
 const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", "timeout", "max_retries", "request_options", "idempotency_key", "api_key", "stripe_account", "stripe_version", "options"]);
@@ -168,7 +169,7 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
  * whatever `err` is, so a `report(err)` wrapper around it is not a client of its own.
  */
 function readsArgs(spec: IrMethodSpec): boolean {
-  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.modelArg, ...(spec.pathArgs ?? [])];
+  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.modelArg, spec.documentArg, ...(spec.pathArgs ?? [])];
   return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
 }
 
@@ -188,7 +189,9 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
     if (!m || otherPackage(entry, fn, ctx)) continue;
     const body = bodyOf(m, call, fn, ctx);
     const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
-    const baseUrl = codeBaseUrl(m, ctx);
+    const endpoint = entry.endpoint ? irEndpoint(m, ctx) : undefined;
+    const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
+    const headers = [endpoint?.headers, m.spec.headersArg !== undefined ? argOf(m.method, m.spec.headersArg, "headers") : undefined].filter((h): h is Scoped => !!h);
     const args = m.segs.flatMap((s) => (s.call && s.fn ? s.call.args.map((a) => ({ expr: a.value, fn: s.fn! })) : []));
     return {
       call,
@@ -199,7 +202,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       body,
       query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
       baseUrl,
-      headers: [],
+      headers,
       inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
       model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,
     };

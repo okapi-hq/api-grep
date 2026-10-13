@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/54",
+  "calls": [
+    {"file": "cakes.tsx", "line": 6, "provider": "api.example-bakery.com", "operation": "ListCakes"},
+    {"file": "cakes.tsx", "line": 10, "provider": "api.example-bakery.com", "operation": "OrderCake"},
+    {"file": "cakes.tsx", "line": 14, "provider": "unknown", "operation": "OvenStatus"},
+    {"file": "cakes.tsx", "line": 19, "provider": "api.example-bakery.com", "operation": "CakeById"},
+    {"file": "cakes.tsx", "line": 23, "provider": "api.example-bakery.com", "operation": "OrderCake"}
+  ]
+}
