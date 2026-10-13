@@ -109,7 +109,12 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    scope (`@sentry/*`). `urlArg` can point into an options object (`"0.baseURL"`), `basePath`
    is the path prefix that a code-given base URL replaces (`/v1` for OpenAI), `urlFromFile`
    takes the base URL from a transport built in the same file (MCP), and `fn:N` reads a Convex
-   function reference. AI SDK model factories live in
+   function reference. A GraphQL client library is a registry of the `graphql` provider (`anyHost`
+   in `providers.json`: a call's provider is the one its URL names) with `host: "{graphqlEndpoint}"`,
+   empty paths, `documentArg` on each method and an `endpoint`: its `clients` (constructor ->
+   where the URL, the headers and a `transport` option are) and `transports` (a link built apart),
+   as in [`apollo-client.json`](src/detect/registry/apollo-client.json); `subscription`,
+   `clientArg`, `headersArg` and `endpointFirst` are method flags for them. AI SDK model factories live in
    [`src/detect/registry/ai-sdk.json`](src/detect/registry/ai-sdk.json). See `MethodSpec` and `RegistryEntry` in [`src/types.ts`](src/types.ts)
    for every field.
 2. Register it in `defaultRegistry()` in [`src/detect/registry/index.ts`](src/detect/registry/index.ts).

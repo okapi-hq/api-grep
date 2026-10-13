@@ -112,6 +112,15 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
   return raw;
 }
 
+/**
+ * A GraphQL client's method is called on the client, not on what another method returns: the Observable of
+ * `client.watchQuery(...)` has a `subscribe` too, and it sends nothing more.
+ */
+function onClient(callee: Callee, reg: RegistryEntry): boolean {
+  if (!reg.endpoint || !callee.instance) return true;
+  return (reg.instance?.names ?? []).includes(callee.instance.chain.at(-1) ?? "default");
+}
+
 export function detectSdk(node: CallExpression | NewExpression, callee: Callee, registry: Registry): RawCall | null {
   const reg = registry.byPackage(callee.package);
   if (!reg) return null;
@@ -120,7 +129,7 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
     const spec = reg.commands?.[name];
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
-  if (!reg.methods) return null;
+  if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
     const spec = reg.methods[key];
     if (spec) return buildRaw(node, reg, key, spec, callee);

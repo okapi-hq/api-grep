@@ -29,8 +29,10 @@ function at(args: Expression[], where: string | undefined): Expression | undefin
   return props.reduce<Expression | undefined>((e, prop) => getProp(e, prop), args[Number(idx)]);
 }
 
+/** `new HttpLink(...)`, `apollo.HttpLink(...)`: the name called; none for anything else (`f()()`, an IIFE). */
 function calledName(c: Construction): string | undefined {
-  return memberChain(c.getExpression()).chain.at(-1) ?? unwrap(c.getExpression()).getText();
+  const mc = memberChain(c.getExpression());
+  return mc.chain.at(-1) ?? (Node.isIdentifier(mc.root) ? mc.root.getText() : undefined);
 }
 
 const argsOf = (c: Construction): Expression[] => c.getArguments() as Expression[];
@@ -108,11 +110,13 @@ const ofEntry = (pkg: string | undefined, reg: RegistryEntry): boolean =>
 function projectEndpoints(project: Project, reg: RegistryEntry): Endpoint[] {
   const spec = reg.endpoint!;
   const names = [...Object.keys(spec.clients), ...Object.keys(spec.transports ?? {})];
+  // a client is built where its package is imported; a transport may come from another package
+  const marks = [reg.package, ...(reg.aliases ?? []).map((a) => a.replace(/\/\*$/, "/")), ...Object.keys(spec.transports ?? {})];
   const out: Endpoint[] = [];
   for (const sf of project.getSourceFiles()) {
     if (sf.isDeclarationFile() || sf.isFromExternalLibrary()) continue;
     const text = sf.getFullText();
-    if (!names.some((n) => text.includes(n))) continue;
+    if (!marks.some((n) => text.includes(n))) continue;
     const nodes: Construction[] = [...sf.getDescendantsOfKind(SyntaxKind.NewExpression), ...sf.getDescendantsOfKind(SyntaxKind.CallExpression)];
     for (const c of nodes) {
       const name = calledName(c) ?? "";
