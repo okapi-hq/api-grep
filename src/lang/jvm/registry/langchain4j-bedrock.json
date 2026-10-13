@@ -15,6 +15,7 @@
     }
   },
   "variants": [
-    { "imports": ["dev.langchain4j.model.bedrock.BedrockChatModel", "dev.langchain4j.model.bedrock.BedrockStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/model/{modelId}/converse","bodySelf":true,"pathFromBody":["modelId"],"operationId":"Converse"} } }
+    { "imports": ["dev.langchain4j.model.bedrock.BedrockChatModel"], "methods": { "build": {"method":"POST","path":"/model/{modelId}/converse","bodySelf":true,"pathFromBody":["modelId"],"operationId":"Converse"} } },
+    { "imports": ["dev.langchain4j.model.bedrock.BedrockStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/model/{modelId}/converse-stream","bodySelf":true,"pathFromBody":["modelId"],"operationId":"ConverseStream"} } }
   ]
 }
