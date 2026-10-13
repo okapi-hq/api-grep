@@ -126,8 +126,9 @@ export class ReceiverResolver {
     let out = this.results.get(node);
     if (!out) {
       const raws = this.fromCallers(node, r);
-      // a field's one-member method (`this.client.graphql`) is too common a name to stand for an SDK by itself
-      const guess = !r.field || r.mc.chain.length >= 2;
+      // a field's one-member method (`this.client.graphql`), or a registry's `callersOnly` key (`db.product.create`), is
+      // too common a name to stand for an SDK by itself: neither the manifests nor a diagnostic speak for it
+      const guess = (!r.field || r.mc.chain.length >= 2) && this.registry.entries().some((e) => !e.callersOnly && !!e.methods && Object.hasOwn(e.methods, r.key));
       const manifest = raws.length === 0 && guess ? this.fromManifest(node, r) : undefined;
       out = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest && guess };
       this.results.set(node, out);
@@ -180,7 +181,7 @@ export class ReceiverResolver {
   private fromManifest(node: CallExpression, r: Receiver): RawCall | undefined {
     const declared = this.declared(node.getSourceFile().getFilePath());
     const has = (e: RegistryEntry): boolean => !!e.methods && Object.hasOwn(e.methods, r.key);
-    const matches = this.registry.entries().filter((e) => has(e) && [e.package, ...(e.aliases ?? [])].some((p) => declared.has(p)));
+    const matches = this.registry.entries().filter((e) => has(e) && !e.callersOnly && [e.package, ...(e.aliases ?? [])].some((p) => declared.has(p)));
     if (matches.length !== 1) return undefined;
     const raw = detectSdk(node, { package: matches[0]!.package, chain: r.mc.chain, viaType: true }, this.registry);
     return raw ? { ...raw, clientFrom: "manifest" } : undefined;

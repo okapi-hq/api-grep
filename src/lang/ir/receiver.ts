@@ -112,7 +112,7 @@ function fromManifest(key: string, chain: Chain, call: CallExpr, fn: FunctionDef
   if (!declared || declared.size === 0) return undefined;
   const lang = ctx.idx.lang;
   const isDeclared = (e: IrRegistryEntry): boolean => [e.package, ...(e.aliases ?? [])].some((p) => declared.has(lang.normalizePackage(p)));
-  const matches = lang.registry.filter((e) => Object.hasOwn(e.methods, key) && isDeclared(e));
+  const matches = lang.registry.filter((e) => Object.hasOwn(e.methods, key) && !e.callersOnly && isDeclared(e));
   if (new Set(matches.map((e) => e.package)).size !== 1) return undefined;
   const entry = matches[0]!;
   const raw = detectSdk({ root: { kind: "external" }, segs: [...clientSegs(entry), ...chain.segs] }, call, fn, ctx);
@@ -132,7 +132,9 @@ export function receiverCalls(call: CallExpr, fn: FunctionDef, chain: Chain, ctx
   const { param, fn: owner } = chain.root;
   const raws = param && owner ? fromCallers(call, fn, param, owner, ctx, detect) : [];
   const manifest = raws.length === 0 ? fromManifest(key, chain, call, fn, ctx) : undefined;
-  const result: ReceiverResult = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest };
+  // a key only `callersOnly` registries have (`order.find`) is too common a name to be reported as an unfollowed client
+  const guess = ctx.idx.lang.registry.some((e) => !e.callersOnly && Object.hasOwn(e.methods, key));
+  const result: ReceiverResult = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest && guess };
   if (cacheable) RESULTS.set(call, result);
   return result;
 }

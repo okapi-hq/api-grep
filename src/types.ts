@@ -95,6 +95,13 @@ export interface MethodSpec {
   auth?: AuthScheme;
   /** The body is a property of the body argument (`functions.invoke(name, { body })`). */
   bodyProp?: string;
+  /** The library sends the body under this key (`shopify.product.create(fields)` sends `{ product: fields }`). */
+  bodyWrap?: string;
+  /**
+   * The path when argument `arg` is given, `path` otherwise: pyactiveresource's `Product.find(id)` reads one record,
+   * `Product.find()` lists them.
+   */
+  argPath?: { arg: number; path: string };
   /**
    * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
    * method is called on, `from(table)`), `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`) or
@@ -226,6 +233,17 @@ export interface RegistryEntry {
   endpoint?: EndpointSpec;
   /** Members of a contract object (`connect`, `interface`): a `*` in a method key, a function of its ABI, is never one of them (#78). */
   notFunctions?: string[];
+  /**
+   * Method names too common to stand for this SDK by themselves (`order.list`): a call on an untyped parameter is this
+   * SDK's when its callers pass one of its clients, never because the manifests declare the package.
+   */
+  callersOnly?: boolean;
+  /**
+   * Clients a framework hands to request handlers in their context, by name (Hydrogen's `context.storefront`): in a
+   * project whose manifests declare the package, `<name>.<method>` on a value of that name read from a parameter or
+   * the context is the key `<name>.<method>` of this registry.
+   */
+  contextClients?: string[];
 }
 
 export interface FrameworkKeys {

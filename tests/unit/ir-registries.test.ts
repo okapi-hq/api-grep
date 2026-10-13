@@ -26,7 +26,7 @@ function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer
       // a GraphQL client's endpoint is the URL the code gives it, with nothing appended
       expect(e.endpoint ? spec.path === "" : spec.path.startsWith("/"), `${e.package} ${key}: ${spec.path}`).toBe(true);
       for (const source of Object.values(spec.params ?? {})) expect(source, `${e.package} ${key}`).toMatch(SOURCE_RE);
-      for (const name of Object.keys(spec.params ?? {})) expect(spec.path, `${e.package} ${key}: param ${name}`).toContain(`{${name}}`);
+      for (const name of Object.keys(spec.params ?? {})) expect(`${spec.path} ${spec.argPath?.path ?? ""}`, `${e.package} ${key}: param ${name}`).toContain(`{${name}}`);
     }
   }
 }

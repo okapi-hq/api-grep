@@ -1133,6 +1133,17 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/shopify-rest 1`] = `
+[
+  "store.py:11 shopify GET /admin/api/{version}/shop.json",
+  "store.py:15 shopify GET /admin/api/{version}/orders.json",
+  "store.py:19 shopify GET /admin/api/{version}/orders/{id}.json",
+  "store.py:23 shopify GET /admin/api/{version}/products/count.json",
+  "store.py:27 shopify POST /admin/api/{version}/pages.json",
+  "store.py:31 shopify DELETE /admin/api/{version}/webhooks/{id}.json",
+]
+`;
+
 exports[`regression fixtures > python/soap 1`] = `
 [
   "carrier.py:18 ws.example-carrier.com POST /track/v2 CancelShipment",
@@ -1631,6 +1642,24 @@ exports[`regression fixtures > sdk/sentry 1`] = `
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-rest 1`] = `
+[
+  "admin.ts:9 shopify GET /admin/api/2024-07/orders.json",
+  "admin.ts:14 shopify PUT /admin/api/{version}/products/{id}.json",
+  "admin.ts:18 shopify GET /admin/api/{version}/products/count.json",
+  "admin.ts:22 shopify GET /admin/api/{version}/variants/{id}.json",
+  "admin.ts:27 shopify GET /admin/api/2024-10/locations.json",
+  "admin.ts:29 shopify POST /admin/api/2024-10/redirects.json",
+  "legacy.js:6 shopify GET /admin/api/2024-07/products.json",
+  "legacy.js:7 shopify GET /admin/api/2024-07/products/count.json",
+  "legacy.js:12 shopify PUT /admin/api/2024-07/products/{id}.json",
+  "legacy.js:16 shopify GET /admin/api/2024-07/products/{product_id}/images.json",
+  "legacy.js:20 shopify POST /admin/api/2024-07/orders/{id}/close.json",
+  "legacy.js:25 shopify POST /admin/api/2024-07/customers.json",
+  "legacy.js:33 shopify POST /admin/api/2024-07/customers.json (wrapper:newCustomer)",
 ]
 `;
 
