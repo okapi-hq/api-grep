@@ -375,7 +375,7 @@ Which SDKs have a registry in which language: [docs/sdk-support.md](docs/sdk-sup
 JavaScript (`.js`, `.jsx`, `.mjs`, `.cjs`) is read by the same type checker as TypeScript, so
 everything below applies to both, with CommonJS (`require`, `module.exports`, `require("stripe")(key)`)
 and `jsconfig.json` path aliases. Minified, bundled and vendored files are build output and are
-not scanned.
+not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video streams).
 
 | client | patterns |
 |---|---|

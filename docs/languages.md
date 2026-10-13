@@ -54,7 +54,8 @@ The original pipeline (`src/detect`, `src/resolve`, `src/wrappers`) is the front
 `src/lang/typescript/`. It reads code through the TypeScript checker, so callees are identified by declaration and
 bodies by their declared types. The same front end reads three languages:
 
-- **TypeScript** (`.ts`, `.tsx`, `.mts`, `.cts`).
+- **TypeScript** (`.ts`, `.tsx`, `.mts`, `.cts`). A `.ts` file that is XML (Qt Linguist translations) or binary (MPEG
+  transport streams) is not TypeScript and is left out.
 - **JavaScript** (`.js`, `.jsx`, `.mjs`, `.cjs`) with `allowJs`: the checker follows CommonJS (`require`,
   `module.exports`) and infers types, so the TypeScript detectors apply as they are. jQuery and `XMLHttpRequest`
   detectors serve both languages; globals of script-tag libraries (`axios`, `$`, `supabase`) map to their packages.
