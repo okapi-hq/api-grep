@@ -139,6 +139,14 @@ exports[`regression fixtures > java/clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/const-names 1`] = `
+[
+  "Ledger.java:22 ledger.example.com GET /v2/entries",
+  "Ledger.java:29 balances.example.com GET /v1/balances",
+  "Ledger.java:44 ledger.example.com POST /v2/entries/{id}/close",
+]
+`;
+
 exports[`regression fixtures > java/di-dagger 1`] = `
 [
   "Net.java:38 tracking.parcels-example.com GET /api/parcels/{id}",
@@ -356,6 +364,16 @@ exports[`regression fixtures > json-rpc 1`] = `
   "node.ts:47 internal POST / getblockcount",
   "node.ts:52 api.example-pay.com POST /v1/payments",
   "node.ts:56 relay.example-proxy.com POST /forward",
+]
+`;
+
+exports[`regression fixtures > kotlin/const-names 1`] = `
+[
+  "Shelf.kt:17 shelf.example.com GET /v1/items",
+  "Shelf.kt:22 shelf.example.com GET /v1/me",
+  "Shelf.kt:27 shelf.example.com GET /v1/ping",
+  "Shelf.kt:41 shelf.example.com GET /v1/items/{id}/save",
+  "Shelf.kt:47 stock.example.com GET /v1/stock",
 ]
 `;
 
