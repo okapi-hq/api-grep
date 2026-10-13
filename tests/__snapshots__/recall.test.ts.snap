@@ -196,6 +196,7 @@ exports[`regression fixtures > kotlin/sdk/messaging 1`] = `
   "Notifier.kt:32 slack POST /api/chat.postMessage",
   "Notifier.kt:33 posthog POST /batch",
   "Notifier.kt:36 slack POST /api/chat.postMessage",
+  "Notifier.kt:39 slack POST /api/team.info",
 ]
 `;
 

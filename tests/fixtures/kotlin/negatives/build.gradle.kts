@@ -18,6 +18,7 @@ android {
 dependencies {
     implementation("com.stripe:stripe-java:29.5.0")
     implementation("software.amazon.awssdk:s3:2.33.0")
+    implementation("com.google.firebase:firebase-messaging:24.1.0")
 }
 
 tasks.register("publishDocs") {

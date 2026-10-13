@@ -97,14 +97,17 @@ describe("kotlin: messaging and monitoring SDKs (Twilio, Slack, Sentry, PostHog)
     expect(at(r, "Notifier.kt", 32)).toMatchObject({ provider: "slack", pathTemplate: "/api/chat.postMessage", body: { properties: { channel: { type: "string" }, text: { type: "string" } } } });
     expect(at(r, "Notifier.kt", 33)).toMatchObject({ provider: "posthog", host: "eu.i.posthog.com", pathTemplate: "/batch" });
     expect(at(r, "Notifier.kt", 36)).toMatchObject({ body: { properties: { thread_ts: { type: "string" }, text: { enum: ["On it"] } } } });
+    expect(at(r, "Notifier.kt", 39)).toMatchObject({ provider: "slack", pathTemplate: "/api/team.info", sdk: { chain: "teamInfo" } });
   });
 });
 
 describe("kotlin: SDK coverage", () => {
   it("names a declared and imported JVM SDK whose calls were not found", async () => {
+    // Push.kt: the Android firebase-messaging is declared, so its FirebaseMessaging is not firebase-admin's
     const r = await scanFixture("kotlin/negatives");
     expect(r.calls).toEqual([]);
     expect(r.coverage?.sdks.map((s) => [s.package, s.ecosystem, s.declared, s.supported, s.status])).toEqual([
+      ["com.google.firebase:firebase-messaging", "maven", true, false, "unsupported"],
       ["com.stripe:stripe-java", "maven", true, true, "imported-no-calls"],
       ["software.amazon.awssdk:s3", "maven", true, true, "imported-no-calls"],
     ]);

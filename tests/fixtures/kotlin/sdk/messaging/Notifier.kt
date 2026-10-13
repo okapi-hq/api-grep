@@ -34,4 +34,7 @@ class Notifier(private val sender: String, private val verifyService: String) {
     }
 
     fun reply(client: MethodsClient, channel: String, thread: String) = client.chatPostMessage { it.channel(channel).threadTs(thread).text("On it") }
+
+    // a `Slack` given as a typed parameter, its `methods` client made on the spot
+    fun team(app: Slack, token: String) = app.methods(token).teamInfo { it }
 }

@@ -70,6 +70,12 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   builders?: string[];
   /** JVM: parameters given as builders, read as dicts (see `SetterRules`). */
   setters?: SetterRules;
+  /**
+   * Packages whose classes have the same names (the Android `firebase-messaging` has firebase-admin's
+   * `com.google.firebase.messaging.FirebaseMessaging`): a file whose manifests declare one of them and not this
+   * package calls theirs, so this entry does not match there.
+   */
+  sameClassesAs?: string[];
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): the call goes where it routes. */
   routeByModel?: boolean;
   methods: Record<string, IrMethodSpec>;

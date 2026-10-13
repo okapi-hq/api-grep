@@ -184,7 +184,9 @@ the same files. `package` is the Maven `group:artifact` and `imports` the fully 
 (`com.anthropic.client.okhttp.AnthropicOkHttpClient`) or the packages of static APIs (`com.stripe.model`). Accessor
 calls make the key (`client.chat().completions().create(params)` is `chat.completions.create`). `instance.build` names
 the call that turns a client builder into the client (`"build"` for `S3Client.builder().region(r).build()`), and a
-`builders` entry ending in `*` matches a prefix (`set*`). Parameters given as builders are described by `setters`:
+`builders` entry ending in `*` matches a prefix (`set*`). `sameClassesAs` lists the artifacts that ship classes of the
+same names (the Android `firebase-messaging` and firebase-admin's `FirebaseMessaging`): where the manifests declare one
+of them and not the entry's package, the entry does not match. Parameters given as builders are described by `setters`:
 
 ```json
 "setters": {

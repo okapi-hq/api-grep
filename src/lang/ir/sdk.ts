@@ -52,7 +52,8 @@ function selected(entry: IrRegistryEntry, seg: Seg, ctx: IrCtx): boolean {
 }
 
 /**
- * `client` matches a `client(...)` segment after the import root or after other calls (`Session().client(...)`); a
+ * `client` matches a `client(...)` segment after the import root or after other calls (`Session().client(...)`) or
+ * typed instances (`slack.methods(token)` with `slack: Slack`); a
  * dotted name (`firestore.client`) also the segments before it. A plain name does not match deeper in a namespace:
  * `Client` is `Anthropic\Client`, not `Anthropic\Bedrock\Client`.
  */
@@ -60,7 +61,7 @@ export function namedAt(rel: Seg[], i: number, name: string): boolean {
   const parts = name.split(".");
   const from = i - (parts.length - 1);
   if (from < 0 || !parts.every((p, j) => rel[from + j]!.name === p)) return false;
-  return rel.slice(0, from).every((s) => !!s.call);
+  return rel.slice(0, from).every(invoked);
 }
 
 /** The constructor / factory segment: the last one named in `instance.names` before the method. */
@@ -171,12 +172,20 @@ function readsArgs(spec: IrMethodSpec): boolean {
   return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
 }
 
+/** The file's manifests declare another package with the entry's class names (`sameClassesAs`) and not the entry's. */
+function otherPackage(entry: IrRegistryEntry, fn: FunctionDef, ctx: IrCtx): boolean {
+  if (!entry.sameClassesAs) return false;
+  const declared = ctx.declared?.(fn.module.file);
+  const has = (p: string): boolean => !!declared?.has(ctx.idx.lang.normalizePackage(p));
+  return entry.sameClassesAs.some(has) && ![entry.package, ...(entry.aliases ?? [])].some(has);
+}
+
 /** An SDK call: a chain from a registry's import root to one of its methods. */
 export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
   if (chain.root.kind !== "external" || chain.segs[chain.segs.length - 1]?.call !== call) return undefined;
   for (const entry of ctx.idx.lang.registry) {
     const m = matchEntry(entry, chain.segs, ctx);
-    if (!m) continue;
+    if (!m || otherPackage(entry, fn, ctx)) continue;
     const body = bodyOf(m, call, fn, ctx);
     const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
     const baseUrl = codeBaseUrl(m, ctx);

@@ -226,7 +226,11 @@ and take parameters as builders.
 - **Clients:** `AnthropicOkHttpClient.fromEnv()`, `OpenAIOkHttpClient.builder().apiKey(k).baseUrl(u).build()`
   (`instance.build`; `baseUrl` / `endpointOverride` / `host` give the base URL through `instance.urlArg`),
   `StripeClient(key)`, `S3Client.create()`, `Slack.getInstance().methods(token)`, a declared type (`client:
-  AnthropicClient`), static configuration that sends nothing (`Stripe.apiKey = ...`, `Twilio.init(...)`).
+  AnthropicClient`, also before a factory: `slack.methods(token)` with `slack: Slack`), static configuration that
+  sends nothing (`Stripe.apiKey = ...`, `Twilio.init(...)`). The Android Firebase SDKs share firebase-admin's class
+  names (`FirebaseMessaging`, `FirebaseAuth`, `FirebaseDatabase`): where the manifests declare the Android artifact and
+  not firebase-admin, those classes are not firebase-admin's (`sameClassesAs`), so `subscribeToTopic(topic)` in an app
+  is not a server call.
 - **Methods:** accessor chains (`client.chat().completions().create(params)`, `client.models.generateContent(...)` with
   `models` a field), static resource methods (`Customer.create(params)`, `Message.creator(...).create()`), operations
   on a retrieved object (`Customer.retrieve(id).update(params)`), Firestore references (`collection(...)`,

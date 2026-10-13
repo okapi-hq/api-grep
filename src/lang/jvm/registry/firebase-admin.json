@@ -1,7 +1,8 @@
 {
-  "$comment": "firebase-admin for Java (also used from Kotlin): Auth (`FirebaseAuth.getInstance().createUser(request)`), Cloud Messaging (`FirebaseMessaging.getInstance().send(message)`, the message built with `Message.builder().setToken(t).putData(k, v).build()`) and the Realtime Database (`FirebaseDatabase.getInstance().getReference(path).child(c).setValueAsync(v)`; `{path}` joins the arguments of `getReference` and `child`). Every method also has its `*Async` twin. Firestore through `FirestoreClient` is in firestore.json. `createCustomToken` and `verifyIdToken` sign or check tokens locally: not calls.",
+  "$comment": "firebase-admin for Java (also used from Kotlin): Auth (`FirebaseAuth.getInstance().createUser(request)`), Cloud Messaging (`FirebaseMessaging.getInstance().send(message)`, the message built with `Message.builder().setToken(t).putData(k, v).build()`) and the Realtime Database (`FirebaseDatabase.getInstance().getReference(path).child(c).setValueAsync(v)`; `{path}` joins the arguments of `getReference` and `child`). Every method also has its `*Async` twin. Firestore through `FirestoreClient` is in firestore.json. `createCustomToken` and `verifyIdToken` sign or check tokens locally: not calls. The Android SDKs have the same class names (`sameClassesAs`): an app's `FirebaseMessaging.getInstance().subscribeToTopic(topic)` is not firebase-admin's.",
   "package": "com.google.firebase:firebase-admin",
   "imports": ["com.google.firebase.auth.FirebaseAuth", "com.google.firebase.messaging.FirebaseMessaging", "com.google.firebase.database.FirebaseDatabase"],
+  "sameClassesAs": ["com.google.firebase:firebase-messaging", "com.google.firebase:firebase-messaging-ktx", "com.google.firebase:firebase-auth", "com.google.firebase:firebase-auth-ktx", "com.google.firebase:firebase-database", "com.google.firebase:firebase-database-ktx"],
   "provider": "firebase",
   "host": "identitytoolkit.googleapis.com",
   "auth": "bearer",
