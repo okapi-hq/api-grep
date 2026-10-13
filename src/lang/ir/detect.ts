@@ -109,5 +109,10 @@ export function detectIn(fn: FunctionDef, ctx: IrCtx): IrDetected {
     const u = unfollowedCall(call, fn, chain);
     if (u) out.unfollowed.push(u);
   }
+  // a property read that sends a request is an SDK call or nothing: no wrapper, receiver or HTTP client behind it
+  for (const read of fn.reads ?? []) {
+    const raw = detectSdk(calleeChain(read, fn, ctx), read, fn, ctx);
+    if (raw) out.calls.push(raw);
+  }
   return out;
 }

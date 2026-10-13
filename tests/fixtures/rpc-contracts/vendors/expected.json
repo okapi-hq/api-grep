@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/78",
+  "calls": [
+    {"file": "feeds.ts", "line": 12, "provider": "infura", "operation": "eth_blockNumber"},
+    {"file": "feeds.ts", "line": 13, "provider": "alchemy", "operation": "eth_getBalance"},
+    {"file": "feeds.ts", "line": 14, "provider": "quicknode", "operation": "eth_gasPrice"},
+    {"file": "feeds.ts", "line": 15, "provider": "infura", "operation": "eth_getTransactionCount"},
+    {"file": "feeds.ts", "line": 16, "provider": "unknown", "operation": "eth_blockNumber"},
+    {"file": "feeds.ts", "line": 17, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "feeds.ts", "line": 18, "provider": "alchemy", "operation": "eth_blockNumber"},
+    {"file": "feeds.ts", "line": 23, "provider": "alchemy", "operation": "eth_call"}
+  ]
+}

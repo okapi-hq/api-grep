@@ -1,6 +1,7 @@
 import type { Arg, CallExpr, Entry, Expr, FunctionDef, ModuleModel, Pos } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { callEdit } from "./lower-edits.js";
+import { PROPERTY_READS } from "./property-reads.js";
 
 /** Lowering state: the module, the function whose calls are being collected, and the method receiver (`self`, `cls`). */
 export interface PyState {
@@ -122,6 +123,16 @@ function lowerCall(n: SyntaxNode, st: PyState): Expr {
   return call;
 }
 
+/** `a.b`; a read of a property that sends a request (`w3.eth.block_number`) is recorded as a call of its own too. */
+function lowerAttribute(n: SyntaxNode, st: PyState): Expr {
+  const name = field(n, "attribute")!;
+  const e: Expr = { k: "attr", obj: lowerExpr(field(n, "object")!, st), name: name.text, pos: posOf(name) };
+  const parent = n.parent;
+  const called = parent?.type === "call" && field(parent, "function")?.startIndex === n.startIndex;
+  if (PROPERTY_READS.has(name.text) && !called) (st.fn.reads ??= []).push({ k: "call", fn: e, args: [], pos: posOf(n), property: true });
+  return e;
+}
+
 function lowerSubscript(n: SyntaxNode, st: PyState): Expr {
   const value = field(n, "value");
   const sub = field(n, "subscript");
@@ -204,7 +215,7 @@ export function lowerExpr(n: SyntaxNode, st: PyState): Expr {
     case "identifier":
       return lowerIdentifier(n, st);
     case "attribute":
-      return { k: "attr", obj: lowerExpr(field(n, "object")!, st), name: field(n, "attribute")!.text, pos: posOf(field(n, "attribute")!) };
+      return lowerAttribute(n, st);
     case "subscript":
       return lowerSubscript(n, st);
     case "call":

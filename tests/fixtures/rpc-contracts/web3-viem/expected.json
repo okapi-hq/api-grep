@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/78",
+  "calls": [
+    {"file": "registry.ts", "line": 11, "provider": "eth.example-node.io", "operation": "eth_call"},
+    {"file": "registry.ts", "line": 15, "provider": "eth.example-node.io", "operation": "eth_sendTransaction"},
+    {"file": "registry.ts", "line": 24, "provider": "alchemy", "operation": "eth_call"},
+    {"file": "registry.ts", "line": 28, "provider": "rpc.example-chain.net", "operation": "eth_sendRawTransaction"},
+    {"file": "registry.ts", "line": 32, "provider": "alchemy", "operation": "eth_call"}
+  ]
+}

@@ -697,7 +697,7 @@ operation?: {
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects, properties and vendor providers #78 |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi #85 |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
@@ -747,9 +747,37 @@ one-value enum:
     receiver of another type, `token: Contract`, is not one) uses the project's client when it builds exactly one,
     else an unknown host; it gives no call when the project builds a wallet or socket client of that library, or no
     client at all while the library has wallet clients (TypeScript; Python keeps such calls with an unknown host).
-  - Not covered yet: contract objects (`new ethers.Contract(...).balanceOf()`, `w3.eth.contract(...).functions.x().call()`,
-    `eth_call` behind ABI-defined names), web3.py properties (`w3.eth.block_number`), ethers' vendor providers
-    (`InfuraProvider`, `AlchemyProvider`), wagmi, and `@solana/spl-token` helpers (#78).
+  - **Contract objects** (#78): the ABI names a contract's functions, so a registry key holds `*` for one (`Contract.*`,
+    `methods.*.call`, `getContract.read.*`, `eth.contract.functions.*.call`), never one of the object's own members
+    (`notFunctions`: `connect`, `interface`, `on`). The call says what it sends where it can: web3.js `.call()` /
+    `.send()` / `.estimateGas()`, viem `.read` / `.simulate` (`eth_call` through the public client of `client`) and
+    `.write` (a transaction through its wallet client), ethers `.staticCall()`, `.estimateGas()`, v5 `callStatic`,
+    `queryFilter` (`eth_getLogs`), web3.py `.call()`, `.transact()`, `.estimate_gas()`, `caller`, event `get_logs`. An
+    ethers function called directly (`token.balanceOf(owner)`, `src/detect/rpc-contract.ts`) sends `eth_call` for a
+    view and a transaction otherwise: the ABI written in the code says which (human-readable signatures or JSON
+    fragments, also through `new Interface(abi)` / `parseAbi`, `src/detect/contract-abi.ts`), and the runner who
+    signs (`endpoint.signers`): a provider only reads (a transaction through it throws, no call), `new Wallet(key,
+    provider)` signs in the app (`eth_sendRawTransaction`), `provider.getSigner()` has the node sign
+    (`eth_sendTransaction`); an ABI or a runner the scan cannot read lists what it may send as `alternatives`. A
+    contract on a browser wallet's provider or signer, or on no runner, gives no call; one on a runner the scan does
+    not follow (a parameter, a helper's result) uses the project's one client as a typed call does.
+  - **The contract's function** stays in `sdk.chain` (`Contract.balanceOf`, `eth.contract.functions.balanceOf.call`):
+    `operation.name` is the RPC method on the wire, as for every JSON-RPC call, and no new report field is needed.
+  - **Properties** (#78): web3.py attribute reads that send a request (`w3.eth.block_number`, `chain_id`,
+    `gas_price`, `accounts`, `max_priority_fee`, `syncing`, `net.version`, `client_version`) are `property` entries;
+    the Python lowering records reads of those names (`FunctionDef.reads`) as calls without arguments, which match
+    property entries only (`w3.eth.get_balance` handed over as a function sends nothing).
+  - **Node vendors** (#78): ethers' `InfuraProvider`, `AlchemyProvider` and `QuickNodeProvider` build their URL from
+    the network (`endpoint.clients.*.vendor`, the hosts copied from ethers 5.7 and 6.13, `src/detect/rpc-vendor.ts`);
+    a network the table does not list or the scan cannot read keeps the vendor's domain (`{network}.infura.io`).
+    `getDefaultProvider(url)` is a JsonRpcProvider, `getDefaultProvider("mainnet")` spreads requests over several
+    vendors (unknown host). `providers.json` names Infura, Alchemy, QuickNode and Helius by their domains, for raw HTTP
+    calls too.
+  - **`@solana/spl-token`** helpers taking a Connection first (`getAccount`, `getMint`, `transfer`, `mintTo`), with
+    the project's one Connection for a typed parameter (`endpoint.clientPackage`).
+  - Not covered yet (#85): clients kept in a cache or handed in a context (`getProvider(chainId)` returning a record
+    entry, `useConnection()`), wagmi actions and hooks, TypeChain factories, `contract.connect(signer)`, contracts
+    typed as parameters, ABIs imported from JSON files.
 - **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
   clients (#32).
 

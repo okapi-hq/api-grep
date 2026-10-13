@@ -131,6 +131,18 @@ export interface MethodSpec {
   rpcArg?: string;
   /** Called as the package's own function (viem/actions `getBalance(client, args)`), the call takes the client first. */
   clientFirst?: boolean;
+  /** An attribute read rather than a call (web3.py `w3.eth.block_number` sends `eth_blockNumber`, #78). */
+  property?: boolean;
+  /**
+   * A function of a contract object (#78), which the contract's ABI names (`*` in the key): `auto` sends `eth_call` for
+   * a view and a transaction otherwise, as the ABI and the runner tell (ethers `token.balanceOf(owner)`); `send` a
+   * transaction, as the runner tells (ethers v6 `token.transfer.send(...)`).
+   */
+  contract?: "auto" | "send";
+  /** Where the contract's construction takes its runner or client: `2` (ethers `new Contract(address, abi, runner)`), `0.client.public|0.client`. */
+  runnerArg?: string;
+  /** Where the contract's construction takes its ABI: `1` (ethers). */
+  abiArg?: string;
 }
 
 /** Where a GraphQL client or one of its transports takes its URL and headers: `0`, `0.uri`, `1.headers` (TypeScript). */
@@ -145,12 +157,26 @@ export interface EndpointSource {
 }
 
 /**
+ * A node vendor's client (ethers `InfuraProvider`, #78): the library builds the URL from a network name, as its own
+ * table says. `hosts` by network name or chain id; `host` for any other (`{network}.infura.io`), so the vendor is
+ * still known; `path` after it (`/v3/{projectId}`).
+ */
+export interface VendorSource {
+  /** Where the client takes the network (`0`), and the network it uses when given none. */
+  network: string;
+  default: string;
+  hosts: Record<string, string>;
+  host: string;
+  path: string;
+}
+
+/**
  * GraphQL clients (#54) talk to whatever URL the code gives them. `clients` are their constructors and factories
  * (`new ApolloClient({ uri })`), with the option holding a transport built apart (`link`); `transports` are the
  * constructors of those (`new HttpLink({ uri })`). Python writes the positions as `kw:url|0`.
  */
 export interface EndpointSpec {
-  clients: Record<string, EndpointSource & { transport?: string }>;
+  clients: Record<string, EndpointSource & { transport?: string; vendor?: VendorSource; urlOrNetwork?: boolean }>;
   transports?: Record<string, EndpointSource>;
   /**
    * JSON-RPC clients (#52) also talk to browser wallets and sockets: with this list, a call is reported only when its
@@ -159,6 +185,14 @@ export interface EndpointSpec {
   nonHttp?: string[];
   /** Types a client of the library is declared with (`JsonRpcProvider`, `PublicClient`): a call on another type is not one. */
   types?: string[];
+  /** The package the clients come from when it is another one (`@solana/spl-token` helpers take a `@solana/web3.js` Connection). */
+  clientPackage?: string;
+  /**
+   * Signers a contract can be built with (ethers, #78): where one takes its provider (`Wallet`: `1`; none: the receiver,
+   * `provider.getSigner()`), and who signs its transactions, the app (`local`: `eth_sendRawTransaction`) or the node
+   * (`node`: `eth_sendTransaction`).
+   */
+  signers?: Record<string, { provider?: string; signs: "local" | "node" }>;
   /**
    * The client a call is given comes from the app's context (Relay's environment, from `useRelayEnvironment()` or a
    * prop): one the scan cannot read is the project's one client, as for a call that names none.
@@ -190,6 +224,8 @@ export interface RegistryEntry {
   routeByModel?: boolean;
   /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */
   endpoint?: EndpointSpec;
+  /** Members of a contract object (`connect`, `interface`): a `*` in a method key, a function of its ABI, is never one of them (#78). */
+  notFunctions?: string[];
 }
 
 export interface FrameworkKeys {
