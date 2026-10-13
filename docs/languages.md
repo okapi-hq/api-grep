@@ -60,10 +60,12 @@ A scan does not hold every file in one checker (#68). `src/lang/typescript/graph
 global names it declares, and groups the files that can see each other: linked by an import in either direction,
 through files in scope or other code the checker loads (never `node_modules`), by an ambient module, or by a global
 name. A `declare global` block, or an interface of a script, links its file to every file. Groups are packed into
-batches of about 8 MB of source (`batches.ts`), each read by a project of its own and dropped once its calls are built;
+batches of about 16 MB of source (a repository with less is one project, without the pre-pass) (`batches.ts`), each read by a project of its own and dropped once its calls are built;
 calls, diagnostics and coverage come out in the order a single project gives them. A group is never split: when one
 group is most of the repository (a backend whose modules import each other), `checker-budget.ts` drops the checker's
-types when the heap passes 60% of its limit, and a new checker makes again those it needs. Imports are resolved by
+types once it has made 400,000 types or 3 million instantiations, and a new checker makes again those it needs. The
+trigger is a count, not the heap: a new checker can type a few expressions differently (TypeScript's inference depends
+on the order it meets types), and a report must be the same whatever the heap or the machine. Imports are resolved by
 `src/module-resolution.ts`, which keeps what it found and not every path it tried (the checker's own keeps them for
 watch mode: hundreds of megabytes in a repository scanned without `node_modules`). Union members of a type are
 ordered by their text, not by when the checker first met them, and the properties of a mapped type over a union of

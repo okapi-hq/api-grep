@@ -2,10 +2,11 @@ import { statSync } from "node:fs";
 import { Project } from "ts-morph";
 
 /**
- * Source text per checker project. A project holds every syntax tree, binding and type of its files until it is
- * dropped: about 50 bytes of heap per byte of source, so 8 MB of source stays well under a 2 GB heap (#68).
+ * Source text per checker project. A project holds every syntax tree and binding of its files until it is dropped,
+ * and its checker's types until `checker-budget.ts` drops them: 16 MB of source fits in a 1.5 GB heap (#68). A
+ * repository with less is scanned in one project, as it always was.
  */
-export const BATCH_BYTES = Number(process.env.B68 ?? 16_000_000);
+export const BATCH_BYTES = 16_000_000;
 
 export function sizeOf(file: string): number {
   try {

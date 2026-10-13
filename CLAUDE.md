@@ -41,10 +41,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
   see `src/lang/html/`). Memory (#68): `graph.ts` groups the files that can see each other (imports either way,
-  `/// <reference>`, `declare module`, globals); `batches.ts` packs groups into projects of about 8 MB of source,
-  scanned one after the other (`batched.ts`), results merged in single-project order; `checker-budget.ts` drops a
-  project's checker when the heap fills up; `src/module-resolution.ts` resolves imports without keeping every path
-  tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
+  `/// <reference>`, `declare module`, globals); `batches.ts` packs groups into projects of about 16 MB of source (a
+  smaller repository is one project, without the pre-pass), scanned one after the other (`batched.ts`), results
+  merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
+  instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
+  without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
 - Tree-sitter languages (Python, PHP, Kotlin, Java): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in

@@ -1,12 +1,14 @@
 import type { Project } from "ts-morph";
 
 /**
- * Types a checker may make before it is dropped. A count, not the heap: the same repository must give the same report
- * whatever the heap, the machine or the garbage collector, and the checker makes the same types in the same order on
- * every run, so it is dropped at the same files.
+ * What a checker may make before it is dropped: counts, not the heap. A new checker can type a few expressions
+ * differently (TypeScript's inference depends on the order it meets types), so the report must not depend on the heap,
+ * the machine or the garbage collector: a checker makes the same types in the same order on every run, so it is
+ * dropped after the same files. Instantiations are what fill the heap in a backend of generic types (about 1.5 KB
+ * each in infisical's); a checker reaching either count holds 300 to 500 MB.
  */
-export const MAX_TYPES = Number(process.env.T68 ?? 400_000);
-export const MAX_INSTANTIATIONS = Number(process.env.I68 ?? 3_000_000);
+export const MAX_TYPES = 400_000;
+export const MAX_INSTANTIATIONS = 3_000_000;
 
 interface WithContext {
   _context?: { resetProgram?: () => void };
@@ -24,15 +26,13 @@ export function resetChecker(project: Project): boolean {
   return true;
 }
 
-let resets = 0;
 /**
- * Called between two files or two calls of one project (#68): drops the checker once it has made `MAX_TYPES` types.
- * Files that see each other share a project however large they are (a backend whose modules all import each other), so
- * this is what bounds its heap.
+ * Called between two files or two calls of one project (#68): drops the checker once it has made `MAX_TYPES` types or
+ * `MAX_INSTANTIATIONS` instantiations. Files that see each other share a project however large they are (a backend
+ * whose modules all import each other), so this is what bounds its heap. Returns whether it did.
  */
-export function relieve(project: Project): void {
+export function relieve(project: Project, limits = { types: MAX_TYPES, instantiations: MAX_INSTANTIATIONS }): boolean {
   const program = project.getProgram().compilerObject;
-  if (program.getTypeCount() < MAX_TYPES && program.getInstantiationCount() < MAX_INSTANTIATIONS) return;
-  if (process.env.DEBUG68) process.stderr.write(`RESET ${++resets} t=${Math.round(performance.now())}\n`);
-  resetChecker(project);
+  if (program.getTypeCount() < limits.types && program.getInstantiationCount() < limits.instantiations) return false;
+  return resetChecker(project);
 }

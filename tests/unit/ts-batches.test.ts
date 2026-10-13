@@ -4,7 +4,7 @@ import path from "node:path";
 import { Project, ts } from "ts-morph";
 import { afterAll, describe, expect, it } from "vitest";
 import { packBatches, projectOrder } from "../../src/lang/typescript/batches.js";
-import { resetChecker } from "../../src/lang/typescript/checker-budget.js";
+import { relieve, resetChecker } from "../../src/lang/typescript/checker-budget.js";
 import { DeferredDiagnostics } from "../../src/lang/typescript/deferred.js";
 import { fileGroups } from "../../src/lang/typescript/graph.js";
 import { leanResolution } from "../../src/module-resolution.js";
@@ -148,6 +148,16 @@ describe("checker reset", () => {
     expect(resetChecker(project)).toBe(true);
     expect(project.getProgram().compilerObject.getTypeChecker()).not.toBe(checker);
     expect(decl.getType().getText()).toBe(before);
+  });
+
+  it("is dropped on counts of types and instantiations, never on the heap", () => {
+    const project = new Project({ useInMemoryFileSystem: true });
+    project.createSourceFile("/a.ts", `export const pairs = [1, 2].map((n) => ({ n, s: String(n) }));`).getVariableDeclarationOrThrow("pairs").getType();
+    const checker = project.getProgram().compilerObject.getTypeChecker();
+    expect(relieve(project, { types: 1e9, instantiations: 1e9 })).toBe(false);
+    expect(project.getProgram().compilerObject.getTypeChecker()).toBe(checker);
+    expect(relieve(project, { types: 1, instantiations: 1e9 })).toBe(true);
+    expect(project.getProgram().compilerObject.getTypeChecker()).not.toBe(checker);
   });
 });
 
