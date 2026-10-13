@@ -24,7 +24,14 @@ export function argAt(seg: Seg | undefined, where: string, ctx: IrCtx): Scoped |
   if (!m) return undefined;
   const arg = m[1] !== undefined ? argOf(seg, undefined, m[1]) : argOf(seg, Number(m[2]));
   if (!arg || m[3] === undefined) return arg;
-  return propOf(arg, m[3], ctx);
+  return lambdaProp(arg, m[3]) ?? propOf(arg, m[3], ctx);
+}
+
+/** A Kotlin configuration lambda (`S3Client { endpointUrl = Url.parse(u) }`): the last value it gives the property. */
+function lambdaProp(arg: Scoped, name: string): Scoped | undefined {
+  if (arg.expr.k !== "fnref") return undefined;
+  const set = arg.expr.fn.props?.filter((p) => p.name === name).pop();
+  return set ? { expr: set.value, fn: arg.expr.fn } : undefined;
 }
 
 /** A key of the dict an expression stands for. */

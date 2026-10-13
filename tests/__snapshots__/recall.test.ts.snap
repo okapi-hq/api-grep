@@ -122,6 +122,21 @@ exports[`regression fixtures > java/apache 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/aws 1`] = `
+[
+  "Dispatch.java:23 aws POST /",
+  "Dispatch.java:27 aws POST /",
+  "Dispatch.java:31 aws PUT /{Bucket}/{Key}",
+  "Dispatch.java:35 aws GET /{Bucket}/{Key}",
+  "Dispatch.java:40 aws PUT /{Bucket}/{Key}",
+  "Inventory.java:25 aws POST /",
+  "Inventory.java:32 aws POST /",
+  "Inventory.java:36 aws POST /",
+  "Inventory.java:40 aws POST /",
+  "Inventory.java:44 aws POST /",
+]
+`;
+
 exports[`regression fixtures > java/clients 1`] = `
 [
   "Alerts.java:21 api.example-alerts.com POST /v1/batches",
@@ -558,6 +573,22 @@ exports[`regression fixtures > kotlin/retrofit-shared-builder 1`] = `
 [
   "Apis.kt:8 api.example-sync.com GET /status",
   "Apis.kt:13 api.example-images.com GET /search",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/aws 1`] = `
+[
+  "Mailer.kt:19 aws POST /",
+  "Mailer.kt:21 aws POST /",
+  "Mailer.kt:23 aws POST /v2/email/outbound-emails",
+  "Mailer.kt:25 aws GET /v2/email/identities/{EmailIdentity}",
+  "Mailer.kt:28 aws PUT /{Bucket}/{Key}",
+  "Orders.kt:29 aws POST /",
+  "Orders.kt:34 aws POST /",
+  "Orders.kt:38 aws POST /",
+  "Orders.kt:46 aws PUT /{Bucket}/{Key}",
+  "Orders.kt:50 aws POST /",
+  "Summaries.kt:20 aws-bedrock POST /model/{modelId}/converse",
 ]
 `;
 

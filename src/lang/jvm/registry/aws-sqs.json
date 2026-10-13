@@ -1,0 +1,56 @@
+{
+  "$comment": "SQS from the AWS SDK for Java 2.x (`SqsClient.builder().region(r).build()`, `sqs.sendMessage(SendMessageRequest.builder().queueUrl(u).messageBody(b).build())` or a lambda that fills the request) and the AWS SDK for Kotlin (`SqsClient { region = r }`, `SendMessageRequest { queueUrl = u; messageBody = b }`). Both SDKs speak the AWS JSON 1.0 protocol to SQS since late 2023 (the Query protocol before): every operation is a POST to `/` that names itself in the `X-Amz-Target` header (`AmazonSQS.SendMessage`), reported as `operationId`; the request's members are the JSON body (`queueUrl` -> `QueueUrl`).",
+  "provider": "aws",
+  "host": "sqs.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SQS API reference, 2012-11-05, under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:sqs",
+      "imports": ["software.amazon.awssdk.services.sqs.SqsClient", "software.amazon.awssdk.services.sqs.SqsAsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "SqsClient", "SqsAsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.sqs.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:sqs",
+      "imports": ["aws.sdk.kotlin.services.sqs.SqsClient"],
+      "instance": {
+        "names": ["fromEnvironment", "SqsClient"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "SqsClient": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.sqs.model"], "case": "pascal" }
+    }
+  ],
+  "methods": {
+    "sendMessage": {"method":"POST","path":"/","bodyArg":0,"operationId":"SendMessage"},
+    "sendMessageBatch": {"method":"POST","path":"/","bodyArg":0,"operationId":"SendMessageBatch"},
+    "receiveMessage": {"method":"POST","path":"/","bodyArg":0,"operationId":"ReceiveMessage"},
+    "deleteMessage": {"method":"POST","path":"/","bodyArg":0,"operationId":"DeleteMessage"},
+    "deleteMessageBatch": {"method":"POST","path":"/","bodyArg":0,"operationId":"DeleteMessageBatch"},
+    "changeMessageVisibility": {"method":"POST","path":"/","bodyArg":0,"operationId":"ChangeMessageVisibility"},
+    "changeMessageVisibilityBatch": {"method":"POST","path":"/","bodyArg":0,"operationId":"ChangeMessageVisibilityBatch"},
+    "createQueue": {"method":"POST","path":"/","bodyArg":0,"operationId":"CreateQueue"},
+    "deleteQueue": {"method":"POST","path":"/","bodyArg":0,"operationId":"DeleteQueue"},
+    "purgeQueue": {"method":"POST","path":"/","bodyArg":0,"operationId":"PurgeQueue"},
+    "getQueueUrl": {"method":"POST","path":"/","bodyArg":0,"operationId":"GetQueueUrl"},
+    "getQueueAttributes": {"method":"POST","path":"/","bodyArg":0,"operationId":"GetQueueAttributes"},
+    "setQueueAttributes": {"method":"POST","path":"/","bodyArg":0,"operationId":"SetQueueAttributes"},
+    "listQueues": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListQueues"},
+    "listQueuesPaginator": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListQueues"},
+    "listDeadLetterSourceQueues": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListDeadLetterSourceQueues"},
+    "tagQueue": {"method":"POST","path":"/","bodyArg":0,"operationId":"TagQueue"},
+    "untagQueue": {"method":"POST","path":"/","bodyArg":0,"operationId":"UntagQueue"},
+    "listQueueTags": {"method":"POST","path":"/","bodyArg":0,"operationId":"ListQueueTags"},
+    "addPermission": {"method":"POST","path":"/","bodyArg":0,"operationId":"AddPermission"},
+    "removePermission": {"method":"POST","path":"/","bodyArg":0,"operationId":"RemovePermission"},
+    "startMessageMoveTask": {"method":"POST","path":"/","bodyArg":0,"operationId":"StartMessageMoveTask"}
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$comment": "DynamoDB Enhanced Client of the AWS SDK for Java 2.x (also used from Kotlin): `DynamoDbEnhancedClient.builder().dynamoDbClient(ddb).build()` or `.create()`, then `enhanced.table(\"Name\", TableSchema.fromBean(X.class))` (or a `DynamoDbTable<X>` field or parameter) and its operations: `table.putItem(item)`, `table.getItem(key)`, `table.query(...)`, `table.index(\"gsi\").query(...)`. Each sends the DynamoDB operation of its name (AWS JSON 1.0, POST `/`, `operationId`); the item is a mapped Java object the SDK serializes itself, so the body is not listed.",
+  "package": "software.amazon.awssdk:dynamodb-enhanced",
+  "imports": [
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient",
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient",
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable",
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable",
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex",
+    "software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncIndex"
+  ],
+  "provider": "aws",
+  "host": "dynamodb.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (DynamoDbEnhancedClient, DynamoDbTable and DynamoDbIndex methods of the AWS SDK for Java 2.x, mapped to the DynamoDB operations they send)",
+  "instance": {
+    "names": ["builder", "create", "DynamoDbEnhancedClient", "DynamoDbEnhancedAsyncClient", "DynamoDbTable", "DynamoDbAsyncTable", "DynamoDbIndex", "DynamoDbAsyncIndex"],
+    "build": "build"
+  },
+  "builders": ["index"],
+  "methods": {
+    "table.putItem": {"method":"POST","path":"/","operationId":"PutItem"},
+    "table.getItem": {"method":"POST","path":"/","operationId":"GetItem"},
+    "table.updateItem": {"method":"POST","path":"/","operationId":"UpdateItem"},
+    "table.deleteItem": {"method":"POST","path":"/","operationId":"DeleteItem"},
+    "table.query": {"method":"POST","path":"/","operationId":"Query"},
+    "table.scan": {"method":"POST","path":"/","operationId":"Scan"},
+    "table.createTable": {"method":"POST","path":"/","operationId":"CreateTable"},
+    "table.deleteTable": {"method":"POST","path":"/","operationId":"DeleteTable"},
+    "table.describeTable": {"method":"POST","path":"/","operationId":"DescribeTable"},
+    "putItem": {"method":"POST","path":"/","operationId":"PutItem"},
+    "getItem": {"method":"POST","path":"/","operationId":"GetItem"},
+    "updateItem": {"method":"POST","path":"/","operationId":"UpdateItem"},
+    "deleteItem": {"method":"POST","path":"/","operationId":"DeleteItem"},
+    "query": {"method":"POST","path":"/","operationId":"Query"},
+    "scan": {"method":"POST","path":"/","operationId":"Scan"},
+    "createTable": {"method":"POST","path":"/","operationId":"CreateTable"},
+    "deleteTable": {"method":"POST","path":"/","operationId":"DeleteTable"},
+    "describeTable": {"method":"POST","path":"/","operationId":"DescribeTable"},
+    "batchGetItem": {"method":"POST","path":"/","operationId":"BatchGetItem"},
+    "batchWriteItem": {"method":"POST","path":"/","operationId":"BatchWriteItem"},
+    "transactGetItems": {"method":"POST","path":"/","operationId":"TransactGetItems"},
+    "transactWriteItems": {"method":"POST","path":"/","operationId":"TransactWriteItems"}
+  }
+}

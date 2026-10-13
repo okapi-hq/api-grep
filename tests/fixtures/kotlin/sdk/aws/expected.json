@@ -1,0 +1,17 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/49",
+  "skipped": [],
+  "calls": [
+    { "file": "Mailer.kt", "line": 19, "provider": "aws" },
+    { "file": "Mailer.kt", "line": 21, "provider": "aws" },
+    { "file": "Mailer.kt", "line": 23, "provider": "aws" },
+    { "file": "Mailer.kt", "line": 25, "provider": "aws" },
+    { "file": "Mailer.kt", "line": 28, "provider": "aws" },
+    { "file": "Orders.kt", "line": 29, "provider": "aws" },
+    { "file": "Orders.kt", "line": 34, "provider": "aws" },
+    { "file": "Orders.kt", "line": 38, "provider": "aws" },
+    { "file": "Orders.kt", "line": 46, "provider": "aws" },
+    { "file": "Orders.kt", "line": 50, "provider": "aws" },
+    { "file": "Summaries.kt", "line": 20, "provider": "aws-bedrock" }
+  ]
+}

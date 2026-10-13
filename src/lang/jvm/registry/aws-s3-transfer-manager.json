@@ -1,0 +1,27 @@
+{
+  "$comment": "S3 Transfer Manager of the AWS SDK for Java 2.x (also used from Kotlin): `S3TransferManager.create()` or `.builder().s3Client(c).build()`; `tm.uploadFile(UploadFileRequest.builder().putObjectRequest(b -> b.bucket(x).key(k)).source(path).build())`. The S3 request it wraps (`putObjectRequest`, `getObjectRequest`, `copyObjectRequest`) is the body, with its bucket and key in the path; a large file goes in several parts, listed as the one operation the transfer stands for. A directory transfer sends one request per file under `{Key}`.",
+  "package": "software.amazon.awssdk:s3-transfer-manager",
+  "imports": ["software.amazon.awssdk.transfer.s3.S3TransferManager"],
+  "provider": "aws",
+  "host": "s3.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (S3TransferManager methods of the AWS SDK for Java 2.x, mapped to the S3 operations of the S3 registry)",
+  "instance": {
+    "names": ["create", "builder", "S3TransferManager"],
+    "build": "build"
+  },
+  "setters": {
+    "packages": ["software.amazon.awssdk.transfer.s3.model"],
+    "case": "pascal",
+    "fields": { "addTransferListener": "", "transferListeners": "", "overrideConfiguration": "" }
+  },
+  "methods": {
+    "uploadFile": {"method":"PUT","path":"/{Bucket}/{Key}","bodyArg":0,"bodyProp":"PutObjectRequest","pathFromBody":["Bucket","Key"],"encoding":"raw","operationId":"PutObject"},
+    "upload": {"method":"PUT","path":"/{Bucket}/{Key}","bodyArg":0,"bodyProp":"PutObjectRequest","pathFromBody":["Bucket","Key"],"encoding":"raw","operationId":"PutObject"},
+    "downloadFile": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"bodyProp":"GetObjectRequest","pathFromBody":["Bucket","Key"],"operationId":"GetObject"},
+    "download": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"bodyProp":"GetObjectRequest","pathFromBody":["Bucket","Key"],"operationId":"GetObject"},
+    "copy": {"method":"PUT","path":"/{DestinationBucket}/{DestinationKey}","bodyArg":0,"bodyProp":"CopyObjectRequest","pathFromBody":["DestinationBucket","DestinationKey"],"operationId":"CopyObject"},
+    "uploadDirectory": {"method":"PUT","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket"],"encoding":"raw","operationId":"PutObject"},
+    "downloadDirectory": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket"],"operationId":"GetObject"}
+  }
+}
