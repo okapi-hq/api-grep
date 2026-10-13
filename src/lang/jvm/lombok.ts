@@ -40,9 +40,26 @@ function lombokRules(e: Expr, fn: FunctionDef, ctx: IrCtx): SetterRules | undefi
   const cls = projectClass(e, fn, ctx);
   if (!cls || !annotated(cls, BUILDERS) || classMethod(cls, "builder", ctx.idx)) return undefined;
   const fields: Record<string, string> = {};
-  // a JSON name with `:` would read as a role (`SetterRules.fields`): such a field keeps its own name
-  for (const a of lineage(cls, ctx).flatMap((c) => c.annotations)) if (a.field && !a.name.includes(":")) fields[a.field] = a.name;
-  return { packages: [], case: "camel", fields };
+  const items: Record<string, string> = {};
+  for (const c of lineage(cls, ctx)) {
+    // a JSON name with `:` would read as a role (`SetterRules.fields`): such a field keeps its own name
+    for (const a of c.annotations) if (a.field && !a.name.includes(":")) fields[a.field] = a.name;
+    for (const [field, singular] of singulars(c)) items[singular] = c.annotations.find((a) => a.field === field && !a.name.includes(":"))?.name ?? field;
+  }
+  return { packages: [], case: "camel", fields, items };
+}
+
+/** The adder of a `@Singular` field: as the annotation names it, else the field's name in the singular (`tags` -> `tag`). */
+function singulars(cls: ClassDef): [string, string][] {
+  const out: [string, string][] = [];
+  for (const [field, annotations] of cls.fieldAnnotations ?? []) {
+    const a = annotations.find((x) => annotationName(x) === "Singular");
+    if (!a) continue;
+    const given = a.args.find((x) => !x.name || x.name === "value")?.value;
+    const singular = given?.k === "str" ? given.v : field.replace(/ies$/, "y").replace(/(ch|sh|x|ss)es$/, "$1").replace(/([^s])s$/, "$1");
+    if (singular && singular !== field) out.push([field, singular]);
+  }
+  return out;
 }
 
 /** `config.getBaseUrl()` on a project class whose getters Lombok writes: the field `config.baseUrl`. */

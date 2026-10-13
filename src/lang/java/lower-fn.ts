@@ -1,3 +1,4 @@
+import { addBranch } from "../ir/edits.js";
 import type { Annotation, Arg, Expr, FunctionDef, Param } from "../ir/model.js";
 import { injectedValue } from "../jvm/annotations.js";
 import { pathRef } from "../jvm/paths.js";
@@ -114,6 +115,8 @@ function lowerSwitch(n: SyntaxNode, st: JState): Expr {
   const inner: JState = { ...st, scope: { names: new Set(), parent: st.scope }, yields: [] };
   const values: Expr[] = [];
   for (const c of named(n.childForFieldName("body") ?? n)) {
+    // a case runs on some paths only
+    if (c.type === "switch_rule" || c.type === "switch_block_statement_group") addBranch(st.fn, c.startIndex, c.endIndex);
     for (const x of c.type === "switch_rule" || c.type === "switch_block_statement_group" ? named(c) : []) {
       if (x.type === "switch_label") continue;
       if (c.type === "switch_rule" && x.type === "expression_statement" && named(x)[0]) values.push(lowerExpr(named(x)[0]!, inner));

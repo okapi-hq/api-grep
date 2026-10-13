@@ -1,6 +1,7 @@
 import { partsToTemplate } from "../../../resolve/parts.js";
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import { evaluate } from "../../ir/evaluate.js";
+import { mayNotRun } from "../../ir/edits.js";
 import { callsOn } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
 import { children, exprText, type CallExpr, type Expr, type FunctionDef } from "../../ir/model.js";
@@ -42,15 +43,17 @@ function written(fn: FunctionDef, after: number): Scoped | undefined {
 /** `requestMethod = "POST"` / `setRequestMethod("POST")`, `setRequestProperty(k, v)`, `doOutput = true` on the connection variable. */
 function configure(p: RequestParts, fn: FunctionDef, v: { name: string; offset: number }): boolean {
   let output = false;
+  // `if (head) conn.setRequestMethod("HEAD")`: a method set on some paths only is not known
+  const method = (value: Scoped | undefined, offset: number): Scoped | undefined => (value && mayNotRun(fn, offset, v.offset >= 0 ? v.offset : undefined) ? { expr: { k: "unknown", text: "method" }, fn } : value);
   for (const c of callsOn(fn, v.name, v.offset)) {
     const at = (i: number): Scoped | undefined => argAt(c, i);
-    if (calleeIs(c.call, ["setRequestMethod"])) p.method = at(0);
+    if (calleeIs(c.call, ["setRequestMethod"])) p.method = method(at(0), c.call.pos.offset);
     else if (calleeIs(c.call, ["setRequestProperty", "addRequestProperty"]) && at(0)) p.pairs.push({ where: "header", name: at(0)!, value: at(1) });
     else if (calleeIs(c.call, ["setDoOutput"])) output = true;
   }
   for (const a of fn.assigns) {
     if (a.offset <= v.offset) continue;
-    if (a.target === `${v.name}.requestMethod`) p.method = { expr: a.value, fn };
+    if (a.target === `${v.name}.requestMethod`) p.method = method({ expr: a.value, fn }, a.offset);
     if (a.target === `${v.name}.doOutput` && !(a.value.k === "bool" && !a.value.v)) output = true;
   }
   return output;

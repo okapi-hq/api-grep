@@ -1,4 +1,5 @@
 import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
+import { overloadFor, overloadsFor } from "./overloads.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { injectedCall, injectedField, paramValue } from "./injected.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
@@ -25,6 +26,10 @@ export interface Chain {
   root: Root;
   segs: Seg[];
   viaType?: boolean;
+  /** A call of an overloaded method: the one it runs is not the first declared of its name. */
+  overloaded?: boolean;
+  /** A call whose arguments fit several overloads: each one it may run (the chain itself is unknown). */
+  overloads?: FunctionDef[];
 }
 
 const MAX_DEPTH = 10;
@@ -173,7 +178,8 @@ function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Cha
   if (injected) return valueChain(injected.expr, injected.fn, ctx, depth + 1);
   const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
-    if (c.root.kind === "function") return factoryResult(c.root.fn, e, fn, ctx, depth);
+    const target = c.root.kind === "function" ? overloadFor(c.root.fn, e, fn, ctx) : undefined;
+    if (c.root.kind === "function") return target ? factoryResult(target, e, fn, ctx, depth) : UNKNOWN;
     if (c.root.kind === "class") return { root: { kind: "instance", cls: c.root.cls }, segs: [] };
     return UNKNOWN;
   }
@@ -218,5 +224,11 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
 
 /** What a call invokes: the callee's chain with the call on its last member (factories are not followed). */
 export function calleeChain(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Chain {
-  return attach(valueChain(call.fn, fn, ctx), call, fn, ctx.subst);
+  const c = valueChain(call.fn, fn, ctx);
+  if (c.root.kind !== "function" || c.segs.length > 0) return attach(c, call, fn, ctx.subst);
+  // an overloaded method: the one the arguments fit, else not known
+  const options = overloadsFor(c.root.fn, call, fn, ctx);
+  const target = options.length === 1 ? options[0]! : undefined;
+  if (target) return { root: { kind: "function", fn: target }, segs: [], ...(target !== c.root.fn ? { overloaded: true } : {}) };
+  return options.length > 1 ? { ...UNKNOWN, overloads: options } : UNKNOWN;
 }

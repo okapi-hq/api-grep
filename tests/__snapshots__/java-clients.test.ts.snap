@@ -8,6 +8,158 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
       "authScheme": "none",
       "body": {
         "properties": {
+          "cart_id": {
+            "hint": "id",
+            "type": "string",
+          },
+          "items": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "labels": {
+            "properties": {
+              "channel": {
+                "enum": [
+                  "web",
+                ],
+                "type": "string",
+              },
+            },
+            "required": [
+              "channel",
+            ],
+            "type": "object",
+          },
+        },
+        "required": [
+          "cart_id",
+          "items",
+          "labels",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "cart_id",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "cart_id": "o2eafx39",
+            "items": [
+              "ember quill",
+            ],
+            "labels": {
+              "channel": "web",
+            },
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/carts",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "831f1482a678",
+      "location": {
+        "col": 9,
+        "file": "Carts.java",
+        "language": "java",
+        "line": 27,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/carts",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/carts",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "cart_id": {
+            "hint": "id",
+            "type": "string",
+          },
+          "currency": {
+            "enum": [
+              "EUR",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "cart_id",
+          "currency",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "cart_id",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "cart_id": "2hyrm77d",
+            "currency": "EUR",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/carts/convert",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "df5dafae0d16",
+      "location": {
+        "col": 9,
+        "file": "Carts.java",
+        "language": "java",
+        "line": 33,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/carts/convert",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/carts/convert",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
           "customer_id": {
             "hint": "customer",
             "type": "string",
@@ -206,12 +358,12 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 1,
-    "filesSeen": 1,
+    "filesScanned": 2,
+    "filesSeen": 2,
     "languages": {
       "java": {
-        "filesScanned": 1,
-        "filesSeen": 1,
+        "filesScanned": 2,
+        "filesSeen": 2,
       },
     },
     "skipped": [],
@@ -221,24 +373,24 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "spring-rest": 3,
+      "spring-rest": 5,
     },
     "byHostKind": {
       "const": 2,
-      "literal": 1,
+      "literal": 3,
     },
     "byLanguage": {
-      "java": 3,
+      "java": 5,
     },
     "byProvider": {
-      "api.example-shop.com": 3,
+      "api.example-shop.com": 5,
     },
-    "callsFound": 3,
+    "callsFound": 5,
     "durationMs": 0,
-    "filesScanned": 1,
+    "filesScanned": 2,
     "redacted": 0,
-    "withBodyShape": 3,
-    "withDynamic": 2,
+    "withBodyShape": 5,
+    "withDynamic": 4,
   },
   "tool": "api-grep",
   "version": "<version>",
@@ -760,10 +912,47 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
       "client": "async-http-client",
       "dynamic": [
         {
-          "name": "expr",
-          "origin": "unknown",
-          "where": "method",
+          "name": "url",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "host",
         },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "POST",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "d241ae39d700",
+      "location": {
+        "col": 16,
+        "file": "Alerts.java",
+        "language": "java",
+        "line": 78,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{url}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "async-http-client",
+      "dynamic": [
         {
           "name": "url",
           "origin": "param",
@@ -786,14 +975,14 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
       "headerValues": {},
       "headers": [],
       "hostKind": "unknown",
-      "id": "d241ae39d700",
+      "id": "5c05b5092b2d",
       "location": {
         "col": 16,
         "file": "Alerts.java",
         "language": "java",
         "line": 78,
       },
-      "method": "DYNAMIC",
+      "method": "GET",
       "optionsOpaque": false,
       "pathTemplate": "/",
       "provider": "unknown",
@@ -915,29 +1104,29 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "async-http-client": 4,
+      "async-http-client": 5,
       "unirest": 3,
       "vertx-webclient": 4,
     },
     "byHostKind": {
       "literal": 10,
-      "unknown": 1,
+      "unknown": 2,
     },
     "byLanguage": {
-      "java": 11,
+      "java": 12,
     },
     "byProvider": {
       "api.example-alerts.com": 8,
       "auth.example-alerts.com": 1,
       "search.example-alerts.com": 1,
-      "unknown": 1,
+      "unknown": 2,
     },
-    "callsFound": 11,
+    "callsFound": 12,
     "durationMs": 0,
     "filesScanned": 2,
     "redacted": 0,
     "withBodyShape": 7,
-    "withDynamic": 7,
+    "withDynamic": 8,
   },
   "tool": "api-grep",
   "version": "<version>",

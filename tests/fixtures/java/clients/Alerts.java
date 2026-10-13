@@ -66,7 +66,7 @@ class Alerts {
     }
 
     Object forward(String verb, String url) {
-        // a request started in several branches: its method is not known
+        // a request started in several branches: one call per start (#73)
         final org.asynchttpclient.BoundRequestBuilder builder;
         switch (verb) {
             case "POST":

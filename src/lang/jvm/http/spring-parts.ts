@@ -17,14 +17,14 @@ import { JVM } from "./tables.js";
  * filters (`ClientRequest.from(request).header(...)`); and requests built as a `RequestEntity`, sent by `exchange`.
  */
 
-interface Handler {
+export interface Handler {
   fn: FunctionDef;
   subst?: Subst;
   self?: ClassDef;
 }
 
 /** A lambda, a SAM conversion (`ClientHttpRequestInterceptor { ... }`, `ofRequestProcessor(r -> ...)`) or a project class. */
-function handlerOf(arg: Scoped, methods: string[], ctx: IrCtx): Handler | undefined {
+export function handlerOf(arg: Scoped, methods: string[], ctx: IrCtx): Handler | undefined {
   const d = deref(arg.expr, arg.fn, ctx);
   if (d.expr.k === "fnref") return { fn: d.expr.fn };
   if (d.expr.k !== "call") return undefined;

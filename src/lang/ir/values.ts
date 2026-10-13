@@ -9,9 +9,14 @@ const MAX_DEPTH = 8;
 
 /** `MediaType.APPLICATION_JSON`, `org.springframework.http.MediaType.APPLICATION_JSON`: a library constant the language lists. */
 export function knownConstant(e: Expr, ctx: IrCtx): string | undefined {
+  const path = ctx.idx.lang.constants && (e.k === "attr" || e.k === "qname") ? dottedPath(e) : undefined;
+  return path ? constantAt(path, ctx) : undefined;
+}
+
+/** The library constant a dotted path ends with (`javax.ws.rs.HttpMethod.GET`, also imported by name: `import static`). */
+export function constantAt(path: string[], ctx: IrCtx): string | undefined {
   const table = ctx.idx.lang.constants;
-  const path = table && (e.k === "attr" || e.k === "qname") ? dottedPath(e) : undefined;
-  if (!table || !path) return undefined;
+  if (!table) return undefined;
   for (let i = 0; i < path.length - 1; i++) {
     const v = table[path.slice(i).join(".")];
     if (v !== undefined) return v;
@@ -31,6 +36,8 @@ export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
   if (e.k === "name") {
     const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
     if (b.kind === "value" && !b.assign.augmented) return deref(b.assign.value, b.fn, ctx, depth + 1);
+    const imported = b.kind === "external" ? constantAt(b.path, ctx) : undefined;
+    if (imported !== undefined) return { expr: { k: "str", v: imported }, fn };
     if (b.kind === "param") {
       const sub = paramValue(b.param, b.fn, ctx);
       if (sub) return deref(sub.expr, sub.fn, ctx, depth + 1);

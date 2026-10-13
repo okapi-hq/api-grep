@@ -42,6 +42,7 @@ export const kotlinLanguage: IrLanguage = {
   sharedGlobals: false,
   packageScope: true,
   typedParams: true,
+  overloads: true,
   registry: JVM_REGISTRY,
   ...JVM_HTTP,
   // `X.builder().a(1).build()` of an SDK's parameter class or a Lombok `@Builder` class: the dict of the fields it

@@ -1,5 +1,5 @@
 {
-  "$comment": "JVM clients whose request is an object built in steps and sent by a call (`RequestClient` in requests.ts). `sends` are the calls that send it, with what they set themselves (`post(entity)`) and where the request is: their receiver, or the first of the `request` arguments a start is found in. `starts` are the calls a request is built from (`hostPath`: Vert.x `(port, host, uri)`, `(host, uri)` or `(uri)` arguments from that position); `request` the steps after it; `fields` the form fields set one at a time (a form body, query parameters for a method without a body); `requires` a step the request must have.",
+  "$comment": "JVM clients whose request is an object built in steps and sent by a call (`RequestClient` in requests.ts). `sends` are the calls that send it, with what they set themselves (`post(entity)`) and where the request is: their receiver, or the first of the `request` arguments a start is found in. `starts` are the calls a request is built from (`hostPath`: Vert.x `(port, host, uri)`, `(host, uri)` or `(uri)` arguments from that position); `request` the steps after it; `fields` the form fields set one at a time (a form body, query parameters for a method without a body); `requires` a step the request must have; `hosts` the class of a target host given before the request (`execute(host, request)`); `defaults` what the client adds to every request (`request-defaults.ts`); `credentials` the steps given a credentials object, by its class.",
   "clients": [
     {
       "client": "apache-httpclient",
@@ -56,7 +56,16 @@
         "setUri": { "url": 0 },
         "setURI": { "url": 0 }
       },
-      "fields": { "addParameter": [0, 1] }
+      "fields": { "addParameter": [0, 1] },
+      "hosts": ["HttpHost", "HttpHost.create"],
+      "defaults": {
+        "on": "send",
+        "headerLists": ["setDefaultHeaders"],
+        "headerItems": ["BasicHeader"],
+        "filters": ["addInterceptorFirst", "addInterceptorLast", "addRequestInterceptorFirst", "addRequestInterceptorLast"],
+        "filterMethods": ["process"],
+        "filterSteps": { "addHeader": { "header": [0, 1] }, "setHeader": { "header": [0, 1] } }
+      }
     },
     {
       "client": "apache-httpclient",
@@ -117,6 +126,12 @@
         "buildPost": { "method": "POST", "body": 0 },
         "buildPut": { "method": "PUT", "body": 0 },
         "build": { "methodArg": 0, "body": 1 }
+      },
+      "defaults": {
+        "on": "start",
+        "filters": ["register"],
+        "filterMethods": ["filter"],
+        "filterSteps": { "add": { "header": [0, 1] }, "putSingle": { "header": [0, 1] } }
       }
     },
     {
@@ -198,7 +213,16 @@
         "body": { "body": 0 },
         "fields": { "body": 0, "bodyRole": "body:form" }
       },
-      "fields": { "field": [0, 1] }
+      "fields": { "field": [0, 1] },
+      "defaults": {
+        "on": "start",
+        "config": {
+          "call": "config",
+          "owner": "Unirest",
+          "baseUrl": "defaultBaseUrl",
+          "steps": { "setDefaultHeader": { "header": [0, 1] }, "addDefaultHeader": { "header": [0, 1] }, "setDefaultBasicAuth": { "basic": true } }
+        }
+      }
     },
     {
       "client": "vertx-webclient",
@@ -248,7 +272,8 @@
         "setQueryParam": { "query": [0, 1] },
         "bearerTokenAuthentication": { "bearer": 0 },
         "basicAuthentication": { "basic": true }
-      }
+      },
+      "credentials": { "steps": ["authentication"], "classes": { "TokenCredentials": { "bearer": 0 }, "UsernamePasswordCredentials": { "basic": true } } }
     }
   ],
   "pairs": { "items": ["BasicNameValuePair"], "lists": ["ArrayList", "LinkedList", "Lists.newArrayList"], "add": ["add"] }

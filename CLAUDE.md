@@ -139,5 +139,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
   JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`, Lombok builders and getters, Kotlin `map["k"] = v`) are
-  done.
+  done; so is #73 (requests started in branches: one call per start, `fluentChains` in `src/lang/ir/fluent-chain.ts`,
+  `request-alternatives.ts` and `IrRaw.alternatives`; overloads picked by their arguments in `src/lang/ir/overloads.ts`;
+  client defaults and filters in `src/lang/jvm/http/request-defaults.ts`; Lombok `@Singular` / `toBuilder()`).
 - Next language candidates (Go, Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.
