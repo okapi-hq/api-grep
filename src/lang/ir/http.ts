@@ -3,7 +3,7 @@ import type { Chain } from "./chain.js";
 import { argOf, arrayOptions, kwargOptions, type Options } from "./args.js";
 import type { ClientFunction, ClientSpec, OptionRole, Scoped } from "./language.js";
 import type { CallExpr, FunctionDef } from "./model.js";
-import type { IrCtx, IrRaw, Seg } from "./raw.js";
+import type { IrCtx, IrPair, IrRaw, Seg } from "./raw.js";
 import { authOfOption } from "./request.js";
 import { namedAt, rootLength } from "./sdk.js";
 import { deref } from "./values.js";
@@ -71,6 +71,7 @@ function bodyFrom(spec: ClientSpec, f: ClientFunction, method: Seg, opts: Option
 
 interface Modified {
   headers: Scoped[];
+  pairs: IrPair[];
   baseUrl?: Scoped;
   query?: Scoped;
   auth?: AuthScheme;
@@ -80,7 +81,7 @@ interface Modified {
 
 /** Fluent modifiers: `withToken()` (auth), `asForm()` (encoding), `withHeaders([...])`, `baseUrl(...)`. */
 function applyModifiers(spec: ClientSpec, mods: Seg[], ctx: IrCtx): Modified {
-  const out: Modified = { headers: [], options: [] };
+  const out: Modified = { headers: [], pairs: [], options: [] };
   for (const s of mods) {
     const m = spec.modifiers![s.name]!;
     if (m.auth) out.auth = m.auth;
@@ -88,6 +89,8 @@ function applyModifiers(spec: ClientSpec, mods: Seg[], ctx: IrCtx): Modified {
     const at = (i: number | undefined): Scoped | undefined => (i !== undefined ? argOf(s, i) : undefined);
     const headers = at(m.headersArg);
     if (headers) out.headers.push(headers);
+    const name = at(m.headerArgs?.[0]);
+    if (name) out.pairs.push({ where: "header", name, value: at(m.headerArgs?.[1]), from: "default" });
     out.baseUrl = at(m.baseUrlArg) ?? out.baseUrl;
     out.query = at(m.queryArg) ?? out.query;
     if (m.optionsArg !== undefined) out.options.push(arrayOptions(at(m.optionsArg), ctx));
@@ -122,6 +125,7 @@ function buildRaw(spec: ClientSpec, f: ClientFunction, method: Seg, shape: Shape
     encoding: mod.encoding,
     query: (f.queryArg !== undefined ? argOf(method, f.queryArg) : undefined) ?? mod.query ?? pick("query"),
     headers: [...all.map((o) => byRole(spec, o, "headers")?.value).filter((v): v is Scoped => !!v), ...mod.headers],
+    ...(mod.pairs.length > 0 ? { pairs: mod.pairs } : {}),
     auth: mod.auth ?? authRole ?? (auth ? authOfOption(auth, ctx) : undefined),
     optionsOpaque: opts.opaque,
     inputs: [],

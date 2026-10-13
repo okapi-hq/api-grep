@@ -32,14 +32,15 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 
 | path | role |
 |---|---|
-| `src/lang/` | language front ends: `typescript/` (wraps the pipeline below for TypeScript, JavaScript and HTML), `html/` (inline scripts, forms, template tags), `ir/` (the engine shared by tree-sitter languages), `python/`, `php/` |
+| `src/lang/` | language front ends: `typescript/` (wraps the pipeline below for TypeScript, JavaScript and HTML), `html/` (inline scripts, forms, template tags), `ir/` (the engine shared by tree-sitter languages), `python/`, `php/`, `kotlin/`, `jvm/` |
 | `src/lang/python/`, `src/lang/php/` | lowering, HTTP client tables (`clients.json`), SDK registries (`registry/`), manifests, import names / namespaces, language detectors (urllib, curl, streams, PSR-18, Laravel `config()`) |
+| `src/lang/kotlin/`, `src/lang/jvm/` | Kotlin lowering; what the JVM languages share: Gradle and Maven manifests, `BuildConfig`, and the HTTP clients (`jvm/http/`: OkHttp and its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit, with their tables in `clients.json`) |
 | `src/assemble.ts` | turns what a front end resolved into a report `Call` (provider, id, `optionsOpaque`, `bodySource`), for every language |
 | `src/operation/` | protocols that name the operation outside the URL, read from the resolved request for every language: `json-rpc.ts` (#34), `graphql.ts` and `graphql-document.ts` (#35; TypeScript documents in `src/resolve/graphql-source.ts`) |
 | `src/ast/` | TypeScript: ts-morph helpers shared by every stage: unwrapping, member chains, object literals, classes, import origins |
 | `src/detect/` | TypeScript: finds call sites: fetch, axios, got/ky, node http, SDKs, framework helpers (`DETECTORS`, tried in order) |
 | `src/detect/registry/` | TypeScript: JSON registries mapping SDK member chains to endpoints |
-| `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
+| `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `url-reference`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
 | `src/wrappers/` | TypeScript: expansion of local HTTP wrapper functions (up to four deep) |
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/examples/` | synthesized example requests |

@@ -91,6 +91,7 @@ function detectAll(modules: ModuleModel[], ctx: IrCtx, input: LanguageScanInput)
         candidates.push(...found.candidates);
         unfollowed.push(...found.unfollowed);
       }
+      for (const declared of ctx.idx.lang.declarations ?? []) out.raws.push(...declared(mod, ctx));
       const expanded = input.opts.wrappers !== false ? expandWrappers(candidates, ctx) : { calls: [], unfollowed: [] };
       out.raws.push(...expanded.calls);
       for (const u of [...unfollowed, ...expanded.unfollowed]) input.diag.unfollow({ file, line: u.call.pos.line, reason: u.reason, expr: u.expr, via: u.via });

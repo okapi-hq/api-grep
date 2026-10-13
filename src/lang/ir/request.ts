@@ -3,7 +3,9 @@ import { staticText } from "../../resolve/parts.js";
 import { formStringShape, jsonToShape } from "../../resolve/shape-utils.js";
 import type { BodyResult } from "../../resolve/body.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Shape } from "../../types.js";
+import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
+import { fluentMap } from "./fluent.js";
 import type { OptionRole, Scoped } from "./language.js";
 import type { Expr, FunctionDef } from "./model.js";
 import type { IrCtx } from "./raw.js";
@@ -18,6 +20,8 @@ const calleeName = (e: Expr): string | undefined =>
 
 /** `json.dumps(x)` / `urlencode(x)` / `json_encode($x)`: the serialized value and the encoding it implies. */
 function unwrapSerializer(s: Scoped, ctx: IrCtx, depth = 0): { inner: Scoped; encoding?: BodyEncoding } {
+  // `val form = LinkedMultiValueMap(); form.add(...)`: the variable, whose calls build the value
+  if (s.expr.k === "name" && fluentMap(s.expr, s.fn, ctx)) return { inner: s };
   const d = deref(s.expr, s.fn, ctx);
   // `json.dumps(x).encode("utf-8")`: the bytes of the serialized value
   if (d.expr.k === "call" && d.expr.fn.k === "attr" && ctx.idx.lang.passthrough.methods.has(d.expr.fn.name) && depth < 3) {
@@ -46,6 +50,15 @@ function stringBody(expr: Expr, fn: FunctionDef, ctx: IrCtx): Pick<BodyResult, "
   return form ? { shape: form, encoding: "form" } : { shape: { type: "string" }, encoding: "raw" };
 }
 
+/** How a value built entry by entry is sent (`FormBody.Builder()...`), also when a project function returns it (`params.toFormBody()`). */
+function builtEncoding(s: Scoped, ctx: IrCtx): BodyEncoding | undefined {
+  const own = fluentMap(s.expr, s.fn, ctx);
+  if (own || s.expr.k !== "call" || !ctx.idx.lang.fluentMaps) return own?.spec.encoding;
+  const target = calleeChain(s.expr, s.fn, ctx);
+  const helper = target.root.kind === "function" && target.segs.length === 0 ? target.root.fn : undefined;
+  return helper?.returns.length === 1 ? fluentMap(helper.returns[0]!, helper, ctx)?.spec.encoding : undefined;
+}
+
 /** Request body: shape, encoding (from the option that carries it, a serializer, or the value) and dynamic parts. */
 export function resolveIrBody(body: Scoped | undefined, role: OptionRole | undefined, fallback: BodyEncoding, ctx: IrCtx): BodyResult {
   if (!body) return { encoding: "none", dynamic: [], fromLiteral: false };
@@ -60,7 +73,7 @@ export function resolveIrBody(body: Scoped | undefined, role: OptionRole | undef
   const dynamic: DynamicPart[] = [];
   const r = shapeOf(inner.expr, inner.fn, ctx, 0, dynamic);
   if (r.shape.type === "dynamic" || r.shape.type === "unknown") dynamic.push({ where: "body", name: "body", origin: r.shape.type === "dynamic" ? r.shape.origin : "unknown" });
-  const encoding = serialized ?? roleEncoding ?? fallback;
+  const encoding = serialized ?? builtEncoding(inner, ctx) ?? roleEncoding ?? fallback;
   const fromType = r.shape.type === "object" ? r.shape.fromType : undefined;
   return { shape: r.shape, encoding, dynamic, fromType, fromLiteral: r.fromLiteral };
 }

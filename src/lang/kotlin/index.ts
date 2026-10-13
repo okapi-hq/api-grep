@@ -1,6 +1,7 @@
 import { SHARED_EXCLUDES } from "../files.js";
 import type { IrLanguage } from "../ir/language.js";
 import { irLanguage } from "../ir/scan.js";
+import { JVM_HTTP } from "../jvm/http/index.js";
 import { jvmManifests, normalizeMaven } from "../jvm/manifests.js";
 import { jvmImportRoots } from "../jvm/packages.js";
 import { lowerKotlin } from "./lower.js";
@@ -35,12 +36,15 @@ export const kotlinLanguage: IrLanguage = {
   sharedGlobals: false,
   packageScope: true,
   typedParams: true,
-  // no HTTP client or SDK is read yet: Kotlin files are parsed and lowered, and the coverage lists their SDKs
+  // no SDK registry yet (#33): the coverage lists the SDKs a project declares
   registry: [],
-  clients: [],
+  ...JVM_HTTP,
   passthrough: {
-    functions: new Set(["URL", "URI", "encode", "requireNotNull", "checkNotNull"]),
-    methods: new Set(["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "toHttpUrl", "toHttpUrlOrNull", "toUri", "toURI", "toURL", "orEmpty"]),
+    functions: new Set(["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"]),
+    methods: new Set([
+      ...["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "orEmpty"],
+      ...["toHttpUrl", "toHttpUrlOrNull", "toUri", "toURI", "toURL", "toMediaType", "toMediaTypeOrNull", "toByteArray", "encodeToByteArray"],
+    ]),
   },
   serializers: { toJson: "json", encodeToString: "json", writeValueAsString: "json" },
   manifests: jvmManifests(),

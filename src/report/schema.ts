@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.9.0";
+export const SCHEMA_VERSION = "1.11.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -41,13 +41,20 @@ export const ClientSchema = z
     "psr-18",
     "php-stream",
     "wordpress",
+    "okhttp",
+    "java-http",
+    "ktor",
+    "spring-rest",
+    "spring-webclient",
+    "feign",
+    "retrofit",
     "sdk",
     "framework",
   ])
   .meta({
     id: "Client",
     description:
-      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Any language: sdk (a registry), framework (a framework helper).",
+      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3. PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method). Any language: sdk (a registry), framework (a framework helper).",
   });
 
 export const ShapeSchema: z.ZodType<Shape> = z
@@ -162,6 +169,16 @@ export const OperationSchema = z
   })
   .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL." });
 
+export const ClientPartSchema = z
+  .object({
+    where: z.enum(["query", "header"]),
+    name: z.string().describe("Query parameter name, or header name in lower case, as listed in `query` / `headers`."),
+    from: z
+      .enum(["interceptor", "default"])
+      .describe("interceptor: an interceptor of the client (OkHttp `addInterceptor`). default: a default the client is built with (Ktor `defaultRequest`, Spring `defaultHeader`)."),
+  })
+  .meta({ id: "ClientPart", description: "A query parameter or header the client adds to every request it sends, rather than the call itself." });
+
 export const ClientFromSchema = z
   .enum(["caller", "manifest"])
   .meta({
@@ -222,6 +239,10 @@ export const CallSchema = z
       .describe("Where the body shape came from: an object literal in the code, a declared type (TypeScript type, Python or PHP class), a value that could not be read, or no body."),
     examples: z.array(ExampleSchema).default([]),
     model: ModelSchema.optional().describe("The model the request names (LLM and other AI APIs); absent when it names none."),
+    clientParts: z
+      .array(ClientPartSchema)
+      .optional()
+      .describe("Which of `query` and `headers` the client adds rather than the call (an interceptor, a client default); absent when none."),
     clientFrom: ClientFromSchema.optional().describe("Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client."),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
@@ -265,6 +286,7 @@ export type ClientFrom = z.infer<typeof ClientFromSchema>;
 export type Call = z.infer<typeof CallSchema>;
 export type Example = z.infer<typeof ExampleSchema>;
 export type Operation = z.infer<typeof OperationSchema>;
+export type ClientPart = z.infer<typeof ClientPartSchema>;
 export type Stats = z.infer<typeof StatsSchema>;
 export type Report = z.infer<typeof ReportSchema>;
 export * from "./schema-scan.js";
