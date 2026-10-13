@@ -1,4 +1,5 @@
-import { Node, SyntaxKind, type CallExpression, type ParameterDeclaration, type SourceFile } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type NewExpression, type ParameterDeclaration, type SourceFile } from "ts-morph";
+import { constructorAssignment, enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, type FunctionLike } from "../ast/function.js";
 import { evaluate } from "../resolve/evaluate.js";
@@ -18,6 +19,8 @@ export interface Receiver {
   /** The callee's member chain, rooted at the parameter. */
   mc: Chain;
   key: string;
+  /** The client is a field the constructor sets from the parameter (`this.client = client`): `mc` is rooted at the field. */
+  field?: boolean;
 }
 
 export interface ReceiverResult {
@@ -28,6 +31,34 @@ export interface ReceiverResult {
 
 const UNTYPED = new Set(["any", "unknown"]);
 
+const untyped = (param: ParameterDeclaration): boolean => {
+  const type = param.getTypeNode();
+  return !type || UNTYPED.has(type.getText());
+};
+
+const hasMethod = (registry: Registry, key: string): boolean => registry.entries().some((e) => !!e.methods && Object.hasOwn(e.methods, key));
+
+/**
+ * `this.client.graphql(q)` where the constructor keeps an untyped parameter in the field (`this.client = client`, or a
+ * parameter property): the receiver is that parameter, whatever `new` passes for it. The field is set nowhere else.
+ */
+function fieldReceiver(mc: Chain, registry: Registry): Receiver | undefined {
+  const cls = enclosingClass(mc.root);
+  const field = mc.chain[0]!;
+  if (!cls || cls.getProperty(field)?.getInitializer()) return undefined;
+  const prop = parameterProperty(cls, field);
+  const assigned = fieldAssignments(cls, field);
+  const value = prop ? undefined : constructorAssignment(cls, field);
+  const ident = value && assigned.length === 1 ? unwrap(value) : undefined;
+  const param = prop && assigned.length === 0 ? prop : ident && Node.isIdentifier(ident) ? ident.getSymbol()?.getDeclarations()[0] : undefined;
+  if (!param || !Node.isParameterDeclaration(param) || param.getInitializer() || !untyped(param)) return undefined;
+  const ctor = param.getParent();
+  if (!Node.isConstructorDeclaration(ctor) || ctor.getParent() !== cls) return undefined;
+  const rest: Chain = { root: mc.nodes[1]!, nodes: mc.nodes.slice(1), chain: mc.chain.slice(1) };
+  const key = rest.chain.join(".");
+  return hasMethod(registry, key) ? { param, fn: ctor, mc: rest, key, field: true } : undefined;
+}
+
 /**
  * The receiver of a call the detectors did not recognize, when it is a parameter without a usable type and the chain
  * after it is a registry method of two members or more (one member, `http.get(url)`, is an HTTP client's verb).
@@ -35,15 +66,14 @@ const UNTYPED = new Set(["any", "unknown"]);
 export function receiverOf(node: CallExpression, callee: Callee, registry: Registry): Receiver | undefined {
   if (callee.package || callee.global || callee.localDecl || callee.chain.length < 2) return undefined;
   const mc = memberChain(node.getExpression());
+  if (Node.isThisExpression(mc.root)) return fieldReceiver(mc, registry);
   if (!Node.isIdentifier(mc.root)) return undefined;
   const param = mc.root.getSymbol()?.getDeclarations()[0];
-  if (!param || !Node.isParameterDeclaration(param) || param.getInitializer()) return undefined;
-  const type = param.getTypeNode();
-  if (type && !UNTYPED.has(type.getText())) return undefined;
+  if (!param || !Node.isParameterDeclaration(param) || param.getInitializer() || !untyped(param)) return undefined;
   const fn = param.getParent();
   if (!isFunctionLike(fn)) return undefined;
   const key = mc.chain.join(".");
-  return registry.entries().some((e) => !!e.methods && Object.hasOwn(e.methods, key)) ? { param, fn, mc, key } : undefined;
+  return hasMethod(registry, key) ? { param, fn, mc, key } : undefined;
 }
 
 /** In a wrapper expansion, the receiver is what the caller passed for the parameter. */
@@ -60,9 +90,17 @@ function nameOf(fn: FunctionLike): string | undefined {
   return parent && (Node.isVariableDeclaration(parent) || Node.isPropertyAssignment(parent)) ? parent.getName() : undefined;
 }
 
-function calledName(call: CallExpression): string | undefined {
+/** The name a call or `new` uses; constructions are indexed apart (`new Client(x)` does not call a `Client` function). */
+function calledName(call: CallExpression | NewExpression): string | undefined {
   const e = unwrap(call.getExpression());
-  return Node.isIdentifier(e) ? e.getText() : Node.isPropertyAccessExpression(e) ? e.getName() : undefined;
+  const name = Node.isIdentifier(e) ? e.getText() : Node.isPropertyAccessExpression(e) ? e.getName() : undefined;
+  return name && Node.isNewExpression(call) ? `new ${name}` : name;
+}
+
+/** The class a constructor builds, by the name `new` uses. */
+function classNameOf(fn: FunctionLike): string | undefined {
+  const cls = Node.isConstructorDeclaration(fn) ? fn.getParent() : undefined;
+  return cls && Node.isClassDeclaration(cls) ? cls.getName() : undefined;
 }
 
 /**
@@ -70,7 +108,7 @@ function calledName(call: CallExpression): string | undefined {
  * up; else the one SDK the manifests next to the file declare with that method; else unknown. Results are per call.
  */
 export class ReceiverResolver {
-  private index?: Map<string, CallExpression[]>;
+  private index?: Map<string, (CallExpression | NewExpression)[]>;
   private readonly results = new Map<Node, ReceiverResult>();
 
   /**
@@ -88,19 +126,21 @@ export class ReceiverResolver {
     let out = this.results.get(node);
     if (!out) {
       const raws = this.fromCallers(node, r);
-      const manifest = raws.length === 0 ? this.fromManifest(node, r) : undefined;
-      out = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest };
+      // a field's one-member method (`this.client.graphql`) is too common a name to stand for an SDK by itself
+      const guess = !r.field || r.mc.chain.length >= 2;
+      const manifest = raws.length === 0 && guess ? this.fromManifest(node, r) : undefined;
+      out = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest && guess };
       this.results.set(node, out);
     }
     return out;
   }
 
   /** Calls by name across the scanned files, indexed once. */
-  private callsNamed(name: string): CallExpression[] {
+  private callsNamed(name: string): (CallExpression | NewExpression)[] {
     if (!this.index) {
       this.index = new Map();
       for (const sf of this.files) {
-        for (const call of sf.getDescendantsOfKind(SyntaxKind.CallExpression)) {
+        for (const call of [...sf.getDescendantsOfKind(SyntaxKind.CallExpression), ...sf.getDescendantsOfKind(SyntaxKind.NewExpression)]) {
           const n = calledName(call);
           const list = n ? this.index.get(n) : undefined;
           if (list) list.push(call);
@@ -112,18 +152,20 @@ export class ReceiverResolver {
   }
 
   private fromCallers(node: CallExpression, r: Receiver): RawCall[] {
-    const name = nameOf(r.fn);
+    const cls = classNameOf(r.fn);
+    const name = cls ? `new ${cls}` : nameOf(r.fn);
     const position = r.fn
       .getParameters()
       .filter((p) => p.getName() !== "this")
       .indexOf(r.param);
     const out = new Map<string, RawCall>();
     const group = this.groupOf?.(node.getSourceFile().getFilePath());
-    const reachable = (c: CallExpression): boolean => group === undefined || this.groupOf!(c.getSourceFile().getFilePath()) === group;
+    const reachable = (c: CallExpression | NewExpression): boolean => group === undefined || this.groupOf!(c.getSourceFile().getFilePath()) === group;
     for (const caller of (name ? this.callsNamed(name).filter(reachable) : []).slice(0, MAX_CALLERS)) {
       const callee = describeCallee(caller);
-      if (wrapperFunction(callee) !== r.fn) continue;
-      const arg = caller.getArguments()[callShift(callee) + position];
+      const runs = cls ? callee.localDecl === r.fn.getParent() && callee.chain.length === 0 : wrapperFunction(callee) === r.fn;
+      if (!runs) continue;
+      const arg = caller.getArguments()[(cls ? 0 : callShift(callee)) + position];
       if (!arg || !Node.isExpression(arg)) continue;
       const raw = detectSdk(node, calleeThrough(arg, r.mc), this.registry);
       if (!raw?.sdk) continue;
