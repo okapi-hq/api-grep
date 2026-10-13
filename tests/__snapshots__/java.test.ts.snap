@@ -642,7 +642,7 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
       "urlTemplate": "https://api.example-podcasts.com/v1/search?q={query}",
     },
     {
-      "authScheme": "unknown",
+      "authScheme": "basic",
       "body": {
         "type": "string",
       },
@@ -655,7 +655,7 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
           "body": "Lantern nectar island estuary grove ridge.",
           "bodyEncoding": "raw",
           "headers": {
-            "authorization": "<authorization>",
+            "authorization": "Basic <base64(user:password)>",
             "content-type": "application/octet-stream",
           },
           "method": "POST",

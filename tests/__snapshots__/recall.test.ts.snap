@@ -259,6 +259,13 @@ exports[`regression fixtures > java/okhttp 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/okhttp-auth 1`] = `
+[
+  "Registry.java:25 registry.example.com GET /v2/_catalog",
+  "Registry.java:33 registry.example.com GET /v2/{image}/tags/list",
+]
+`;
+
 exports[`regression fixtures > java/request-factories 1`] = `
 [
   "Catalog.java:24 api.example-catalog.com GET /{version}/items (wrapper:Catalog.request)",
@@ -493,6 +500,13 @@ exports[`regression fixtures > kotlin/okhttp 1`] = `
   "Messages.kt:35 unsplash GET /search/photos (wrapper:Messages.execute)",
   "Messages.kt:41 cloudinary DELETE /v1_1/demo/resources/image/upload/{id} (wrapper:Messages.execute)",
   "Messages.kt:44 unknown GET /",
+]
+`;
+
+exports[`regression fixtures > kotlin/okhttp-auth 1`] = `
+[
+  "Registry.kt:17 registry.example.com GET /v2/{image}/tags/list",
+  "Registry.kt:28 registry.example.com GET /v2/_catalog",
 ]
 `;
 

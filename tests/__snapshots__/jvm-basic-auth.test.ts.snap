@@ -1,0 +1,295 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a request and in an interceptor, in Java 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://registry.example.com/v2/_catalog",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "registry.example.com",
+      "hostKind": "literal",
+      "id": "651d8f8c0f82",
+      "location": {
+        "col": 9,
+        "file": "Registry.java",
+        "language": "java",
+        "line": 25,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/_catalog",
+      "provider": "registry.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://registry.example.com/v2/_catalog",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "image",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://registry.example.com/v2/ridge/tags/list",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "registry.example.com",
+      "hostKind": "literal",
+      "id": "2e27671b8b01",
+      "location": {
+        "col": 9,
+        "file": "Registry.java",
+        "language": "java",
+        "line": 33,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/{image}/tags/list",
+      "provider": "registry.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://registry.example.com/v2/{image}/tags/list",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 2,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 2,
+    },
+    "byProvider": {
+      "registry.example.com": 2,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a request and in an interceptor, in Kotlin 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "image",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://registry.example.com/v2/ember/tags/list",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "registry.example.com",
+      "hostKind": "literal",
+      "id": "2597112f4bdb",
+      "location": {
+        "col": 9,
+        "file": "Registry.kt",
+        "language": "kotlin",
+        "line": 17,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/{image}/tags/list",
+      "provider": "registry.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://registry.example.com/v2/{image}/tags/list",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://registry.example.com/v2/_catalog",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "registry.example.com",
+      "hostKind": "literal",
+      "id": "b0b0c86ed189",
+      "location": {
+        "col": 21,
+        "file": "Registry.kt",
+        "language": "kotlin",
+        "line": 28,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/_catalog",
+      "provider": "registry.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://registry.example.com/v2/_catalog",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 2,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "kotlin": 2,
+    },
+    "byProvider": {
+      "registry.example.com": 2,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
