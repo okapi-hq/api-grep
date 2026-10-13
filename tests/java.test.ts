@@ -50,6 +50,8 @@ describe("java: HTTP clients", () => {
     // a request made by a method of the class, and a copy of a request with one more header
     expect(at(r, "Podcasts.java", 17)).toMatchObject({ pathTemplate: "/v1/search", query: ["q"], headers: ["x-auth-key"] });
     expect(at(r, "Podcasts.java", 34)).toMatchObject({ method: "POST", pathTemplate: "/v1/login", headers: ["authorization"] });
+    // a client made by a method of the class; interceptors changing or making responses add nothing to the request
+    expect(at(r, "Feeds.java", 24)).toMatchObject({ headers: ["x-client"], authScheme: "none", clientParts: [{ where: "header", name: "x-client", from: "interceptor" }] });
     expect(at(r, "Messages.java", 59)).toMatchObject({ bodyEncoding: "json", body: { properties: { method: { enum: ["getBalance"] }, address: { type: "string" } } }, headers: ["x-api-key"] });
   });
 
@@ -79,6 +81,9 @@ describe("java: Spring, Feign and Retrofit", () => {
     expect(at(r, "Payments.java", 56)).toMatchObject({ pathTemplate: "/v1/search", query: ["q"] });
     // a HashMap filled entry by entry
     expect(at(r, "Payments.java", 63).body).toMatchObject({ properties: { sku: { type: "string" }, currency: { enum: ["EUR"] } } });
+    // `new HashMap<>(8)` is a capacity, not entries; `remove` makes its key optional
+    expect(at(r, "Quotes.java", 14).body).toEqual({ type: "object", properties: { sku: { type: "string", hint: "sku" } }, required: ["sku"] });
+    expect(at(r, "Quotes.java", 25).body).toMatchObject({ properties: { sku: { type: "string" }, wrapping: { enum: ["paper"] } }, required: ["sku"] });
     expect(at(r, "Payments.java", 86)).toMatchObject({ client: "spring-webclient", query: ["expand"], bodyEncoding: "form", authScheme: "bearer" });
     expect(at(r, "Payments.java", 98)).toMatchObject({ authScheme: "basic" });
     expect(r.calls.some((c) => c.location.line > 100)).toBe(false);

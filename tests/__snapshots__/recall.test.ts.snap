@@ -89,6 +89,7 @@ exports[`regression fixtures > java/negatives 1`] = `[]`;
 
 exports[`regression fixtures > java/okhttp 1`] = `
 [
+  "Feeds.java:24 api.example-feeds.com GET /v1/latest",
   "Interceptors.java:38 open-meteo GET /v1/forecast",
   "Interceptors.java:43 github GET /user/repos",
   "Interceptors.java:53 github DELETE /user/starred/{owner}/{repo}",
@@ -137,6 +138,8 @@ exports[`regression fixtures > java/spring 1`] = `
   "Payments.java:82 stripe GET /v1/charges",
   "Payments.java:86 stripe POST /v1/charges/{id}/capture",
   "Payments.java:98 api.example-shop.com GET /v1/status",
+  "Quotes.java:14 api.example-shop.com POST /v1/quotes",
+  "Quotes.java:25 api.example-shop.com POST /v1/reservations",
 ]
 `;
 

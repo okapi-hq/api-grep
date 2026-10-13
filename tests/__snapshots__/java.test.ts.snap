@@ -5,6 +5,54 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
   "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
   "calls": [
     {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-client",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-client": "feeds-app",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-feeds.com/v1/latest",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-client": "feeds-app",
+      },
+      "headers": [
+        "x-client",
+      ],
+      "host": "api.example-feeds.com",
+      "hostKind": "literal",
+      "id": "b3c2e6460b70",
+      "location": {
+        "col": 16,
+        "file": "Feeds.java",
+        "language": "java",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/latest",
+      "provider": "api.example-feeds.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-feeds.com/v1/latest",
+    },
+    {
       "authScheme": "apikey",
       "bodyEncoding": "none",
       "bodySource": "none",
@@ -646,12 +694,12 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 3,
-    "filesSeen": 3,
+    "filesScanned": 4,
+    "filesSeen": 4,
     "languages": {
       "java": {
-        "filesScanned": 3,
-        "filesSeen": 3,
+        "filesScanned": 4,
+        "filesSeen": 4,
       },
     },
     "skipped": [],
@@ -661,16 +709,17 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
   "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
-      "okhttp": 10,
+      "okhttp": 11,
     },
     "byHostKind": {
-      "literal": 9,
+      "literal": 10,
       "unknown": 1,
     },
     "byLanguage": {
-      "java": 10,
+      "java": 11,
     },
     "byProvider": {
+      "api.example-feeds.com": 1,
       "api.example-podcasts.com": 2,
       "cloudinary": 1,
       "github": 2,
@@ -680,9 +729,9 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
       "unknown": 1,
       "unsplash": 1,
     },
-    "callsFound": 10,
+    "callsFound": 11,
     "durationMs": 0,
-    "filesScanned": 3,
+    "filesScanned": 4,
     "redacted": 0,
     "withBodyShape": 4,
     "withDynamic": 7,
@@ -2260,6 +2309,142 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
       "scheme": "https",
       "urlTemplate": "https://api.example-shop.com/v1/status",
     },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "sku": {
+            "hint": "sku",
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "sku": "ridge birch",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/quotes",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "f4a10bff64ce",
+      "location": {
+        "col": 16,
+        "file": "Quotes.java",
+        "language": "java",
+        "line": 14,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/quotes",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/quotes",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "sku": {
+            "hint": "sku",
+            "type": "string",
+          },
+          "wrapping": {
+            "enum": [
+              "paper",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "sku": "orbit atlas",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/reservations",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "sku": "quartz atlas",
+            "wrapping": "paper",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/reservations",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "91c45d1cb15c",
+      "location": {
+        "col": 16,
+        "file": "Quotes.java",
+        "language": "java",
+        "line": 25,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/reservations",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/reservations",
+    },
   ],
   "coverage": {
     "sdks": [],
@@ -2267,12 +2452,12 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 1,
-    "filesSeen": 1,
+    "filesScanned": 2,
+    "filesSeen": 2,
     "languages": {
       "java": {
-        "filesScanned": 1,
-        "filesSeen": 1,
+        "filesScanned": 2,
+        "filesSeen": 2,
       },
     },
     "skipped": [],
@@ -2282,26 +2467,26 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
   "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
-      "spring-rest": 6,
+      "spring-rest": 8,
       "spring-webclient": 3,
     },
     "byHostKind": {
       "const": 5,
-      "literal": 4,
+      "literal": 6,
     },
     "byLanguage": {
-      "java": 9,
+      "java": 11,
     },
     "byProvider": {
-      "api.example-shop.com": 6,
+      "api.example-shop.com": 8,
       "stripe": 3,
     },
-    "callsFound": 9,
+    "callsFound": 11,
     "durationMs": 0,
-    "filesScanned": 1,
+    "filesScanned": 2,
     "redacted": 0,
-    "withBodyShape": 4,
-    "withDynamic": 6,
+    "withBodyShape": 6,
+    "withDynamic": 8,
   },
   "tool": "api-grep",
   "version": "<version>",

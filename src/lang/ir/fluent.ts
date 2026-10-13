@@ -51,6 +51,12 @@ interface Acc {
 const positional = (c: CallExpr): Expr[] => c.args.filter((a) => !a.name && !a.spread).map((a) => a.value);
 const methodName = (c: CallExpr): string => (c.fn.k === "attr" ? c.fn.name : "");
 
+/** `map.remove("k")`, perhaps on some paths only: the key it removes is no longer a required one. */
+function unset(acc: Acc, key: Expr): void {
+  if (key.k !== "str") return;
+  acc.entries = acc.entries.map((en) => (en.key?.k === "str" && en.key.v === key.v ? { ...en, optional: true } : en));
+}
+
 /** One call on the value: an entry, an item or an Authorization entry; false when the spec has no such method. */
 function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: FunctionDef): boolean {
   const [a, b] = positional(call).map((x) => scopedIn(x, fn, into));
@@ -58,6 +64,7 @@ function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: Fu
   if (acc.spec.put?.includes(name) && a && b) acc.entries.push({ key: a, value: b });
   else if (acc.spec.items?.includes(name) && a) acc.items.push(a);
   else if (acc.spec.spread?.includes(name) && a) acc.entries.push({ value: a, spread: true });
+  else if (acc.spec.remove?.includes(name) && a) unset(acc, positional(call)[0]!);
   else if (acc.spec.skip?.includes(name)) return true;
   else if (auth && a) acc.entries.push({ key: { k: "str", v: "Authorization" }, value: { k: "tmpl", parts: [{ k: "str", v: auth === "bearer" ? "Bearer " : "Basic " }, a] } });
   else return false;
@@ -69,8 +76,8 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   if (e.k === "call") {
     const spec = ctx.idx.lang.fluentMaps!.find((s) => namesEnd(e.fn, s.objects));
     const arg = positional(e)[0];
-    // `JSONObject(mapOf(...))`: the map's entries first
-    return spec ? { spec, entries: arg && !spec.items ? [{ value: scopedIn(arg, fn, into), spread: true }] : [], items: [] } : undefined;
+    // `JSONObject(mapOf(...))`: the map's entries first; `HashMap(16)` is a capacity
+    return spec ? { spec, entries: arg && !spec.items && arg.k !== "num" ? [{ value: scopedIn(arg, fn, into), spread: true }] : [], items: [] } : undefined;
   }
   if (e.k !== "name" || depth > MAX_DEPTH) return undefined;
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
