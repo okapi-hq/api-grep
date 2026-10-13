@@ -4,6 +4,7 @@ import type { CallExpr, FunctionDef } from "../../ir/model.js";
 import type { IrCtx, IrRaw, Seg } from "../../ir/raw.js";
 import { rootLength } from "../../ir/sdk.js";
 import { applyStep, calleeIs, emptyParts, lambdaCalls, lambdaOf, readSteps, type RequestParts } from "../../ir/steps.js";
+import { ktorAuth } from "./bodies.js";
 import { rawOf } from "./request.js";
 import { JVM } from "./tables.js";
 
@@ -40,6 +41,7 @@ function clientDefaults(instance: Seg | undefined): RequestParts | undefined {
   for (const c of config.calls) {
     const block = calleeIs(c, K.defaults) !== undefined || (calleeIs(c, ["install"]) && c.args[0]?.value.k === "name" && c.args[0].value.name === "DefaultRequest") ? lambdaOf(c) : undefined;
     if (block) readLambda(block, p);
+    else if (calleeIs(c, ["install"])) ktorAuth(c, p);
   }
   return p;
 }
@@ -62,6 +64,9 @@ export function detectKtor(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: C
   // `get(urlString = url)`: the URL as a named argument
   const named = call.args.find((a) => a.name === "urlString" || a.name === "url");
   if (named && !p.url) p.url = { expr: named.value, fn };
+  // `submitForm(url, formParameters = parameters { ... })`, `submitFormWithBinaryData(url, formData = formData { ... })`
+  const form = call.args.find((a) => a.name === "formParameters" || a.name === "formData");
+  if (form && !p.body) [p.body, p.bodyRole] = [{ expr: form.value, fn }, form.name === "formData" ? "body:multipart" : "body:form"];
   const lambda = lambdaOf(call);
   if (lambda) readLambda(lambda, p);
   return rawOf(call, fn, K.client, p, ctx);

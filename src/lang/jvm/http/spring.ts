@@ -8,6 +8,7 @@ import { rootLength } from "../../ir/sdk.js";
 import { argAt, calleeIs, emptyParts, readSteps, type RequestParts } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { rawOf, readUrl, urlParts } from "./request.js";
+import { builderInterceptors, requestEntity, restTemplateInterceptors } from "./spring-parts.js";
 import { JVM, type FluentClient } from "./tables.js";
 
 const isHeaders = (s: Scoped, ctx: IrCtx): boolean => fluentMap(s.expr, s.fn, ctx)?.spec.objects.includes("HttpHeaders") ?? false;
@@ -28,10 +29,13 @@ function unwrapEntity(raw: IrRaw, ctx: IrCtx): void {
 export function detectRestTemplate(call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain): IrRaw | undefined {
   const raw = detectHttp(chain, call, fn, ctx);
   if (raw?.client !== JVM.restTemplate.client) return raw;
+  raw.pairs = [...(raw.pairs ?? []), ...restTemplateInterceptors(chain.segs, ctx)];
+  const entity = requestEntity(raw, ctx);
+  if (entity) return entity;
   unwrapEntity(raw, ctx);
   // `UriComponentsBuilder.fromHttpUrl(base).path(...).queryParam(...).toUriString()`
   const url = readUrl(raw.url, ctx);
-  return { ...raw, url: url.url, query: raw.query ?? url.query, pairs: [...(raw.pairs ?? []), ...url.pairs] };
+  return { ...raw, url: url.url, query: raw.query ?? url.query, pairs: [...raw.pairs, ...url.pairs] };
 }
 
 const toCalls = (segs: Seg[]): ScopedCall[] => segs.flatMap((s) => (s.call && s.fn ? [{ call: s.call, fn: s.fn }] : []));
@@ -64,10 +68,13 @@ function fluentRequest(spec: FluentClient, call: CallExpr, fn: FunctionDef, ctx:
   const client = segs.findIndex((s) => spec.clients.includes(s.name));
   const verb = segs.findIndex((s, i) => i > client && !!s.call && Object.hasOwn(JVM.springRequest, s.name) && (JVM.springRequest[s.name]!.method !== undefined || JVM.springRequest[s.name]!.methodArg !== undefined));
   if (client < 0 || verb < 0) return undefined;
-  const defaults = readSteps(toCalls(segs.slice(client, verb)), spec.clientSteps);
+  const built = toCalls(segs.slice(client, verb));
+  const defaults = readSteps(built, spec.clientSteps, emptyParts(), { headers: JVM.springHeaders });
   const p = emptyParts();
   p.baseUrl = defaults.baseUrl;
   p.pairs.push(...defaults.pairs.map((x) => ({ ...x, from: "default" as const })));
+  // `filter(...)` (WebClient), `requestInterceptor(...)` (RestClient)
+  p.pairs.push(...builderInterceptors(built, JVM.interceptors.fluent, ["filter", "intercept"], ctx));
   const steps = toCalls(segs.slice(verb));
   readSteps(steps, JVM.springRequest, p, { headers: JVM.springHeaders });
   uriLambda(steps, p, ctx);

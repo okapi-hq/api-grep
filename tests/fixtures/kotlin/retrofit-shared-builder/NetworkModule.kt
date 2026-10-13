@@ -6,7 +6,8 @@ import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-// a Retrofit.Builder the graph provides and its users finish: the injected Retrofit is not the project's other one
+// a Retrofit.Builder the graph provides and its users finish: the injected Retrofit is the one built from it (#46),
+// not the project's other one
 @Module
 object NetworkModule {
     @Provides

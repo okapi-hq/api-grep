@@ -1,3 +1,4 @@
+import { appliedSteps } from "./applied.js";
 import { mayNotRun } from "./edits.js";
 import type { FluentMapSpec } from "./language.js";
 import { dottedPath, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
@@ -50,7 +51,12 @@ interface Acc {
 }
 
 const positional = (c: CallExpr): Expr[] => c.args.filter((a) => !a.name && !a.spread).map((a) => a.value);
-const methodName = (c: CallExpr): string => (c.fn.k === "attr" ? c.fn.name : "");
+const methodName = (c: CallExpr): string => (c.fn.k === "attr" || c.fn.k === "name" ? c.fn.name : "");
+
+/** The entries `apply { put(k, v) }` lambdas run on the value add (Kotlin); other calls in them are not the map's. */
+function applyLambdas(acc: Acc, call: CallExpr, into: FunctionDef): void {
+  for (const c of appliedSteps(call.applied)) apply(acc, methodName(c.call), c.call, c.fn, into);
+}
 
 /** `map.remove("k")`, perhaps on some paths only: the key it removes is no longer a required one. */
 function unset(acc: Acc, key: Expr): void {
@@ -97,7 +103,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   const before = (offset: number): boolean => offset < e.pos.offset || b.fn !== fn;
   const steps: { at: number; run: () => void }[] = callsOn(b.fn, e.name, b.assign.offset)
     .filter((c) => before(c.call.pos.offset))
-    .map((c) => ({ at: c.call.pos.offset, run: () => void apply(acc, methodName(c.call), c.call, c.fn, into) }));
+    .map((c) => ({ at: c.call.pos.offset, run: () => void (apply(acc, methodName(c.call), c.call, c.fn, into), applyLambdas(acc, c.call, into)) }));
   // `body["k"] = v` (Kotlin, lowered as an edit): an entry put on the map, in order with the calls
   const sets = acc.spec.put ? b.fn.assigns.filter((a) => a.edit === "merge" && a.target === e.name && a.offset > b.assign.offset && before(a.offset)) : [];
   for (const a of sets) {
@@ -132,7 +138,11 @@ export function fluentMap(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, compl
   const pass = ctx.idx.lang.passthrough.methods;
   // `.build()`, `.toString()` at the end hand back what was built
   while (steps.length > 0 && ["build", ...pass].includes(methodName(steps[steps.length - 1]!))) steps.pop();
-  for (const s of steps) if (!apply(acc, methodName(s), s, fn, fn)) return undefined;
+  if (cur.k === "call") applyLambdas(acc, cur, fn);
+  for (const s of steps) {
+    if (!apply(acc, methodName(s), s, fn, fn)) return undefined;
+    applyLambdas(acc, s, fn);
+  }
   // the calls on a variable holding it come after: only the value as it is read is complete
   if (complete && acc.spec.filledOnly && acc.entries.length === 0) return undefined;
   const expr: Expr = acc.spec.items ? { k: "list", items: acc.items } : { k: "dict", entries: acc.entries };

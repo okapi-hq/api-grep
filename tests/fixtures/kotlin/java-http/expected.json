@@ -5,6 +5,7 @@
     {"file": "Notifier.kt", "line": 25, "provider": "pagerduty"},
     {"file": "Notifier.kt", "line": 32, "provider": "pagerduty"},
     {"file": "Notifier.kt", "line": 38, "provider": "pagerduty"},
-    {"file": "Notifier.kt", "line": 47, "provider": "api.example-alerts.com"}
+    {"file": "Notifier.kt", "line": 47, "provider": "api.example-alerts.com"},
+    {"file": "Helpers.kt", "line": 9, "provider": "pager.example-alerts.com"}
   ]
 }

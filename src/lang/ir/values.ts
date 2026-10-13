@@ -2,6 +2,7 @@ import type { Scoped } from "./language.js";
 import { dottedPath, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { fluentMap } from "./fluent.js";
 import { classField, lookup, receiverClass } from "./project.js";
+import { injectedCall, injectedField, paramValue } from "./injected.js";
 import type { IrCtx } from "./raw.js";
 
 const MAX_DEPTH = 8;
@@ -31,16 +32,19 @@ export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
     const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
     if (b.kind === "value" && !b.assign.augmented) return deref(b.assign.value, b.fn, ctx, depth + 1);
     if (b.kind === "param") {
-      const sub = ctx.subst?.get(b.param);
+      const sub = paramValue(b.param, b.fn, ctx);
       if (sub) return deref(sub.expr, sub.fn, ctx, depth + 1);
     }
   }
   if (e.k === "attr" && e.obj.k === "this" && fn.cls) {
-    const values = classField(receiverClass(fn, ctx.self, ctx.idx)!, e.name, ctx.idx);
+    const cls = receiverClass(fn, ctx.self, ctx.idx)!;
+    const values = classField(cls, e.name, ctx.idx);
     if (values.length === 1) return deref(values[0]!.value, values[0]!.fn, ctx, depth + 1);
+    const injected = values.length === 0 ? injectedField(cls, e.name, ctx) : undefined;
+    if (injected) return deref(injected.expr, injected.fn, ctx, depth + 1);
   }
   if (e.k === "call") {
-    const resolved = ctx.idx.lang.resolveCall?.(e, fn, ctx);
+    const resolved = ctx.idx.lang.resolveCall?.(e, fn, ctx) ?? injectedCall(e, fn, ctx);
     if (resolved) return deref(resolved.expr, resolved.fn, ctx, depth + 1);
   }
   if (e.k === "or") {

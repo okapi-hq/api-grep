@@ -1,4 +1,5 @@
 import type { BodyEncoding } from "../../../types.js";
+import { valueChain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import { dottedPath, type Annotation, type CallExpr, type Entry, type Expr, type FunctionDef, type ModuleModel, type Param } from "../../ir/model.js";
 import type { IrCtx, IrPair, IrRaw } from "../../ir/raw.js";
@@ -84,9 +85,10 @@ function readParam(out: Params, p: Param, m: FunctionDef): void {
 
 /**
  * A body's encoding: a form or multipart method, else the `Content-Type` of `@Headers` (it replaces the converter's),
- * else what the first converter able to write the body's type writes.
+ * else what the first converter able to write the body's type writes. A protobuf converter writes generated messages
+ * only: not a class of the project, a generic collection or a scalar, which the next converter writes (#46).
  */
-function encodingOf(m: FunctionDef, p: Params, build: RetrofitBuild | undefined): BodyEncoding | undefined {
+function encodingOf(m: FunctionDef, p: Params, build: RetrofitBuild | undefined, ctx: IrCtx): BodyEncoding | undefined {
   if (findAnn(m.annotations, [R.form])) return "form";
   if (findAnn(m.annotations, [R.multipart])) return "multipart";
   if (!p.body) return undefined;
@@ -95,14 +97,16 @@ function encodingOf(m: FunctionDef, p: Params, build: RetrofitBuild | undefined)
   const type = p.bodyType ? dottedPath(p.bodyType.k === "index" ? p.bodyType.obj : p.bodyType)?.join(".") : undefined;
   if (type && R.rawBodies.some((t) => type === t || type.endsWith(`.${t}`))) return "raw";
   const scalar = !!type && R.scalars.includes(type);
-  const writer = (build?.converters ?? []).find((c) => c !== "scalars" || scalar);
-  return writer === "scalars" ? "raw" : ((writer as BodyEncoding | undefined) ?? "json");
+  const own = (): boolean => !!p.bodyType && valueChain(p.bodyType, m, ctx).root.kind === "class";
+  const message = !!type && !scalar && p.bodyType?.k !== "index" && !own();
+  const writer = (build?.converters ?? []).find((c) => (c !== "scalars" || scalar) && (c !== "protobuf" || message));
+  return writer === "scalars" ? "raw" : writer === "protobuf" ? "raw" : ((writer as BodyEncoding | undefined) ?? "json");
 }
 
 function methodRaw(m: FunctionDef, verb: Verb, build: RetrofitBuild | undefined, ctx: IrCtx): IrRaw {
   const p: Params = { pairs: [], headers: [], entries: [] };
   for (const param of m.params) readParam(p, param, m);
-  const encoding = encodingOf(m, p, build);
+  const encoding = encodingOf(m, p, build, ctx);
   const body = encoding === "form" || encoding === "multipart" ? { expr: { k: "dict", entries: p.entries } as Expr, fn: m } : p.body;
   const call: CallExpr = { k: "call", fn: { k: "name", name: m.name, pos: m.pos }, args: [], pos: m.pos };
   const client = build?.client ? okHttpClientFacts(build.client, ctx) : [];

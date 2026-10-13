@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/46",
+  "calls": [
+    {"file": "Net.java", "line": 38, "provider": "tracking.parcels-example.com"},
+    {"file": "Net.java", "line": 51, "provider": "labels.parcels-example.com"}
+  ]
+}

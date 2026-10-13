@@ -11,6 +11,10 @@
     {"file": "Payments.java", "line": 86, "provider": "stripe"},
     {"file": "Payments.java", "line": 98, "provider": "api.example-shop.com"},
     {"file": "Quotes.java", "line": 14, "provider": "api.example-shop.com"},
-    {"file": "Quotes.java", "line": 25, "provider": "api.example-shop.com"}
+    {"file": "Quotes.java", "line": 25, "provider": "api.example-shop.com"},
+    {"file": "Builders.java", "line": 40, "provider": "partners.example-shop.com"},
+    {"file": "Builders.java", "line": 49, "provider": "partners.example-shop.com"},
+    {"file": "Builders.java", "line": 67, "provider": "ledger.example-shop.com"},
+    {"file": "Builders.java", "line": 80, "provider": "auth.example-shop.com"}
   ]
 }

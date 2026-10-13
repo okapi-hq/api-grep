@@ -2,7 +2,7 @@ import type { ClientKind, Ecosystem, Language } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding, MethodSpec, RegistryEntry } from "../../types.js";
 import type { SyntaxNode } from "../tree-sitter.js";
 import type { Chain } from "./chain.js";
-import type { CallExpr, ClassDef, Expr, FunctionDef, ModuleModel } from "./model.js";
+import type { CallExpr, ClassDef, Expr, FunctionDef, ModuleModel, Param } from "./model.js";
 import type { IrCtx, IrRaw } from "./raw.js";
 
 /** An expression with the function it is written in: names are looked up there. */
@@ -227,6 +227,8 @@ export interface IrLanguage extends IrSource {
   constants?: Record<string, string>;
   /** A call that stands for another expression of the project (Laravel `config('services.x.url')`: an entry of `config/services.php`). */
   resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
+  /** Values a DI container gives (JVM: Dagger / Hilt, Spring, Koin), for parameters and fields nothing else sets. */
+  injection?: IrInjection;
   /**
    * A call that returns an instance of a project class it names (`retrofit.create(Api::class.java)`,
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.
@@ -241,6 +243,17 @@ export interface IrLanguage extends IrSource {
   importRoots(pkg: string): string[];
   /** The ecosystem's canonical spelling of a package name (PyPI: lower case, `-` for `_` and `.`). */
   normalizePackage(name: string): string;
+}
+
+/**
+ * What a dependency injection container gives: a parameter no wrapper expansion substituted (a provider's, a managed
+ * constructor's), a field only an annotation sets, a container lookup (`get<Api>()`). Undefined when not injected, or
+ * when the binding cannot be told (several providers).
+ */
+export interface IrInjection {
+  param(p: Param, fn: FunctionDef, ctx: IrCtx): Scoped | undefined;
+  field(cls: ClassDef, name: string, ctx: IrCtx): Scoped | undefined;
+  call(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined;
 }
 
 /** A detector for one language's own patterns; it sees the call, its scope and what the callee resolved to. */

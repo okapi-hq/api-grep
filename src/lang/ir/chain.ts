@@ -1,5 +1,6 @@
 import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
+import { injectedCall, injectedField, paramValue } from "./injected.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
 import { dictValue } from "./values.js";
 
@@ -34,7 +35,7 @@ const resolved = (c: Chain): boolean => c.root.kind === "external" || c.root.kin
 function bindingChain(b: Binding, name: string, ctx: IrCtx, depth: number): Chain {
   switch (b.kind) {
     case "param": {
-      const sub = ctx.subst?.get(b.param);
+      const sub = paramValue(b.param, b.fn, ctx);
       if (sub) return valueChain(sub.expr, sub.fn, ctx, depth + 1);
       // a default instance (`Client $http = new Client(['base_uri' => ...])`) says more than the type alone
       const dflt = b.param.default ? valueChain(b.param.default, b.fn, ctx, depth + 1) : UNKNOWN;
@@ -97,6 +98,10 @@ function fieldValues(cls: ClassDef, name: string, ctx: IrCtx, depth: number): { 
 function fieldChain(cls: ClassDef, name: string, ctx: IrCtx, depth: number): Chain | undefined {
   const { resolved: value, fallback } = fieldValues(cls, name, ctx, depth);
   if (value) return value;
+  // `@Autowired private RestTemplate rest;`: what the container injects
+  const injected = fallback ? undefined : injectedField(cls, name, ctx);
+  const inj = injected ? valueChain(injected.expr, injected.fn, ctx, depth + 1) : undefined;
+  if (inj && resolved(inj)) return inj;
   const type = classFieldType(cls, name, ctx.idx);
   if (type) {
     const typed = typeChain(type, cls.module.top, ctx, depth + 1);
@@ -163,6 +168,9 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
 function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
   const made = ctx.idx.lang.instanceOf?.(e, fn, ctx, depth);
   if (made) return { root: { kind: "instance", cls: made }, segs: [] };
+  // `get<HttpClient>()`, `by inject()`: the container's binding
+  const injected = injectedCall(e, fn, ctx);
+  if (injected) return valueChain(injected.expr, injected.fn, ctx, depth + 1);
   const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
     if (c.root.kind === "function") return factoryResult(c.root.fn, e, fn, ctx, depth);

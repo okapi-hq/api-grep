@@ -53,7 +53,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
   (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
   language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`; Lombok `@Builder` classes and
-  getters of the project in `src/lang/jvm/lombok.ts`).
+  getters of the project in `src/lang/jvm/lombok.ts`). Clients a DI container provides (#46: Dagger / Hilt, Spring,
+  Koin) are bindings and injection points in `src/lang/jvm/di/`, which the engine asks through the language's
+  `injection` hook (`ir/injected.ts`) wherever a parameter or field has no other value; when several bindings fit,
+  none is attached.
 - Kotlin and Java (#43): one front end. `kotlinLanguage` lists Java's `IrSource` (`src/lang/java/index.ts`) in
   `alsoReads`; `scanIr` (`src/lang/ir/scan.ts`) lowers every source language the scan asks for into one module set and
   one `ProjectIndex`, each module keeping its `language` (the call's `location.language`), and computes the `maven`
@@ -126,7 +129,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   and #31 (Retrofit interfaces, `retrofit.ts` / `retrofit-link.ts`, URLs resolved by RFC 3986 in
   `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
   Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
-  #49, other JVM SDKs and builder forms #50, DI-provided clients #46.
+  #49, other JVM SDKs and builder forms #50. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
+  done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
   JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`, Lombok builders and getters, Kotlin `map["k"] = v`) are
   done.

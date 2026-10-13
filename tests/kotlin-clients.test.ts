@@ -52,7 +52,7 @@ describe("kotlin: java.net.http and HttpURLConnection", () => {
   it("reads HttpRequest builders sent by send / sendAsync and connections configured in the same function", async () => {
     const r = await scanFixture("kotlin/java-http");
     expect(r).toMatchSnapshot();
-    expect(r.calls.map((c) => [c.location.line, c.client, c.method, c.pathTemplate])).toEqual([
+    expect(r.calls.filter((c) => c.location.file === "Notifier.kt").map((c) => [c.location.line, c.client, c.method, c.pathTemplate])).toEqual([
       [16, "java-http", "POST", "/v1/items"],
       [25, "java-http", "GET", "/incidents"],
       [32, "java-http", "PUT", "/incidents/{id}"],

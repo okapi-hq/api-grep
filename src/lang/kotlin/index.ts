@@ -7,6 +7,7 @@ import { jvmImportRoots } from "../jvm/packages.js";
 import { JVM_REGISTRY } from "../jvm/registry/index.js";
 import { javaSource } from "../java/index.js";
 import { jvmResolveCall } from "../jvm/lombok.js";
+import { JVM_INJECTION } from "../jvm/di/inject.js";
 import { lowerKotlin } from "./lower.js";
 import { semicolonsBeforeBraces } from "./repair.js";
 
@@ -46,6 +47,8 @@ export const kotlinLanguage: IrLanguage = {
   // `X.builder().a(1).build()` of an SDK's parameter class or a Lombok `@Builder` class: the dict of the fields it
   // sets; a Lombok getter: its field
   resolveCall: jvmResolveCall,
+  // Dagger / Hilt, Spring and Koin bindings: injected parameters and fields, `get<T>()` (#46)
+  injection: JVM_INJECTION,
   passthrough: {
     functions: new Set([
       ...["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"],
