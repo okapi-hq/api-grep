@@ -7,7 +7,8 @@ import { partsOf, stringShapeOf } from "./string-template.js";
 import { xmlBody } from "./xml-shape.js";
 import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
-import { importedDocument, isDocumentExpression } from "./graphql-source.js";
+import { astDocumentParts } from "./graphql-ast.js";
+import { importedDocument, isDocumentExpression, printedArgument } from "./graphql-source.js";
 import { localReturn } from "./local-return.js";
 import { paramShape } from "./param-values.js";
 import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
@@ -137,13 +138,17 @@ export function shapeOf(expr: Expression, ctx: EvalCtx = {}, depth = 0, dynamic:
   if (depth > MAX_DEPTH) return { shape: { type: "unknown" }, fromLiteral: false };
   const lit = literalToShape(u, ctx, depth);
   if (lit) return { shape: lit, fromLiteral: true };
-  if (Node.isObjectLiteralExpression(u)) return { shape: objectLiteralShape(u, ctx, depth, dynamic), fromLiteral: true };
+  if (Node.isObjectLiteralExpression(u)) {
+    // a document written as its AST (#56) is sent as its text
+    const document = astDocumentParts(u);
+    return { shape: document ? stringShapeOf(document) : objectLiteralShape(u, ctx, depth, dynamic), fromLiteral: true };
+  }
   if (Node.isIdentifier(u)) return identifierShape(u, ctx, depth, dynamic);
   if (Node.isConditionalExpression(u)) return branchesShape([u.getWhenTrue(), u.getWhenFalse()], ctx, depth, dynamic);
   const env = envShape(u, ctx, depth);
   if (env) return env;
   if (isDefaultExpression(u)) return branchesShape([u.getLeft(), u.getRight()], ctx, depth, dynamic, true);
-  if (Node.isCallExpression(u)) return returnsShape(u, ctx, depth) ?? fromChecker(u, "call", u.getExpression().getText().slice(0, 40));
+  if (Node.isCallExpression(u)) return printedShape(u, ctx, depth, dynamic) ?? returnsShape(u, ctx, depth) ?? fromChecker(u, "call", u.getExpression().getText().slice(0, 40));
   return constantShape(u, ctx, depth) ?? fromChecker(u, "unknown", u.getText().slice(0, 40));
 }
 
@@ -169,6 +174,15 @@ function branchesShape(branches: Expression[], ctx: EvalCtx, depth: number, dyna
   const shapes = results.map((r, i) => (optionalLeft && i === 0 && r.shape.type === "union" ? unionOf(r.shape.anyOf.filter((m) => m.type !== "null")) : r.shape));
   const literal = results.every((r) => r.fromLiteral);
   return { shape: unionOf(shapes), fromLiteral: false, origin: literal ? "unknown" : (results.find((r) => !r.fromLiteral)?.origin ?? "unknown") };
+}
+
+const isText = (s: Shape): boolean => s.type === "string" || (s.type === "union" && s.anyOf.every(isText));
+
+/** `print(doc)`: the document's text, when the scan reads it; else the call's type. */
+function printedShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: DynamicPart[]): ShapeResult | undefined {
+  const printed = printedArgument(u);
+  const r = printed ? shapeOf(printed, ctx, depth + 1, dynamic) : undefined;
+  return r && isText(r.shape) ? r : undefined;
 }
 
 /** What a function of the project returns (`model: getModel()`): the shapes of its returns, its arguments substituted. */

@@ -1,0 +1,3 @@
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+
+export const client = new ApolloClient({ uri: "https://api.example-invoicing.com/graphql", cache: new InMemoryCache() });

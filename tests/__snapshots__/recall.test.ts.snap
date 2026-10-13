@@ -81,6 +81,18 @@ exports[`regression fixtures > graphql-clients/urql 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-codegen 1`] = `
+[
+  "invoices.tsx:10 api.example-invoicing.com POST /graphql GetInvoice",
+  "invoices.tsx:18 api.example-invoicing.com POST /graphql ListInvoices",
+  "invoices.tsx:22 api.example-invoicing.com POST /graphql PayInvoice",
+  "invoices.tsx:26 unknown POST / InvoiceUpdated",
+  "invoices.tsx:30 api.example-invoicing.com POST /graphql PayInvoice",
+  "invoices.tsx:33 api.example-invoicing.com POST /graphql viewer",
+  "invoices.tsx:37 api.example-invoicing.com POST /notes",
+]
+`;
+
 exports[`regression fixtures > html/negatives 1`] = `[]`;
 
 exports[`regression fixtures > html/site 1`] = `
@@ -190,6 +202,13 @@ exports[`regression fixtures > javascript/browser 1`] = `
   "app.js:28 cloudinary POST /v1_1/demo/image/upload",
   "app.js:32 tmdb GET /3/search/movie",
   "widget.jsx:6 github GET /repos/{repo}",
+]
+`;
+
+exports[`regression fixtures > javascript/graphql-ast 1`] = `
+[
+  "catalog.js:66 api.example-store.com POST /graphql GetProduct",
+  "catalog.js:74 api.example-store.com POST /graphql Stock",
 ]
 `;
 

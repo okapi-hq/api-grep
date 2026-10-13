@@ -1,6 +1,7 @@
 import path from "node:path";
 import { Node, SyntaxKind, type CallExpression, type Expression, type Project } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
+import { identifierOrigin } from "../ast/origin.js";
 import { declarationsOf } from "../ast/object.js";
 import { readConfigFile } from "../files.js";
 import { MAX_DOCUMENT_CHARS, operationDocument } from "../operation/graphql-document.js";
@@ -47,12 +48,27 @@ export function isDocumentExpression(u: Expression): boolean {
   return (Node.isTaggedTemplateExpression(u) && TAGS.has(tagName(u.getTag()) ?? "")) || isDocumentCall(u);
 }
 
+/** Packages exporting graphql-js's `print` (Apollo re-exports it). */
+const PRINTERS = new Set(["graphql", "@apollo/client"]);
+
+/** The document of `print(doc)` (`import { print } from "graphql"`, `graphql.print(doc)`): what is sent is its text. */
+export function printedArgument(u: Expression): Expression | undefined {
+  if (!Node.isCallExpression(u) || u.getArguments().length !== 1) return undefined;
+  const callee = unwrap(u.getExpression());
+  const member = Node.isPropertyAccessExpression(callee) && callee.getName() === "print";
+  const ident = member ? unwrap(callee.getExpression()) : callee;
+  if (!Node.isIdentifier(ident) || (!member && !/print/i.test(ident.getText()))) return undefined;
+  const origin = identifierOrigin(ident);
+  if (origin.kind !== "package" || !PRINTERS.has(origin.package)) return undefined;
+  return member || origin.importedName === "print" ? (u.getArguments()[0] as Expression) : undefined;
+}
+
 /** Documents already read, per substitution: a fragment many documents interpolate is read once. */
 const memo = new WeakMap<Node, Map<EvalCtx["subst"], Part[]>>();
 const MAX_PARTS = 1_000;
 
 /** A document past the size bound keeps its start, so its header still names it; its fields are unknown. */
-function truncated(start: string): Part[] {
+export function truncated(start: string): Part[] {
   return [
     { kind: "static", text: start.slice(0, 1_000), viaConst: true },
     { kind: "dynamic", name: "document", origin: "unknown" },

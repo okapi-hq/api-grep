@@ -120,3 +120,12 @@ export function operationDocument(text: string, name: string): string | undefine
   if (!doc || !keep?.some((d) => d.kind === Kind.OPERATION_DEFINITION)) return undefined;
   return print({ ...doc, definitions: keep });
 }
+
+/** The text of a document given as its AST (#56); undefined when `print` cannot read it as one. */
+export function printedDocument(doc: { kind: "Document"; definitions: unknown[] }): string | undefined {
+  try {
+    return print(doc as unknown as DocumentNode);
+  } catch {
+    return undefined;
+  }
+}
