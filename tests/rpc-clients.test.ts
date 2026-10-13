@@ -7,7 +7,7 @@ import { at, scanFixture } from "./fixture-helpers.js";
 
 const rpc = (name: string, extra: object = {}): object => ({ protocol: "json-rpc", name, dynamic: false, from: "body", ...extra });
 
-describe("JSON-RPC client libraries (#52)", () => {
+describe("JSON-RPC client libraries of Solana nodes (#52)", () => {
   it("@solana/web3.js: the Connection's URL, the method sent rather than the helper called", async () => {
     const r = await scanFixture("rpc-clients/solana");
     expect(at(r, "ledger.ts", 6)).toMatchObject({
@@ -27,6 +27,19 @@ describe("JSON-RPC client libraries (#52)", () => {
     expect(at(r, "ledger.ts", 6).id).not.toBe(at(r, "ledger.ts", 10).id);
   });
 
+  it("@solana/kit: the RPC method called on `createSolanaRpc(url)`, before its `.send()`; `clusterApiUrl` is the cluster's URL", async () => {
+    const r = await scanFixture("rpc-clients/solana-kit");
+    expect(at(r, "accounts.ts", 6)).toMatchObject({ sdk: { package: "@solana/kit", chain: "getBalance" }, provider: "rpc.example-chain.net", operation: rpc("getBalance") });
+    expect(at(r, "accounts.ts", 15)).toMatchObject({ provider: "rpc.example-chain.net", operation: rpc("getAccountInfo") });
+    expect(r.calls).toHaveLength(3);
+    const c = await scanFixture("rpc-clients/solana-cluster");
+    expect(at(c, "faucet.ts", 6)).toMatchObject({ urlTemplate: "https://api.devnet.solana.com", hostKind: "literal", operation: rpc("requestAirdrop") });
+    expect(at(c, "faucet.ts", 10)).toMatchObject({ provider: "api.mainnet-beta.solana.com", operation: rpc("getMinimumBalanceForRentExemption") });
+  });
+
+});
+
+describe("JSON-RPC client libraries of EVM nodes (#52)", () => {
   it("viem: the http transport, also in a fallback, `request({ method })` and viem/actions; a wallet transport is not HTTP", async () => {
     const r = await scanFixture("rpc-clients/viem");
     expect(at(r, "chain.ts", 14)).toMatchObject({

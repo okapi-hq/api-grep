@@ -1208,6 +1208,21 @@ exports[`regression fixtures > rpc-clients/solana 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rpc-clients/solana-cluster 1`] = `
+[
+  "faucet.ts:6 api.devnet.solana.com POST / requestAirdrop",
+  "faucet.ts:10 api.mainnet-beta.solana.com POST / getMinimumBalanceForRentExemption",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/solana-kit 1`] = `
+[
+  "accounts.ts:6 rpc.example-chain.net POST / getBalance",
+  "accounts.ts:11 rpc.example-chain.net POST / getEpochInfo",
+  "accounts.ts:15 rpc.example-chain.net POST / getAccountInfo",
+]
+`;
+
 exports[`regression fixtures > rpc-clients/viem 1`] = `
 [
   "chain.ts:14 eth.example-node.io POST /v1/demo eth_getBalance",

@@ -1,16 +1,20 @@
 {
-  "$comment": "@solana/web3.js (#52): a Connection sends JSON-RPC to the URL it is built with. `rpc` is the method on the wire: `getParsedTransaction` sends `getTransaction`, `confirmTransaction` polls `getSignatureStatuses`.",
+  "$comment": "@solana/web3.js (#52): a Connection sends JSON-RPC to the URL it is built with. `rpc` is the method on the wire: `getParsedTransaction` sends `getTransaction`, `confirmTransaction` polls `getSignatureStatuses`. @solana/kit (and web3.js 2) name the RPC methods themselves: `createSolanaRpc(url).getBalance(address).send()`, reported at the method call.",
   "package": "@solana/web3.js",
+  "aliases": ["@solana/kit", "@solana/rpc"],
   "provider": "json-rpc",
   "host": "{rpcEndpoint}",
   "auth": "unknown",
   "generatedFrom": "manual (checked against @solana/web3.js 1.98)",
   "inlinePathLiterals": true,
-  "instance": { "names": ["Connection"] },
+  "instance": { "names": ["Connection", "createSolanaRpc"] },
   "endpoint": {
-    "clients": { "Connection": { "url": "0", "headers": "1.httpHeaders" } },
+    "clients": {
+      "Connection": { "url": "0", "headers": "1.httpHeaders" },
+      "createSolanaRpc": { "url": "0", "headers": "1.headers" }
+    },
     "nonHttp": [],
-    "types": ["Connection"]
+    "types": ["Connection", "Rpc"]
   },
   "methods": {
     "confirmTransaction": { "method": "POST", "path": "", "rpc": "getSignatureStatuses" },
@@ -77,6 +81,16 @@
     "sendRawTransaction": { "method": "POST", "path": "", "rpc": "sendTransaction" },
     "sendTransaction": { "method": "POST", "path": "", "rpc": "sendTransaction" },
     "simulateTransaction": { "method": "POST", "path": "", "rpc": "simulateTransaction" },
+    "getBlockCommitment": { "method": "POST", "path": "", "rpc": "getBlockCommitment" },
+    "getBlocksWithLimit": { "method": "POST", "path": "", "rpc": "getBlocksWithLimit" },
+    "getHealth": { "method": "POST", "path": "", "rpc": "getHealth" },
+    "getHighestSnapshotSlot": { "method": "POST", "path": "", "rpc": "getHighestSnapshotSlot" },
+    "getIdentity": { "method": "POST", "path": "", "rpc": "getIdentity" },
+    "getMaxRetransmitSlot": { "method": "POST", "path": "", "rpc": "getMaxRetransmitSlot" },
+    "getMaxShredInsertSlot": { "method": "POST", "path": "", "rpc": "getMaxShredInsertSlot" },
+    "getMultipleAccounts": { "method": "POST", "path": "", "rpc": "getMultipleAccounts" },
+    "getTokenAccountsByDelegate": { "method": "POST", "path": "", "rpc": "getTokenAccountsByDelegate" },
+    "minimumLedgerSlot": { "method": "POST", "path": "", "rpc": "minimumLedgerSlot" },
     "sendAndConfirmTransaction": { "method": "POST", "path": "", "rpc": "sendTransaction", "clientArg": "0" },
     "sendAndConfirmRawTransaction": { "method": "POST", "path": "", "rpc": "sendTransaction", "clientArg": "0" }
   }
