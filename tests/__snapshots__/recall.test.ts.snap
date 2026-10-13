@@ -55,6 +55,94 @@ exports[`regression fixtures > html/site 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/feign 1`] = `
+[
+  "Clients.java:28 api.example-orders.com GET /v2/orders/{id}",
+  "Clients.java:31 api.example-orders.com POST /v2/orders",
+  "Clients.java:34 api.example-orders.com DELETE /v2/orders/{id}",
+  "Clients.java:37 api.example-orders.com GET /v2/orders",
+  "Clients.java:43 github GET /repos/{owner}/{repo}/issues",
+  "Clients.java:46 github POST /repos/{owner}/{repo}/issues",
+]
+`;
+
+exports[`regression fixtures > java/java-http 1`] = `
+[
+  "Notifier.java:28 api.example-alerts.com POST /v1/items",
+  "Notifier.java:37 pagerduty GET /incidents",
+  "Notifier.java:44 pagerduty PUT /incidents/{id}",
+  "Notifier.java:51 pagerduty POST /v2/enqueue",
+  "Notifier.java:62 api.example-alerts.com POST /v1/ping",
+  "Notifier.java:71 api.example-alerts.com GET /v1/status",
+]
+`;
+
+exports[`regression fixtures > java/mixed 1`] = `
+[
+  "NotesApi.java:12 api.example-notes.com GET /v1/notes",
+  "NotesApi.java:15 api.example-notes.com POST /v1/notes",
+  "Settings.java:16 status.example-notes.com GET /api/v2/status.json",
+]
+`;
+
+exports[`regression fixtures > java/negatives 1`] = `[]`;
+
+exports[`regression fixtures > java/okhttp 1`] = `
+[
+  "Feeds.java:24 api.example-feeds.com GET /v1/latest",
+  "Interceptors.java:38 open-meteo GET /v1/forecast",
+  "Interceptors.java:43 github GET /user/repos",
+  "Interceptors.java:53 github DELETE /user/starred/{owner}/{repo}",
+  "Messages.java:31 mailgun POST /v3/mg.example.com/messages",
+  "Messages.java:36 cloudinary POST /v1_1/demo/image/upload",
+  "Messages.java:46 unsplash GET /search/photos (wrapper:Messages.execute)",
+  "Messages.java:59 rpc.example.com POST /v1/balances",
+  "Messages.java:63 unknown GET /",
+  "Podcasts.java:17 api.example-podcasts.com GET /v1/search",
+  "Podcasts.java:34 api.example-podcasts.com POST /v1/login",
+]
+`;
+
+exports[`regression fixtures > java/retrofit 1`] = `
+[
+  "BookApi.java:24 api.example-books.com GET /v2/books",
+  "BookApi.java:27 api.example-books.com GET /v2/books/{id}",
+  "BookApi.java:30 api.example-books.com POST /v2/books/{id}/reviews",
+  "BookApi.java:34 api.example-books.com POST /v2/oauth/token",
+  "BookApi.java:38 api.example-books.com POST /v2/books/{id}/cover",
+  "BookApi.java:42 api.example-books.com DELETE /v2/books/{id}",
+  "BookApi.java:45 api.example-books.com GET /v2/search",
+]
+`;
+
+exports[`regression fixtures > java/sdk 1`] = `
+[
+  "Billing.java:24 stripe POST /v1/customers",
+  "Billing.java:32 stripe POST /v1/payment_intents",
+  "Billing.java:38 stripe GET /v1/customers/{customer}",
+  "Billing.java:38 stripe POST /v1/customers/{customer}",
+  "Billing.java:42 aws PUT /{Bucket}/{Key}",
+  "Chat.java:25 openai POST /v1/chat/completions",
+  "Chat.java:29 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > java/spring 1`] = `
+[
+  "Payments.java:35 api.example-shop.com GET /v1/items/{id}",
+  "Payments.java:42 api.example-shop.com POST /v1/items",
+  "Payments.java:48 stripe POST /v1/refunds",
+  "Payments.java:56 api.example-shop.com GET /v1/search",
+  "Payments.java:63 api.example-shop.com POST /v1/rates",
+  "Payments.java:67 api.example-shop.com GET /v1/items",
+  "Payments.java:82 stripe GET /v1/charges",
+  "Payments.java:86 stripe POST /v1/charges/{id}/capture",
+  "Payments.java:98 api.example-shop.com GET /v1/status",
+  "Quotes.java:14 api.example-shop.com POST /v1/quotes",
+  "Quotes.java:25 api.example-shop.com POST /v1/reservations",
+]
+`;
+
 exports[`regression fixtures > javascript/browser 1`] = `
 [
   "app.js:4 icanhazdadjoke.com GET /search",

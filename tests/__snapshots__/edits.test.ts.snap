@@ -381,7 +381,7 @@ exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.13.0",
+  "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
       "guzzle": 1,
@@ -1487,7 +1487,7 @@ exports[`edited request arguments: python > keeps keys set in branches, optional
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.13.0",
+  "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -2232,7 +2232,7 @@ exports[`edited request arguments: typescript and javascript > reads property as
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.13.0",
+  "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
       "fetch": 1,

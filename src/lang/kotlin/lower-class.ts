@@ -2,7 +2,8 @@ import type { ClassDef, FunctionDef, Param } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { lowerArgs, lowerExpr } from "./lower-expr.js";
 import { addField, lowerFunction, lowerParams, lowerStatement, propertyParts } from "./lower-stmt.js";
-import { injectedValue, isTransient, modifiersOf, serialName } from "./modifiers.js";
+import { injectedValue, isTransient, serialName } from "../jvm/annotations.js";
+import { modifiersOf } from "./modifiers.js";
 import { newFunction, posOf, setHooks, type KtState } from "./state.js";
 import { lowerType } from "./types.js";
 

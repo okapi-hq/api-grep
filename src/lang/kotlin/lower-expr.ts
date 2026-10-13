@@ -1,7 +1,8 @@
 import type { Arg, CallExpr, Expr } from "../ir/model.js";
 import { buildConfigValue } from "../jvm/build-config.js";
 import { field, named as namedNodes, type SyntaxNode } from "../tree-sitter.js";
-import { isEnvMap, special } from "./calls.js";
+import { isEnvMap } from "../jvm/calls.js";
+import { special } from "./calls.js";
 import { hook, nameRef, posOf, type KtState } from "./state.js";
 import { charValue, numberValue, shortTemplate, unescapeKotlin } from "./strings.js";
 import { classRef, lowerType } from "./types.js";

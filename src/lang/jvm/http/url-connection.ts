@@ -3,7 +3,7 @@ import type { Chain } from "../../ir/chain.js";
 import { evaluate } from "../../ir/evaluate.js";
 import { callsOn } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
-import { exprText, type CallExpr, type FunctionDef } from "../../ir/model.js";
+import { children, exprText, type CallExpr, type Expr, type FunctionDef } from "../../ir/model.js";
 import type { IrCtx, IrRaw } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, type RequestParts } from "../../ir/steps.js";
 import { rawOf } from "./request.js";
@@ -16,13 +16,22 @@ function connectionVar(call: CallExpr, fn: FunctionDef): { name: string; offset:
   return a ? { name: a.target, offset: a.offset } : undefined;
 }
 
-/** `conn.outputStream.write(json.toByteArray())`, `conn.outputStream.use { it.write(...) }`: what the function writes to the connection. */
+const STREAM = /outputStream|getOutputStream|^it$|writer/i;
+
+/** An expression that is the connection's output stream or wraps it (`new DataOutputStream(conn.getOutputStream())`). */
+const mentionsStream = (e: Expr, depth = 0): boolean => STREAM.test(exprText(e)) || (depth < 4 && children(e).some((c) => mentionsStream(c, depth + 1)));
+
+/**
+ * `conn.outputStream.write(json.toByteArray())`, `conn.outputStream.use { it.write(...) }`, Java's `os.write(...)` on a
+ * local holding the stream (`try (OutputStream os = conn.getOutputStream())`): what the function writes to the connection.
+ */
 function written(fn: FunctionDef, after: number): Scoped | undefined {
   const fns = [fn, ...fn.module.allFunctions.filter((f) => f.parent === fn)];
+  const streams = new Set(fn.assigns.filter((a) => a.offset > after && mentionsStream(a.value)).map((a) => a.target));
   for (const f of fns) {
     for (const c of f.calls) {
       const target = c.fn.k === "attr" ? exprText(c.fn.obj) : "";
-      const stream = /outputStream|getOutputStream|^it$|writer/i.test(target) || f !== fn;
+      const stream = STREAM.test(target) || streams.has(target) || f !== fn;
       if (c.pos.offset > after && calleeIs(c, WRITES) && stream) return argAt({ call: c, fn: f }, 0);
     }
   }

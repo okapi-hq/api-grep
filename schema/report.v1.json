@@ -315,9 +315,10 @@
         "html",
         "python",
         "php",
-        "kotlin"
+        "kotlin",
+        "java"
       ],
-      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php and kotlin."
+      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, and kotlin and java together (one front end, so names resolve across the two)."
     },
     "Client": {
       "type": "string",

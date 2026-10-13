@@ -266,6 +266,7 @@
     { "objects": ["MultipartBody.Builder"], "put": ["addFormDataPart"], "skip": ["setType"], "encoding": "multipart" },
     { "objects": ["Headers.Builder", "Headers.of"], "put": ["add", "set"] },
     { "objects": ["LinkedMultiValueMap"], "put": ["add", "set"], "encoding": "form" },
+    { "objects": ["HashMap", "LinkedHashMap", "TreeMap"], "put": ["put", "putIfAbsent"], "spread": ["putAll"], "remove": ["remove"], "filledOnly": true },
     { "objects": ["HttpHeaders"], "put": ["set", "add"], "auth": { "setBearerAuth": "bearer", "setBasicAuth": "basic" }, "props": { "contentType": "Content-Type", "accept": "Accept" } }
   ],
   "wildcardTypes": [

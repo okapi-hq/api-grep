@@ -4,16 +4,17 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
 
-**Find every outbound HTTP and SDK call in a TypeScript, JavaScript, Python, PHP or HTML codebase, without running it.**
+**Find every outbound HTTP and SDK call in a TypeScript, JavaScript, Python, PHP, Kotlin, Java or HTML codebase, without running it.**
 
 Point `api-grep` at a repository and it lists every call the code makes to an external API:
 provider, method, path template, the *shape* of the payload (names and types, never values),
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
-checker, and Python, PHP and Kotlin through tree-sitter; a repository that mixes languages gets one
-report that says which language each call comes from. Kotlin's HTTP clients are read (OkHttp,
-`java.net.http`, Ktor, Spring, Feign, Retrofit), and so are its SDK calls (OpenAI, Anthropic,
-Stripe, AWS, Firebase and others), with its Gradle and Maven manifests.
+checker, and Python, PHP, Kotlin and Java through tree-sitter; a repository that mixes languages gets one
+report that says which language each call comes from. Kotlin and Java are read together, so a
+Kotlin file calling a Retrofit interface declared in Java resolves; their HTTP clients are read
+(OkHttp, `java.net.http`, `HttpURLConnection`, Ktor, Spring, Feign, Retrofit), and so are their SDK
+calls (OpenAI, Anthropic, Stripe, AWS, Firebase and others), with the Gradle and Maven manifests.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
@@ -130,8 +131,8 @@ calls:                          # one entry per call, sorted by file, line, colu
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
       col: 10
-      language: typescript      # typescript | javascript | html | python | php | kotlin
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit (Kotlin), sdk | framework
+      language: typescript      # typescript | javascript | html | python | php | kotlin | java
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit (Kotlin, Java), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -285,7 +286,7 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, â
 
 Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
 and `diagnostics.languages` files per language: `typescript`, `javascript`, `html` (inline scripts
-and forms, at their line in the page), `python`, `php` and `kotlin` share one format. Coverage rows
+and forms, at their line in the page), `python`, `php`, `kotlin` and `java` share one format. Coverage rows
 name their package `ecosystem` (`npm`, `pypi`, `composer`, `maven`).
 
 ## Usage
@@ -303,7 +304,7 @@ api-grep serve --port 8080                            # HTTP server, see below
 
 | option | description |
 |---|---|
-| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `javascript`, `html`, `python`, `php`, `kotlin` (default: every language with files in scope) |
+| `--language <ids>` | languages to scan, comma-separated or repeated: `typescript`, `javascript`, `html`, `python`, `php`, `kotlin`, `java` (default: every language with files in scope) |
 | `--json` | print the JSON report on stdout instead of the table |
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
@@ -473,7 +474,12 @@ Names resolve through namespaces and `use` (classes, functions, constants), `sel
 class constants, `define()` / `const`, promoted and typed properties, `$this->x` set in any
 method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` and `$_SERVER`.
 
-### Kotlin
+### Kotlin and Java
+
+Kotlin and Java files are read by one front end into one index: a Java class and a Kotlin file of
+the same package see each other, imports resolve across the two, and each call keeps its file's
+language. The clients and SDK registries below apply to both; in Java, `new X(...)` is a call of `X`
+and `Api.class` a class reference.
 
 | client | patterns |
 |---|---|
@@ -486,12 +492,11 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 
 JSON bodies come from `JSONObject().put(...)` chains, `mapOf(...)` serialized by Gson, Moshi,
 Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiValueMap` and the
-content type. Java (#43) will share these clients, which read the engine's model only. The Gradle
+content type; in Java also `Map.of(...)`, a `HashMap` filled with `put`, POJOs and records. The Gradle
 and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
 (`ecosystem: "maven"`).
 
-SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`, shared with Java
-later): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
+SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
 Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog
 ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
@@ -507,6 +512,14 @@ module's Gradle file as its default) and Spring `@Value("\${x:default}")`. Data 
 shapes, with `@SerializedName`, `@Json(name = ...)`, `@SerialName` and `@JsonProperty` names.
 Gradle build scripts (`*.gradle.kts`), `buildSrc/`, `build-logic/` and test source sets are out of
 scope.
+
+Java values resolve the same way: `static final` constants (also through `import static` and from
+Kotlin `object`s), fields set in constructors, `+`, `String.format`, `"...".formatted(...)`,
+`String.join`, `StringBuilder` chains and appends, text blocks, `System.getenv`,
+`System.getProperty`, Spring `@Value("${x:default}")` and `Environment.getProperty("x", "d")`,
+`Optional.ofNullable(x).orElse(d)` and `BuildConfig.X`; POJO fields and records give body shapes
+under their `@SerializedName` / `@JsonProperty` names (`transient` aside). Maven `target/`, test
+source sets and `*Test.java` / `*IT.java` are out of scope.
 
 ## How it works
 
@@ -683,7 +696,9 @@ package. `--changed-since` scans have no coverage section.
   unknown host. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
-  Java is not read yet ([docs/languages.md](docs/languages.md#kotlin)).
+  Java: interceptors and clients provided by DI frameworks are known by their type only, as in
+  Kotlin; Lombok-generated builders and setters and annotation processors are not run
+  ([docs/languages.md](docs/languages.md#java)).
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
@@ -691,9 +706,9 @@ package. `--changed-since` scans have no coverage section.
 
 ## Evaluation
 
-The scanner is measured on 33 open-source repositories listed in
-[`eval/repos.json`](eval/repos.json): 20 TypeScript, 6 Python and 7 PHP (a `language` entry scans that
-language only). Results are in [`eval/results.md`](eval/results.md).
+The scanner is measured on 45 open-source repositories listed in
+[`eval/repos.json`](eval/repos.json): 20 TypeScript, 6 Python, 7 PHP, 6 Kotlin and 5 Java (a `language` entry
+scans that language only). Results are in [`eval/results.md`](eval/results.md).
 
 ```sh
 pnpm eval                       # shallow-clone, scan, write eval/out/<repo>.json and a summary
