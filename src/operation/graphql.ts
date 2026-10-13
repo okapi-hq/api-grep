@@ -112,9 +112,22 @@ function batchItems(items: Shape): ObjectShape[] {
   return members.filter((m): m is ObjectShape => m.type === "object" && !!(m.properties.query || m.properties.extensions));
 }
 
+/** Operations listed for one request; a document of more (generated, or hostile) is one call of an unnamed operation. */
+export const MAX_OPERATIONS = 50;
+
 /** One call per operation: the same operation twice (a batch, two branches) is one. */
 function distinct(ops: Operation[]): Operation[] {
-  return ops.filter((op, i) => ops.findIndex((o) => o.name === op.name && o.type === op.type) === i);
+  const seen = new Set<string>();
+  const out: Operation[] = [];
+  for (const op of ops) {
+    const key = `${op.type ?? ""}:${op.name ?? ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(op);
+  }
+  if (out.length <= MAX_OPERATIONS) return out;
+  const first = out[0]!;
+  return [graphql(null, first.from, first.batch ? { batch: true } : {})];
 }
 
 function bodyOperations(r: ResolvedCall): Operation[] {

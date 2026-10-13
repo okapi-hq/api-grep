@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assembleCalls, type ResolvedCall } from "../../src/assemble.js";
-import { graphqlOperations } from "../../src/operation/graphql.js";
+import { graphqlOperations, MAX_OPERATIONS } from "../../src/operation/graphql.js";
 import { stringShapeOf } from "../../src/resolve/string-template.js";
 import type { Shape } from "../../src/types.js";
 
@@ -35,6 +35,12 @@ describe("graphqlOperations: JSON bodies", () => {
     expect(graphqlOperations(request(obj({ query: doc }))).map((o) => o.name)).toEqual(["A", "B"]);
     // a name the document does not hold is still the name the request sends
     expect(graphqlOperations(request(obj({ query: doc, operationName: str("C") })))).toEqual([{ protocol: "graphql", name: "C", dynamic: false, from: "body" }]);
+  });
+
+  it("a document of more operations than the bound is one call, not one per operation", () => {
+    const doc = (n: number) => str(Array.from({ length: n }, (_, i) => `query Q${i} { f${i} }`).join("\n"));
+    expect(graphqlOperations(request(obj({ query: doc(MAX_OPERATIONS) })))).toHaveLength(MAX_OPERATIONS);
+    expect(graphqlOperations(request(obj({ query: doc(1_000) })))).toEqual([{ protocol: "graphql", name: null, dynamic: true, from: "document" }]);
   });
 
   it("a document the scan cannot read is GraphQL when the rest of the envelope says so", () => {

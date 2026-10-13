@@ -370,7 +370,8 @@ document with the `graphql` package's parser (no schema, no network):
 - **One call per operation.** A JSON array of envelopes is a batch (`batch: true`, the same operation twice once). A
   document of several operations runs the one `operationName` names; with no literal `operationName`, and when a
   branch or a helper's callers give several documents, each operation is a call of its own at that location, without
-  `batch`. This differs from JSON-RPC's `alternatives`: each GraphQL operation has its own `type` and `fields`.
+  `batch`. This differs from JSON-RPC's `alternatives`: each GraphQL operation has its own `type` and `fields`. A
+  request of more than 50 distinct operations is one call with `name: null` rather than one call per operation.
 - **Where documents come from** (TypeScript / JavaScript, `src/resolve/graphql-source.ts`): string and template
   literals, `gql` / `graphql` tagged templates with their `${Fragment}` interpolations, `graphql("...", [Fragment])`
   calls (gql.tada, the codegen client preset), and `.graphql` / `.gql` files imported by a relative path (`import Doc
