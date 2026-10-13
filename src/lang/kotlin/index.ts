@@ -1,6 +1,7 @@
 import { SHARED_EXCLUDES } from "../files.js";
 import type { IrLanguage } from "../ir/language.js";
 import { irLanguage } from "../ir/scan.js";
+import { JVM_HTTP } from "../jvm/http/index.js";
 import { jvmManifests, normalizeMaven } from "../jvm/manifests.js";
 import { jvmImportRoots } from "../jvm/packages.js";
 import { JVM_REGISTRY } from "../jvm/registry/index.js";
@@ -38,13 +39,15 @@ export const kotlinLanguage: IrLanguage = {
   packageScope: true,
   typedParams: true,
   registry: JVM_REGISTRY,
-  // no HTTP client table yet (#31, #32)
-  clients: [],
+  ...JVM_HTTP,
   // `X.builder().a(1).build()` of an SDK's parameter class: the dict of the fields it sets
   resolveCall: builderValue,
   passthrough: {
-    functions: new Set(["URL", "URI", "encode", "requireNotNull", "checkNotNull"]),
-    methods: new Set(["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "toHttpUrl", "toHttpUrlOrNull", "toUri", "toURI", "toURL", "orEmpty"]),
+    functions: new Set(["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"]),
+    methods: new Set([
+      ...["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "orEmpty"],
+      ...["toHttpUrl", "toHttpUrlOrNull", "toUri", "toURI", "toURL", "toMediaType", "toMediaTypeOrNull", "toByteArray", "encodeToByteArray"],
+    ]),
   },
   serializers: { toJson: "json", encodeToString: "json", writeValueAsString: "json" },
   manifests: jvmManifests(),

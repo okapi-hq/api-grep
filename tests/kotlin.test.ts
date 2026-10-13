@@ -13,13 +13,17 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
 describe("kotlin: an Android project", () => {
   it("reads every source file, leaves build scripts and tests out, and compares the Maven SDKs with the calls", async () => {
     const r = await scanFixture("kotlin/android", { exclude: [] });
-    // the SDK calls; the Retrofit interface and OkHttp come with #31 / #32
-    expect(r.calls.map((c) => [c.location.file, c.location.line, c.provider, c.method, c.pathTemplate])).toEqual([
-      ["app/src/main/java/com/example/forecast/data/ForecastRepository.kt", 16, "firebase", "POST", "/v1/projects/{projectId}/databases/(default)/documents/places"],
-      ["core/src/main/kotlin/com/example/core/Analytics.kt", 13, "posthog", "POST", "/batch"],
+    // the Retrofit interface, with the base URL its `create` gets from BuildConfig, and the SDK calls
+    expect(r.calls.map((c) => [c.location.file, c.location.line, c.client, c.provider, c.method, c.pathTemplate])).toEqual([
+      ["app/src/main/java/com/example/forecast/data/ForecastApi.kt", 7, "retrofit", "open-meteo", "GET", "/v1/forecast"],
+      ["app/src/main/java/com/example/forecast/data/ForecastRepository.kt", 16, "sdk", "firebase", "POST", "/v1/projects/{projectId}/databases/(default)/documents/places"],
+      ["core/src/main/kotlin/com/example/core/Analytics.kt", 13, "sdk", "posthog", "POST", "/batch"],
     ]);
+    expect(r.calls[0]).toMatchObject({ urlTemplate: "{env:FORECAST_URL}/v1/forecast" });
+    // `hourly` is left out by the only caller: its default is the value sent
+    expect(r.calls[0]).toMatchObject({ queryShape: { properties: { hourly: { type: "string", enum: ["temperature_2m"] } } } });
     // a data class written to Firestore gives the body
-    expect(r.calls[0]!.body).toMatchObject({ properties: { place_name: { type: "string" }, lat: { type: "number" } }, fromType: "SavedPlace" });
+    expect(r.calls[1]!.body).toMatchObject({ properties: { place_name: { type: "string" }, lat: { type: "number" } }, fromType: "SavedPlace" });
     expect(r.diagnostics).toMatchObject({ filesSeen: 6, filesScanned: 6, skipped: [], unfollowed: [], languages: { kotlin: { filesSeen: 6, filesScanned: 6 } }, complete: true });
     expect(r.coverage?.sdks.map((s) => [s.package, s.ecosystem, s.provider, s.status, s.importSites])).toEqual([
       ["com.google.firebase:firebase-firestore", "maven", "firebase", "ok", 1],

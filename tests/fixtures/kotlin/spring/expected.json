@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/32",
+  "calls": [
+    {"file": "Payments.kt", "line": 17, "provider": "api.example-shop.com"},
+    {"file": "Payments.kt", "line": 23, "provider": "api.example-shop.com"},
+    {"file": "Payments.kt", "line": 29, "provider": "stripe"},
+    {"file": "Payments.kt", "line": 37, "provider": "api.example-shop.com"},
+    {"file": "Payments.kt", "line": 40, "provider": "api.example-shop.com"},
+    {"file": "Payments.kt", "line": 49, "provider": "stripe"},
+    {"file": "Payments.kt", "line": 51, "provider": "stripe"},
+    {"file": "Payments.kt", "line": 61, "provider": "api.example-shop.com"}
+  ]
+}

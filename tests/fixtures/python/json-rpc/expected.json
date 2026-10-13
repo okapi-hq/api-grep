@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/34",
+  "calls": [
+    {"file": "node.py", "line": 9, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "node.py", "line": 13, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "node.py", "line": 17, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "node.py", "line": 21, "provider": "eth.example-node.io", "operation": "eth_chainId"},
+    {"file": "node.py", "line": 25, "provider": "eth.example-node.io", "operation": "eth_gasPrice"},
+    {"file": "node.py", "line": 29, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "node.py", "line": 29, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "node.py", "line": 37, "provider": "eth.example-node.io", "operation": "eth_getTransactionByHash"},
+    {"file": "node.py", "line": 41, "provider": "eth.example-node.io", "operation": "{namespace}_syncing"}
+  ]
+}

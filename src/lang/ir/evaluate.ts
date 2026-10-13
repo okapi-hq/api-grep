@@ -3,11 +3,11 @@ import type { DynamicOrigin, Part, Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { braceParts, printfParts, type FormatArgs } from "./format.js";
 import { instanceField } from "./instance.js";
-import { argFor, type Arg, type CallExpr, type Expr, type FunctionDef } from "./model.js";
+import { argFor, dottedPath, type Arg, type CallExpr, type Expr, type FunctionDef } from "./model.js";
 import { bindingOfPath, classField, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSelf, withSubst, type IrCtx, type Subst } from "./raw.js";
 import { scalarShape } from "./types.js";
-import { dictOf, dictValue } from "./values.js";
+import { dictOf, dictValue, knownConstant } from "./values.js";
 
 /** Steps followed to resolve one value (a name's value, a wrapper argument, a field): enough for four wrappers. */
 const MAX_DEPTH = 10;
@@ -67,6 +67,8 @@ function evalBinding(b: Binding, e: Expr & { k: "name" }, fn: FunctionDef, ctx: 
 }
 
 function evalAttr(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
+  const constant = knownConstant(e, ctx);
+  if (constant !== undefined) return [{ kind: "static", text: constant }];
   if (e.obj.k === "this" && fn.cls) {
     // `self.base_url` set in the constructor (or a class attribute / property default), on the object's own class first
     for (const f of classField(receiverClass(fn, ctx.self, ctx.idx)!, e.name, ctx.idx)) {
@@ -172,6 +174,8 @@ export function evaluate(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Part[
     }
     case "call":
       return evalCall(e, fn, ctx, depth);
+    case "scoped":
+      return evaluate(e.expr, e.fn, ctx, depth + 1);
     default:
       return dyn(e, "unknown");
   }
@@ -202,6 +206,12 @@ function urljoinParts(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
   return [...base, ...sep, ...path];
 }
 
+/** `URI.create(url)`, `java.net.URI.create(url)`: a passthrough listed with its owner, which a bare name would not tell. */
+function qualifiedPassthrough(call: CallExpr, names: Set<string>): boolean {
+  const path = dottedPath(call.fn)?.join(".");
+  return !!path && [...names].some((n) => n.includes(".") && (path === n || path.endsWith(`.${n}`)));
+}
+
 function evalCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
   const resolved = ctx.idx.lang.resolveCall?.(call, fn, ctx);
   if (resolved) return markConst(evaluate(resolved.expr, resolved.fn, ctx, depth + 1));
@@ -209,6 +219,7 @@ function evalCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): P
   const pass = ctx.idx.lang.passthrough;
   if (name && pass.methods.has(name) && call.fn.k === "attr") return evaluate(call.fn.obj, fn, ctx, depth + 1);
   if (name && pass.functions.has(name) && call.args[0]) return evaluate(call.args[0].value, fn, ctx, depth + 1);
+  if (call.args[0] && qualifiedPassthrough(call, pass.functions)) return evaluate(call.args[0].value, fn, ctx, depth + 1);
   if (name === "join" || name === "implode") {
     const joined = joinParts(call, name, fn, ctx, depth);
     if (joined) return joined;

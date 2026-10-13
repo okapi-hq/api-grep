@@ -1,9 +1,22 @@
 import type { Scoped } from "./language.js";
-import type { Entry, Expr, FunctionDef } from "./model.js";
+import { dottedPath, type Entry, type Expr, type FunctionDef } from "./model.js";
+import { fluentMap } from "./fluent.js";
 import { classField, lookup, receiverClass } from "./project.js";
 import type { IrCtx } from "./raw.js";
 
 const MAX_DEPTH = 8;
+
+/** `MediaType.APPLICATION_JSON`, `org.springframework.http.MediaType.APPLICATION_JSON`: a library constant the language lists. */
+export function knownConstant(e: Expr, ctx: IrCtx): string | undefined {
+  const table = ctx.idx.lang.constants;
+  const path = table && (e.k === "attr" || e.k === "qname") ? dottedPath(e) : undefined;
+  if (!table || !path) return undefined;
+  for (let i = 0; i < path.length - 1; i++) {
+    const v = table[path.slice(i).join(".")];
+    if (v !== undefined) return v;
+  }
+  return undefined;
+}
 
 /**
  * The expression a name stands for: a variable's value, a wrapper parameter's argument, a field's value. Stops at
@@ -11,6 +24,9 @@ const MAX_DEPTH = 8;
  */
 export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
   if (depth > MAX_DEPTH) return { expr: e, fn };
+  if (e.k === "scoped") return deref(e.expr, e.fn, ctx, depth + 1);
+  const constant = knownConstant(e, ctx);
+  if (constant !== undefined) return { expr: { k: "str", v: constant }, fn };
   if (e.k === "name") {
     const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
     if (b.kind === "value" && !b.assign.augmented) return deref(b.assign.value, b.fn, ctx, depth + 1);
@@ -45,7 +61,11 @@ export function staticKey(e: Expr | undefined, fn: FunctionDef, ctx: IrCtx): str
 
 /** The dict / associative array literal an expression stands for. */
 export function dictOf(e: Expr, fn: FunctionDef, ctx: IrCtx): { entries: Entry[]; fn: FunctionDef } | undefined {
+  const built = fluentMap(e, fn, ctx);
+  if (built) return built.expr.k === "dict" ? { entries: built.expr.entries, fn: built.fn } : undefined;
   const d = deref(e, fn, ctx);
+  const derefBuilt = d.expr !== e ? fluentMap(d.expr, d.fn, ctx) : undefined;
+  if (derefBuilt) return derefBuilt.expr.k === "dict" ? { entries: derefBuilt.expr.entries, fn: derefBuilt.fn } : undefined;
   return d.expr.k === "dict" ? { entries: d.expr.entries, fn: d.fn } : undefined;
 }
 

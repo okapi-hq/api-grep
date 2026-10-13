@@ -104,6 +104,12 @@ describe("toCurl", () => {
     );
   });
 
+  it("names the operation of a call whose URL does not", () => {
+    const operation = { protocol: "json-rpc" as const, name: "getSlot\nX", dynamic: false, from: "body" as const };
+    const out = toCurl(report([call({ method: "POST", pathTemplate: "/", operation })]));
+    expect(out.split("\n")[0]).toBe("# src/a.ts:3 (typescript)  api.example.com POST / getSlot\\u000aX");
+  });
+
   it("renders every call", () => {
     const out = toCurl(report([call({ id: "a", pathTemplate: "/one" }), call({ id: "b", pathTemplate: "/two" })]));
     expect(out).toContain("/one");

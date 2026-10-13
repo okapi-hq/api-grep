@@ -10,10 +10,10 @@ Point `api-grep` at a repository and it lists every call the code makes to an ex
 provider, method, path template, the *shape* of the payload (names and types, never values),
 headers, auth scheme, and a `dynamic` list of what could not be known statically. It reads
 TypeScript, JavaScript and the inline scripts and forms of HTML pages through the TypeScript type
-checker, and Python and PHP through tree-sitter; a repository that mixes languages gets one report
-that says which language each call comes from. Kotlin is read the same way for its SDK calls
-(OpenAI, Anthropic, Stripe, AWS, Firebase and others), with its Gradle and Maven manifests; its
-HTTP clients come next.
+checker, and Python, PHP and Kotlin through tree-sitter; a repository that mixes languages gets one
+report that says which language each call comes from. Kotlin's HTTP clients are read (OkHttp,
+`java.net.http`, Ktor, Spring, Feign, Retrofit), and so are its SDK calls (OpenAI, Anthropic,
+Stripe, AWS, Firebase and others), with its Gradle and Maven manifests.
 No AI, no network, no runtime. How each language is read: [docs/languages.md](docs/languages.md).
 
 Use it to:
@@ -119,7 +119,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.9.0            # report format version; readers check the major
+schemaVersion: 1.10.0           # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -131,7 +131,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | html | python | php | kotlin
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit (Kotlin), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -158,6 +158,8 @@ calls:                          # one entry per call, sorted by file, line, colu
       - { where: body, name: userId, origin: param }
     optionsOpaque: false        # true: the options are a value the scan could not read (method, headers or body may be missing)
     bodySource: literal         # literal | type | unknown | none: where the body shape came from
+    clientParts:                # query parameters and headers the client adds, not the call (absent when none)
+      - { where: header, name: authorization, from: interceptor }   # interceptor (OkHttp) | default (Ktor defaultRequest, Spring defaultHeader)
     examples:                   # concrete requests with invented values
       - variant: minimal        # minimal | full | alt
         method: POST
@@ -215,10 +217,12 @@ that routes nowhere leaves the provider `unknown`.
 
 A call to an API that names the operation outside the URL (JSON-RPC, GraphQL, SOAP, action-style APIs such as
 AWS Query) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
-calls. The field is in the format; no protocol is detected yet: JSON-RPC
-([#34](https://github.com/okapi-hq/api-grep/issues/34)), GraphQL
+calls. JSON-RPC is recognized in every language: a JSON body with `jsonrpc` and a `method` (or a 1.0-style
+`method`, `params` and `id`) gives `protocol: json-rpc` with the method as `name`, also through a helper that builds
+the envelope (`rpc("getBalance", [address])`). GraphQL
 ([#35](https://github.com/okapi-hq/api-grep/issues/35)), SOAP and action-style APIs
-([#36](https://github.com/okapi-hq/api-grep/issues/36)) will fill it.
+([#36](https://github.com/okapi-hq/api-grep/issues/36)) are next; RPC client libraries such as viem or web3.py are
+[#52](https://github.com/okapi-hq/api-grep/issues/52).
 
 ```yaml
     operation:
@@ -452,16 +456,30 @@ method, closures with `use (...)`, `env('X', 'default')`, `getenv()`, `$_ENV` an
 
 ### Kotlin
 
-Kotlin files (`.kt`, `.kts`) are parsed and lowered into the shared engine, and the Gradle and Maven
-manifests are read. SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`,
-shared with Java later): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x
-S3 and Bedrock Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and
-PostHog ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+| client | patterns |
+|---|---|
+| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class) on every call it makes |
+| `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body) |
+| Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, the client's `defaultRequest { url(...); header(...) }` |
+| Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity`, `UriComponentsBuilder` URLs), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl` and `defaultHeader` of their builder |
+| OpenFeign | `@FeignClient(url = "\${x:default}")` interfaces with `@GetMapping` / `@PostMapping` / `@RequestMapping`, `@RequestParam`, `@RequestHeader`, `@RequestBody`, `@SpringQueryMap`; Feign `@RequestLine` / `@Headers` interfaces given to `Feign.builder().target(...)`; one call per method, at its declaration |
+| Retrofit | service interfaces (`@GET` ... `@OPTIONS`, `@HTTP`, `@Path`, `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers`, `@Body`, `@FormUrlEncoded` with `@Field` / `@FieldMap`, `@Multipart` with `@Part` / `@PartMap`, `@Url`), one call per method at its declaration, resolved against the `baseUrl(...)` of the `Retrofit.Builder()` whose `create(Api::class.java)` / `create<Api>()` made it (one call per base URL), as Retrofit resolves it (a leading `/` replaces the base path, the base's query string is dropped); the interceptors of `.client(okHttp)`; the converters choose the body encoding |
+
+JSON bodies come from `JSONObject().put(...)` chains, `mapOf(...)` serialized by Gson, Moshi,
+Jackson or kotlinx, and data classes; form bodies from `FormBody`, `LinkedMultiValueMap` and the
+content type. Java (#43) will share these clients, which read the engine's model only. The Gradle
+and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project declares
+(`ecosystem: "maven"`).
+
+SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`, shared with Java
+later): the official OpenAI and Anthropic Java SDKs, Stripe, AWS SDK for Java 2.x S3 and Bedrock
+Runtime, Google Gen AI, Firestore and Firebase Admin, Twilio, Slack, Sentry and PostHog
+([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
 in steps or filled by a lambda) are read as the request body, and enum constants as the model ids
-they stand for. HTTP clients (Retrofit, OkHttp, Ktor, Spring, Feign) are the next step.
+they stand for.
 
-Also resolved: string templates, `+`, `buildString`, `String.format`,
+Values are resolved through string templates, `+`, `buildString`, `String.format`,
 `const val` and other top-level properties (also from other files of the package and through
 imports), `object` and `companion object` members, constructor properties, `by lazy`, getters,
 `init` blocks, parameter defaults and named arguments, `System.getenv("X") ?: "default"`,
@@ -639,7 +657,11 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: SDK calls are detected, HTTP clients not yet. The
+- Kotlin: AWS services other than S3 and Bedrock Runtime and other JVM SDKs are listed in
+  `coverage.sdks` only (#49, #50); a client injected by a DI framework (Hilt, Spring) is
+  known by its type only, so its interceptors and base URL are not followed (#46): a Retrofit
+  interface created on an injected `Retrofit` gets the project's only Retrofit builder, else an
+  unknown host. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java is not read yet ([docs/languages.md](docs/languages.md#kotlin)).

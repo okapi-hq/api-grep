@@ -91,6 +91,7 @@ function detectAll(modules: ModuleModel[], ctx: IrCtx, input: LanguageScanInput)
         candidates.push(...found.candidates);
         unfollowed.push(...found.unfollowed);
       }
+      for (const declared of ctx.idx.lang.declarations ?? []) out.raws.push(...declared(mod, ctx));
       const expanded = input.opts.wrappers !== false ? expandWrappers(candidates, ctx) : { calls: [], unfollowed: [] };
       out.raws.push(...expanded.calls);
       for (const u of [...unfollowed, ...expanded.unfollowed]) input.diag.unfollow({ file, line: u.call.pos.line, reason: u.reason, expr: u.expr, via: u.via });
@@ -106,7 +107,7 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
   const calls: Call[] = [];
   for (const raw of raws) {
     try {
-      calls.push(buildIrCall(raw, ctx));
+      calls.push(...buildIrCall(raw, ctx));
     } catch (err) {
       diag.drop({ file: relativePosix(ctx.rootDir, raw.fn.module.file), line: raw.call.pos.line, reason: "internal-error", detail: errorText(err) });
     }

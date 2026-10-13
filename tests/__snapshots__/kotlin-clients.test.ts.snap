@@ -1,0 +1,2787 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the client's defaultRequest 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "limit": "20",
+          },
+          "url": "https://api.example-catalog.com/v1/items?limit=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-catalog.com",
+      "hostKind": "literal",
+      "id": "3f70a81785a8",
+      "location": {
+        "col": 19,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-catalog.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              20,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-catalog.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "NewItem",
+        "properties": {
+          "name": {
+            "type": "string",
+          },
+          "price": {
+            "type": "integer",
+          },
+        },
+        "required": [
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "NewItem",
+      "bodySource": "type",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "name": "Indigo Glacier",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-catalog.com/v1/items",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "name": "Willow Nimbus",
+            "price": 2985,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-catalog.com/v1/items",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-catalog.com",
+      "hostKind": "literal",
+      "id": "81b42f901c47",
+      "location": {
+        "col": 40,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 28,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-catalog.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-catalog.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "page_size": "50",
+          },
+          "url": "https://api.example-catalog.com/v1/categories?page_size=50",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-catalog.com",
+      "hostKind": "literal",
+      "id": "db4279edc07b",
+      "location": {
+        "col": 32,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 30,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/categories",
+      "provider": "api.example-catalog.com",
+      "query": [
+        "page_size",
+      ],
+      "queryShape": {
+        "properties": {
+          "page_size": {
+            "enum": [
+              "50",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "page_size",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-catalog.com/v1/categories",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "notion-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "notion-version": "2022-06-28",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.notion.com/v1/pages/p7emky0x",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "notion-version": "2022-06-28",
+      },
+      "headers": [
+        "notion-version",
+        "authorization",
+      ],
+      "host": "api.notion.com",
+      "hostKind": "literal",
+      "id": "9dcd75690f81",
+      "location": {
+        "col": 36,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 48,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/pages/{id}",
+      "provider": "notion",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/pages/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "query": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "notion-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "query": "quartz",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "notion-version": "2022-06-28",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.notion.com/v1/search",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "notion-version": "2022-06-28",
+      },
+      "headers": [
+        "notion-version",
+      ],
+      "host": "api.notion.com",
+      "hostKind": "literal",
+      "id": "a9123b1239dc",
+      "location": {
+        "col": 41,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 50,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "notion",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/search",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "notion-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "notion-version": "2022-06-28",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.notion.com/v1/blocks/92yi67tc",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "notion-version": "2022-06-28",
+      },
+      "headers": [
+        "notion-version",
+        "authorization",
+      ],
+      "host": "api.notion.com",
+      "hostKind": "literal",
+      "id": "9d792aec779a",
+      "location": {
+        "col": 39,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 56,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/blocks/{id}",
+      "provider": "notion",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notion.com/v1/blocks/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://feeds.example.com/v2/latest.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "feeds.example.com",
+      "hostKind": "literal",
+      "id": "194c0252534b",
+      "location": {
+        "col": 28,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 63,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/latest.json",
+      "provider": "feeds.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://feeds.example.com/v2/latest.json",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "hint": "city",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "city": "Ghent",
+          },
+          "url": "https://forecast.example.com/v1/today?city=Ghent",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "forecast.example.com",
+      "hostKind": "literal",
+      "id": "c7bd01f68b1d",
+      "location": {
+        "col": 47,
+        "file": "Wildcards.kt",
+        "language": "kotlin",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/today",
+      "provider": "forecast.example.com",
+      "query": [
+        "city",
+      ],
+      "queryShape": {
+        "properties": {
+          "city": {
+            "hint": "city",
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://forecast.example.com/v1/today",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.11.0",
+  "stats": {
+    "byClient": {
+      "ktor": 8,
+    },
+    "byHostKind": {
+      "literal": 8,
+    },
+    "byLanguage": {
+      "kotlin": 8,
+    },
+    "byProvider": {
+      "api.example-catalog.com": 3,
+      "feeds.example.com": 1,
+      "forecast.example.com": 1,
+      "notion": 3,
+    },
+    "callsFound": 8,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 4,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and multipart bodies, and wrappers 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "method": {
+            "enum": [
+              "getBalance",
+            ],
+            "type": "string",
+          },
+          "params": {
+            "items": {
+              "hint": "address",
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "method",
+          "params",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "api-key",
+          "origin": "param",
+          "shape": {
+            "hint": "apiKey",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "method": "getBalance",
+            "params": [
+              "159 Ridge Street",
+            ],
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "api-key": "<apiKey>",
+          },
+          "url": "https://rpc.example.com/?api-key=%3CapiKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "rpc.example.com",
+      "hostKind": "literal",
+      "id": "b8f3a642caf0",
+      "location": {
+        "col": 16,
+        "file": "Balances.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "rpc.example.com",
+      "query": [
+        "api-key",
+      ],
+      "queryShape": {
+        "properties": {
+          "api-key": {
+            "hint": "apiKey",
+            "type": "string",
+          },
+        },
+        "required": [
+          "api-key",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://rpc.example.com/",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "bookId",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "image/webp",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://covers.example.com/v1/covers/9o89i746",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "image/webp",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "covers.example.com",
+      "hostKind": "literal",
+      "id": "9b54832d0350",
+      "location": {
+        "col": 9,
+        "file": "Covers.kt",
+        "language": "kotlin",
+        "line": 13,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/covers/{bookId}",
+      "provider": "covers.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://covers.example.com/v1/covers/{bookId}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "body",
+        "origin": "unknown",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "unknown",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "body",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Fjord jetty inlet inlet nectar island.",
+          "bodyEncoding": "raw",
+          "headers": {
+            "content-type": "application/octet-stream",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://drafts.example.com/v1/drafts",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "drafts.example.com",
+      "hostKind": "literal",
+      "id": "c32578ef7e8a",
+      "location": {
+        "col": 9,
+        "file": "Drafts.kt",
+        "language": "kotlin",
+        "line": 36,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/drafts",
+      "provider": "drafts.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://drafts.example.com/v1/drafts",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "shelfId",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://books.example.com/v1/shelves/q7abixwn/books",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "books.example.com",
+      "hostKind": "literal",
+      "id": "ba60b1d117f3",
+      "location": {
+        "col": 9,
+        "file": "Factories.kt",
+        "language": "kotlin",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/shelves/{shelfId}/books",
+      "provider": "books.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://books.example.com/v1/shelves/{shelfId}/books",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "title": {
+            "hint": "title",
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "shelfId",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "title": "Compass Horizon",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://books.example.com/v1/shelves/ao91kaqy/books",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "books.example.com",
+      "hostKind": "literal",
+      "id": "a3685e0b8f1e",
+      "location": {
+        "col": 9,
+        "file": "Factories.kt",
+        "language": "kotlin",
+        "line": 42,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/shelves/{shelfId}/books",
+      "provider": "books.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://books.example.com/v1/shelves/{shelfId}/books",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "href",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "HEAD",
+          "query": {},
+          "url": "https://{href}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "07f54952daf6",
+      "location": {
+        "col": 13,
+        "file": "Factories.kt",
+        "language": "kotlin",
+        "line": 49,
+      },
+      "method": "HEAD",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{href}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "grant_type": {
+            "enum": [
+              "password",
+            ],
+            "type": "string",
+          },
+          "password": {
+            "hint": "password",
+            "type": "string",
+          },
+          "username": {
+            "hint": "user",
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+          "username",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "type",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "grant_type": "password",
+            "password": "<password>",
+            "username": "chloe22",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://books.example.com/oauth/token",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "books.example.com",
+      "hostKind": "literal",
+      "id": "8b8918cad9ff",
+      "location": {
+        "col": 9,
+        "file": "Factories.kt",
+        "language": "kotlin",
+        "line": 58,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/oauth/token",
+      "provider": "books.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://books.example.com/oauth/token",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "origin": "unknown",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "unknown",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "bookId",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "body",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Ember xenon mosaic garden maple marble.",
+          "bodyEncoding": "raw",
+          "headers": {
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://books.example.com/v1/books/50qk9xaw/cover",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "books.example.com",
+      "hostKind": "literal",
+      "id": "90cf25b94bc8",
+      "location": {
+        "col": 9,
+        "file": "Factories.kt",
+        "language": "kotlin",
+        "line": 89,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/books/{bookId}/cover",
+      "provider": "books.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://books.example.com/v1/books/{bookId}/cover",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "apikey",
+          "where": "query",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "apikey",
+          "origin": "env",
+          "shape": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "apikey": "<apikey>",
+            "city": "Ghent",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?city=Ghent&apikey=%3Capikey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "4638729077ba",
+      "location": {
+        "col": 16,
+        "file": "Interceptors.kt",
+        "language": "kotlin",
+        "line": 30,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "query": [
+        "city",
+        "apikey",
+      ],
+      "queryShape": {
+        "properties": {
+          "apikey": {
+            "env": "WEATHER_KEY",
+            "hint": "WEATHER_KEY",
+            "type": "string",
+          },
+          "city": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+          "apikey",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast?city={city}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/user/repos",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "3bf3406eb1e4",
+      "location": {
+        "col": 18,
+        "file": "Interceptors.kt",
+        "language": "kotlin",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/user/repos",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user/repos",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "hint": "ByteArray",
+        "origin": "call",
+        "type": "dynamic",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "unknown",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-github-api-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "body",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+            "x-github-api-version": "2022-11-28",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.github.com/user/starred/glacier/atlas",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "x-github-api-version": "2022-11-28",
+      },
+      "headers": [
+        "authorization",
+        "x-github-api-version",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "1ae12fb38da3",
+      "location": {
+        "col": 9,
+        "file": "Interceptors.kt",
+        "language": "kotlin",
+        "line": 44,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/user/starred/{owner}/{repo}",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user/starred/{owner}/{repo}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "text": "Pebble river nimbus copper zephyr glacier.",
+            "to": "elena.hoshi@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/mg.example.com/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "896c76315381",
+      "location": {
+        "col": 9,
+        "file": "Messages.kt",
+        "language": "kotlin",
+        "line": 20,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/mg.example.com/messages",
+      "provider": "mailgun",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/mg.example.com/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "upload_preset": {
+            "enum": [
+              "avatars",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "upload_preset",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "upload_preset": "avatars",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/image/upload",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "71a5f1e83c66",
+      "location": {
+        "col": 9,
+        "file": "Messages.kt",
+        "language": "kotlin",
+        "line": 25,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1_1/demo/image/upload",
+      "provider": "cloudinary",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/image/upload",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "shape": {
+            "hint": "query",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "query": "dune",
+          },
+          "url": "https://api.unsplash.com/search/photos?query=dune",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.unsplash.com",
+      "hostKind": "literal",
+      "id": "4902af80e15c",
+      "location": {
+        "col": 16,
+        "file": "Messages.kt",
+        "language": "kotlin",
+        "line": 35,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/search/photos",
+      "provider": "unsplash",
+      "query": [
+        "query",
+      ],
+      "queryShape": {
+        "properties": {
+          "query": {
+            "hint": "query",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.unsplash.com/search/photos",
+      "via": "wrapper:Messages.execute",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.cloudinary.com/v1_1/demo/resources/image/upload/a9lrfe3z",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "api.cloudinary.com",
+      "hostKind": "literal",
+      "id": "657f99667a1e",
+      "location": {
+        "col": 9,
+        "file": "Messages.kt",
+        "language": "kotlin",
+        "line": 41,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1_1/demo/resources/image/upload/{id}",
+      "provider": "cloudinary",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudinary.com/v1_1/demo/resources/image/upload/{id}",
+      "via": "wrapper:Messages.execute",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "url",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "4d105ecf9eec",
+      "location": {
+        "col": 53,
+        "file": "Messages.kt",
+        "language": "kotlin",
+        "line": 44,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.11.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 16,
+    },
+    "byHostKind": {
+      "literal": 14,
+      "unknown": 2,
+    },
+    "byLanguage": {
+      "kotlin": 16,
+    },
+    "byProvider": {
+      "books.example.com": 4,
+      "cloudinary": 2,
+      "covers.example.com": 1,
+      "drafts.example.com": 1,
+      "github": 2,
+      "mailgun": 1,
+      "open-meteo": 1,
+      "rpc.example.com": 1,
+      "unknown": 2,
+      "unsplash": 1,
+    },
+    "callsFound": 16,
+    "durationMs": 0,
+    "filesScanned": 6,
+    "redacted": 0,
+    "withBodyShape": 5,
+    "withDynamic": 13,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at its declaration 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/cutua2zs",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "66ffd896449e",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 23,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "fromType": "Order",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+          },
+          "sku": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "sku",
+          "quantity",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Order",
+      "bodySource": "type",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "dryRun",
+          "origin": "param",
+          "shape": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "body": {
+            "quantity": 4,
+            "sku": "cedar river",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "true",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=true",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "quantity": 7,
+            "sku": "compass fable",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "idempotency-key": "<idempotency-key>",
+          },
+          "method": "POST",
+          "query": {
+            "dryRun": "false",
+          },
+          "url": "https://api.example-orders.com/v2/orders?dryRun=false",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {
+        "idempotency-key": null,
+      },
+      "headers": [
+        "idempotency-key",
+      ],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "e08774690338",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 26,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "dryRun",
+      ],
+      "queryShape": {
+        "properties": {
+          "dryRun": {
+            "hint": "dryRun",
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "dryRun",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.example-orders.com/v2/orders/jzj1jydw",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "76f46145c146",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 29,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders/{id}",
+      "provider": "api.example-orders.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "status",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "envName": "orders.url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "page": "5",
+            "status": "active",
+          },
+          "url": "https://api.example-orders.com/v2/orders?status=active&page=5",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-orders.com",
+      "hostKind": "env",
+      "id": "0c9b0db6b142",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 32,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/orders",
+      "provider": "api.example-orders.com",
+      "query": [
+        "status",
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "type": "integer",
+          },
+          "status": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "status",
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:orders.url}/v2/orders",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "state",
+          "origin": "unknown",
+          "where": "query",
+        },
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+          },
+          "method": "GET",
+          "query": {
+            "state": "active",
+          },
+          "url": "https://api.github.com/repos/horizon/summit/issues?state=active",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "87970c69ed3b",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 38,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [
+        "state",
+      ],
+      "queryShape": {
+        "properties": {
+          "state": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues?state={state}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "feign",
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Koala jasper wander fable sable amber.",
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.github.com/repos/canyon/ember/issues",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "content-type": "application/json",
+      },
+      "headers": [
+        "accept",
+        "content-type",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "e174c1f83268",
+      "location": {
+        "col": 5,
+        "file": "Clients.kt",
+        "language": "kotlin",
+        "line": 41,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.11.0",
+  "stats": {
+    "byClient": {
+      "feign": 6,
+    },
+    "byHostKind": {
+      "env": 4,
+      "literal": 2,
+    },
+    "byLanguage": {
+      "kotlin": 6,
+    },
+    "byProvider": {
+      "api.example-orders.com": 4,
+      "github": 2,
+    },
+    "callsFound": 6,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 2,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTemplate calls with HttpEntity headers, URI builders, and fluent chains with their client's base URL 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items/66sk8u6r",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "51460079e396",
+      "location": {
+        "col": 35,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 17,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "fromType": "Item",
+        "properties": {
+          "id": {
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodyFromType": "Item",
+      "bodySource": "type",
+      "client": "spring-rest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "id": "i8ymch7w",
+            "name": "Walnut Yonder",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/items",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "content-type": "application/json",
+      },
+      "headers": [
+        "authorization",
+        "content-type",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "c99a747778df",
+      "location": {
+        "col": 16,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 23,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "charge": {
+            "hint": "charge",
+            "type": "string",
+          },
+        },
+        "required": [
+          "charge",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "charge",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "charge": "kestrel ultra",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/refunds",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "3069eefa3211",
+      "location": {
+        "col": 9,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 29,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/refunds",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/refunds",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "term",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "q": "summit",
+          },
+          "url": "https://api.example-shop.com/v1/search?q=summit",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "29381f832bf9",
+      "location": {
+        "col": 16,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 37,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "api.example-shop.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "term",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/search",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "limit",
+          "origin": "unknown",
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "limit": "78",
+          },
+          "url": "https://api.example-shop.com/v1/items?limit=78",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "5f84aae5bbe3",
+      "location": {
+        "col": 18,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 40,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-shop.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/items?limit={limit}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.stripe.com/v1/charges",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "24490381c704",
+      "location": {
+        "col": 18,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 49,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges",
+      "provider": "stripe",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "amount": {
+            "hint": "amount",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "amount",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+        {
+          "name": "amount",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "amount": 1094,
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {
+            "expand": "balance_transaction",
+          },
+          "url": "https://api.stripe.com/v1/charges/gchmpo0k/capture?expand=balance_transaction",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.stripe.com",
+      "hostKind": "literal",
+      "id": "a70b50fc3194",
+      "location": {
+        "col": 44,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 51,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/charges/{id}/capture",
+      "provider": "stripe",
+      "query": [
+        "expand",
+      ],
+      "queryShape": {
+        "properties": {
+          "expand": {
+            "enum": [
+              "balance_transaction",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "expand",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.stripe.com/v1/charges/{id}/capture",
+    },
+    {
+      "authScheme": "basic",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-shop.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-shop.com",
+      "hostKind": "literal",
+      "id": "bcebfbada999",
+      "location": {
+        "col": 18,
+        "file": "Payments.kt",
+        "language": "kotlin",
+        "line": 61,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-shop.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-shop.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.11.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 5,
+      "spring-webclient": 3,
+    },
+    "byHostKind": {
+      "literal": 8,
+    },
+    "byLanguage": {
+      "kotlin": 8,
+    },
+    "byProvider": {
+      "api.example-shop.com": 5,
+      "stripe": 3,
+    },
+    "callsFound": 8,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 5,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builders sent by send / sendAsync and connections configured in the same function 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "hint": "json",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Nimbus prairie linen juniper amber mosaic.",
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "limit": "20",
+          },
+          "url": "https://api.example-alerts.com/v1/items?limit=20",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "91cd04934b45",
+      "location": {
+        "col": 9,
+        "file": "Notifier.kt",
+        "language": "kotlin",
+        "line": 16,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.example-alerts.com",
+      "query": [
+        "limit",
+      ],
+      "queryShape": {
+        "properties": {
+          "limit": {
+            "enum": [
+              "20",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "limit",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/items?limit=20",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "token <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.pagerduty.com/incidents",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+      },
+      "headers": [
+        "accept",
+        "authorization",
+      ],
+      "host": "api.pagerduty.com",
+      "hostKind": "literal",
+      "id": "b5d7772c3bf6",
+      "location": {
+        "col": 16,
+        "file": "Notifier.kt",
+        "language": "kotlin",
+        "line": 25,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/incidents",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.pagerduty.com/incidents",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": "River verdant fable valley ridge horizon.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.pagerduty.com/incidents/5wha6auw",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.pagerduty.com",
+      "hostKind": "literal",
+      "id": "1539e0df0828",
+      "location": {
+        "col": 9,
+        "file": "Notifier.kt",
+        "language": "kotlin",
+        "line": 32,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/incidents/{id}",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.pagerduty.com/incidents/{id}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Beacon verdant linen valley wander jasper.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://events.pagerduty.com/v2/enqueue",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "events.pagerduty.com",
+      "hostKind": "literal",
+      "id": "622cf7561011",
+      "location": {
+        "col": 20,
+        "file": "Notifier.kt",
+        "language": "kotlin",
+        "line": 38,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/enqueue",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.pagerduty.com/v2/enqueue",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "java-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.example-alerts.com/v1/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example-alerts.com",
+      "hostKind": "literal",
+      "id": "6d441edd5f79",
+      "location": {
+        "col": 20,
+        "file": "Notifier.kt",
+        "language": "kotlin",
+        "line": 47,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/status",
+      "provider": "api.example-alerts.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.example-alerts.com/v1/status",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.11.0",
+  "stats": {
+    "byClient": {
+      "java-http": 5,
+    },
+    "byHostKind": {
+      "literal": 5,
+    },
+    "byLanguage": {
+      "kotlin": 5,
+    },
+    "byProvider": {
+      "api.example-alerts.com": 2,
+      "pagerduty": 3,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 3,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

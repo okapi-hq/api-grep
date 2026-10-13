@@ -11,7 +11,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | HTML | supported | inline scripts through the type checker, forms read directly | npm (CDN scripts) | `package.json` |
 | Python | supported | tree-sitter + shared engine | PyPI | `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621, Poetry), `Pipfile`, `setup.cfg`, `setup.py` |
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
-| Kotlin | SDK registries; no HTTP client yet | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
+| Kotlin | supported: HTTP clients, Retrofit interfaces and SDK registries | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
 
 ## Goals
 
@@ -90,6 +90,8 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `edits.ts` | keys a dict gets or loses after it is built (`kwargs["k"] = v`, `.update`, `$params['k'] = $v`): folded into the variable's value where it is read |
 | `sdk.ts` | SDK registry matching on chains (instances, builders, module-level APIs) |
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
+| `steps.ts`, `fluent.ts` | fluent builders read from step tables (`Request.Builder().url(u).post(b)`, also through variables, fields and factories) and values built entry by entry (`JSONObject().put(k, v)`, `FormBody.Builder().add(k, v)`, `HttpHeaders().set(k, v)`) |
+| `pairs.ts` | headers and query parameters set one at a time (builder steps, interceptors, annotated parameters), and those the client adds (`clientParts`) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `receiver.ts` | SDK calls on untyped parameters: the clients callers pass, else the one declared SDK, else `receiver-unknown` (#37) |
 | `build.ts`, `scan.ts` | report `Call`s, the scan driver (per-file errors are diagnostics, never fatal) and SDK coverage |
@@ -102,6 +104,13 @@ A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, 
 - `manifests.ts` and `modules.json`: declared packages, their versions, and import names that differ from the package;
 - `index.ts`: the `IrLanguage` (excludes, passthrough calls, serializers, custom detectors such as `urllib.request`
   or curl handles, and `resolveCall` for calls that stand for project data, like Laravel's `config()`).
+
+A language can also give `declarations` (requests an annotated declaration describes, located at the declaration:
+Feign, Retrofit), `instanceOf` (calls that return an instance of a project class they name, `retrofit.create(Api::class.java)`:
+the methods called on it are the interface's, so their callers' arguments are known), `fluentMaps` (constructors and methods that build a map, a list or a body entry by entry) and
+`constants` (library constants with a known value, `MediaType.APPLICATION_JSON`). The engine builds `scoped`
+expressions (an expression read in another function's scope) when it puts a request together from pieces written in
+several places.
 
 Language traits are flags of the `IrLanguage`: `moduleVarsVisible` (Python globals), `sharedGlobals` (PHP constants
 and functions seen from every file), `packageScope` (the files of a Kotlin package see each other's declarations),
@@ -202,11 +211,10 @@ Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params +=
 
 ## Kotlin
 
-**Status:** parsed, lowered and resolved; SDK calls are detected through the JVM registries (#33). No HTTP client
-table yet: Retrofit service interfaces (#31) and OkHttp, `java.net.http`, Ktor, Spring and Feign (#32) build on this.
-Java is #43; it will read the same registries.
+**Status:** parsed, lowered and resolved; the HTTP clients and Retrofit service interfaces below are detected, and SDK
+calls through the JVM registries (#33). Java is #43; it will read the same clients and registries.
 
-**Detected:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
+**SDKs:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
 AWS SDK for Java 2.x S3 and Bedrock Runtime, Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
 `FirestoreClient`, the Android SDK), Firebase Admin Auth, Cloud Messaging and Realtime Database, Twilio, Slack, Sentry
 and PostHog (the Android / JVM facade and posthog-java). The registries are in `src/lang/jvm/registry/`, keyed by Maven
@@ -240,6 +248,69 @@ and take parameters as builders.
   that matches the package roots of several artifacts counts for a declared one first (firebase-admin's
   `com.google.firebase.auth` is not the Android `firebase-auth`'s when only firebase-admin is declared).
 
+**HTTP clients** (`src/lang/jvm/http/`, tables in `clients.json`):
+
+- **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (also a bare `Builder()` when the client
+  is OkHttp's; `url`, verbs, `method`, `header` /
+  `addHeader`, `headers`), also built over several statements, held in a field, sent through a wrapper or returned
+  by a request factory of the project (`newCall(get(url))`: the factory's parameters read as the call's arguments,
+  a factory calling its own name read as its overload);
+  `HttpUrl` builders (`toHttpUrl().newBuilder()`, `HttpUrl.Builder()`: path segments and query parameters); bodies
+  from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
+  `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
+  `RequestBody` class of the project writes its own bytes, so its body is opaque (`raw`, not its constructor fields).
+- **Interceptors**: the headers and query parameters an interceptor sets (a lambda, `Interceptor { }`, an
+  `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
+  with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
+  factories). They are in `query` / `headers` and `authScheme` like any other, and listed in `clientParts` with
+  `from: "interceptor"`. `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
+  Retrofit reads the client of `.client(okHttp)` with it.
+- **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
+  `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
+  (`URL(u).openConnection()`, reported there, with `requestMethod` / `setRequestMethod`, `setRequestProperty`,
+  `doOutput` and what the function writes to the output stream; a URL that is not http(s) or an env var, with no HTTP
+  setting, is not a request).
+- **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient` (the URL positional or
+  `urlString = ...`), with the builder lambda
+  (`parameter`, `header`, `headers { append }`, `setBody`, `contentType`, `bearerAuth`, `basicAuth`, `url("...")`,
+  `url { host = ...; path(...); parameters.append(...) }`, `method = HttpMethod.X`), and the client's
+  `defaultRequest { url(...); header(...) }` as base URL and `clientParts` with `from: "default"`.
+- **Spring** (`spring-rest`, `spring-webclient`): `RestTemplate` as a client table (`getForObject`, `getForEntity`,
+  `postForObject`, `put`, `patchForObject`, `delete`, `exchange` with `HttpMethod.X` and an `HttpEntity` of body and
+  `HttpHeaders`; `RestTemplateBuilder().rootUri(...)`), URLs from `UriComponentsBuilder`; `RestClient`
+  (`spring-rest`) and `WebClient` (`spring-webclient`) chains ended by `retrieve` / `exchange*`, with the `baseUrl`
+  and `defaultHeader` of `create(...)` / `builder()`, `uri(...)` (also a `UriBuilder` lambda), `header`,
+  `headers { it.setBearerAuth(...) }`, `contentType`, `bodyValue` / `body`.
+- **OpenFeign** (`feign`): one call per mapped method of a `@FeignClient` interface, at the method declaration:
+  `@GetMapping` ... `@RequestMapping(method = ...)`, the `url` (a `${property:default}` reads as the property with its
+  default) and `path` of the annotation, `@RequestParam`, `@RequestHeader`, `@RequestBody` (or an unannotated
+  parameter of a method that sends a body), `@SpringQueryMap`; Feign's own `@RequestLine("GET /x")`, `@Headers` and
+  `@Param`, with the URL of `Feign.builder().target(X::class.java, url)`.
+- **Retrofit** (`retrofit`, `retrofit.ts`, `retrofit-link.ts`): one call per annotated method of a service interface,
+  at the method declaration: `@GET` ... `@OPTIONS` and `@HTTP(method, path, hasBody)`, `@Path` (the `{name}` stays a
+  placeholder), `@Query`, `@QueryMap`, `@Header`, `@HeaderMap`, `@Headers("Name: value")` (literal values in
+  `headerValues`), `@Body` (its declared type gives the shape, under `@SerializedName` / `@Json` / `@SerialName` /
+  `@JsonProperty` names), `@FormUrlEncoded` with `@Field` / `@FieldMap` (a form body), `@Multipart` with `@Part` /
+  `@PartMap`, `@Url` (the URL is the argument). The base URL is the `baseUrl(...)` of the `Retrofit.Builder()` whose
+  `create(Api::class.java)` or `create<Api>()` made the interface, followed through variables, fields, `by lazy`,
+  factories and singletons set in their getter; an interface created by several builders gives one call per base URL.
+  The endpoint is resolved against it by RFC 3986, as Retrofit does (`src/resolve/url-reference.ts`): a relative path
+  appends to the base's directory, a leading `/` replaces its path, `.` is the base itself, and a query string in the
+  base URL (`baseUrl("https://host/?key=...")`) is dropped, so it is not in `query`. The interceptors of the builder's
+  `.client(okHttp)` apply (`clientParts`). The converters (`addConverterFactory`) choose `bodyEncoding`: JSON for
+  Gson, Moshi, Jackson and kotlinx.serialization, `raw` for a `String` or primitive body through the scalars converter,
+  a `RequestBody`, protobuf, Wire or XML; a `Content-Type` in `@Headers` replaces the converter's. Values come from
+  the callers of the interface's methods (#39). A file must import `retrofit2.http` (or the interface be created on a
+  Retrofit builder): JAX-RS resources use the same annotation names.
+- **Bodies**: `JSONObject().put(...)` chains (also `val o = JSONObject(); o.put(...)`), `JSONArray`, Gson
+  `JsonObject`, Jackson `createObjectNode()`, `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data
+  classes, `LinkedMultiValueMap` (form); `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
+
+**Java reuse.** The detectors read the engine's model only (calls, chains, annotations), and the tables are in
+`src/lang/jvm/http/clients.json`, so the Java front end (#43) gets the same clients by lowering Java into the same
+model (`new Request.Builder()` is a call of `Request.Builder`, `X.class` a class reference). Retrofit only needs the
+annotations of interface methods and parameters and `create(X.class)` linked by `instanceOf`.
+
 **Lowering** (`src/lang/kotlin/`): the module is the file's package, and every file of a package sees the others'
 top-level declarations (`packageScope`); `import a.b.*` makes a project package's declarations names of the file, and
 `import a.Config.BASE` reads an `object` member. A class's primary constructor, property initializers and `init` blocks
@@ -247,8 +318,13 @@ are its `<init>` method; constructor `val` / `var` parameters, body properties, 
 returns), getters, nested classes and `companion object` members (initialized in `<clinit>`) are its fields. A bare
 name in a method is a local or parameter first, then a member of the class (`this.name`, Kotlin's implicit receiver),
 then a top-level name. Lambdas are closures; `x.let { it }` gives `it` the value of `x`, and `run`, `with`,
-`withContext` and `lazy` stand for what their lambda returns. Annotations of functions and parameters
-(`@GET("users/{id}")`, `@Query("page")`) are kept on `FunctionDef.annotations` / `Param.annotations` for Retrofit.
+`withContext` and `lazy` stand for what their lambda returns; `x ?: return` (also `continue`, `break`, `throw`) is
+`x`. Annotations of functions and parameters
+(`@GET("users/{id}")`, `@Query("page")`) are kept on `FunctionDef.annotations` / `Param.annotations` for Retrofit,
+the type arguments of a call (`create<Api>()`) on `CallExpr.typeArgs`,
+those of a class (`@FeignClient(...)`) on `ClassDef.classAnnotations`. A property set on a local object
+(`conn.requestMethod = "POST"`) is an assignment to `conn.requestMethod`, and an anonymous object with a single
+function (`object : Interceptor { override fun intercept(...) }`) stands for that function, like a lambda.
 
 **Resolved:** string templates (`"$base/v1/${id}"`, raw strings), `+`, `buildString { append(...) }`,
 `StringBuilder(...).append(...).toString()`, `String.format` and `"...".format(...)`, `joinToString`, `mapOf("a" to
@@ -279,11 +355,23 @@ file. A file that does not parse is then read once more with a `;` in place of t
 
 **Limitations:**
 
+- Clients injected by a DI framework (Hilt `@Provides`, Spring beans) are known by their type only: their
+  interceptors, default headers and base URL are not followed.
+- Ktor `submitForm(formParameters = ...)`, `buildJsonObject { }` bodies, `RequestEntity` builders, WebClient
+  `defaultHeaders { }` lambdas, RestTemplate interceptors and builder steps inside `apply { }` are not read (#46, with
+  DI-provided clients).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
-  unresolved.
+  unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
+  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
+  Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
+- Retrofit: an interface created on an injected `Retrofit` (a Hilt `@Provides` parameter), or never created in the
+  project, gets the project's only `Retrofit.Builder()` when there is one (a second builder, such as a provided
+  `Retrofit.Builder` its users finish, makes it ambiguous), else an unknown host (`{baseUrl}`); the
+  builder of a DI provider and its injected OkHttp client are #46. `@QueryName` (a parameter name without a value)
+  and `@Tag` are not listed, and the keys of a `@QueryMap` / `@HeaderMap` map are only known when the map is.
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
   flavors other than the first literal are not listed.
 - SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
@@ -340,7 +428,9 @@ operation?: {
 - `operationId` keeps its meaning, the OpenAPI operation id from an SDK registry; `operation` is about the wire
   protocol.
 - **Identity.** `id` hashes the file, line and column and, when the call has one, `operation.name`: `getTransaction`
-  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids.
+  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids, also the
+  `#n` index of a request a wrapper sends beside a JSON-RPC one (`onePerRequest` in `src/scan.ts` counts every request
+  from the place for them, a batch once).
 - **Batches: one `Call` per operation.** A request that sends several operations together (a JSON-RPC array, a GraphQL
   batch array) gives one `Call` per operation, at the request's location, each with its own `id` and `batch: true`;
   the same operation twice in one batch is one call. Every field but `operation` and `id` describes the HTTP request,
@@ -356,13 +446,39 @@ operation?: {
   - Not chosen: one `Call` with `alternatives` (merges "one of" and "all of", drops per-operation fields), or an
     `operations` array on `Call` (every reader of the common single-operation case loops over a list, and ids and
     grouping per operation need another key).
-- Front ends fill it through `ResolvedCall.operation` (`src/assemble.ts`). No protocol is detected yet:
+- **Where it is read.** `assembleCalls` (`src/assemble.ts`) asks each protocol of `src/operation/index.ts`, one module
+  per protocol, for the operations of the resolved request (method, URL, body shape, headers, query), so every
+  language gets them from what it already resolves; a front end that knows better sets `ResolvedCall.operation`
+  itself and is kept as it is. SDK calls are left out: their registry names the endpoint.
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | not started |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
 | GraphQL (document: type, name, fields) | #35 | not started |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
+
+### JSON-RPC (#34)
+
+`src/operation/json-rpc.ts` reads the body shape every front end already builds, where a literal `method` is a
+one-value enum:
+
+- **A request** is a JSON body object with a `jsonrpc` member and a `method`, or, JSON-RPC 1.0 style (older node
+  clients), a string `method` together with `params` and `id`. A 1.0-style body whose `method` is an HTTP verb
+  (`{ method: "GET", params, id }`, a request handed to a proxy) is not one, nor is a `method` with neither
+  (`{ method: "card", amount }`). `from` is `body`.
+- **The name** is the `method`'s literal value. Several values (a branch, a variable set on each path, or a helper's
+  parameter with the methods its callers pass) give `alternatives`; a value the scan cannot read sets `dynamic` and
+  keeps the names it could read. A computed method keeps its literal parts: `` `get${kind}Info` ``, `"eth_" + kind`
+  and `"get{$kind}Info"` give `get{kind}Info` / `eth_{kind}` with `dynamic: true` (the body shape itself stays a plain
+  `string`; the text is kept beside it by `src/resolve/string-template.ts`).
+- **A batch** is a JSON array body: one call per distinct method among its request elements, each with `batch: true`.
+- **Helpers** that build the envelope (`rpc(method, params)`) need nothing of their own: wrapper expansion carries
+  each caller's literal `method` into the body, so `rpc("getBalance", [address])` is a call at the caller with the
+  operation `getBalance`; the request inside the helper lists every method its callers pass as `alternatives`.
+- `params` keeps its shape as before: positional `params` an array, named `params` an object with its properties.
+- **Not covered**: RPC client libraries that hide the envelope (`@solana/web3.js`, viem, ethers, web3.py,
+  solana-py) map a client method to an RPC method and need registries of their own (#52); JSON builders that are not
+  literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP clients (#32).
 
 ## SDK clients passed as untyped parameters (#37)
 
@@ -466,13 +582,13 @@ call site keeps its own single value.
 |---|---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt listed in `providers.json` (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json`: negatives and the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`); HTTP client fixtures with #31 / #32 |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json`: OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same | same |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) from the body shape, GraphQL and SOAP not yet (#35, #36) | same | same | same engine; no JSON-RPC fixture until the HTTP clients (#32) |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
-| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); SDK wrappers read their callers' values like Python |
+| #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 
 ## Adding a language
 

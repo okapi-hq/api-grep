@@ -34,12 +34,13 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 |---|---|
 | `src/lang/` | language front ends: `typescript/` (wraps the pipeline below for TypeScript, JavaScript and HTML), `html/` (inline scripts, forms, template tags), `ir/` (the engine shared by tree-sitter languages), `python/`, `php/`, `kotlin/`, `jvm/` |
 | `src/lang/python/`, `src/lang/php/` | lowering, HTTP client tables (`clients.json`), SDK registries (`registry/`), manifests, import names / namespaces, language detectors (urllib, curl, streams, PSR-18, Laravel `config()`) |
-| `src/lang/kotlin/`, `src/lang/jvm/` | Kotlin lowering; what Java will share: Gradle and Maven manifests, package roots, `BuildConfig` values, SDK registries (`jvm/registry/`) |
+| `src/lang/kotlin/`, `src/lang/jvm/` | Kotlin lowering; what the JVM languages share: Gradle and Maven manifests, package roots, `BuildConfig`, the HTTP clients (`jvm/http/`: OkHttp and its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit, with their tables in `clients.json`) and the SDK registries (`jvm/registry/`) |
 | `src/assemble.ts` | turns what a front end resolved into a report `Call` (provider, id, `optionsOpaque`, `bodySource`), for every language |
+| `src/operation/` | protocols that name the operation outside the URL, read from the resolved request for every language: `json-rpc.ts` (#34) |
 | `src/ast/` | TypeScript: ts-morph helpers shared by every stage: unwrapping, member chains, object literals, classes, import origins |
 | `src/detect/` | TypeScript: finds call sites: fetch, axios, got/ky, node http, SDKs, framework helpers (`DETECTORS`, tried in order) |
 | `src/detect/registry/` | TypeScript: JSON registries mapping SDK member chains to endpoints |
-| `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
+| `src/resolve/` | TypeScript: resolves URLs, methods, query, headers and bodies; `parts`, `url-shape`, `url-reference`, `header-names`, `shape-utils` and `sdk-template` are shared by every language |
 | `src/wrappers/` | TypeScript: expansion of local HTTP wrapper functions (up to four deep) |
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/examples/` | synthesized example requests |
@@ -64,7 +65,8 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 - Fixtures are written from scratch with invented names and only public provider hosts.
 - Regression fixtures: a directory under `tests/fixtures/` with an `expected.json` lists the
   calls a scan must find (`file`, `line`, `provider`). An empty `calls` list marks a negative
-  fixture; `orUnfollowed` accepts a `diagnostics.unfollowed` entry instead of a call; `todo`
+  fixture; `orUnfollowed` accepts a `diagnostics.unfollowed` entry instead of a call; `operation`
+  requires the call's `operation.name` (a JSON-RPC method); `todo`
   (an issue URL) parks a fixture whose feature is not built yet. `tests/recall.test.ts` scans
   them all, snapshots their calls and prints `recall 1.00, false calls 0`. It fails when recall
   drops below `tests/recall-baseline.json` or a negative fixture gives a call; raise the

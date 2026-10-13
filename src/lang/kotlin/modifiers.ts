@@ -2,7 +2,7 @@ import type { Annotation, Arg, Expr } from "../ir/model.js";
 import { named, type SyntaxNode } from "../tree-sitter.js";
 import { lowerArgs } from "./lower-expr.js";
 import { posOf, type KtState } from "./state.js";
-import { springPlaceholders } from "./strings.js";
+import { springPlaceholders } from "../jvm/placeholders.js";
 import { lowerType } from "./types.js";
 
 /** Keywords (`private`, `const`, `data`, `override`, `vararg`) and annotations of a declaration. */
