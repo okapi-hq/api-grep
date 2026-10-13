@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Expr, ModuleModel } from "../../src/lang/ir/model.js";
 import { lowerJava } from "../../src/lang/java/lower.js";
+import { varargsAnnotations } from "../../src/lang/java/repair.js";
 import { parserFor, syntaxError } from "../../src/lang/tree-sitter.js";
 
 async function lower(code: string): Promise<ModuleModel> {
@@ -191,5 +192,42 @@ describe("java lowering: expressions and types", () => {
     );
     expect(m.classes.get("G")!.fieldTypes.get("table")).toMatchObject({ k: "index", obj: { k: "name", name: "Array" } });
     expect(m.classes.get("H")!.bases).toMatchObject([{ k: "index", obj: { k: "name", name: "G" } }]);
+  });
+});
+
+describe("java lowering: grammar gaps, binary data and generated code", () => {
+  it("repairs annotated varargs types (JSpecify) the grammar does not parse, keeping every position", async () => {
+    const code = 'class V {\n  String[] of(String @Nullable ... items) { return items; }\n  void run(Object @org.jspecify.annotations.Nullable... rest) { client.get("https://x"); }\n}\n';
+    const fixed = varargsAnnotations(code);
+    expect(fixed).toHaveLength(code.length);
+    expect(fixed).toContain("String           ... items");
+    const parser = await parserFor("java");
+    const [before, after] = [code, fixed].map((c) => parser.parse(c)!);
+    try {
+      expect(syntaxError(before!)).toBeDefined();
+      expect(syntaxError(after!)).toBeUndefined();
+    } finally {
+      before!.delete();
+      after!.delete();
+      parser.delete();
+    }
+  });
+
+  it("reads array initializers as lists, but not byte arrays (binary data)", async () => {
+    const m = await lower('class Arr {\n  static final String[] S = new String[] {"a", "b"};\n  static final byte[] B = new byte[] {0x78, 0};\n}\n');
+    expect(fieldOf(m, "Arr", "S")).toEqual({ k: "list", items: [{ k: "str", v: "a" }, { k: "str", v: "b" }] });
+    expect(fieldOf(m, "Arr", "B")).toMatchObject({ k: "unknown" });
+  });
+
+  it("lowers operator chains thousands deep (generated code) without running out of stack", async () => {
+    const terms = Array.from({ length: 20000 }, (_, i) => `"p${i}"`);
+    const m = await lower(`class Big {\n  static final String S = ${terms.join(" + ")} + (BASE + "/x");\n  static final boolean B = ${Array(20000).fill("a == 1").join(" && ")};\n}\n`);
+    const s = fieldOf(m, "Big", "S");
+    expect(s).toMatchObject({ k: "concat" });
+    const parts = s?.k === "concat" ? s.parts : [];
+    expect(parts).toHaveLength(20001);
+    expect(parts[0]).toEqual({ k: "str", v: "p0" });
+    expect(parts[20000]).toMatchObject({ k: "concat", parts: [{ k: "name", name: "BASE" }, { k: "str", v: "/x" }] });
+    expect(fieldOf(m, "Big", "B")).toMatchObject({ k: "unknown" });
   });
 });

@@ -94,14 +94,25 @@ function lowerNew(n: SyntaxNode, st: JState): Expr {
   return call;
 }
 
+/**
+ * `a + b + c`, `x == 1 && y == 2 && ...`: binary operators nest down their left side, thousands deep in generated
+ * code, so the left spine is walked in a loop rather than by recursion.
+ */
 function lowerBinary(n: SyntaxNode, st: JState): Expr {
-  const l = n.childForFieldName("left");
-  const r = n.childForFieldName("right");
-  if (!l || !r) return unknown(n);
-  const left = lowerExpr(l, st);
-  const right = lowerExpr(r, st);
-  if (n.childForFieldName("operator")?.text === "+") return { k: "concat", parts: [...(left.k === "concat" ? left.parts : [left]), right] };
-  return unknown(n);
+  const spine: SyntaxNode[] = [];
+  let leftmost: SyntaxNode | null = n;
+  while (leftmost?.type === "binary_expression") {
+    spine.push(leftmost);
+    leftmost = leftmost.childForFieldName("left");
+  }
+  let value: Expr | undefined = leftmost ? lowerExpr(leftmost, st) : undefined;
+  for (const b of spine.reverse()) {
+    const r = b.childForFieldName("right");
+    const right = r ? lowerExpr(r, st) : undefined;
+    const plus = b.childForFieldName("operator")?.text === "+";
+    value = value && right && plus ? { k: "concat", parts: [...(value.k === "concat" ? value.parts : [value]), right] } : unknown(b);
+  }
+  return value ?? unknown(n);
 }
 
 /** Lowers a Java expression; calls are recorded in the current function as they are met. */
@@ -178,7 +189,10 @@ function lowerOther(n: SyntaxNode, st: JState): Expr {
       return { k: "list", items: named(n).map((c) => lowerExpr(c, st)) };
     case "array_creation_expression": {
       const init = n.childForFieldName("value");
-      return init ? lowerExpr(init, st) : unknown(n);
+      // `new byte[] {0x78, 0}` is binary data, not a list a body would serialize
+      const bytes = n.childForFieldName("type")?.text === "byte";
+      const value = init ? lowerExpr(init, st) : undefined;
+      return value && !bytes ? value : unknown(n);
     }
     case "array_access": {
       const [a, i] = [n.childForFieldName("array"), n.childForFieldName("index")];

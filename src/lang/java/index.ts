@@ -1,6 +1,7 @@
 import { SHARED_EXCLUDES } from "../files.js";
 import type { IrSource } from "../ir/language.js";
 import { lowerJava } from "./lower.js";
+import { varargsAnnotations } from "./repair.js";
 
 export const JAVA_EXCLUDES = [
   ...SHARED_EXCLUDES,
@@ -29,4 +30,5 @@ export const javaSource: IrSource = {
   extensions: [".java"],
   excludes: JAVA_EXCLUDES,
   lower: lowerJava,
+  repair: varargsAnnotations,
 };
