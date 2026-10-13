@@ -45,3 +45,7 @@ def saved_view(token):
 
 def search(text):
     return requests.post("https://api.example-tracker.dev/search", json={"query": text})
+
+
+def search_near(city, kind):
+    return requests.post("https://api.example-tracker.dev/search", json={"query": f"{city} {kind}"})

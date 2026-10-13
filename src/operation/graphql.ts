@@ -1,6 +1,6 @@
 import type { ResolvedCall } from "../assemble.js";
 import type { Operation } from "../report/schema.js";
-import { templateOf } from "../resolve/string-template.js";
+import { literalOf } from "../resolve/string-template.js";
 import type { Shape } from "../types.js";
 import { documentHeader, documentOperations } from "./graphql-document.js";
 
@@ -17,7 +17,7 @@ type From = Operation["from"];
 const GRAPHQL_PATH = /graphql/i;
 
 interface Strings {
-  /** Literal values, then the text of strings built with computed parts (`{id}` for each). */
+  /** Literal values, then the literal text of strings built with computed parts (the computed parts left out). */
   values: string[];
   templates: string[];
   /** Some branch has no text at all. */
@@ -34,11 +34,25 @@ function strings(s: Shape | undefined, acc: Strings = { values: [], templates: [
     return acc;
   }
   const values = s.type === "string" ? (s.enum ?? []).filter((v): v is string => typeof v === "string") : [];
-  const template = s.type === "string" && values.length === 0 ? templateOf(s) : undefined;
+  const template = s.type === "string" && values.length === 0 ? documentTemplate(s) : undefined;
   if (values.length === 0 && !template) acc.unknown = true;
   acc.values.push(...values.filter((v) => !acc.values.includes(v)));
   if (template && !acc.templates.includes(template)) acc.templates.push(template);
   return acc;
+}
+
+/** Marks a computed part while the text is checked: a private-use character, never part of a document's syntax. */
+const GAP = "\uE000";
+/** `query ${name} {`, `query Get${Kind} {`: a computed operation name. */
+const COMPUTED_NAME = /^\s*(?:#[^\n]*\n\s*)*(?:query|mutation|subscription)\s+[_0-9A-Za-z]*\uE000/;
+
+/**
+ * The text of a document built with computed parts, read without them: one standing for a fragment or a selection
+ * the scan could not resolve would otherwise read as a field. A computed operation name leaves the document unread.
+ */
+function documentTemplate(s: Shape): string | undefined {
+  const text = literalOf(s, GAP);
+  return text === undefined || COMPUTED_NAME.test(text) ? undefined : text.replaceAll(GAP, "");
 }
 
 const graphql = (name: string | null, from: From, extra: Partial<Operation> = {}): Operation => ({ protocol: "graphql", name, ...extra, dynamic: name === null, from });
@@ -123,13 +137,15 @@ function bodyOperations(r: ResolvedCall): Operation[] {
  */
 function urlDocument(raw: string): Shape | undefined {
   const m = /[?&]query=([^&#]*)/.exec(raw);
-  // a lone placeholder (`?query=${q}`) is a value the scan does not know, not a document selecting `q`
-  if (!m?.[1] || /^\{[\w.:-]+\}$/.test(m[1])) return undefined;
+  if (!m?.[1]) return undefined;
+  let text = m[1];
   try {
-    return { type: "string", enum: [decodeURIComponent(m[1])] };
+    text = decodeURIComponent(text);
   } catch {
-    return { type: "string", enum: [m[1]] };
+    // kept as written
   }
+  // placeholders alone (`?query=${q}`, `?query=${a} ${b}`) are values the scan does not know, not a document selecting `q`
+  return text.replace(/\{[\w.:-]+\}/g, "").includes("{") ? { type: "string", enum: [text] } : undefined;
 }
 
 /** `GET /graphql?query=...&operationName=...`, or a persisted query sent in the URL. */

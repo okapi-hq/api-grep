@@ -377,7 +377,9 @@ document with the `graphql` package's parser (no schema, no network):
   from "./doc.graphql"`, a named import keeps that operation, `require`), with graphql-tag/loader's `#import` lines
   followed four files deep. An imported file is read only inside the scanned directory, symlinks resolved, like a
   config file. Python and PHP read documents in strings, f-strings, concatenations and heredocs through the shared
-  engine.
+  engine. A part the scan cannot compute (a `${Fragment}` from a package, a value) is left out of the document
+  before it is parsed, so it never reads as a field or as an operation of its own (`` `${city} ${kind}` `` is not a
+  document selecting `city` and `kind`); a computed operation name leaves the name unknown.
 - **SDKs**: a TypeScript registry method names the argument holding the document with `documentArg` (Octokit
   `graphql(query, variables)` and `graphql({ query })`, also from `@octokit/graphql`). No Python or PHP registry
   has a GraphQL method yet.

@@ -18,6 +18,7 @@
     {"file": "transport.ts", "line": 4, "provider": "api.example-store.com", "operation": "GetCart"},
     {"file": "transport.ts", "line": 12, "provider": "api.example-store.com", "operation": "StoreHours"},
     {"file": "transport.ts", "line": 15, "provider": "api.example-store.com", "operation": "Banner"},
-    {"file": "transport.ts", "line": 15, "provider": "api.example-store.com", "operation": "Footer"}
+    {"file": "transport.ts", "line": 15, "provider": "api.example-store.com", "operation": "Footer"},
+    {"file": "profile.ts", "line": 11, "provider": "api.example-store.com", "operation": "GetProfile"}
   ]
 }

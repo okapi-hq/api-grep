@@ -37,15 +37,6 @@ describe("graphqlOperations: JSON bodies", () => {
     expect(graphqlOperations(request(obj({ query: doc, operationName: str("C") })))).toEqual([{ protocol: "graphql", name: "C", dynamic: false, from: "body" }]);
   });
 
-  it("a document built with computed parts is named by its header", () => {
-    const doc = stringShapeOf([
-      { kind: "static", text: "mutation Rename { rename(id: " },
-      { kind: "dynamic", name: "id", origin: "param" },
-      { kind: "static", text: ") { id } }" },
-    ]);
-    expect(graphqlOperations(request(obj({ query: doc })))).toEqual([{ protocol: "graphql", name: "Rename", type: "mutation", dynamic: false, from: "document" }]);
-  });
-
   it("a document the scan cannot read is GraphQL when the rest of the envelope says so", () => {
     const unknown: Shape = { type: "dynamic", origin: "param", hint: "query" };
     expect(graphqlOperations(request(obj({ query: unknown, variables: obj({}) }), {}, "/v1"))).toEqual([{ protocol: "graphql", name: null, dynamic: true, from: "body" }]);
@@ -80,14 +71,40 @@ describe("graphqlOperations: JSON bodies", () => {
   });
 });
 
+describe("graphqlOperations: documents built with computed parts", () => {
+  it("a document built with computed parts is named by its header", () => {
+    const doc = stringShapeOf([
+      { kind: "static", text: "mutation Rename { rename(id: " },
+      { kind: "dynamic", name: "id", origin: "param" },
+      { kind: "static", text: ") { id } }" },
+    ]);
+    expect(graphqlOperations(request(obj({ query: doc })))).toEqual([{ protocol: "graphql", name: "Rename", type: "mutation", dynamic: false, from: "document" }]);
+  });
+
+  it("a computed part is left out of the document, not read as a field", () => {
+    const parts = (...p: (string | null)[]) => stringShapeOf(p.map((t, i) => (t === null ? { kind: "dynamic", name: `v${i}`, origin: "param" } : { kind: "static", text: t })));
+    // a fragment interpolated but not resolved is not a second, anonymous operation
+    const unresolved = parts("query A { a { ...F } }\n", null, "\n");
+    expect(graphqlOperations(request(obj({ query: unresolved })))).toEqual([{ protocol: "graphql", name: "A", type: "query", fields: ["a"], dynamic: false, from: "document" }]);
+    // a search text built from two values is not a document selecting them
+    expect(graphqlOperations(request(obj({ query: parts(null, " ", null) }), {}, "/search"))).toEqual([]);
+    // a computed operation name leaves the name unknown
+    const named = parts("query ", null, " { a }");
+    expect(graphqlOperations(request(obj({ query: named, variables: obj({}) })))).toEqual([{ protocol: "graphql", name: null, dynamic: true, from: "body" }]);
+    expect(graphqlOperations(request(obj({ query: named }), {}, "/search"))).toEqual([]);
+  });
+});
+
 describe("graphqlOperations: URLs and SDK documents", () => {
   it("reads `?query=` from the URL, not a lone placeholder", () => {
-    const url = (raw: string): Partial<ResolvedCall> => ({
+    const url = (raw: string, pathTemplate = "/graphql"): Partial<ResolvedCall> => ({
       method: "GET",
-      url: { hostKind: "literal", host: "api.example.com", pathTemplate: "/graphql", query: ["query"], queryShape: { query: str() }, dynamic: [], raw },
+      url: { hostKind: "literal", host: "api.example.com", pathTemplate, query: ["query"], queryShape: { query: str() }, dynamic: [], raw },
     });
     expect(graphqlOperations(request(undefined, url("https://api.example.com/graphql?query=query%20Hours%20%7B%20hours%20%7D")))[0]).toMatchObject({ name: "Hours", fields: ["hours"] });
     expect(graphqlOperations(request(undefined, url("https://api.example.com/graphql?query={q}")))).toEqual([{ protocol: "graphql", name: null, dynamic: true, from: "query" }]);
+    // placeholders alone are values, not a document: `?query=${a}%20${b}` on a search endpoint
+    expect(graphqlOperations(request(undefined, url("https://api.example.com/search?query={a}%20{b}", "/search")))).toEqual([]);
   });
 
   it("an SDK method's document, as text or as an object with `query`", () => {

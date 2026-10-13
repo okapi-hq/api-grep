@@ -17,6 +17,8 @@ exports[`regression fixtures > graphql 1`] = `
   "orders.ts:35 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json OrderTotals",
   "orders.ts:46 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct",
   "orders.ts:54 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct (wrapper:shopify)",
+  "profile.ts:11 api.example-store.com POST /graphql GetProfile",
+  "profile.ts:13 api.example-store.com POST /search",
   "transport.ts:4 api.example-store.com POST /graphql GetCart",
   "transport.ts:10 api.example-store.com POST /graphql null",
   "transport.ts:12 api.example-store.com GET /graphql StoreHours",
@@ -254,6 +256,7 @@ exports[`regression fixtures > python/graphql 1`] = `
   "tracker.py:39 api.example-tracker.dev POST /graphql TeamNames (wrapper:run)",
   "tracker.py:43 api.example-tracker.dev POST /graphql SavedView",
   "tracker.py:47 api.example-tracker.dev POST /search",
+  "tracker.py:51 api.example-tracker.dev POST /search",
 ]
 `;
 

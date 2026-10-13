@@ -58,7 +58,22 @@ describe("GraphQL: the operation and the fields it selects (#35)", () => {
     expect(at(r, "transport.ts", 26).operation).toBeUndefined();
     expect(at(r, "transport.ts", 28).operation).toBeUndefined();
   });
+});
 
+describe("GraphQL documents with parts the scan cannot compute (#35)", () => {
+  it("typescript: a computed part is not read as a field or an operation", async () => {
+    const r = await scanFixture("graphql");
+    // a fragment from a package the scan does not read: one operation, not a second one named after the variable
+    expect(operations(r, "profile.ts", 11)).toEqual([{ protocol: "graphql", name: "GetProfile", type: "query", fields: ["profile"], dynamic: false, from: "document" }]);
+    // a search text built from two values
+    expect(at(r, "profile.ts", 13).operation).toBeUndefined();
+  });
+
+  it("python: an f-string of two values is a search text, not a document selecting them", async () => {
+    const py = await scanFixture("python/graphql");
+    expect(at(py, "tracker.py", 51)).toMatchObject({ pathTemplate: "/search" });
+    expect(at(py, "tracker.py", 51).operation).toBeUndefined();
+  });
 });
 
 describe("GraphQL in Python and PHP, and imported documents (#35)", () => {
