@@ -112,4 +112,13 @@ describe("kotlin: SDK coverage", () => {
       ["software.amazon.awssdk:s3", "maven", true, true, "imported-no-calls"],
     ]);
   });
+
+  it("does not count Android Firebase imports for firebase-admin (#62)", async () => {
+    // FirebaseApp, analytics, crashlytics, remoteconfig, perf: Android artifacts that are not SDKs of providers.json
+    const app = await scanFixture("kotlin/firebase-android");
+    expect(app.coverage?.sdks).toEqual([]);
+    // declared, firebase-admin's own classes at the root of com.google.firebase still count
+    const server = await scanFixture("java/firebase-admin");
+    expect(server.coverage?.sdks.map((s) => [s.package, s.declared, s.importSites, s.status])).toEqual([["com.google.firebase:firebase-admin", true, 1, "imported-no-calls"]]);
+  });
 });

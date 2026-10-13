@@ -131,7 +131,7 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   const known = sdkPackages(lang.ecosystem);
   const declaredNames = lang.manifests.declared(manifestDirs(rootDir, files), rootDir);
   const declared = new Set([...known.keys()].filter((p) => declaredNames.has(lang.normalizePackage(p))));
-  const roots = [...known.keys()].map((pkg) => ({ pkg, roots: lang.importRoots(pkg).map((r) => r.split(".")) }));
+  const roots = [...known.keys()].map((pkg) => ({ pkg, roots: lang.importRoots(pkg, declared.has(pkg)).map((r) => r.split(".")) }));
   const sites = new Map<string, number>();
   for (const mod of scanned) {
     const hit = new Set<string>();

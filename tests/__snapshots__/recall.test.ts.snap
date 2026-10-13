@@ -166,6 +166,8 @@ exports[`regression fixtures > java/feign 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/firebase-admin 1`] = `[]`;
+
 exports[`regression fixtures > java/java-http 1`] = `
 [
   "Notifier.java:28 api.example-alerts.com POST /v1/items",
@@ -397,6 +399,8 @@ exports[`regression fixtures > kotlin/feign 1`] = `
   "Clients.kt:41 github POST /repos/{owner}/{repo}/issues",
 ]
 `;
+
+exports[`regression fixtures > kotlin/firebase-android 1`] = `[]`;
 
 exports[`regression fixtures > kotlin/java-http 1`] = `
 [
