@@ -1,0 +1,24 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/35",
+  "calls": [
+    {"file": "orders.ts", "line": 6, "provider": "example-shop.myshopify.com", "operation": "GetOrder"},
+    {"file": "orders.ts", "line": 14, "provider": "example-shop.myshopify.com", "operation": "locations,shop"},
+    {"file": "orders.ts", "line": 22, "provider": "example-shop.myshopify.com", "operation": "CancelOrder"},
+    {"file": "orders.ts", "line": 35, "provider": "example-shop.myshopify.com", "operation": "OrderTotals"},
+    {"file": "orders.ts", "line": 54, "provider": "example-shop.myshopify.com", "operation": "GetProduct"},
+    {"file": "catalog.ts", "line": 26, "provider": "api.example-catalog.com", "operation": "ListItems"},
+    {"file": "catalog.ts", "line": 28, "provider": "api.example-catalog.com", "operation": "ListCategories"},
+    {"file": "catalog.ts", "line": 30, "provider": "api.example-catalog.com", "operation": "GetCategory"},
+    {"file": "catalog.ts", "line": 38, "provider": "api.example-catalog.com", "operation": "CountCategories"},
+    {"file": "catalog.ts", "line": 40, "provider": "api.example-catalog.com", "operation": "CountItems"},
+    {"file": "catalog.ts", "line": 40, "provider": "api.example-catalog.com", "operation": "CountCategories"},
+    {"file": "github.ts", "line": 6, "provider": "github", "operation": "OpenIssues"},
+    {"file": "github.ts", "line": 14, "provider": "github", "operation": "viewer"},
+    {"file": "github-standalone.ts", "line": 4, "provider": "github", "operation": "LatestRelease"},
+    {"file": "transport.ts", "line": 4, "provider": "api.example-store.com", "operation": "GetCart"},
+    {"file": "transport.ts", "line": 12, "provider": "api.example-store.com", "operation": "StoreHours"},
+    {"file": "transport.ts", "line": 15, "provider": "api.example-store.com", "operation": "Banner"},
+    {"file": "transport.ts", "line": 15, "provider": "api.example-store.com", "operation": "Footer"},
+    {"file": "profile.ts", "line": 11, "provider": "api.example-store.com", "operation": "GetProfile"}
+  ]
+}

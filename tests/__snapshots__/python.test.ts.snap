@@ -2151,7 +2151,7 @@ exports[`python: constants > follows module constants, imported modules, class c
       "headers": [],
       "host": "api.linear.app",
       "hostKind": "const",
-      "id": "0b6e091b21a8",
+      "id": "bd56be383196",
       "location": {
         "col": 12,
         "file": "use_config.py",
@@ -2159,6 +2159,16 @@ exports[`python: constants > follows module constants, imported modules, class c
         "line": 12,
       },
       "method": "POST",
+      "operation": {
+        "dynamic": false,
+        "fields": [
+          "viewer.id",
+        ],
+        "from": "document",
+        "name": "viewer",
+        "protocol": "graphql",
+        "type": "query",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",
@@ -3694,7 +3704,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
       "headers": [],
       "host": "api.linear.app",
       "hostKind": "literal",
-      "id": "9f1cbea80f86",
+      "id": "8fcd97c1d8ca",
       "location": {
         "col": 12,
         "file": "verbs.py",
@@ -3702,6 +3712,16 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
         "line": 31,
       },
       "method": "DYNAMIC",
+      "operation": {
+        "dynamic": false,
+        "fields": [
+          "viewer.id",
+        ],
+        "from": "document",
+        "name": "viewer",
+        "protocol": "graphql",
+        "type": "query",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",

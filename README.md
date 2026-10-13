@@ -219,24 +219,28 @@ A call to an API that names the operation outside the URL (JSON-RPC, GraphQL, SO
 AWS Query) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
 calls. JSON-RPC is recognized in every language: a JSON body with `jsonrpc` and a `method` (or a 1.0-style
 `method`, `params` and `id`) gives `protocol: json-rpc` with the method as `name`, also through a helper that builds
-the envelope (`rpc("getBalance", [address])`). GraphQL
-([#35](https://github.com/okapi-hq/api-grep/issues/35)), SOAP and action-style APIs
-([#36](https://github.com/okapi-hq/api-grep/issues/36)) are next; RPC client libraries such as viem or web3.py are
-[#52](https://github.com/okapi-hq/api-grep/issues/52).
+the envelope (`rpc("getBalance", [address])`). GraphQL is recognized from the document a request sends (`query` in
+a JSON body, `?query=`, a batch array, Octokit's `graphql()`), written in a string, a `gql` tagged template or an
+imported `.graphql` file: `protocol: graphql` with the operation's `name` (its root fields when anonymous), `type`, and
+`fields`, the sorted leaf paths it selects with aliases resolved and fragments inlined; a persisted query is named by
+its `operationName`. SOAP and action-style APIs ([#36](https://github.com/okapi-hq/api-grep/issues/36)) are next; RPC
+client libraries such as viem or web3.py are [#52](https://github.com/okapi-hq/api-grep/issues/52), GraphQL clients
+such as Apollo or urql [#54](https://github.com/okapi-hq/api-grep/issues/54).
 
 ```yaml
     operation:
       protocol: graphql          # json-rpc | graphql | soap | action
       name: GetOrder             # null when no part of it is known
       type: query                # GraphQL only: query | mutation | subscription
-      fields: [order.id, order.customer.email]   # GraphQL only: selected fields, aliases resolved, fragments inlined
+      fields: [order.customer.email, order.id]   # GraphQL only: selected leaf paths, sorted, aliases resolved, fragments inlined
       dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
       from: document             # body | header | query | document
 ```
 
 `alternatives` lists every name when a branch picks one (`name` is the first). A request that sends several
-operations together (a JSON-RPC batch array) gives one call per operation at the same location, each with
-`batch: true`. `operationId` is unrelated: the OpenAPI id of an SDK method. The reasons are in
+operations together (a JSON-RPC or GraphQL batch array) gives one call per operation at the same location, each with
+`batch: true`; so does a GraphQL document of several operations with no `operationName` picking one (without
+`batch`). `operationId` is unrelated: the OpenAPI id of an SDK method. The reasons are in
 [docs/languages.md](docs/languages.md#operations-the-url-does-not-name-30).
 
 An SDK call made on an untyped parameter (`def ask(client, prompt): client.messages.create(...)`,

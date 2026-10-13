@@ -316,9 +316,9 @@
         "name": "GetOrder",
         "type": "query",
         "fields": [
+          "order.customer.email",
           "order.id",
-          "order.totalPriceSet.shopMoney.amount",
-          "order.customer.email"
+          "order.totalPriceSet.shopMoney.amount"
         ],
         "dynamic": false,
         "from": "document"

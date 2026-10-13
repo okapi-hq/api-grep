@@ -13,6 +13,7 @@ import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call } from "../../report/schema.js";
 import type { RawCall } from "../../types.js";
 import { expandWrappers } from "../../wrappers/detect.js";
+import { setDocumentRoot } from "../../resolve/graphql-source.js";
 import { errorText } from "../files.js";
 import { formCall } from "../html/forms.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
@@ -140,6 +141,7 @@ function scanTypeScript(input: LanguageScanInput): LanguageScanResult | undefine
   if (tsFiles(rootDir, undefined, [], languages).length === 0) return undefined;
   const registry = opts.registry ?? defaultRegistry();
   const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude, languages });
+  setDocumentRoot(loaded.project, rootDir);
   const { files, pages, seen } = filesInScope(loaded, input);
   const packages = new PackageJsonReader(rootDir);
   const { raws, scanned } = detectAll(files, registry, input, packages);

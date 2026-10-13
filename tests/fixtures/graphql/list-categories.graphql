@@ -1,0 +1,7 @@
+#import "./category-fields.graphql"
+
+query ListCategories {
+  categories {
+    ...CategoryFields
+  }
+}

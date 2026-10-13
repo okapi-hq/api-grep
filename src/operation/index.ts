@@ -1,5 +1,6 @@
 import type { ResolvedCall } from "../assemble.js";
 import type { Operation } from "../report/schema.js";
+import { graphqlOperations } from "./graphql.js";
 import { jsonRpcOperations } from "./json-rpc.js";
 
 /**
@@ -10,6 +11,7 @@ import { jsonRpcOperations } from "./json-rpc.js";
 const PROTOCOLS: ((r: ResolvedCall) => Operation[])[] = [
   // an SDK call's endpoint is its registry's; the body it is given is the method's arguments, not an envelope
   (r) => (r.client === "sdk" ? [] : jsonRpcOperations(r.body)),
+  graphqlOperations,
 ];
 
 export function operationsOf(r: ResolvedCall): Operation[] {

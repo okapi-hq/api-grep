@@ -8,7 +8,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 66 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| TypeScript / JavaScript (npm) | 67 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
 | Python (PyPI) | 41 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
 | Kotlin (Maven) | 0 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit` |
@@ -26,7 +26,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Google | `googleapis`, `google-auth-library` | `google-api-python-client`, `google-auth`, `google-auth-oauthlib`, `google-cloud-storage`, `google-cloud-bigquery`, `google-cloud-pubsub`, `google-cloud-translate`, `google-cloud-vision`, `google-cloud-speech`, `google-cloud-texttospeech`, `google-cloud-secret-manager`, `google-cloud-tasks`, `gspread` | `google/apiclient`, `google/apiclient-services`, `google/auth`, `google/cloud-storage` | `com.google.api-client:google-api-client` |
 | AWS | **`aws-sdk`**, **`@aws-sdk/client-s3`** | **`boto3`**, `botocore`, **`aioboto3`**, `aiobotocore`, `s3fs` | **`aws/aws-sdk-php`**, **`aws/aws-sdk-php-laravel`**, **`aws/aws-sdk-php-symfony`**, `league/flysystem-aws-s3-v3`, `symfony/amazon-mailer` | `software.amazon.awssdk:s3`, `software.amazon.awssdk:dynamodb`, `software.amazon.awssdk:sqs`, `software.amazon.awssdk:sns`, `software.amazon.awssdk:ses`, `com.amazonaws:aws-java-sdk-s3`, `aws.sdk.kotlin:s3` |
 | AWS Bedrock | **`@aws-sdk/client-bedrock-runtime`**, **`@ai-sdk/amazon-bedrock`**, **`@langchain/aws`** | **`langchain-aws`** | **`aws/aws-sdk-php`** | `software.amazon.awssdk:bedrockruntime`, `aws.sdk.kotlin:bedrockruntime`, `dev.langchain4j:langchain4j-bedrock` |
-| GitHub | **`octokit`**, **`@octokit/rest`**, **`@octokit/core`** | `PyGithub`, `githubkit`, `ghapi`, `github3.py` | `knplabs/github-api`, `graham-campbell/github` | `org.kohsuke:github-api` |
+| GitHub | **`octokit`**, **`@octokit/rest`**, **`@octokit/core`**, **`@octokit/graphql`** | `PyGithub`, `githubkit`, `ghapi`, `github3.py` | `knplabs/github-api`, `graham-campbell/github` | `org.kohsuke:github-api` |
 | Slack | **`@slack/web-api`**, **`@slack/webhook`**, **`@slack/bolt`** | **`slack-sdk`**, `slack-bolt`, **`slackclient`** | **`jolicode/slack-php-api`**, `laravel/slack-notification-channel`, `symfony/slack-notifier` | `com.slack.api:slack-api-client`, `com.slack.api:bolt` |
 | Twilio | **`twilio`** | **`twilio`** | **`twilio/sdk`**, `symfony/twilio-notifier` | `com.twilio.sdk:twilio` |
 | SendGrid | `@sendgrid/mail`, `@sendgrid/client` | `sendgrid` | **`sendgrid/sendgrid`**, **`sendgrid/php-http-client`**, `symfony/sendgrid-mailer` | `com.sendgrid:sendgrid-java` |

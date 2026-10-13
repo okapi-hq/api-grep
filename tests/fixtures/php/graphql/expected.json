@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/35",
+  "calls": [
+    {"file": "StoreClient.php", "line": 23, "provider": "api.example-store.com", "operation": "GetProduct"},
+    {"file": "StoreClient.php", "line": 33, "provider": "api.example-store.com", "operation": "AddLine"},
+    {"file": "StoreClient.php", "line": 38, "provider": "api.example-store.com", "operation": "shop"}
+  ]
+}
