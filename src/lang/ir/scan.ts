@@ -5,19 +5,19 @@ import { relativePosix } from "../../files.js";
 import { sdkPackages } from "../../normalize/provider.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
-import { errorText, languageFiles, leftOutFiles, readEnvHints } from "../files.js";
+import { errorText, languageFiles, leftOutFiles, readEnvHints, type LeftOut } from "../files.js";
 import { parserFor, syntaxError, type Parser, type Tree } from "../tree-sitter.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { buildIrCall, type BuildIrCtx } from "./build.js";
 import { detectIn, type Candidate, type IrUnfollowed } from "./detect.js";
-import type { IrLanguage } from "./language.js";
+import { sourcesOf, type IrLanguage, type IrSource } from "./language.js";
 import type { ModuleModel } from "./model.js";
 import { ProjectIndex } from "./project.js";
 import type { IrCtx, IrRaw } from "./raw.js";
 import { expandWrappers } from "./wrappers.js";
 
 /** A file's syntax tree and its first syntax error; the language's same-length repair is tried when there is one. */
-function parseFile(parser: Parser, lang: IrLanguage, text: string): { tree: Tree; problem?: string } {
+function parseFile(parser: Parser, lang: IrSource, text: string): { tree: Tree; problem?: string } {
   const tree = parser.parse(text);
   if (!tree) throw new Error("the parser returned no tree");
   const problem = syntaxError(tree, lang.allowHiddenErrors);
@@ -36,7 +36,7 @@ function parseFile(parser: Parser, lang: IrLanguage, text: string): { tree: Tree
  * Parses and lowers every file; a file that does not parse, or makes the lowering throw, is skipped, not fatal. Files
  * outside the scanned set are still read so imports resolve through them, but their problems are not reported.
  */
-async function lowerAll(lang: IrLanguage, files: string[], scanned: Set<string>, rootDir: string, diag: DiagnosticsCollector): Promise<ModuleModel[]> {
+async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, rootDir: string, diag: DiagnosticsCollector): Promise<ModuleModel[]> {
   const parser = await parserFor(lang.grammar);
   const modules: ModuleModel[] = [];
   try {
@@ -45,7 +45,7 @@ async function lowerAll(lang: IrLanguage, files: string[], scanned: Set<string>,
       try {
         const { tree, problem } = parseFile(parser, lang, readFileSync(file, "utf8"));
         try {
-          if (!problem) modules.push(lang.lower(tree.rootNode, file, rootDir));
+          if (!problem) modules.push(Object.assign(lang.lower(tree.rootNode, file, rootDir), { language: lang.id }));
           else if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: problem });
         } finally {
           tree.delete();
@@ -153,18 +153,52 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   return coverageRows({ ecosystem: lang.ecosystem, known, declared, sites, calls, supported });
 }
 
+/** The files of one source language: in scope, left out by --include / --exclude, and every one to index. */
+interface SourceFiles {
+  source: IrSource;
+  files: string[];
+  leftOut: LeftOut[];
+  all: string[];
+}
+
+function sourceFiles(source: IrSource, input: LanguageScanInput): SourceFiles {
+  const { rootDir, opts } = input;
+  const files = languageFiles(rootDir, source.extensions, opts.include, [...source.excludes, ...(opts.exclude ?? [])]);
+  const leftOut = leftOutFiles({ dir: rootDir, include: opts.include, exclude: opts.exclude }, source.extensions, source.excludes, new Set(files));
+  const all = [...new Set([...files, ...languageFiles(rootDir, source.extensions, undefined, source.excludes)])];
+  return { source, files, leftOut, all };
+}
+
+/** Files seen and scanned per source language with files in scope. */
+function fileCounts(sources: SourceFiles[], selected: ModuleModel[], scanned: ModuleModel[], changed: Set<string> | undefined): LanguageScanResult["files"] {
+  const selectedFiles = new Set(selected.map((m) => m.file));
+  const out: LanguageScanResult["files"] = {};
+  for (const s of sources) {
+    if (s.files.length === 0 && s.leftOut.length === 0) continue;
+    const seen = changed ? s.files.filter((f) => changed.has(f) || selectedFiles.has(f)).length : s.files.length + s.leftOut.length;
+    out[s.source.id] = { filesSeen: seen, filesScanned: scanned.filter((m) => m.language === s.source.id).length };
+  }
+  return out;
+}
+
+/**
+ * Every source language of the front end the scan asks for (`--language`) is lowered into one set of modules and one
+ * `ProjectIndex`, so names resolve across them (a Kotlin file calling a Retrofit interface declared in Java).
+ */
 async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<LanguageScanResult | undefined> {
-  const { rootDir, opts, diag } = input;
-  const files = languageFiles(rootDir, lang.extensions, opts.include, [...lang.excludes, ...(opts.exclude ?? [])]);
-  const leftOut = leftOutFiles({ dir: rootDir, include: opts.include, exclude: opts.exclude }, lang.extensions, lang.excludes, new Set(files));
-  if (files.length === 0 && leftOut.length === 0) return undefined;
+  const { rootDir, diag } = input;
+  const sources = sourcesOf(lang)
+    .filter((s) => input.languages.includes(s.id))
+    .map((s) => sourceFiles(s, input));
+  if (sources.every((s) => s.files.length === 0 && s.leftOut.length === 0)) return undefined;
+  const files = sources.flatMap((s) => s.files);
   const inScope = new Set(files);
-  const all = [...new Set([...files, ...languageFiles(rootDir, lang.extensions, undefined, lang.excludes)])];
-  const modules = await lowerAll(lang, all, inScope, rootDir, diag);
+  const modules: ModuleModel[] = [];
+  for (const s of sources) modules.push(...(await lowerAll(s.source, s.all, inScope, rootDir, diag)));
   const idx = new ProjectIndex(lang, modules);
   const scannable = modules.filter((m) => inScope.has(m.file));
   const selected = input.changed ? selectChanged(scannable, input.changed, idx) : scannable;
-  if (!input.changed) for (const l of leftOut) diag.skip(l);
+  if (!input.changed) for (const l of sources.flatMap((s) => s.leftOut)) diag.skip(l);
   const ctx: BuildIrCtx = {
     idx,
     declared: declaredNear(lang, rootDir),
@@ -175,13 +209,11 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   };
   const { raws, scanned } = detectAll(selected, ctx, input);
   const calls = buildAll(raws, ctx, diag);
-  const selectedFiles = new Set(selected.map((m) => m.file));
-  const changedFiles = input.changed ? files.filter((f) => input.changed!.has(f) || selectedFiles.has(f)).length : 0;
-  const counts = { filesSeen: input.changed ? changedFiles : files.length + leftOut.length, filesScanned: scanned.length };
-  return { calls, files: { [lang.id]: counts }, coverage: input.changed ? [] : coverage(lang, rootDir, files, scanned, calls) };
+  const counts = fileCounts(sources, selected, scanned, input.changed);
+  return { calls, files: counts, coverage: input.changed ? [] : coverage(lang, rootDir, files, scanned, calls) };
 }
 
-/** A tree-sitter language as a scanner front end. */
+/** A tree-sitter language as a scanner front end: its own language and the ones it reads alongside. */
 export function irLanguage(lang: IrLanguage): LanguageFrontEnd {
-  return { ids: [lang.id], ecosystem: lang.ecosystem, scan: (input) => scanIr(lang, input) };
+  return { ids: sourcesOf(lang).map((s) => s.id), ecosystem: lang.ecosystem, scan: (input) => scanIr(lang, input) };
 }

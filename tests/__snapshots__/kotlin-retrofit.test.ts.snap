@@ -900,7 +900,7 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.13.0",
+  "schemaVersion": "1.14.0",
   "stats": {
     "byClient": {
       "retrofit": 15,

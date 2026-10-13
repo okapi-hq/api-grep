@@ -145,7 +145,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const file = raw.fn.module.file;
   const sdk = raw.sdk;
   return assembleCalls({
-    location: { file: relativePosix(base.rootDir, file), line: raw.call.pos.line, col: raw.call.pos.col, language: base.language },
+    location: { file: relativePosix(base.rootDir, file), line: raw.call.pos.line, col: raw.call.pos.col, language: raw.fn.module.language ?? base.language },
     client: raw.client,
     sdk: sdk ? { package: sdk.entry.package, version: base.sdkVersion(file, sdk.entry.package), chain: sdk.key, provider: sdk.entry.provider, operationId: sdk.spec.operationId } : undefined,
     url,

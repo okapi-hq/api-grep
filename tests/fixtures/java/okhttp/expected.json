@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/43",
+  "calls": [
+    {"file": "Feeds.java", "line": 24, "provider": "api.example-feeds.com"},
+    {"file": "Interceptors.java", "line": 38, "provider": "open-meteo"},
+    {"file": "Interceptors.java", "line": 43, "provider": "github"},
+    {"file": "Interceptors.java", "line": 53, "provider": "github"},
+    {"file": "Messages.java", "line": 31, "provider": "mailgun"},
+    {"file": "Messages.java", "line": 36, "provider": "cloudinary"},
+    {"file": "Messages.java", "line": 46, "provider": "unsplash"},
+    {"file": "Messages.java", "line": 59, "provider": "rpc.example.com"},
+    {"file": "Podcasts.java", "line": 17, "provider": "api.example-podcasts.com"},
+    {"file": "Podcasts.java", "line": 34, "provider": "api.example-podcasts.com"}
+  ]
+}

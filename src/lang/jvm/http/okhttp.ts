@@ -1,9 +1,10 @@
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
-import type { CallExpr, ClassDef, FunctionDef } from "../../ir/model.js";
+import type { ScopedCall } from "../../ir/fluent.js";
+import type { CallExpr, ClassDef, Expr, FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
-import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps } from "../../ir/steps.js";
+import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { chainFrom, rawOf } from "./request.js";
@@ -38,10 +39,33 @@ function withClosures(fn: FunctionDef): FunctionDef[] {
   return out;
 }
 
+/**
+ * A response the interceptor receives or makes (`chain.proceed(request).newBuilder()`, `Response.Builder()`, through
+ * variables of the function and the ones around it): the headers set on it are not the request's.
+ */
+function onResponse(e: Expr, fn: FunctionDef, depth = 0): boolean {
+  if (depth > 8) return false;
+  if (e.k === "name") {
+    for (let f: FunctionDef | undefined = fn; f; f = f.parent) {
+      const set = f.assigns.filter((a) => a.target === e.name).pop();
+      if (set) return onResponse(set.value, f, depth + 1);
+    }
+    return false;
+  }
+  if (e.k !== "call") return false;
+  if (calleeIs(e, ["Response.Builder"]) !== undefined) return true;
+  return e.fn.k === "attr" && (e.fn.name === "proceed" || onResponse(e.fn.obj, fn, depth + 1));
+}
+
+/**
+ * Header and query steps of the request: two arguments (`request.header("X")` reads one) on anything but a response.
+ */
+const requestStep = (c: ScopedCall): boolean => c.call.args.length >= 2 && !(c.call.fn.k === "attr" && onResponse(c.call.fn.obj, c.fn));
+
 /** The headers and query parameters an interceptor adds to every request (`header("Authorization", ...)`, `addQueryParameter(...)`). */
 function interceptorPairs(i: Interceptor): IrPair[] {
   const parts = emptyParts();
-  for (const f of withClosures(i.fn)) readSteps(lambdaCalls(f), JVM.okhttp.interceptor!, parts);
+  for (const f of withClosures(i.fn)) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
   return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(i.subst ? { subst: i.subst } : {}), ...(i.self ? { self: i.self } : {}) }));
 }
 
@@ -65,6 +89,19 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
 }
 
 /**
+ * `request.newBuilder().header("Authorization", ...)`: a copy of a request built in the project, whose own steps (its
+ * URL, method, body) come first. A `newBuilder()` on anything else stays where the chain starts.
+ */
+function copiedRequest(fc: FluentChain, spec: BuiltRequestClient, ctx: IrCtx): FluentChain {
+  const start = fc.start;
+  if (!start || start.call.fn.k !== "attr" || start.call.fn.name !== "newBuilder" || start.call.args.length > 0) return fc;
+  const base = fluentChain({ expr: start.call.fn.obj, fn: start.fn }, (c) => calleeIs(c, spec.starts) !== undefined, ctx);
+  if (!base.start || calleeIs(base.start.call, spec.starts.filter((s) => s.includes("."))) === undefined) return fc;
+  const subst = base.subst || fc.subst ? new Map([...(base.subst ?? []), ...(fc.subst ?? [])]) : undefined;
+  return { start: base.start, steps: [...base.steps, ...fc.steps], ...(subst ? { subst } : {}) };
+}
+
+/**
  * A request built with a request builder and sent by a client method (`client.newCall(request)`, `httpClient.send(request,
  * handler)`): reported at the send. The client must be the library's, or the request its builder's.
  */
@@ -73,7 +110,7 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   const index = send && send.call === call && Object.hasOwn(spec.sends, send.name) ? spec.sends[send.name] : undefined;
   const request = index !== undefined ? argAt({ call, fn }, index) : undefined;
   if (!request) return undefined;
-  const fc = fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx);
+  const fc = copiedRequest(fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx), spec, ctx);
   // `Request.Builder()` names its library; a bare `newBuilder()` (protobuf, gRPC descriptors) needs the client to
   const own = !!fc.start && calleeIs(fc.start.call, spec.starts.filter((s) => s.includes("."))) !== undefined;
   if (!own && !chainFrom(chain, spec.imports)) return undefined;

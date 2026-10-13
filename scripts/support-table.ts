@@ -46,7 +46,7 @@ function irColumn(title: string, lang: IrLanguage): Column {
   };
 }
 
-export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage), irColumn("PHP (Composer)", phpLanguage), irColumn("Kotlin (Maven)", kotlinLanguage)];
+export const COLUMNS: Column[] = [typescriptColumn(), irColumn("Python (PyPI)", pythonLanguage), irColumn("PHP (Composer)", phpLanguage), irColumn("Kotlin and Java (Maven)", kotlinLanguage)];
 
 function cell(col: Column, packages: string[] | undefined): string {
   if (!packages || packages.length === 0) return "";

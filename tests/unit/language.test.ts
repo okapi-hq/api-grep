@@ -10,6 +10,7 @@ describe("languageOf", () => {
     expect(languageOf("src/Http.php")).toBe("php");
     expect(languageOf("app/src/main/java/Api.kt")).toBe("kotlin");
     expect(languageOf("scripts/release.main.kts")).toBe("kotlin");
+    expect(languageOf("app/src/main/java/Api.java")).toBe("java");
   });
 
   it("falls back to typescript, the language the scanner parses", () => {

@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/43",
+  "calls": [
+    {"file": "Payments.java", "line": 35, "provider": "api.example-shop.com"},
+    {"file": "Payments.java", "line": 42, "provider": "api.example-shop.com"},
+    {"file": "Payments.java", "line": 48, "provider": "stripe"},
+    {"file": "Payments.java", "line": 56, "provider": "api.example-shop.com"},
+    {"file": "Payments.java", "line": 63, "provider": "api.example-shop.com"},
+    {"file": "Payments.java", "line": 67, "provider": "api.example-shop.com"},
+    {"file": "Payments.java", "line": 82, "provider": "stripe"},
+    {"file": "Payments.java", "line": 86, "provider": "stripe"},
+    {"file": "Payments.java", "line": 98, "provider": "api.example-shop.com"},
+    {"file": "Quotes.java", "line": 14, "provider": "api.example-shop.com"},
+    {"file": "Quotes.java", "line": 25, "provider": "api.example-shop.com"}
+  ]
+}

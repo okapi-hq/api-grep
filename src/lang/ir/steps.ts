@@ -1,7 +1,7 @@
 import { callsOn, scopedIn, type ScopedCall } from "./fluent.js";
 import type { OptionRole, Scoped } from "./language.js";
 import { dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "./model.js";
-import { classField, lookup, receiverClass, type Binding } from "./project.js";
+import { classField, classMethod, lookup, receiverClass, type Binding } from "./project.js";
 import type { IrCtx, IrPair, Subst } from "./raw.js";
 import { substitutionFor } from "./wrappers.js";
 
@@ -104,7 +104,7 @@ function overload(target: FunctionDef, from: FunctionDef): FunctionDef {
  * one return; its parameters stand for the call's arguments (`fun get(url: String) = Request.Builder().url(url)`).
  */
 function factoryReturn(call: CallExpr, fn: FunctionDef, ctx: IrCtx, subst: Subst): Scoped | undefined {
-  const named = call.fn.k === "fnref" ? call.fn.fn : call.fn.k === "name" ? functionBinding(lookup(call.fn.name, fn, call.pos.offset, ctx.idx)) : undefined;
+  const named = call.fn.k === "fnref" ? call.fn.fn : call.fn.k === "name" ? functionBinding(lookup(call.fn.name, fn, call.pos.offset, ctx.idx)) : factoryMethod(call.fn, fn, ctx);
   const target = named ? overload(named, fn) : undefined;
   if (!target || target.returns.length !== 1) return undefined;
   for (const [p, v] of substitutionFor(target, call, fn)) subst.set(p, v);
@@ -112,6 +112,13 @@ function factoryReturn(call: CallExpr, fn: FunctionDef, ctx: IrCtx, subst: Subst
 }
 
 const functionBinding = (b: Binding): FunctionDef | undefined => (b.kind === "function" ? b.fn : undefined);
+
+/** A method of the class the code runs in (`this.buildRequest(url)`, a bare call in Java and Kotlin) or of a named class (`Requests.get(url)`). */
+function factoryMethod(callee: Expr, fn: FunctionDef, ctx: IrCtx): FunctionDef | undefined {
+  if (callee.k !== "attr") return undefined;
+  const owner = callee.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : callee.obj.k === "name" ? classBinding(lookup(callee.obj.name, fn, callee.pos.offset, ctx.idx)) : undefined;
+  return owner ? classMethod(owner, callee.name, ctx.idx) : undefined;
+}
 
 /** The next value down a chain: a variable's value (and the calls made on it), a parameter's argument, a field. */
 function below(e: Expr, fn: FunctionDef, ctx: IrCtx, steps: ScopedCall[], subst: Subst): Scoped | undefined {
@@ -144,6 +151,13 @@ export function fluentChain(s: Scoped, isStart: (c: CallExpr) => boolean, ctx: I
   for (let hops = 0; cur && hops < MAX_DEPTH && steps.length < MAX_STEPS; ) {
     const { expr, fn }: Scoped = cur;
     if (expr.k === "call" && isStart(expr)) return done({ call: expr, fn });
+    // `this.buildRequest(url)`, `Requests.get(url)`: a method of the project returning the builder, not a step of it
+    const made: Scoped | undefined = expr.k === "call" && factoryMethod(expr.fn, fn, ctx) ? factoryReturn(expr, fn, ctx, subst) : undefined;
+    if (made) {
+      cur = made;
+      hops++;
+      continue;
+    }
     if (expr.k === "call" && expr.fn.k === "attr") {
       steps.unshift({ call: expr, fn });
       cur = { expr: expr.fn.obj, fn };
