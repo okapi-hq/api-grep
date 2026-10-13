@@ -237,7 +237,8 @@ Arrays keep the keys set later in the function (`$params['k'] = $v`, `$params +=
 calls through the JVM registries (#33). Java is read by the same front end, into the same index ([Java](#java)).
 
 **SDKs:** the SDKs in [`sdk-support.md`](sdk-support.md): OpenAI and Anthropic (the official Java SDKs), Stripe,
-AWS SDK for Java 2.x S3 and Bedrock Runtime, Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
+AWS (S3, Bedrock Runtime, DynamoDB, SQS, SNS, SES and SES v2 from the AWS SDK for Java 2.x and the AWS SDK for Kotlin,
+the S3 Transfer Manager and the DynamoDB Enhanced Client, S3 from the AWS SDK for Java 1.x: #49), Google Gen AI, Firestore (google-cloud-firestore, firebase-admin's
 `FirestoreClient`, the Android SDK), Firebase Admin Auth, Cloud Messaging and Realtime Database, Twilio, Slack, Sentry
 and PostHog (the Android / JVM facade and posthog-java). The registries are in `src/lang/jvm/registry/`, keyed by Maven
 coordinates and fully qualified classes, so Java reads them as they are.
@@ -266,6 +267,22 @@ and take parameters as builders.
   follow each SDK's rule (`setters.case`): `maxTokens` -> `max_tokens` (OpenAI, Anthropic, Slack), `setEmail` ->
   `email` (Stripe), `bucket` -> `Bucket` (S3), as written (Bedrock, FCM); `addTool` appends to `tools`, `putMetadata(k,
   v)` sets `metadata.k`, `addUserMessage(text)` adds `{role: "user", content: text}` to `messages` (`setters.fields`).
+  A lambda given to a setter fills a nested object (`destination(d -> d.toAddresses(to))`).
+- **AWS** (#49): the AWS SDK for Kotlin has the Java 2.x SDK's operations under the same names, so one registry per
+  service holds both (`variants`: package, imports, client factories and model package of each). Its clients are
+  `S3Client.fromEnvironment { region = r }` or `S3Client { ... }` (`endpointUrl = Url.parse(u)` in that lambda replaces
+  the host), and its requests are built by lambdas that assign properties: `PutObjectRequest { bucket = b; key = k }`,
+  `s3.putObject { ... }`, a nested member filled by a call with a lambda (`inferenceConfig { maxTokens = 512 }`). The
+  Kotlin lowering keeps a lambda's assignments to names it does not declare, and `this.x = v`, on `FunctionDef.props`;
+  `src/lang/ir/builders.ts` reads them as setters, and a call of a class of the parameter packages with a lambda
+  (`X { ... }`) as a built value. DynamoDB and SQS speak AWS JSON 1.0 (POST `/`, the operation in `X-Amz-Target`), SNS
+  and SES the Query protocol (`/?Action=Publish`, form fields, as the TypeScript `aws-sdk` registry writes them), SES
+  v2 REST JSON; the operation is the call's `operationId` (an SDK call carries no `operation`, in every language). The
+  DynamoDB Enhanced Client's operations (`table.putItem(item)`, on `enhanced.table(...)` or a `DynamoDbTable<T>`)
+  send a mapped object the SDK serializes: no body. The S3 Transfer Manager's body is the S3 request it wraps
+  (`bodyProp`). The SDK for Java 1.x takes the bucket and key as positional arguments (`s3.putObject(bucket, key,
+  file)`: `pathArgs`); a request object (`new PutObjectRequest(...)`) is not read. Presigners
+  (`S3Presigner`, `generatePresignedUrl`) sign locally and send nothing.
 - **Models:** an enum constant of the SDK (`Model.CLAUDE_SONNET_4_5`, `ChatModel.GPT_4_1_MINI`) is the model id it
   stands for (`claude-sonnet-4-5`, `gpt-4.1-mini`: `setters.constants` and `constantRewrites`); other enum constants
   are their snake_case value (`SessionCreateParams.Mode.SUBSCRIPTION` -> `subscription`). String overloads
@@ -529,8 +546,10 @@ file. A file that does not parse is then read once more with a `;` in place of t
   Twilio creator arguments) give no body. An SDK builder filled in `apply { ... }`, or in steps spread over several
   functions, is not read; keys set in a branch are not marked optional. A path id given inside a params object rather
   than as the first argument stays a placeholder. The `PostHogConfig` host given to `PostHog.setup` is not followed.
-- AWS artifacts other than S3 and Bedrock Runtime, the AWS SDK for Kotlin and other JVM SDKs listed in `providers.json`
-  are reported as `unsupported` in `coverage.sdks` (#49, #50).
+- Other JVM SDKs listed in `providers.json` are reported as `unsupported` in `coverage.sdks` (#50). AWS services
+  without a registry (Lambda, Kinesis, the SDK for Java 1.x's clients other than S3) are not in `providers.json`. The
+  DynamoDB Enhanced Client's table name and item, and the AWS SDK for Kotlin's sealed-class values
+  (`AttributeValue.S(v)`, `ConversationRole.User`), are not read.
 
 ## Java
 
@@ -1032,8 +1051,8 @@ call site keeps its own single value.
 |---|---|---|---|---|
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt listed in `providers.json` (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
-| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33 (`tests/fixtures/kotlin/sdk/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
+| #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33 and #49 (`tests/fixtures/kotlin/sdk/`, `tests/fixtures/java/aws/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), more AWS services and the AWS SDK for Kotlin (#49), the rest in #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
 | #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |

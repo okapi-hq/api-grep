@@ -59,5 +59,9 @@
   { "name": "metasync", "url": "https://github.com/kalenjordan/metasync.git" },
   { "name": "tap-shopify", "url": "https://github.com/singer-io/tap-shopify.git", "language": "python" },
   { "name": "sgtm", "url": "https://github.com/Asana/SGTM.git", "language": "python" },
-  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" }
+  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" },
+  { "name": "spring-cloud-aws", "url": "https://github.com/awspring/spring-cloud-aws.git", "language": "java" },
+  { "name": "aws-sdk-kotlin-spring-example", "url": "https://github.com/hantsy/aws-sdk-kotlin-spring-example.git", "language": "kotlin" },
+  { "name": "aws-doc-sdk-examples-kotlin", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "kotlin/services", "language": "kotlin" },
+  { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" }
 ]

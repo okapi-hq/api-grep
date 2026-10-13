@@ -8,6 +8,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 public class Inventory {
@@ -42,5 +43,9 @@ public class Inventory {
 
     public void tables() {
         ddb.listTables();
+    }
+
+    public void remove(String sku) {
+        ddb.deleteItem(DeleteItemRequest.builder().applyMutation(b -> b.tableName(TABLE)).key(Map.of("sku", AttributeValue.fromS(sku))).build());
     }
 }

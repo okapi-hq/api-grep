@@ -46,25 +46,31 @@ describe("kotlin: the AWS SDK for Kotlin and more AWS SDK for Java 2.x services 
 describe("java: more AWS SDK for Java 2.x services and the AWS SDK for Java 1.x (#49)", () => {
   it("reads DynamoDB, the enhanced client, SQS, and S3 v1 positional arguments", async () => {
     const r = await scanFixture("java/aws");
-    expect(at(r, "Inventory.java", 25)).toMatchObject({
+    expect(at(r, "Inventory.java", 26)).toMatchObject({
       operationId: "PutItem",
       body: { properties: { TableName: { enum: ["warehouse-stock"] }, Item: { properties: { sku: { properties: { S: { type: "string" } } } } } } },
     });
-    expect(at(r, "Inventory.java", 32)).toMatchObject({ operationId: "Query", body: { properties: { KeyConditionExpression: { enum: ["sku = :sku"] } } } });
+    expect(at(r, "Inventory.java", 33)).toMatchObject({ operationId: "Query", body: { properties: { KeyConditionExpression: { enum: ["sku = :sku"] } } } });
     // the enhanced client's table, held in a field: the operation, not the mapped item
-    expect(at(r, "Inventory.java", 36)).toMatchObject({ sdk: { package: "software.amazon.awssdk:dynamodb-enhanced", chain: "table.putItem" }, operationId: "PutItem", bodyEncoding: "none" });
-    expect(at(r, "Inventory.java", 40)).toMatchObject({ operationId: "GetItem" });
+    expect(at(r, "Inventory.java", 37)).toMatchObject({ sdk: { package: "software.amazon.awssdk:dynamodb-enhanced", chain: "table.putItem" }, operationId: "PutItem", bodyEncoding: "none" });
+    expect(at(r, "Inventory.java", 41)).toMatchObject({ operationId: "GetItem" });
+    // `applyMutation(b -> ...)` sets the builder's own fields
+    expect(at(r, "Inventory.java", 49)).toMatchObject({ operationId: "DeleteItem", body: { properties: { TableName: { enum: ["warehouse-stock"] }, Key: { type: "object" } } } });
+    expect(at(r, "Inventory.java", 49).body).not.toHaveProperty("properties.ApplyMutation");
     expect(at(r, "Dispatch.java", 23)).toMatchObject({ operationId: "SendMessage", body: { properties: { QueueUrl: { type: "string" }, DelaySeconds: { enum: [10] } } } });
     // v1: the bucket and key are positional arguments
     expect(at(r, "Dispatch.java", 31)).toMatchObject({ sdk: { package: "com.amazonaws:aws-java-sdk-s3", version: "1.12.780" }, method: "PUT", pathTemplate: "/{Bucket}/{Key}", dynamic: [{ where: "path", name: "Key" }] });
     expect(at(r, "Dispatch.java", 35)).toMatchObject({ method: "GET", operationId: "GetObject" });
     expect(at(r, "Dispatch.java", 40)).toMatchObject({ method: "PUT", sdk: { chain: "upload" } });
+    // the client and request classes of star imports
+    expect(at(r, "Alerts.java", 11)).toMatchObject({ operationId: "Publish", body: { properties: { Subject: { enum: ["Low stock"] }, Message: { type: "string" } } } });
     // `generatePresignedUrl` signs locally
     expect(r.calls.some((c) => c.location.file === "Dispatch.java" && c.location.line === 45)).toBe(false);
     expect(r.coverage?.sdks.map((s) => [s.package, s.status, s.calls])).toEqual([
       ["com.amazonaws:aws-java-sdk-s3", "ok", 3],
-      ["software.amazon.awssdk:dynamodb", "ok", 3],
+      ["software.amazon.awssdk:dynamodb", "ok", 4],
       ["software.amazon.awssdk:dynamodb-enhanced", "ok", 2],
+      ["software.amazon.awssdk:sns", "ok", 1],
       ["software.amazon.awssdk:sqs", "ok", 2],
     ]);
   });

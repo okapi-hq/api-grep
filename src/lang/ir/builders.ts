@@ -118,11 +118,19 @@ function fieldOf(name: string, rules: SetterRules): Field | undefined {
 
 const str = (v: string): Expr => ({ k: "str", v });
 
+/** `applyMutation(b -> b.key(k))` (AWS SDK for Java 2.x): the lambda's setters are the builder's own. */
+function mutated(setters: Setter[], fn: FunctionDef): Setter[] {
+  return setters.flatMap((s) => {
+    const a = s.name === "applyMutation" && s.args.length === 1 ? s.args[0]!.value : undefined;
+    return a?.k === "fnref" && a.fn.params.length === 1 ? settersIn(lambdaSetters(a.fn), a.fn, fn) : [s];
+  });
+}
+
 /** The setters as a dict: one entry per field, list fields gathering their `add` items, map fields their `put` keys. */
 function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr {
   const entries: Entry[] = [];
   const byField = new Map<string, Entry>();
-  for (const s of setters) {
+  for (const s of mutated(setters, fn)) {
     const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
     const f = named?.kind === "item" ? { ...named, kind: b ? ("put" as const) : ("add" as const) } : named;

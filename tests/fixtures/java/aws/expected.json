@@ -2,15 +2,17 @@
   "issue": "https://github.com/okapi-hq/api-grep/issues/49",
   "skipped": [],
   "calls": [
+    { "file": "Alerts.java", "line": 11, "provider": "aws" },
     { "file": "Dispatch.java", "line": 23, "provider": "aws" },
     { "file": "Dispatch.java", "line": 27, "provider": "aws" },
     { "file": "Dispatch.java", "line": 31, "provider": "aws" },
     { "file": "Dispatch.java", "line": 35, "provider": "aws" },
     { "file": "Dispatch.java", "line": 40, "provider": "aws" },
-    { "file": "Inventory.java", "line": 25, "provider": "aws" },
-    { "file": "Inventory.java", "line": 32, "provider": "aws" },
-    { "file": "Inventory.java", "line": 36, "provider": "aws" },
-    { "file": "Inventory.java", "line": 40, "provider": "aws" },
-    { "file": "Inventory.java", "line": 44, "provider": "aws" }
+    { "file": "Inventory.java", "line": 26, "provider": "aws" },
+    { "file": "Inventory.java", "line": 33, "provider": "aws" },
+    { "file": "Inventory.java", "line": 37, "provider": "aws" },
+    { "file": "Inventory.java", "line": 41, "provider": "aws" },
+    { "file": "Inventory.java", "line": 45, "provider": "aws" },
+    { "file": "Inventory.java", "line": 49, "provider": "aws" }
   ]
 }

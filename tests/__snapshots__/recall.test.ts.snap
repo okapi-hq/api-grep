@@ -158,16 +158,18 @@ exports[`regression fixtures > java/apache 1`] = `
 
 exports[`regression fixtures > java/aws 1`] = `
 [
+  "Alerts.java:11 aws POST /",
   "Dispatch.java:23 aws POST /",
   "Dispatch.java:27 aws POST /",
   "Dispatch.java:31 aws PUT /{Bucket}/{Key}",
   "Dispatch.java:35 aws GET /{Bucket}/{Key}",
   "Dispatch.java:40 aws PUT /{Bucket}/{Key}",
-  "Inventory.java:25 aws POST /",
-  "Inventory.java:32 aws POST /",
-  "Inventory.java:36 aws POST /",
-  "Inventory.java:40 aws POST /",
-  "Inventory.java:44 aws POST /",
+  "Inventory.java:26 aws POST /",
+  "Inventory.java:33 aws POST /",
+  "Inventory.java:37 aws POST /",
+  "Inventory.java:41 aws POST /",
+  "Inventory.java:45 aws POST /",
+  "Inventory.java:49 aws POST /",
 ]
 `;
 

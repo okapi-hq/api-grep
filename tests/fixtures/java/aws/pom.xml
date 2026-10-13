@@ -24,6 +24,11 @@
       <version>${aws.version}</version>
     </dependency>
     <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sns</artifactId>
+      <version>${aws.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
       <version>1.12.780</version>
