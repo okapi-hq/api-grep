@@ -12,6 +12,10 @@ export interface Candidate {
   fn: FunctionDef;
   /** The project function the call runs: a wrapper when its body makes an HTTP call with its parameters. */
   target: FunctionDef;
+  /** Overloads the call may run, when its arguments do not tell which: each is expanded, and what they agree on kept. */
+  targets?: FunctionDef[];
+  /** The call runs an overload other than the first declared of its name. */
+  overloaded?: boolean;
 }
 
 export interface IrUnfollowed {
@@ -89,7 +93,11 @@ export function detectIn(fn: FunctionDef, ctx: IrCtx): IrDetected {
       continue;
     }
     if (chain.root.kind === "function" && chain.segs.length === 0) {
-      out.candidates.push({ call, fn, target: chain.root.fn });
+      out.candidates.push({ call, fn, target: chain.root.fn, ...(chain.overloaded ? { overloaded: true } : {}) });
+      continue;
+    }
+    if (chain.overloads) {
+      out.candidates.push({ call, fn, target: chain.overloads[0]!, targets: chain.overloads });
       continue;
     }
     const receiver = receiverCalls(call, fn, chain, ctx, detectCall);

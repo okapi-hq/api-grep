@@ -581,8 +581,12 @@ nested a few thousand deep still skip their file as an `internal-error`.
 - A call of an overloaded method runs the overload its arguments fit (#73, `src/lang/ir/overloads.ts`, the language's
   `overloads` flag; Kotlin too): by count (named arguments by name, defaults and varargs counted), then by the types
   of literal arguments and of typed parameters and locals; an overload calling its own name delegates to another.
-  Several left, or none, and the call is not followed (no wrapper, no factory), unless all but one hand the call to
-  another of their name (convenience overloads ending in one). Overloads of constructors resolve to the widest one.
+  When all but one hand the call to another of their name (convenience overloads ending in one), that one. Several
+  left (a payload of unknown type), and a wrapper call reads each (`src/lang/ir/overload-merge.ts`): the request they
+  all reach keeps what they agree on (a URL, method, body or header value they disagree on is unknown, a body they
+  encode differently is `raw`), different requests are one call each. A factory or URL helper that is ambiguous is not
+  followed. Paths found through an overload other than the first declared come after the others at a call site, so
+  its earlier calls keep their ids. Overloads of constructors resolve to the widest one.
 - Java records the blocks that may not run (`if` / `else`, loop bodies, `case`s, `catch`), as Kotlin does: a key put
   in a map there is optional, and an `HttpURLConnection` method set there (`if (head) conn.setRequestMethod("HEAD")`)
   is not known (`DYNAMIC`).

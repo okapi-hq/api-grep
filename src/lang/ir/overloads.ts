@@ -82,17 +82,24 @@ function fitsTypes(f: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx):
 
 /** The overload of `target` a call runs; `target` itself without overloads; undefined when the arguments do not tell. */
 export function overloadFor(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): FunctionDef | undefined {
+  const options = overloadsFor(target, call, fn, ctx);
+  return options.length === 1 ? options[0] : undefined;
+}
+
+/** The overloads of `target` a call may run: one when its arguments tell, several when they do not, none when none fits. */
+export function overloadsFor(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): FunctionDef[] {
   // lambdas and constructors are not overloads of a name (Java's other constructors are functions of their own)
-  if (!ctx.idx.lang.overloads || SYNTHETIC.has(target.name) || target.name.startsWith("<") || (call.fn.k !== "name" && call.fn.k !== "attr")) return target;
+  if (!ctx.idx.lang.overloads || SYNTHETIC.has(target.name) || target.name.startsWith("<") || (call.fn.k !== "name" && call.fn.k !== "attr")) return [target];
   const all = siblingsOf(target);
-  if (all.length <= 1) return target;
+  if (all.length <= 1) return [target];
   const fitting = all.filter((f) => fitsCount(f, call));
   // an overload calling its own name delegates to another (`get(url) = get(url.toHttpUrl())`)
   const byCount = fitting.length > 1 ? fitting.filter((f) => f !== fn) : fitting;
-  if (byCount.length <= 1) return byCount[0];
+  if (byCount.length <= 1) return byCount;
   const byType = byCount.filter((f) => fitsTypes(f, call, fn, ctx));
-  if (byType.length === 1) return byType[0];
+  if (byType.length === 1) return byType;
+  const left = byType.length > 0 ? byType : byCount;
   // convenience overloads that all end in one: whichever runs, that one builds the request
-  const core = byType.filter((f) => !delegates(f));
-  return core.length === 1 && byType.length > 1 ? core[0] : undefined;
+  const core = left.filter((f) => !delegates(f));
+  return core.length === 1 ? core : left;
 }

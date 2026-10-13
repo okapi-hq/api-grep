@@ -49,6 +49,9 @@ describe("jvm: requests started in several places (#73)", () => {
     expect(at(r, "Volumes.java", 25).bodyEncoding).toBe("none");
     // a convenience overload delegating to the full one; a method set in a branch is unknown
     expect(summary(r, "Probes.java")[0]).toEqual([9, "java-http", "DYNAMIC", "https://api.example-probes.com/v1/health"]);
+    // overloads differing only by the payload's type: the call is kept with what they agree on
+    expect(at(r, "Payloads.java", 14)).toMatchObject({ method: "DYNAMIC", urlTemplate: "{url}", headers: ["x-client"], bodyEncoding: "raw", body: { type: "dynamic" } });
+    expect(r.calls.filter((c) => c.location.file === "Payloads.java" && c.location.line === 14)).toHaveLength(1);
     expect(at(r, "Volumes.java", 30)).toMatchObject({ bodyEncoding: "json", body: { fromType: "Volume" } });
   });
 });
@@ -73,13 +76,16 @@ describe("kotlin: requests started in several places (#73)", () => {
       ["PUT", "json"],
       ["GET", "none"],
     ]);
-    // by count and by name; an argument of unknown type fitting two overloads is not followed
+    // by count and by name; an argument of unknown type fitting two overloads that send different requests: each
     expect(summary(r, "Pages.kt").slice(0, 3)).toEqual([
       [8, "okhttp", "GET", "https://api.example-pages.com/v1/pages"],
       [10, "okhttp", "DELETE", "https://api.example-pages.com/v1/pages?page=2"],
       [12, "okhttp", "DELETE", "https://api.example-pages.com/v1/archive?page=3"],
     ]);
-    expect(r.calls.some((c) => c.location.file === "Pages.kt" && c.location.line === 14)).toBe(false);
+    expect(summary(r, "Pages.kt").filter((c) => (c as unknown[])[0] === 14)).toEqual([
+      [14, "okhttp", "GET", "https://api.example-pages.com/v1/notes/{value}"],
+      [14, "okhttp", "DELETE", "https://api.example-pages.com/v1/notes/{value}"],
+    ]);
   });
 });
 
