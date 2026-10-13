@@ -5,9 +5,9 @@ import { Project } from "ts-morph";
  * Source text per checker project. A project holds every syntax tree, binding and type of its files until it is
  * dropped: about 50 bytes of heap per byte of source, so 8 MB of source stays well under a 2 GB heap (#68).
  */
-export const BATCH_BYTES = 8_000_000;
+export const BATCH_BYTES = Number(process.env.B68 ?? 16_000_000);
 
-function sizeOf(file: string): number {
+export function sizeOf(file: string): number {
   try {
     return statSync(file).size;
   } catch {

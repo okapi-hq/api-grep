@@ -9,9 +9,9 @@ import type { Call } from "../../report/schema.js";
 import { formCall } from "../html/forms.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { Merged } from "./batched.js";
-import { packBatches, projectOrder } from "./batches.js";
+import { BATCH_BYTES, packBatches, projectOrder, sizeOf } from "./batches.js";
 import { declaredPackages, importsCoverage } from "./coverage.js";
-import { fileGroups } from "./graph.js";
+import { fileGroups, type FileGroups } from "./graph.js";
 
 /** npm packages declared by the package.json files between a file and the scanned directory, read once per directory. */
 function declaredNear(rootDir: string, packages: PackageJsonReader): (file: string) => Set<string> {
@@ -64,13 +64,20 @@ function textOf(scope: Scope): (file: string) => string | undefined {
   };
 }
 
+/** A repository whose source fits in one batch is one group: reading every file's imports first would only cost time. */
+function groupsOf(files: string[], scope: Scope, budget: number): FileGroups {
+  if (files.reduce((a, f) => a + sizeOf(f), 0) <= budget) return { groups: [files.map((_, i) => i)], groupOf: () => undefined };
+  return fileGroups({ files, options: scope.options, textOf: textOf(scope) });
+}
+
 /**
  * Scans the files in batches of files that can see each other, each in a project of its own (#68): a large monorepo
  * no longer holds every syntax tree and type at once. A batch reads its files in the order a single project would.
  */
 function scanBatches(scope: Scope, input: LanguageScanInput, registry: Registry, packages: PackageJsonReader): Merged {
   const files = sourceFiles(scope);
-  const { groups, groupOf } = fileGroups({ files, options: scope.options, textOf: textOf(scope) });
+  const budget = input.opts.batchBytes ?? BATCH_BYTES;
+  const { groups, groupOf } = groupsOf(files, scope, budget);
   const order = projectOrder(files);
   const merged = new Merged();
   const ctx = {
@@ -83,7 +90,7 @@ function scanBatches(scope: Scope, input: LanguageScanInput, registry: Registry,
     groupOf,
     order,
   };
-  for (const batch of packBatches(files, groups, input.opts.batchBytes, input.changed)) merged.scanBatch(batch, ctx);
+  for (const batch of packBatches(files, groups, budget, input.changed)) merged.scanBatch(batch, ctx);
   return merged;
 }
 

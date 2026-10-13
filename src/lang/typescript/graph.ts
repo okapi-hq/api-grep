@@ -182,13 +182,13 @@ function linkGlobals(g: Graph): void {
     }
   });
   if (declaredBy.size === 0) return;
+  // a few names are looked for in the text as it is (a substring links more, never less); many, word by word
+  const few = declaredBy.size <= 32 ? [...declaredBy] : undefined;
   for (let id = 0; id < g.paths.length; id++) {
     const text = g.text(id);
     if (text === undefined) continue;
-    for (const w of words(text)) {
-      const other = declaredBy.get(w);
-      if (other !== undefined) g.sets.union(id, other);
-    }
+    const found = few ? few.filter(([name]) => text.includes(name)).map(([, decl]) => decl) : [...words(text)].flatMap((w) => declaredBy.get(w) ?? []);
+    for (const other of found) g.sets.union(id, other);
   }
 }
 

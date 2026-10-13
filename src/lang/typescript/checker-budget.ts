@@ -1,10 +1,12 @@
-import v8 from "node:v8";
 import type { Project } from "ts-morph";
 
-/** Share of the heap limit past which the checker's types are dropped. */
-export const PRESSURE = 0.6;
-/** Types the checker must have made since it was created before it is dropped: bounds the time spent remaking them. */
-export const MIN_TYPES = 250_000;
+/**
+ * Types a checker may make before it is dropped. A count, not the heap: the same repository must give the same report
+ * whatever the heap, the machine or the garbage collector, and the checker makes the same types in the same order on
+ * every run, so it is dropped at the same files.
+ */
+export const MAX_TYPES = Number(process.env.T68 ?? 400_000);
+export const MAX_INSTANTIATIONS = Number(process.env.I68 ?? 3_000_000);
 
 interface WithContext {
   _context?: { resetProgram?: () => void };
@@ -22,14 +24,15 @@ export function resetChecker(project: Project): boolean {
   return true;
 }
 
+let resets = 0;
 /**
- * Called between two files or two calls of one project (#68): when the heap is filling up and the checker has made
- * many types, drops it. Files that see each other share a project however large they are (a backend whose modules all
- * import each other), so this is what bounds its heap. A project that fits in the heap never pays for this.
+ * Called between two files or two calls of one project (#68): drops the checker once it has made `MAX_TYPES` types.
+ * Files that see each other share a project however large they are (a backend whose modules all import each other), so
+ * this is what bounds its heap.
  */
 export function relieve(project: Project): void {
-  const { used_heap_size: used, heap_size_limit: limit } = v8.getHeapStatistics();
-  if (used < limit * PRESSURE) return;
-  if (project.getProgram().compilerObject.getTypeCount() < MIN_TYPES) return;
+  const program = project.getProgram().compilerObject;
+  if (program.getTypeCount() < MAX_TYPES && program.getInstantiationCount() < MAX_INSTANTIATIONS) return;
+  if (process.env.DEBUG68) process.stderr.write(`RESET ${++resets} t=${Math.round(performance.now())}\n`);
   resetChecker(project);
 }
