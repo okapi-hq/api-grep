@@ -404,7 +404,9 @@ reference (`getDoc(doc(db, "users", uid))` is `.../documents/users/{uid}`); `sig
 A client constructed with its own base URL (`new OpenAI({ baseURL: "https://openrouter.ai/api/v1" })`,
 `new PostHog(key, { host })`, `new ConvexHttpClient(url)`) sends its calls there, and the provider
 follows the URL when it names another known service (OpenRouter, Groq, `localhost:11434` for
-Ollama). MCP clients get the server URL from the HTTP transport built in the same file.
+Ollama). A base URL the scan cannot read (a parameter, a settings object) leaves the host `unknown`
+rather than the SDK's default; `baseURL: undefined` (`base_url=None`) keeps the default. MCP clients
+get the server URL from the HTTP transport built in the same file.
 
 Libraries loaded with a `<script>` tag are used as globals the checker cannot see: `axios`, `$` /
 `jQuery`, `supabase`, `Sentry` and `posthog` are read as their npm packages. Imports from a CDN
