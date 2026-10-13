@@ -287,13 +287,16 @@ original's URL, method and body;
   from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
   `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
   `RequestBody` class of the project writes its own bytes, so its body is opaque (`raw`, not its constructor fields).
+  `Credentials.basic(user, password)` is `Basic <credentials>`, so an `Authorization` header set to it (on the request
+  or in an interceptor, also through a variable) is basic auth (#69, `src/lang/jvm/http/bodies.ts`).
 - **Interceptors**: the headers and query parameters an interceptor sets (a lambda, `Interceptor { }`, an
   `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
   factories). They are in `query` / `headers` and `authScheme` like any other, and listed in `clientParts` with
   `from: "interceptor"`. Headers set on a response (`chain.proceed(...).newBuilder()`, `Response.Builder()`) and
   one-argument reads (`request.header("X")`) are not the request's. A header set in a branch of the interceptor
-  (`if (url.contains(...))`) is still listed for every call. `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
+  (`if (url.contains(...))`) is still listed for every call: the report has no way yet to mark a header optional
+  (#69). `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
   Retrofit reads the client of `.client(okHttp)` with it.
 - **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
   `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
