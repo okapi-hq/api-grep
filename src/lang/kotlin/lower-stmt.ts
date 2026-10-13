@@ -158,6 +158,16 @@ function indexSet(left: SyntaxNode, value: Expr, offset: number, st: KtState): v
   st.fn.assigns.push({ target: obj.text, value: { k: "dict", entries: [{ key: lowerExpr(key, st), value }] }, offset, edit: "merge" });
 }
 
+/**
+ * In a lambda, `x = v` on a name no enclosing scope declares, or `this.x = v`: a property of the lambda's receiver when
+ * it fills a DSL builder (`PutObjectRequest { bucket = b }`), kept apart since the lambda may have none.
+ */
+function receiverProp(left: SyntaxNode, target: Expr | undefined, value: Expr, offset: number, st: KtState): void {
+  if (st.fn.name !== "lambda") return;
+  const name = left.type === "identifier" && !isLocal(st.scope, left.text) ? left.text : target?.k === "attr" && target.obj.k === "this" ? target.name : undefined;
+  if (name) (st.fn.props ??= []).push({ name, value, offset });
+}
+
 /** `x = v`, `x += v`, `this.x = v`; a bare member name is the implicit `this`. */
 function lowerAssignment(n: SyntaxNode, st: KtState): void {
   const left = field(n, "left");
@@ -167,6 +177,7 @@ function lowerAssignment(n: SyntaxNode, st: KtState): void {
   if (!left || !value || (op !== "=" && op !== "+=")) return;
   if (left.type === "index_expression" && op === "=") return indexSet(left, value, n.endIndex, st);
   const target = left.type === "identifier" ? nameRef(left.text, posOf(left), st) : left.type === "navigation_expression" ? lowerExpr(left, st) : undefined;
+  if (op === "=") receiverProp(left, target, value, n.endIndex, st);
   if (target?.k === "name") st.fn.assigns.push({ target: target.name, value, offset: n.endIndex, ...(op === "+=" ? { augmented: true } : {}) });
   else if (target?.k === "attr" && target.obj.k === "this" && st.cls && op === "=") addField(st.cls.def, target.name, value, st.fn);
   // `conn.requestMethod = "POST"`: a property set on a local object, read by detectors as `conn.requestMethod`

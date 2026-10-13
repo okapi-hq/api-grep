@@ -146,8 +146,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - Kotlin: #29 (parsing, lowering, manifests), #32 (OkHttp with interceptors, `java.net.http`, Ktor, Spring, Feign)
   and #31 (Retrofit interfaces, `retrofit.ts` / `retrofit-link.ts`, URLs resolved by RFC 3986 in
   `src/resolve/url-reference.ts`) are done; so are the JVM SDK registries #33 (OpenAI, Anthropic, Stripe, AWS S3 /
-  Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog). Other AWS services and the AWS SDK for Kotlin
-  #49, other JVM SDKs and builder forms #50. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog) and the AWS ones of #49 (DynamoDB and its
+  enhanced client, SQS, SNS, SES, SES v2, the S3 Transfer Manager, the AWS SDK for Kotlin as `variants` of the Java
+  2.x registries, its requests built by lambdas that assign properties: `FunctionDef.props`, S3 from the SDK for
+  Java 1.x). Other JVM SDKs and builder forms #50. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,

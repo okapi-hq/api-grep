@@ -1,0 +1,53 @@
+{
+  "$comment": "AWS SDK for Java 1.x, S3: `AmazonS3ClientBuilder.standard().withRegion(r).build()`, `AmazonS3ClientBuilder.defaultClient()` or `new AmazonS3Client(...)`; operations take the bucket and key as positional arguments (`pathArgs`) (`s3.putObject(bucket, key, file)`, `s3.getObject(bucket, key)`), or a request object (`new PutObjectRequest(bucket, key, file)`) whose bucket and key are not read. The v1 `TransferManager` (`TransferManagerBuilder.standard().withS3Client(s3).build()`) uploads and downloads the same way. `generatePresignedUrl` and `getUrl` build a URL locally and send nothing.",
+  "package": "com.amazonaws:aws-java-sdk-s3",
+  "imports": [
+    "com.amazonaws.services.s3.AmazonS3",
+    "com.amazonaws.services.s3.AmazonS3Client",
+    "com.amazonaws.services.s3.AmazonS3ClientBuilder",
+    "com.amazonaws.services.s3.transfer.TransferManager",
+    "com.amazonaws.services.s3.transfer.TransferManagerBuilder"
+  ],
+  "provider": "aws",
+  "host": "s3.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (AmazonS3 and TransferManager methods of the AWS SDK for Java 1.x, mapped to the S3 operations of the S3 registry)",
+  "instance": {
+    "names": ["standard", "defaultClient", "defaultTransferManager", "AmazonS3", "AmazonS3Client", "TransferManager"],
+    "build": "build"
+  },
+  "methods": {
+    "putObject": {"method":"PUT","path":"/{Bucket}/{Key}","pathArgs":[0,1],"encoding":"raw","operationId":"PutObject"},
+    "getObject": {"method":"GET","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"GetObject"},
+    "getObjectAsString": {"method":"GET","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"GetObject"},
+    "getObjectMetadata": {"method":"HEAD","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"HeadObject"},
+    "doesObjectExist": {"method":"HEAD","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"HeadObject"},
+    "deleteObject": {"method":"DELETE","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"DeleteObject"},
+    "deleteObjects": {"method":"POST","path":"/{Bucket}?delete","operationId":"DeleteObjects"},
+    "copyObject": {"method":"PUT","path":"/{Bucket}/{Key}","pathArgs":[2,3],"operationId":"CopyObject"},
+    "listObjects": {"method":"GET","path":"/{Bucket}","pathArgs":[0],"operationId":"ListObjects"},
+    "listObjectsV2": {"method":"GET","path":"/{Bucket}?list-type=2","pathArgs":[0],"operationId":"ListObjectsV2"},
+    "listNextBatchOfObjects": {"method":"GET","path":"/{Bucket}","operationId":"ListObjects"},
+    "listVersions": {"method":"GET","path":"/{Bucket}?versions","pathArgs":[0],"operationId":"ListObjectVersions"},
+    "listBuckets": {"method":"GET","path":"/","operationId":"ListBuckets"},
+    "createBucket": {"method":"PUT","path":"/{Bucket}","pathArgs":[0],"operationId":"CreateBucket"},
+    "deleteBucket": {"method":"DELETE","path":"/{Bucket}","pathArgs":[0],"operationId":"DeleteBucket"},
+    "doesBucketExist": {"method":"HEAD","path":"/{Bucket}","pathArgs":[0],"operationId":"HeadBucket"},
+    "doesBucketExistV2": {"method":"HEAD","path":"/{Bucket}","pathArgs":[0],"operationId":"HeadBucket"},
+    "getBucketLocation": {"method":"GET","path":"/{Bucket}?location","pathArgs":[0],"operationId":"GetBucketLocation"},
+    "setBucketPolicy": {"method":"PUT","path":"/{Bucket}?policy","pathArgs":[0],"operationId":"PutBucketPolicy"},
+    "getBucketPolicy": {"method":"GET","path":"/{Bucket}?policy","pathArgs":[0],"operationId":"GetBucketPolicy"},
+    "deleteBucketPolicy": {"method":"DELETE","path":"/{Bucket}?policy","pathArgs":[0],"operationId":"DeleteBucketPolicy"},
+    "setObjectAcl": {"method":"PUT","path":"/{Bucket}/{Key}?acl","pathArgs":[0,1],"operationId":"PutObjectAcl"},
+    "getObjectAcl": {"method":"GET","path":"/{Bucket}/{Key}?acl","pathArgs":[0,1],"operationId":"GetObjectAcl"},
+    "initiateMultipartUpload": {"method":"POST","path":"/{Bucket}/{Key}?uploads","operationId":"CreateMultipartUpload"},
+    "uploadPart": {"method":"PUT","path":"/{Bucket}/{Key}","encoding":"raw","operationId":"UploadPart"},
+    "completeMultipartUpload": {"method":"POST","path":"/{Bucket}/{Key}","operationId":"CompleteMultipartUpload"},
+    "abortMultipartUpload": {"method":"DELETE","path":"/{Bucket}/{Key}","operationId":"AbortMultipartUpload"},
+    "upload": {"method":"PUT","path":"/{Bucket}/{Key}","pathArgs":[0,1],"encoding":"raw","operationId":"PutObject"},
+    "download": {"method":"GET","path":"/{Bucket}/{Key}","pathArgs":[0,1],"operationId":"GetObject"},
+    "copy": {"method":"PUT","path":"/{Bucket}/{Key}","pathArgs":[2,3],"operationId":"CopyObject"},
+    "uploadDirectory": {"method":"PUT","path":"/{Bucket}/{Key}","pathArgs":[0],"encoding":"raw","operationId":"PutObject"},
+    "downloadDirectory": {"method":"GET","path":"/{Bucket}/{Key}","pathArgs":[0],"operationId":"GetObject"}
+  }
+}

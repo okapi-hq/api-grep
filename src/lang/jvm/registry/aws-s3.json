@@ -1,21 +1,35 @@
 {
   "$comment": "AWS SDK for Java 2.x, S3 (also used from Kotlin): `S3Client.builder().region(r).build()` or `S3Client.create()`; every operation takes its request builder (`PutObjectRequest.builder().bucket(b).key(k).build()`) or a lambda that fills it (`s3.getObject { it.bucket(b).key(k) }`). The request's members are its fields (`bucket` -> `Bucket`), the path is read from them, as in the boto3 registry. `endpointOverride(URI.create(...))` (MinIO, R2, LocalStack) replaces the host.",
-  "package": "software.amazon.awssdk:s3",
-  "imports": ["software.amazon.awssdk.services.s3.S3Client", "software.amazon.awssdk.services.s3.S3AsyncClient"],
+  "$variants": "The AWS SDK for Kotlin has the same operations under the same names: `S3Client.fromEnvironment { region = r }` or `S3Client { ... }` (`endpointUrl = Url.parse(...)` replaces the host), requests built by a lambda that assigns their properties (`PutObjectRequest { bucket = b; key = k }`, `s3.putObject { ... }`).",
   "provider": "aws",
   "host": "s3.{region}.amazonaws.com",
   "auth": "unknown",
-  "generatedFrom": "manual (operations of the boto3 S3 registry under their AWS SDK for Java 2.x names)",
-  "instance": {
-    "names": ["builder", "create", "crtBuilder", "crtCreate", "S3Client", "S3AsyncClient"],
-    "urlArg": { "endpointOverride": "0" },
-    "build": "build"
-  },
-  "setters": {
-    "packages": ["software.amazon.awssdk.services.s3.model"],
-    "case": "pascal",
-    "fields": { "overrideConfiguration": "" }
-  },
+  "generatedFrom": "manual (operations of the boto3 S3 registry under their AWS SDK for Java 2.x and AWS SDK for Kotlin names)",
+  "variants": [
+    {
+      "package": "software.amazon.awssdk:s3",
+      "imports": ["software.amazon.awssdk.services.s3.S3Client", "software.amazon.awssdk.services.s3.S3AsyncClient"],
+      "instance": {
+        "names": ["builder", "create", "crtBuilder", "crtCreate", "S3Client", "S3AsyncClient"],
+        "urlArg": { "endpointOverride": "0" },
+        "build": "build"
+      },
+      "setters": {
+        "packages": ["software.amazon.awssdk.services.s3.model"],
+        "case": "pascal",
+        "fields": { "overrideConfiguration": "" }
+      }
+    },
+    {
+      "package": "aws.sdk.kotlin:s3",
+      "imports": ["aws.sdk.kotlin.services.s3.S3Client"],
+      "instance": {
+        "names": ["fromEnvironment", "S3Client"],
+        "urlArg": { "fromEnvironment": "0.endpointUrl", "S3Client": "0.endpointUrl" }
+      },
+      "setters": { "packages": ["aws.sdk.kotlin.services.s3.model"], "case": "pascal" }
+    }
+  ],
   "methods": {
     "putObject": {"method":"PUT","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"encoding":"raw","operationId":"PutObject"},
     "getObject": {"method":"GET","path":"/{Bucket}/{Key}","bodyArg":0,"pathFromBody":["Bucket","Key"],"operationId":"GetObject"},
