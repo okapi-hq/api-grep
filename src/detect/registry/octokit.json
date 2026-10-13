@@ -1,6 +1,6 @@
 {
   "package": "@octokit/rest",
-  "aliases": ["octokit", "@octokit/core", "@octokit/action"],
+  "aliases": ["octokit", "@octokit/core", "@octokit/action", "@octokit/graphql"],
   "provider": "github",
   "host": "api.github.com",
   "auth": "bearer",
@@ -8,7 +8,7 @@
   "instance": { "names": ["Octokit", "default", "App"] },
   "methods": {
     "request": { "method": "GET", "path": "/", "routeArg": 0, "bodyArg": 1 },
-    "graphql": { "method": "POST", "path": "/graphql", "bodyArg": 1 },
+    "graphql": { "method": "POST", "path": "/graphql", "bodyArg": 1, "documentArg": 0 },
     "issues.create": { "method": "POST", "path": "/repos/{owner}/{repo}/issues", "bodyArg": 0, "pathFromBody": ["owner", "repo"], "operationId": "issues/create" },
     "issues.update": { "method": "PATCH", "path": "/repos/{owner}/{repo}/issues/{issue_number}", "bodyArg": 0, "pathFromBody": ["owner", "repo", "issue_number"], "operationId": "issues/update" },
     "issues.get": { "method": "GET", "path": "/repos/{owner}/{repo}/issues/{issue_number}", "queryArg": 0, "pathFromBody": ["owner", "repo", "issue_number"], "operationId": "issues/get" },

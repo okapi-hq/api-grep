@@ -13,7 +13,7 @@ import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
 import { withoutClientSettings } from "./model/client-settings.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
-import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, UrlShape } from "./types.js";
+import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
 export interface BuildCtx extends EvalCtx {
   rootDir: string;
@@ -69,6 +69,12 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme };
 }
 
+/** The GraphQL document an SDK method takes as an argument. */
+function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
+  const arg = sdk?.spec.documentArg !== undefined ? sdk.args[sdk.spec.documentArg] : undefined;
+  return arg ? shapeOf(arg, ctx).shape : undefined;
+}
+
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -99,6 +105,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
     codeBaseUrl: !!raw.baseUrlExpr,
     optionsOpaque: raw.optionsOpaque,
     model: raw.modelExpr ? shapeOf(raw.modelExpr, ctx).shape : undefined,
+    document: documentOf(sdk, ctx),
     routeByModel: sdk?.routeByModel,
     clientFrom: raw.clientFrom,
   });

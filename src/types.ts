@@ -80,6 +80,8 @@ export interface MethodSpec {
   path: string;
   operationId?: string;
   bodyArg?: number;
+  /** Argument holding a GraphQL document, or an object with its `query` (Octokit `graphql(query, variables)`). */
+  documentArg?: number;
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];

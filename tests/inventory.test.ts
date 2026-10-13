@@ -61,6 +61,26 @@ describe("provider inventory: LLM SDKs", () => {
   });
 });
 
+describe("provider inventory: an SDK client's own base URL", () => {
+  it("a base URL the code gives but that cannot be read leaves the host unknown, not the SDK's", async () => {
+    const hosts = async (name: string) =>
+      (await scanFixture(name, { examples: 0 })).calls.map((c) => `${c.location.line} ${c.provider} ${c.hostKind} ${c.host ?? c.envName ?? "-"} ${c.pathTemplate}`);
+    expect(await hosts("sdk/unread-base-url")).toEqual([
+      "13 openai unknown - /chat/completions",
+      "14 openai unknown - /chat/completions",
+      "15 openai relative - /api/inference/chat/completions",
+      "16 openai literal api.openai.com /v1/chat/completions",
+      "17 anthropic unknown - /v1/messages",
+    ]);
+    expect(await hosts("python/sdk-unread-base-url")).toEqual([
+      "11 openai unknown - /chat/completions",
+      "21 openai unknown - /chat/completions",
+      "25 openai env localhost:8000 /v1/chat/completions",
+      "29 openai literal api.openai.com /v1/chat/completions",
+    ]);
+  });
+});
+
 describe("provider inventory: product SDKs", () => {
   it("resend", async () => {
     expect(await calls("sdk/resend")).toEqual(["mail.ts:5 resend POST api.resend.com/emails", "mail.ts:7 resend POST api.resend.com/audiences/{audienceId}/contacts"]);

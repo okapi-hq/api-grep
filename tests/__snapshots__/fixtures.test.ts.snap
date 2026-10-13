@@ -402,6 +402,12 @@ exports[`axios > matches snapshot and key expectations 1`] = `
         "line": 7,
       },
       "method": "POST",
+      "operation": {
+        "dynamic": true,
+        "from": "body",
+        "name": null,
+        "protocol": "graphql",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",
@@ -1169,6 +1175,12 @@ exports[`constants > matches snapshot and key expectations 1`] = `
         "line": 3,
       },
       "method": "POST",
+      "operation": {
+        "dynamic": true,
+        "from": "body",
+        "name": null,
+        "protocol": "graphql",
+      },
       "optionsOpaque": false,
       "pathTemplate": "/graphql",
       "provider": "linear",
@@ -9545,11 +9557,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 42,
+    "filesSeen": 43,
     "languages": {
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 42,
+        "filesSeen": 43,
       },
     },
     "skipped": [
@@ -9662,6 +9674,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "unread-base-url/clients.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/_generated/api.ts",
         "reason": "excluded",
       },
@@ -9691,7 +9707,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 34,
+      "excluded": 35,
     },
     "unfollowed": [],
   },

@@ -8,7 +8,7 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
  * Regression fixtures: each directory with an `expected.json` lists the calls a scan must find (file, line, provider).
  * An empty list marks a negative fixture: any call there is a false call. `orUnfollowed` accepts a
  * `diagnostics.unfollowed` entry instead of a call; `todo` (an issue URL) parks a fixture whose feature is not built yet.
- * `operation` is the `operation.name` the call must carry (a JSON-RPC method).
+ * `operation` is the `operation.name` the call must carry (a JSON-RPC method, a GraphQL operation).
  */
 interface Expected {
   issue: string;

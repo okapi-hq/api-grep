@@ -6,6 +6,7 @@ import { evaluate, staticText } from "./evaluate.js";
 import { stringShapeOf } from "./string-template.js";
 import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
+import { importedDocument, isDocumentExpression } from "./graphql-source.js";
 import { localReturn } from "./local-return.js";
 import { paramShape } from "./param-values.js";
 import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
@@ -23,7 +24,8 @@ export interface BodyResult {
 
 function literalToShape(u: Expression, ctx: EvalCtx, depth: number): Shape | undefined {
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u)) return { type: "string", enum: [u.getLiteralValue()] };
-  if (Node.isTemplateExpression(u)) return stringShapeOf(evaluate(u, ctx, depth));
+  // a GraphQL document (`gql\`...\``) is sent as its text
+  if (Node.isTemplateExpression(u) || isDocumentExpression(u)) return stringShapeOf(evaluate(u, ctx, depth));
   if (Node.isNumericLiteral(u)) {
     // getLiteralValue() reads `30_000` and `0x10`; Number(getText()) gives NaN for separators, which breaks the schema.
     const n = u.getLiteralValue();
@@ -112,6 +114,8 @@ function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: Dy
   // `import { CHAT_MODEL } from "./config"`: the constant that file defines
   const imported = importedVariable(u)?.getInitializer();
   if (imported) return shapeOf(imported, ctx, depth + 1, dynamic);
+  const document = importedDocument(u);
+  if (document) return { shape: stringShapeOf(document), fromLiteral: true };
   for (const decl of declarationsOf(u)) {
     const sub = paramSubstitution(decl, ctx);
     // the callers' own dynamic parts belong to them, not to this request

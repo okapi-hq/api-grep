@@ -1,5 +1,36 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`regression fixtures > graphql 1`] = `
+[
+  "catalog.ts:26 api.example-catalog.com POST /graphql ListItems",
+  "catalog.ts:28 api.example-catalog.com POST /graphql ListCategories",
+  "catalog.ts:30 api.example-catalog.com POST /graphql GetCategory",
+  "catalog.ts:38 api.example-catalog.com POST /graphql CountCategories",
+  "catalog.ts:40 api.example-catalog.com POST /graphql CountItems",
+  "catalog.ts:40 api.example-catalog.com POST /graphql CountCategories",
+  "github-standalone.ts:4 github POST /graphql LatestRelease",
+  "github.ts:6 github POST /graphql OpenIssues",
+  "github.ts:14 github POST /graphql viewer",
+  "orders.ts:6 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetOrder",
+  "orders.ts:14 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json locations,shop",
+  "orders.ts:22 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json CancelOrder",
+  "orders.ts:35 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json OrderTotals",
+  "orders.ts:46 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct",
+  "orders.ts:54 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct (wrapper:shopify)",
+  "profile.ts:11 api.example-store.com POST /graphql GetProfile",
+  "profile.ts:13 api.example-store.com POST /search",
+  "transport.ts:4 api.example-store.com POST /graphql GetCart",
+  "transport.ts:10 api.example-store.com POST /graphql null",
+  "transport.ts:12 api.example-store.com GET /graphql StoreHours",
+  "transport.ts:15 api.example-store.com POST /graphql Banner",
+  "transport.ts:15 api.example-store.com POST /graphql Footer",
+  "transport.ts:20 api.example-store.com POST /graphql null",
+  "transport.ts:23 api.example-store.com POST /graphql null",
+  "transport.ts:26 api.example-store.com POST /search",
+  "transport.ts:28 api.example-store.com POST /search",
+]
+`;
+
 exports[`regression fixtures > html/negatives 1`] = `[]`;
 
 exports[`regression fixtures > html/site 1`] = `
@@ -241,6 +272,16 @@ exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
 
 exports[`regression fixtures > negatives/test-files 1`] = `[]`;
 
+exports[`regression fixtures > php/graphql 1`] = `
+[
+  "StoreClient.php:23 api.example-store.com POST /graphql GetProduct",
+  "StoreClient.php:28 api.example-store.com POST /graphql AddLine",
+  "StoreClient.php:28 api.example-store.com POST /graphql shop",
+  "StoreClient.php:33 api.example-store.com POST /graphql AddLine (wrapper:StoreClient.run)",
+  "StoreClient.php:38 api.example-store.com POST /graphql shop (wrapper:StoreClient.run)",
+]
+`;
+
 exports[`regression fixtures > php/json-rpc 1`] = `
 [
   "NodeClient.php:18 rpc.example-chain.net POST / getBlockHeight",
@@ -369,6 +410,19 @@ exports[`regression fixtures > php/wrappers/two-hop 1`] = `
   "signed.php:12 mixpanel POST /{path} (wrapper:do_fetch)",
   "signed.php:17 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
   "signed.php:22 mixpanel POST /track (wrapper:tracked>signed_fetch>do_fetch)",
+]
+`;
+
+exports[`regression fixtures > python/graphql 1`] = `
+[
+  "tracker.py:22 api.example-tracker.dev POST /graphql ListTickets",
+  "tracker.py:27 api.example-tracker.dev POST /graphql CloseTicket",
+  "tracker.py:31 api.example-tracker.dev POST /graphql viewer",
+  "tracker.py:35 api.example-tracker.dev POST /graphql TeamNames",
+  "tracker.py:39 api.example-tracker.dev POST /graphql TeamNames (wrapper:run)",
+  "tracker.py:43 api.example-tracker.dev POST /graphql SavedView",
+  "tracker.py:47 api.example-tracker.dev POST /search",
+  "tracker.py:51 api.example-tracker.dev POST /search",
 ]
 `;
 

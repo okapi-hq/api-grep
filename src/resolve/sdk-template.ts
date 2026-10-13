@@ -105,12 +105,22 @@ function pathParts<E>(src: SdkSource<E>, pathT: string, names: PathNames): Part[
   return path;
 }
 
-/** On the base URL the code gives the client (minus the registry's `basePath`, which that URL replaces). */
+/** `baseURL: undefined`, `base_url=None`: the client keeps its default host. */
+function isNullValue(parts: Part[]): boolean {
+  const only = parts.length === 1 ? parts[0]! : undefined;
+  return only?.kind === "dynamic" && only.shape?.type === "null";
+}
+
+/**
+ * On the base URL the code gives the client (minus the registry's `basePath`, which that URL replaces). One that cannot
+ * be read keeps its host unknown: the client talks to whatever it holds, not to the registry host.
+ */
 function onCodeBase<E>(src: SdkSource<E>, pathT: string, names: PathNames): UrlShape | undefined {
   if (src.baseUrl === undefined) return undefined;
+  const base = src.urlParts(src.baseUrl);
+  if (isNullValue(base)) return undefined;
   const rel = src.basePath && pathT.startsWith(src.basePath) ? pathT.slice(src.basePath.length) : pathT;
-  const url = partsToUrlShape([...src.urlParts(src.baseUrl), ...pathParts(src, rel, names)], { envHints: src.envHints });
-  return url.hostKind !== "unknown" && url.hostKind !== "relative" ? url : undefined;
+  return partsToUrlShape([...base, ...pathParts(src, rel, names)], { envHints: src.envHints });
 }
 
 /**

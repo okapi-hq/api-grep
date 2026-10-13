@@ -6,6 +6,7 @@ import { bindingElementValue, declarationsOf, getProp, paramSubstitution, proper
 import { identifierOrigin } from "../ast/origin.js";
 import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
+import { documentParts, importedDocument } from "./graphql-source.js";
 import { localReturn } from "./local-return.js";
 import { hasStaticHost, markConst, partsToTemplate, pickBranch, replaceInParts, staticText } from "./parts.js";
 import { typeToShape } from "./type-shape.js";
@@ -94,7 +95,7 @@ function evalIdentifier(u: Expression, ctx: EvalCtx, depth: number): Part[] {
     const bound = bindingElementValue(decl, ctx);
     if (bound) return markConst(evaluate(bound, ctx, depth + 1));
   }
-  const exported = commonJsExport(u, ctx, depth);
+  const exported = importedDocument(u) ?? commonJsExport(u, ctx, depth);
   return exported ?? typeLiteral(u) ?? dyn(u, "unknown");
 }
 
@@ -209,6 +210,8 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   const env = envName(u);
   if (env) return [{ kind: "env", name: env }];
   if (!Node.isCallExpression(u)) return dyn(u, "call");
+  const doc = documentParts(u, ctx, depth, evaluate) ?? importedDocument(u);
+  if (doc) return doc;
   const callee = u.getExpression();
   const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : callee.getText();
   if (PASSTHROUGH_CALLS.has(name)) {
@@ -301,6 +304,7 @@ export function evaluate(expr: Expression, ctx: EvalCtx = {}, depth = 0): Part[]
   if (Node.isStringLiteral(u) || Node.isNoSubstitutionTemplateLiteral(u)) return [{ kind: "static", text: u.getLiteralValue() }];
   if (Node.isNumericLiteral(u)) return [{ kind: "static", text: String(u.getLiteralValue()) }];
   if (Node.isTemplateExpression(u)) return evalTemplate(u, ctx, depth);
+  if (Node.isTaggedTemplateExpression(u)) return documentParts(u, ctx, depth, evaluate) ?? dyn(u, "unknown");
   if (Node.isBinaryExpression(u)) {
     const op = u.getOperatorToken().getKind();
     if (op === SyntaxKind.PlusToken) return plusOperands(u).flatMap((o) => evaluate(o, ctx, depth));
