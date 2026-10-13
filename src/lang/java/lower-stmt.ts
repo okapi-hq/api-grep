@@ -1,3 +1,4 @@
+import { addBranch } from "../ir/edits.js";
 import type { ClassDef, Expr, FunctionDef } from "../ir/model.js";
 import { stringBuilderStart } from "../jvm/calls.js";
 import type { SyntaxNode } from "../tree-sitter.js";
@@ -84,6 +85,7 @@ function lowerTry(n: SyntaxNode, st: JState): void {
       const param = named(c).find((x) => x.type === "catch_formal_parameter")?.childForFieldName("name")?.text;
       if (param) handler.scope.names.add(param);
       const body = c.childForFieldName("body");
+      addBranch(st.fn, c.startIndex, c.endIndex);
       if (body) lowerStatement(body, handler);
     } else if (c.type === "finally_clause") for (const b of named(c)) lowerStatement(b, st);
   }
@@ -102,7 +104,20 @@ function lowerFor(n: SyntaxNode, st: JState): void {
     for (const f of ["condition", "update"]) for (const c of n.childrenForFieldName(f)) if (c) lowerExpr(c, inner);
   }
   const body = n.childForFieldName("body");
+  if (body) addBranch(st.fn, body.startIndex, body.endIndex);
   if (body) lowerStatement(body, inner);
+}
+
+/** The blocks of an `if` (exactly one runs when it has an `else`) and a loop body: they may not run (`ir/edits.ts`). */
+function markBranches(n: SyntaxNode, fn: FunctionDef): void {
+  if (n.type === "if_statement") {
+    const blocks = [n.childForFieldName("consequence"), n.childForFieldName("alternative")].filter((b): b is SyntaxNode => !!b);
+    const group = blocks.length === 2 ? { id: n.startIndex, size: 2 } : undefined;
+    for (const b of blocks) addBranch(fn, b.startIndex, b.endIndex, group);
+  } else if (n.type.endsWith("while_statement")) {
+    const body = n.childForFieldName("body");
+    if (body) addBranch(fn, body.startIndex, body.endIndex);
+  }
 }
 
 const STATEMENTS = new Set(["block", "local_variable_declaration", "expression_statement", "if_statement", "while_statement", "do_statement", "for_statement", "enhanced_for_statement"]);
@@ -156,6 +171,7 @@ export function lowerStatement(n: SyntaxNode, st: JState): void {
 function lowerOtherStatement(n: SyntaxNode, st: JState): void {
   if (n.type.endsWith("_declaration") && n.type !== "local_variable_declaration") return hook("classDecl")(n, st, false);
   if (n.type === "if_statement" || n.type.endsWith("while_statement") || n.type === "do_statement" || n.type === "labeled_statement" || n.type === "synchronized_statement") {
+    markBranches(n, st.fn);
     for (const c of named(n)) lowerAny(c, STATEMENTS.has(c.type) ? inBlock(st) : st);
     return;
   }

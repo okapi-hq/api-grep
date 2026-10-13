@@ -45,6 +45,22 @@ interface Expansion {
   via: string[];
 }
 
+/**
+ * Expansions with every path first: a wrapper calling another several times (`load(url, CACHE)`, then `load(url,
+ * NETWORK)`) reaches the same call each time: when there are more than are kept, those repeats come after the other
+ * paths.
+ */
+function diverse(chains: Expansion[]): Expansion[] {
+  const seen = new Map<string, number>();
+  const rank = chains.map((e) => {
+    const key = `${e.raw.call.pos.offset}:${e.raw.fn.module.file}:${e.via.join(">")}`;
+    const n = seen.get(key) ?? 0;
+    seen.set(key, n + 1);
+    return n;
+  });
+  return chains.map((e, i) => ({ e, i })).sort((a, b) => rank[a.i]! - rank[b.i]! || a.i - b.i).map((x) => x.e);
+}
+
 class Expander {
   private readonly bodies = new Map<FunctionDef, IrDetected>();
   private readonly direct = new Map<FunctionDef, IrRaw[]>();
@@ -93,7 +109,8 @@ class Expander {
       chains = this.innerWrappers(fn)
         .flatMap((c) => this.expansionsOf(c.target).map((e) => ({ raw: e.raw, subst: new Map([...e.subst, ...substitutionFor(c.target, c.call, fn)]), via: [wrapperName(c.target), ...e.via] })))
         .filter((e) => e.via.length < MAX_WRAPPERS)
-        .slice(0, MAX_INNER);
+        .slice(0, MAX_INNER * 4);
+      chains = (chains.length > MAX_INNER ? diverse(chains) : chains).slice(0, MAX_INNER);
       this.chains.set(fn, chains);
     }
     return chains;

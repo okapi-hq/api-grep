@@ -15,6 +15,7 @@
     {"file": "Volumes.java", "line": 25, "provider": "api.example-volumes.com"},
     {"file": "Volumes.java", "line": 30, "provider": "api.example-volumes.com"},
     {"file": "Volumes.java", "line": 34, "provider": "api.example-volumes.com"},
-    {"file": "Volumes.java", "line": 38, "provider": "api.example-volumes.com"}
+    {"file": "Volumes.java", "line": 38, "provider": "api.example-volumes.com"},
+    {"file": "Probes.java", "line": 9, "provider": "api.example-probes.com"}
   ]
 }

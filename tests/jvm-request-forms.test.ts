@@ -47,6 +47,8 @@ describe("jvm: requests started in several places (#73)", () => {
       [38, "jaxrs-client", "GET", "https://api.example-volumes.com/v1/volumes/{name}/hits"],
     ]);
     expect(at(r, "Volumes.java", 25).bodyEncoding).toBe("none");
+    // a convenience overload delegating to the full one; a method set in a branch is unknown
+    expect(summary(r, "Probes.java")[0]).toEqual([9, "java-http", "DYNAMIC", "https://api.example-probes.com/v1/health"]);
     expect(at(r, "Volumes.java", 30)).toMatchObject({ bodyEncoding: "json", body: { fromType: "Volume" } });
   });
 });

@@ -1,5 +1,5 @@
 import type { CallExpr, Expr, FunctionDef, Param } from "./model.js";
-import { lookup } from "./project.js";
+import { classField, classFieldType, lookup, receiverClass } from "./project.js";
 import type { IrCtx } from "./raw.js";
 
 /**
@@ -9,6 +9,10 @@ import type { IrCtx } from "./raw.js";
  */
 
 const NUMBERS = new Set(["Integer", "Int", "Long", "Short", "Byte", "Double", "Float", "Number", "BigDecimal", "BigInteger"]);
+const CLASSES = new Set(["Class", "KClass"]);
+const SYNTHETIC = new Set(["lambda", "anonymous", "constructor"]);
+/** Types no other of the list is an instance of: two different ones never fit each other. */
+const DISTINCT = new Set(["String", "Boolean", ...NUMBERS, ...CLASSES, "GenericType", "TypeReference", "ParameterizedTypeReference", "HttpUrl", "URI", "URL"]);
 
 const siblingsOf = (target: FunctionDef): FunctionDef[] =>
   target.module.allFunctions.filter((f) => f.name === target.name && f.cls === target.cls && f.parent === target.parent);
@@ -30,15 +34,30 @@ function typeName(t: Expr | undefined): string | undefined {
   return e?.k === "name" || e?.k === "attr" ? e.name : e?.k === "qname" ? e.path.at(-1) : undefined;
 }
 
+/** `new GenericType<X>() {}` (lowered as unknown when anonymous), `new Foo(...)`: the class built. */
+function builtType(e: Expr): string | undefined {
+  if (e.k === "call" && e.isNew) return typeName(e.fn);
+  return e.k === "unknown" ? /^new\s+(?:[\w.]+\.)?(\w+)/.exec(e.text)?.[1] : undefined;
+}
+
 /** The type of an argument when it is cheap to know: a literal, a class reference, a typed parameter or local. */
 function argType(e: Expr, fn: FunctionDef, ctx: IrCtx): string | undefined {
   if (e.k === "str" || e.k === "tmpl") return "String";
   if (e.k === "num") return "Number";
   if (e.k === "bool") return "Boolean";
+  if (e.k === "qname") return "Class";
+  // a field of the class the code runs in (`this.LIST`, a bare `LIST` in Java)
+  if (e.k === "attr" && e.obj.k === "this") {
+    const cls = receiverClass(fn, ctx.self, ctx.idx);
+    const field = cls ? classField(cls, e.name, ctx.idx)[0] : undefined;
+    return cls ? (typeName(classFieldType(cls, e.name, ctx.idx)) ?? (field ? builtType(field.value) : undefined)) : undefined;
+  }
   if (e.k !== "name") return undefined;
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
   if (b.kind === "param") return typeName(b.param.type);
-  return b.kind === "value" ? typeName(b.assign.type) : undefined;
+  if (b.kind === "value") return typeName(b.assign.type) ?? builtType(b.assign.value);
+  // `Version.class` lowers as the class itself
+  return /^[A-Z](?=.*[a-z])/.test(e.name) && (b.kind === "class" || b.kind === "external" || b.kind === "none") ? "Class" : undefined;
 }
 
 /** Whether an argument of type `arg` can be given to a parameter declared `param`: only clear mismatches say no. */
@@ -48,10 +67,13 @@ function compatible(arg: string | undefined, param: Param | undefined): boolean 
   if (arg === "Number") return NUMBERS.has(declared) || /^(?:int|long|short|byte|double|float)$/.test(declared);
   if (arg === "String") return declared === "String" || declared === "CharSequence";
   if (arg === "Boolean") return declared === "Boolean" || declared === "boolean";
-  // two declared types: a mismatch only between well-known value types
-  const values = ["String", "Boolean", ...NUMBERS];
-  return !(values.includes(arg) && values.includes(declared) && arg !== declared);
+  if (CLASSES.has(arg) && CLASSES.has(declared)) return true;
+  // two declared types: a mismatch only between well-known types
+  return !(DISTINCT.has(arg) && DISTINCT.has(declared) && arg !== declared);
 }
+
+/** Whether an overload hands its call to another of its name (`GET(url: String) = GET(url.toHttpUrl(), ...)`). */
+const delegates = (f: FunctionDef): boolean => f.calls.some((c) => (c.fn.k === "name" || (c.fn.k === "attr" && c.fn.obj.k === "this")) && c.fn.name === f.name);
 
 function fitsTypes(f: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
   const positional = f.params.filter((p) => p.kind === "normal");
@@ -60,7 +82,8 @@ function fitsTypes(f: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx):
 
 /** The overload of `target` a call runs; `target` itself without overloads; undefined when the arguments do not tell. */
 export function overloadFor(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): FunctionDef | undefined {
-  if (!ctx.idx.lang.overloads) return target;
+  // lambdas and constructors are not overloads of a name (Java's other constructors are functions of their own)
+  if (!ctx.idx.lang.overloads || SYNTHETIC.has(target.name) || target.name.startsWith("<") || (call.fn.k !== "name" && call.fn.k !== "attr")) return target;
   const all = siblingsOf(target);
   if (all.length <= 1) return target;
   const fitting = all.filter((f) => fitsCount(f, call));
@@ -68,5 +91,8 @@ export function overloadFor(target: FunctionDef, call: CallExpr, fn: FunctionDef
   const byCount = fitting.length > 1 ? fitting.filter((f) => f !== fn) : fitting;
   if (byCount.length <= 1) return byCount[0];
   const byType = byCount.filter((f) => fitsTypes(f, call, fn, ctx));
-  return byType.length === 1 ? byType[0] : undefined;
+  if (byType.length === 1) return byType[0];
+  // convenience overloads that all end in one: whichever runs, that one builds the request
+  const core = byType.filter((f) => !delegates(f));
+  return core.length === 1 && byType.length > 1 ? core[0] : undefined;
 }
