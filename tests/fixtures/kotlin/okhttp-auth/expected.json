@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/69",
+  "calls": [
+    {"file": "Registry.kt", "line": 17, "provider": "registry.example.com"},
+    {"file": "Registry.kt", "line": 28, "provider": "registry.example.com"}
+  ]
+}
