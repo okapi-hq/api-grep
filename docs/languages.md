@@ -212,11 +212,15 @@ JVM SDK registries (#33) come next. Java is #43.
 
 **Detected** (`src/lang/jvm/http/`, tables in `clients.json`):
 
-- **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (`url`, verbs, `method`, `header` /
-  `addHeader`, `headers`), also built over several statements, held in a field or sent through a wrapper;
+- **OkHttp** (`okhttp`): `newCall(request)` with a `Request.Builder` chain (also a bare `Builder()` when the client
+  is OkHttp's; `url`, verbs, `method`, `header` /
+  `addHeader`, `headers`), also built over several statements, held in a field, sent through a wrapper or returned
+  by a request factory of the project (`newCall(get(url))`: the factory's parameters read as the call's arguments,
+  a factory calling its own name read as its overload);
   `HttpUrl` builders (`toHttpUrl().newBuilder()`, `HttpUrl.Builder()`: path segments and query parameters); bodies
   from `toRequestBody(mediaType)`, `RequestBody.create` (either argument order), `FormBody.Builder` (form) and
-  `MultipartBody.Builder` (multipart), the encoding from the media type.
+  `MultipartBody.Builder` (multipart), also when a project method returns them, the encoding from the media type; a
+  `RequestBody` class of the project writes its own bytes, so its body is opaque (`raw`, not its constructor fields).
 - **Interceptors**: the headers and query parameters an interceptor sets (a lambda, `Interceptor { }`, an
   `object : Interceptor`, or a project class with its constructor arguments) apply to every call of the client built
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
@@ -228,7 +232,8 @@ JVM SDK registries (#33) come next. Java is #43.
   (`URL(u).openConnection()`, reported there, with `requestMethod` / `setRequestMethod`, `setRequestProperty`,
   `doOutput` and what the function writes to the output stream; a URL that is not http(s) or an env var, with no HTTP
   setting, is not a request).
-- **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient`, with the builder lambda
+- **Ktor client** (`ktor`): verbs and `request` on an `io.ktor.client.HttpClient` (the URL positional or
+  `urlString = ...`), with the builder lambda
   (`parameter`, `header`, `headers { append }`, `setBody`, `contentType`, `bearerAuth`, `basicAuth`, `url("...")`,
   `url { host = ...; path(...); parameters.append(...) }`, `method = HttpMethod.X`), and the client's
   `defaultRequest { url(...); header(...) }` as base URL and `clientParts` with `from: "default"`.
@@ -275,7 +280,8 @@ are its `<init>` method; constructor `val` / `var` parameters, body properties, 
 returns), getters, nested classes and `companion object` members (initialized in `<clinit>`) are its fields. A bare
 name in a method is a local or parameter first, then a member of the class (`this.name`, Kotlin's implicit receiver),
 then a top-level name. Lambdas are closures; `x.let { it }` gives `it` the value of `x`, and `run`, `with`,
-`withContext` and `lazy` stand for what their lambda returns. Annotations of functions and parameters
+`withContext` and `lazy` stand for what their lambda returns; `x ?: return` (also `continue`, `break`, `throw`) is
+`x`. Annotations of functions and parameters
 (`@GET("users/{id}")`, `@Query("page")`) are kept on `FunctionDef.annotations` / `Param.annotations` for Retrofit,
 the type arguments of a call (`create<Api>()`) on `CallExpr.typeArgs`,
 those of a class (`@FeignClient(...)`) on `ClassDef.classAnnotations`. A property set on a local object
@@ -320,7 +326,9 @@ file. A file that does not parse is then read once more with a `;` in place of t
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay
-  unresolved (Retrofit annotations are matched by name in a file that imports `retrofit2.http`).
+  unresolved, except the client classes listed in `wildcardTypes` of `clients.json` (`HttpClient` under
+  `import io.ktor.client.*`, `OkHttpClient` under `import okhttp3.*`) when a single star import of the file has it.
+  Retrofit annotations are matched by name in a file that imports `retrofit2.http`.
 - Retrofit: an interface created on an injected `Retrofit` (a Hilt `@Provides` parameter), or never created in the
   project, gets the project's only `Retrofit.Builder()` when there is one, else an unknown host (`{baseUrl}`); the
   builder of a DI provider and its injected OkHttp client are #46. `@QueryName` (a parameter name without a value)
@@ -375,7 +383,9 @@ operation?: {
 - `operationId` keeps its meaning, the OpenAPI operation id from an SDK registry; `operation` is about the wire
   protocol.
 - **Identity.** `id` hashes the file, line and column and, when the call has one, `operation.name`: `getTransaction`
-  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids.
+  and `getBalance` sent from one place are two calls with two ids. Calls with no operation keep their ids, also the
+  `#n` index of a request a wrapper sends beside a JSON-RPC one (`onePerRequest` in `src/scan.ts` counts every request
+  from the place for them, a batch once).
 - **Batches: one `Call` per operation.** A request that sends several operations together (a JSON-RPC array, a GraphQL
   batch array) gives one `Call` per operation, at the request's location, each with its own `id` and `batch: true`;
   the same operation twice in one batch is one call. Every field but `operation` and `id` describes the HTTP request,
@@ -391,13 +401,39 @@ operation?: {
   - Not chosen: one `Call` with `alternatives` (merges "one of" and "all of", drops per-operation fields), or an
     `operations` array on `Call` (every reader of the common single-operation case loops over a list, and ids and
     grouping per operation need another key).
-- Front ends fill it through `ResolvedCall.operation` (`src/assemble.ts`). No protocol is detected yet:
+- **Where it is read.** `assembleCalls` (`src/assemble.ts`) asks each protocol of `src/operation/index.ts`, one module
+  per protocol, for the operations of the resolved request (method, URL, body shape, headers, query), so every
+  language gets them from what it already resolves; a front end that knows better sets `ResolvedCall.operation`
+  itself and is kept as it is. SDK calls are left out: their registry names the endpoint.
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | not started |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32) |
 | GraphQL (document: type, name, fields) | #35 | not started |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | not started |
+
+### JSON-RPC (#34)
+
+`src/operation/json-rpc.ts` reads the body shape every front end already builds, where a literal `method` is a
+one-value enum:
+
+- **A request** is a JSON body object with a `jsonrpc` member and a `method`, or, JSON-RPC 1.0 style (older node
+  clients), a string `method` together with `params` and `id`. A 1.0-style body whose `method` is an HTTP verb
+  (`{ method: "GET", params, id }`, a request handed to a proxy) is not one, nor is a `method` with neither
+  (`{ method: "card", amount }`). `from` is `body`.
+- **The name** is the `method`'s literal value. Several values (a branch, a variable set on each path, or a helper's
+  parameter with the methods its callers pass) give `alternatives`; a value the scan cannot read sets `dynamic` and
+  keeps the names it could read. A computed method keeps its literal parts: `` `get${kind}Info` ``, `"eth_" + kind`
+  and `"get{$kind}Info"` give `get{kind}Info` / `eth_{kind}` with `dynamic: true` (the body shape itself stays a plain
+  `string`; the text is kept beside it by `src/resolve/string-template.ts`).
+- **A batch** is a JSON array body: one call per distinct method among its request elements, each with `batch: true`.
+- **Helpers** that build the envelope (`rpc(method, params)`) need nothing of their own: wrapper expansion carries
+  each caller's literal `method` into the body, so `rpc("getBalance", [address])` is a call at the caller with the
+  operation `getBalance`; the request inside the helper lists every method its callers pass as `alternatives`.
+- `params` keeps its shape as before: positional `params` an array, named `params` an object with its properties.
+- **Not covered**: RPC client libraries that hide the envelope (`@solana/web3.js`, viem, ethers, web3.py,
+  solana-py) map a client method to an RPC method and need registries of their own (#52); JSON builders that are not
+  literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP clients (#32).
 
 ## SDK clients passed as untyped parameters (#37)
 
@@ -505,7 +541,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries with #33 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"` |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; no protocol detected yet (#34 to #36) | same | same | same |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) from the body shape, GraphQL and SOAP not yet (#35, #36) | same | same | same engine; no JSON-RPC fixture until the HTTP clients (#32) |
 | #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture) |
 

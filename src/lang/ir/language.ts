@@ -171,6 +171,8 @@ export interface IrLanguage {
   declarations?: IrDeclarationDetector[];
   /** Values built entry by entry (`JSONObject().put(...)`), read as dicts and lists. */
   fluentMaps?: FluentMapSpec[];
+  /** Library classes a wildcard import can stand for (`io.ktor.client.HttpClient` under `import io.ktor.client.*`). */
+  wildcardTypes?: Set<string>;
   /** Library constants with a known string value (`MediaType.APPLICATION_JSON`), by the end of their dotted name. */
   constants?: Record<string, string>;
   /** A call that stands for another expression of the project (Laravel `config('services.x.url')`: an entry of `config/services.php`). */

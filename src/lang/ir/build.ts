@@ -1,4 +1,4 @@
-import { assembleCall } from "../../assemble.js";
+import { assembleCalls } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
 import type { Call, Language } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
@@ -113,8 +113,8 @@ function authOf(raw: IrRaw, fromHeaders: AuthScheme): AuthScheme {
   return definite || !raw.auth ? fromHeaders : raw.auth;
 }
 
-/** Resolves a detected call into the report's Call record. */
-export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
+/** Resolves a detected call into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
+export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const ctx = withSelf(withSubst(base, raw.subst), raw.self);
   const dynamic: DynamicPart[] = [];
   const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
@@ -133,7 +133,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call {
   const fromHeaders = headers.authScheme === "none" && pairs?.queryAuth ? pairs.queryAuth : headers.authScheme;
   const file = raw.fn.module.file;
   const sdk = raw.sdk;
-  return assembleCall({
+  return assembleCalls({
     location: { file: relativePosix(base.rootDir, file), line: raw.call.pos.line, col: raw.call.pos.col, language: base.language },
     client: raw.client,
     sdk: sdk ? { package: sdk.entry.package, version: base.sdkVersion(file, sdk.entry.package), chain: sdk.key, provider: sdk.entry.provider, operationId: sdk.spec.operationId } : undefined,

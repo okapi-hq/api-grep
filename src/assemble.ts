@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
+import { operationsOf } from "./operation/index.js";
 import type { BodySource, Call, ClientFrom, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
@@ -141,4 +142,13 @@ export function assembleCall(r: ResolvedCall): Call {
     ...(r.clientFrom ? { clientFrom: r.clientFrom } : {}),
   };
   return route ? { ...call, ...route } : call;
+}
+
+/**
+ * The report's calls for one resolved request: one per operation it sends (each method of a JSON-RPC batch), or one
+ * when it names none. An operation the front end set itself is kept as it is.
+ */
+export function assembleCalls(r: ResolvedCall): Call[] {
+  const ops = r.operation ? [r.operation] : operationsOf(r);
+  return ops.length === 0 ? [assembleCall(r)] : ops.map((operation) => assembleCall({ ...r, operation }));
 }

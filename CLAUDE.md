@@ -49,7 +49,7 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit), detectors over the IR driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
   (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds).
-- Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template}.ts`.
+- Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template,string-template}.ts`.
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
   them to the shape (`src/resolve/object-edits.ts`, `edited-shape.ts`). Rules in `docs/languages.md`.
@@ -60,8 +60,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
   the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
-  APIs). Front ends set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. Schema,
-  batch decision and per-protocol status (#34 to #36) in `docs/languages.md`.
+  APIs). `assembleCalls` (`src/assemble.ts`) reads it from the resolved request through `src/operation/`, one module
+  per protocol (`json-rpc.ts` reads the body shape), unless the front end set `ResolvedCall.operation`; `callId`
+  hashes its name; a batch is one `Call` per operation. Schema, batch decision and per-protocol status (#34 to #36) in
+  `docs/languages.md`.
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

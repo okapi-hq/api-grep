@@ -84,6 +84,8 @@ export interface JvmTables {
   feign: FeignTables;
   retrofit: RetrofitTables;
   fluentMaps: FluentMapSpec[];
+  /** Classes of these clients a wildcard import (`import io.ktor.client.*`) stands for. */
+  wildcardTypes: string[];
   constants: Record<string, string>;
 }
 
