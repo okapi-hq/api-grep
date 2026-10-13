@@ -45,7 +45,7 @@ function isUrlString(e: Expression, depth = 0): boolean {
 }
 
 /** A client's construction: its URL, the one HTTP transport it is handed, or null when it does not read as HTTP. */
-function fromRpcClient(name: string, args: Expression[], reg: RegistryEntry): Endpoint | null {
+export function fromRpcClient(name: string, args: Expression[], reg: RegistryEntry): Endpoint | null {
   const spec = reg.endpoint!;
   const source = Object.hasOwn(spec.clients, name) ? spec.clients[name]! : undefined;
   if (!source) return null;
@@ -94,7 +94,7 @@ function projectRpcEndpoint(project: Project, reg: RegistryEntry): Endpoint | nu
 
 const projectCache = new WeakMap<Project, Map<RegistryEntry, Endpoint | null>>();
 
-function cachedProjectEndpoint(project: Project, reg: RegistryEntry): Endpoint | null {
+export function cachedProjectEndpoint(project: Project, reg: RegistryEntry): Endpoint | null {
   let byEntry = projectCache.get(project);
   if (!byEntry) projectCache.set(project, (byEntry = new Map<RegistryEntry, Endpoint | null>()));
   if (!byEntry.has(reg)) byEntry.set(reg, projectRpcEndpoint(project, reg));
@@ -102,7 +102,7 @@ function cachedProjectEndpoint(project: Project, reg: RegistryEntry): Endpoint |
 }
 
 /** `ethers.Contract`, `PublicClient<Transport>`: the name of a written type reference, without namespace or arguments. */
-function referenceName(type: TypeNode | undefined): string | undefined {
+export function referenceName(type: TypeNode | undefined): string | undefined {
   return type && Node.isTypeReference(type) ? type.getTypeName().getText().split(".").at(-1) : undefined;
 }
 

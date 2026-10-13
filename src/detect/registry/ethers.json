@@ -1,7 +1,7 @@
 {
-  "$comment": "ethers v5 and v6 (#52): a JsonRpcProvider sends JSON-RPC to the URL it is built with. A BrowserProvider (v5 Web3Provider) talks to the wallet and a WebSocketProvider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire.",
+  "$comment": "ethers v5 and v6 (#52): a JsonRpcProvider sends JSON-RPC to the URL it is built with. A BrowserProvider (v5 Web3Provider) talks to the wallet and a WebSocketProvider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire. A Contract (#78) sends what its runner can: a provider only reads (`eth_call`), a Wallet signs in the app (`eth_sendRawTransaction`), `provider.getSigner()` has the node sign (`eth_sendTransaction`); a function called directly is a view or a transaction as the ABI written in the code says, either when it does not. `*` in a key is one of the ABI's functions, never one of `notFunctions`.",
   "package": "ethers",
-  "aliases": ["@ethersproject/providers"],
+  "aliases": ["@ethersproject/providers", "@ethersproject/contracts"],
   "provider": "json-rpc",
   "host": "{rpcEndpoint}",
   "auth": "unknown",
@@ -14,9 +14,19 @@
       "StaticJsonRpcProvider": { "url": "0" }
     },
     "nonHttp": ["BrowserProvider", "Web3Provider", "WebSocketProvider", "IpcProvider", "IpcSocketProvider", "SocketProvider"],
-    "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider"]
+    "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider"],
+    "signers": { "Wallet": { "provider": "1", "signs": "local" }, "getSigner": { "signs": "node" } }
   },
+  "notFunctions": ["addListener", "address", "attach", "callStatic", "connect", "deployed", "deploymentTransaction", "emit", "estimateGas", "fallback", "filters", "functions", "getAddress", "getDeployedCode", "getEvent", "getFunction", "interface", "listenerCount", "listeners", "off", "on", "once", "populateTransaction", "provider", "queryFilter", "removeAllListeners", "removeListener", "resolvedAddress", "runner", "signer", "target", "then", "toString", "valueOf", "waitForDeployment"],
   "methods": {
+    "Contract.*": { "method": "POST", "path": "", "contract": "auto", "runnerArg": "2", "abiArg": "1" },
+    "Contract.functions.*": { "method": "POST", "path": "", "contract": "auto", "runnerArg": "2", "abiArg": "1" },
+    "Contract.*.send": { "method": "POST", "path": "", "contract": "send", "runnerArg": "2" },
+    "Contract.*.staticCall": { "method": "POST", "path": "", "rpc": "eth_call", "runnerArg": "2" },
+    "Contract.callStatic.*": { "method": "POST", "path": "", "rpc": "eth_call", "runnerArg": "2" },
+    "Contract.*.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "runnerArg": "2" },
+    "Contract.estimateGas.*": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "runnerArg": "2" },
+    "Contract.queryFilter": { "method": "POST", "path": "", "rpc": "eth_getLogs", "runnerArg": "2" },
     "broadcastTransaction": { "method": "POST", "path": "", "rpc": "eth_sendRawTransaction" },
     "call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
     "estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },

@@ -1,5 +1,5 @@
 {
-  "$comment": "web3.js v1 and v4 (#52): `new Web3(url)` and `new Web3(new HttpProvider(url))` send JSON-RPC over HTTP; `new Web3(window.ethereum)` or `Web3.givenProvider` talk to the wallet, and a WebSocket or IPC provider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire.",
+  "$comment": "web3.js v1 and v4 (#52): `new Web3(url)` and `new Web3(new HttpProvider(url))` send JSON-RPC over HTTP; `new Web3(window.ethereum)` or `Web3.givenProvider` talk to the wallet, and a WebSocket or IPC provider over a socket: calls through them are not HTTP requests of the app. `rpc` is the method on the wire. A contract (#78), `new web3.eth.Contract(abi, address)`, says what it sends: `.methods.balanceOf(owner).call()` is `eth_call`, `.send()` a transaction; `*` in a key is one of the ABI's functions.",
   "package": "web3",
   "provider": "json-rpc",
   "host": "{rpcEndpoint}",
@@ -17,6 +17,9 @@
     "types": ["Web3"]
   },
   "methods": {
+    "methods.*.call": { "method": "POST", "path": "", "rpc": "eth_call" },
+    "methods.*.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas" },
+    "methods.*.send": { "method": "POST", "path": "", "rpc": ["eth_sendTransaction", "eth_sendRawTransaction"] },
     "eth.call": { "method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0 },
     "eth.estimateGas": { "method": "POST", "path": "", "rpc": "eth_estimateGas", "bodyArg": 0 },
     "eth.getAccounts": { "method": "POST", "path": "", "rpc": "eth_accounts" },

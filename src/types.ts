@@ -164,6 +164,12 @@ export interface EndpointSpec {
   nonHttp?: string[];
   /** Types a client of the library is declared with (`JsonRpcProvider`, `PublicClient`): a call on another type is not one. */
   types?: string[];
+  /**
+   * Signers a contract can be built with (ethers, #78): where one takes its provider (`Wallet`: `1`; none: the receiver,
+   * `provider.getSigner()`), and who signs its transactions, the app (`local`: `eth_sendRawTransaction`) or the node
+   * (`node`: `eth_sendTransaction`).
+   */
+  signers?: Record<string, { provider?: string; signs: "local" | "node" }>;
 }
 
 export interface RegistryEntry {

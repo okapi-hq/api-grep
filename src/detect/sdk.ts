@@ -3,7 +3,8 @@ import { unwrap } from "../ast/expr.js";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { getProp } from "../ast/object.js";
 import { exportedChain, isNamedImport } from "./callee.js";
-import { clientEndpoint } from "./endpoint.js";
+import { clientEndpoint, type Endpoint } from "./endpoint.js";
+import { contractCall } from "./rpc-contract.js";
 import { rpcEndpoint } from "./rpc-endpoint.js";
 import type { Registry } from "./registry/index.js";
 
@@ -73,7 +74,7 @@ function endpointFirst(all: Expression[], spec: MethodSpec, callee: Callee): { u
   return { url: all[0], args: all.slice(1) };
 }
 
-function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee): RawCall | null {
+function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee, endpoint?: Endpoint): RawCall | null {
   const own = endpointFirst(node.getArguments() as Expression[], spec, callee);
   const args = own.args;
   const raw: RawCall = {
@@ -100,7 +101,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
-  if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own);
+  if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
@@ -110,9 +111,9 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
  * A GraphQL or JSON-RPC client call: the endpoint and headers its client was built with, and the request's own
  * headers; none for a JSON-RPC client that does not read as HTTP (a browser wallet).
  */
-function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, own: { url?: Expression; client?: Expression }): RawCall | null {
+function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, own: { url?: Expression; client?: Expression }, given?: Endpoint): RawCall | null {
   const args = raw.sdk!.args;
-  const endpoint = own.url ? { url: own.url } : reg.endpoint!.nonHttp ? rpcEndpoint(node, reg, spec, callee, args, own.client) : clientEndpoint(node, reg, spec, callee, args);
+  const endpoint = given ?? (own.url ? { url: own.url } : reg.endpoint!.nonHttp ? rpcEndpoint(node, reg, spec, callee, args, own.client) : clientEndpoint(node, reg, spec, callee, args));
   if (!endpoint) return null;
   if (endpoint.url) raw.baseUrlExpr = endpoint.url;
   if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
@@ -138,6 +139,9 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
     const spec = reg.commands && Object.hasOwn(reg.commands, name) ? reg.commands[name] : undefined;
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
+  // a contract object's function (#78), before its name is read as one of the client's own methods
+  const contract = reg.endpoint?.nonHttp ? contractCall(node, callee, reg) : undefined;
+  if (contract !== undefined) return contract && buildRaw(node, reg, contract.key, contract.spec, callee, contract.endpoint);
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
     const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
