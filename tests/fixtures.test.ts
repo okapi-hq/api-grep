@@ -137,10 +137,10 @@ describe("examples", () => {
     const r = await scanFixture("examples");
     expect(r).toMatchSnapshot();
     const list = at(r, "query.ts", 4);
-    expect(list.queryShape).toMatchObject({ type: "object", properties: { page: { type: "number" }, status: { type: "string", enum: ["open", "closed"] }, expand: { type: "string", enum: ["owner"] } } });
-    expect(list.examples[0]!.url).toMatch(/^https:\/\/api\.example\.com\/v1\/tickets\?page=\d+&status=open&expand=owner$/);
+    expect(list.queryShape).toMatchObject({ type: "object", properties: { page: { type: "number" }, status: { type: "string", enum: ["closed", "open"] }, expand: { type: "string", enum: ["owner"] } } });
+    expect(list.examples[0]!.url).toMatch(/^https:\/\/api\.example\.com\/v1\/tickets\?page=\d+&status=closed&expand=owner$/);
     expect(list.examples.map((e) => e.variant)).toEqual(["minimal", "alt"]);
-    expect(list.examples[1]!.query.status).toBe("closed");
+    expect(list.examples[1]!.query.status).toBe("open");
 
     const search = at(r, "query.ts", 8);
     expect(search.query).toEqual(["q", "limit", "sort"]);
@@ -154,8 +154,8 @@ describe("examples", () => {
     const pay = at(r, "body.ts", 5);
     expect(pay.headerValues).toEqual({ "content-type": "application/json", "idempotency-key": null, "x-api-version": "2024-06-01" });
     expect(pay.examples[0]!.headers).toEqual({ "content-type": "application/json", "idempotency-key": "<idempotency-key>", "x-api-version": "2024-06-01" });
-    expect(pay.examples[0]!.body).toMatchObject({ currency: "eur", amount: 1200, capture: true, source: { kind: "card" } });
-    expect(pay.examples.find((e) => e.variant === "alt")!.body).toMatchObject({ source: { kind: "bank" } });
+    expect(pay.examples[0]!.body).toMatchObject({ currency: "eur", amount: 1200, capture: true, source: { kind: "bank" } });
+    expect(pay.examples.find((e) => e.variant === "alt")!.body).toMatchObject({ source: { kind: "card" } });
 
     const login = at(r, "body.ts", 13);
     expect(login.bodyEncoding).toBe("form");
@@ -169,8 +169,8 @@ describe("examples", () => {
     expect(invite.examples[2]!.body).toMatchObject({ role: "member" });
 
     const user = at(r, "path.ts", 2);
-    expect(user.examples[0]!.url).toMatch(/^https:\/\/api\.example\.com\/users\/\d+\/posts$/);
-    expect(user.examples[1]!.url).toMatch(/\/likes$/);
+    expect(user.examples[0]!.url).toMatch(/^https:\/\/api\.example\.com\/users\/\d+\/likes$/);
+    expect(user.examples[1]!.url).toMatch(/\/posts$/);
     expect(at(r, "path.ts", 6).examples[0]!.url).toMatch(/\/members\/[a-z]+\.[a-z]+%40example\.com$/);
     const dyn = at(r, "path.ts", 10);
     expect(dyn.examples[0]!.url).toMatch(/^https:\/\/\{baseUrl\}\/v2\/records\/[a-z0-9]{8}$/);

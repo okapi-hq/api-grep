@@ -55,6 +55,21 @@ The original pipeline (`src/detect`, `src/resolve`, `src/wrappers`) is the front
 `src/lang/typescript/`. It reads code through the TypeScript checker, so callees are identified by declaration and
 bodies by their declared types. The same front end reads three languages:
 
+A scan does not hold every file in one checker (#68). `src/lang/typescript/graph.ts` first reads each file's imports
+(and `require`, `import()`, JSDoc import types, `/// <reference>`), its `declare module` blocks and, for a script, the
+global names it declares, and groups the files that can see each other: linked by an import in either direction,
+through files in scope or other code the checker loads (never `node_modules`), by an ambient module, or by a global
+name. A `declare global` block, or an interface of a script, links its file to every file. Groups are packed into
+batches of about 8 MB of source (`batches.ts`), each read by a project of its own and dropped once its calls are built;
+calls, diagnostics and coverage come out in the order a single project gives them. A group is never split: when one
+group is most of the repository (a backend whose modules import each other), `checker-budget.ts` drops the checker's
+types when the heap passes 60% of its limit, and a new checker makes again those it needs. Imports are resolved by
+`src/module-resolution.ts`, which keeps what it found and not every path it tried (the checker's own keeps them for
+watch mode: hundreds of megabytes in a repository scanned without `node_modules`). Union members of a type are
+ordered by their text, not by when the checker first met them, and the properties of a mapped type over a union of
+keys by name: a shape no longer depends on which other files a checker read. The receiver resolver (#37) counts its 50
+callers among the calls of the function's group.
+
 - **TypeScript** (`.ts`, `.tsx`, `.mts`, `.cts`). A `.ts` file that is XML (Qt Linguist translations) or binary (MPEG
   transport streams) is not TypeScript and is left out.
 - **JavaScript** (`.js`, `.jsx`, `.mjs`, `.cjs`) with `allowJs`: the checker follows CommonJS (`require`,

@@ -1,36 +1,17 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
-import { ts, type Node, type SourceFile } from "ts-morph";
-import { buildCall, type BuildCtx } from "../../build-call.js";
-import { detectFile } from "../../detect/index.js";
-import { ReceiverResolver } from "../../detect/receiver.js";
 import { defaultRegistry, type Registry } from "../../detect/registry/index.js";
-import { selectChanged } from "../../git.js";
 import { relativePosix } from "../../files.js";
 import { languageOf } from "../../language.js";
 import { PackageJsonReader } from "../../package-json.js";
-import { loadProject, tsFiles, type CheckerLanguage, type Loaded } from "../../project.js";
-import type { DiagnosticsCollector } from "../../report/diagnostics.js";
+import { leftOutOf, scopeOf, tsFiles, type CheckerLanguage, type Scope, type Unreadable } from "../../project.js";
 import type { Call } from "../../report/schema.js";
-import type { RawCall } from "../../types.js";
-import { expandWrappers } from "../../wrappers/detect.js";
-import { setDocumentRoot } from "../../resolve/graphql-source.js";
-import { errorText } from "../files.js";
 import { formCall } from "../html/forms.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
-import { declaredPackages, sdkCoverage } from "./coverage.js";
-
-/** Why a file cannot be read reliably: a syntax error, or an import whose module specifier is not a string literal. */
-function parseProblem(sf: SourceFile): string | undefined {
-  const syntax = sf.getProject().getProgram().compilerObject.getSyntacticDiagnostics(sf.compilerNode)[0];
-  if (syntax) return ts.flattenDiagnosticMessageText(syntax.messageText, " ");
-  const decls = [...sf.getImportDeclarations(), ...sf.getExportDeclarations()];
-  const bad = decls.some((d) => d.compilerNode.moduleSpecifier !== undefined && !ts.isStringLiteral(d.compilerNode.moduleSpecifier));
-  return bad ? "Expected the module specifier to be a string literal." : undefined;
-}
-
-function lineOf(node: Node): number {
-  return node.getSourceFile().getLineAndColumnAtPos(node.getStart()).line;
-}
+import { Merged } from "./batched.js";
+import { packBatches, projectOrder } from "./batches.js";
+import { declaredPackages, importsCoverage } from "./coverage.js";
+import { fileGroups } from "./graph.js";
 
 /** npm packages declared by the package.json files between a file and the scanned directory, read once per directory. */
 function declaredNear(rootDir: string, packages: PackageJsonReader): (file: string) => Set<string> {
@@ -43,82 +24,13 @@ function declaredNear(rootDir: string, packages: PackageJsonReader): (file: stri
   };
 }
 
-interface Detected {
-  raws: RawCall[];
-  scanned: SourceFile[];
-}
-
-/** Runs every detector on each file; a file that cannot be read or makes a detector throw is skipped, not fatal. */
-function detectAll(files: SourceFile[], registry: Registry, input: LanguageScanInput, packages: PackageJsonReader): Detected {
-  const raws: RawCall[] = [];
-  const scanned: SourceFile[] = [];
-  const receivers = new ReceiverResolver(files, registry, declaredNear(input.rootDir, packages));
-  for (const sf of files) {
-    const file = relativePosix(input.rootDir, sf.getFilePath());
-    try {
-      const problem = parseProblem(sf);
-      if (problem) {
-        input.diag.skip({ file, reason: "parse-error", detail: problem });
-        continue;
-      }
-      const { calls, candidates, unfollowed } = detectFile(sf, registry, sf, receivers);
-      const expanded = input.opts.wrappers !== false ? expandWrappers(candidates, registry, receivers) : { calls: [], unfollowed: [] };
-      raws.push(...calls, ...expanded.calls);
-      for (const u of [...unfollowed, ...expanded.unfollowed]) input.diag.unfollow({ file, line: lineOf(u.node), reason: u.reason, expr: u.expr, via: u.via });
-      scanned.push(sf);
-    } catch (err) {
-      input.diag.skip({ file, reason: "internal-error", detail: errorText(err) });
-    }
-  }
-  return { raws, scanned };
-}
-
-function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsCollector): Call[] {
-  const calls: Call[] = [];
-  for (const raw of raws) {
-    try {
-      calls.push(...buildCall(raw, ctx));
-    } catch (err) {
-      diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
-    }
-  }
-  return calls;
-}
-
-interface InScope {
-  files: SourceFile[];
-  /** HTML pages in scope (absolute paths). */
-  pages: string[];
-  /** Every file this scan saw, HTML pages without inline script aside (absolute paths). */
-  seen: string[];
-}
-
-/** The files this scan covers; what it leaves out (unreadable, or removed by the options) goes to diagnostics. */
-function filesInScope(loaded: Loaded, input: LanguageScanInput): InScope {
-  const parseError = (u: Loaded["unreadable"][number]): void => input.diag.skip({ file: u.file, reason: "parse-error", detail: u.detail });
-  const paths = (files: SourceFile[]): string[] => files.map((sf) => sf.getFilePath() as string);
-  const pages = [...loaded.html.keys()];
-  if (input.changed) {
-    const changed = input.changed;
-    const unreadable = loaded.unreadable.filter((u) => changed.has(u.path));
-    unreadable.forEach(parseError);
-    const files = selectChanged(loaded.files, changed);
-    const kept = new Set(paths(files));
-    return { files, pages: pages.filter((p) => changed.has(p) || kept.has(p)), seen: [...kept, ...unreadable.map((u) => u.path)] };
-  }
-  loaded.unreadable.forEach(parseError);
-  for (const l of loaded.leftOut) input.diag.skip(l);
-  const leftOut = loaded.leftOut.map((l) => path.join(input.rootDir, l.file));
-  return { files: loaded.files, pages, seen: [...paths(loaded.files), ...leftOut, ...loaded.unreadable.map((u) => u.path)] };
-}
-
 const CHECKER_LANGUAGES: CheckerLanguage[] = ["typescript", "javascript", "html"];
 
 /** Form submissions of the HTML pages in scope whose inline scripts could be read (a skipped page sends nothing). */
-function formCalls(loaded: Loaded, pages: string[], scanned: Set<string>, rootDir: string): Call[] {
+function formCalls(scope: Scope, pages: string[], scanned: Set<string>): Call[] {
   return pages.flatMap((p) => {
-    const doc = loaded.html.get(p)!;
-    return doc.script && !scanned.has(p) ? [] : doc.forms.map((f) => formCall(f, relativePosix(rootDir, p), loaded.envHints));
+    const doc = scope.html.get(p)!;
+    return doc.script && !scanned.has(p) ? [] : doc.forms.map((f) => formCall(f, relativePosix(scope.dir, p), scope.envHints));
   });
 }
 
@@ -134,25 +46,105 @@ function fileCounts(seen: string[], scanned: string[]): LanguageScanResult["file
   return out;
 }
 
+/** The files a project would hold: an HTML page without inline script, or that could not be read, is none. */
+function sourceFiles(scope: Scope): string[] {
+  const unreadable = new Set(scope.unreadable.map((u) => u.path));
+  return scope.files.filter((f) => !unreadable.has(f) && (!/\.html?$/i.test(f) || !!scope.html.get(f)?.script));
+}
+
+function textOf(scope: Scope): (file: string) => string | undefined {
+  return (file) => {
+    const doc = scope.html.get(file);
+    if (doc) return doc.script || undefined;
+    try {
+      return readFileSync(file, "utf8");
+    } catch {
+      return undefined;
+    }
+  };
+}
+
+/**
+ * Scans the files in batches of files that can see each other, each in a project of its own (#68): a large monorepo
+ * no longer holds every syntax tree and type at once. A batch reads its files in the order a single project would.
+ */
+function scanBatches(scope: Scope, input: LanguageScanInput, registry: Registry, packages: PackageJsonReader): Merged {
+  const files = sourceFiles(scope);
+  const { groups, groupOf } = fileGroups({ files, options: scope.options, textOf: textOf(scope) });
+  const order = projectOrder(files);
+  const merged = new Merged();
+  const ctx = {
+    scope,
+    registry,
+    build: { rootDir: scope.dir, envHints: scope.envHints, sdkVersion: (file: string, name: string) => packages.versionOf(file, name) },
+    wrappers: input.opts.wrappers !== false,
+    changed: input.changed,
+    declared: declaredNear(scope.dir, packages),
+    groupOf,
+    order,
+  };
+  for (const batch of packBatches(files, groups, input.opts.batchBytes, input.changed)) merged.scanBatch(batch, ctx);
+  return merged;
+}
+
+/** Orders by `rank`, keeping the order of equals. */
+function sortedBy<T>(items: T[], rank: (t: T) => number): T[] {
+  return items
+    .map((t, i) => ({ t, i, r: rank(t) }))
+    .sort((a, b) => a.r - b.r || a.i - b.i)
+    .map((x) => x.t);
+}
+
+/** Unreadable files in load order, and files --include / --exclude left out, reported before what the batches found. */
+function reportScope(scope: Scope, merged: Merged, input: LanguageScanInput): { unreadable: Unreadable[]; leftOut: string[] } {
+  const index = new Map(scope.files.map((f, i) => [f, i]));
+  let unreadable = sortedBy([...scope.unreadable, ...merged.unreadable], (u) => index.get(u.path) ?? 0);
+  if (input.changed) unreadable = unreadable.filter((u) => input.changed!.has(u.path));
+  for (const u of unreadable) input.diag.skip({ file: u.file, reason: "parse-error", detail: u.detail });
+  if (input.changed) return { unreadable, leftOut: [] };
+  const leftOut = leftOutOf(scope, [...merged.loaded, ...unreadable.map((u) => u.path)]);
+  for (const l of leftOut) input.diag.skip(l);
+  return { unreadable, leftOut: leftOut.map((l) => path.join(scope.dir, l.file)) };
+}
+
+/** Rank of each file (absolute path) in a single project of every file, the dependencies the batches pulled in last. */
+function singleProjectOrder(scope: Scope, merged: Merged): (file: string) => number {
+  const sources = new Set(sourceFiles(scope));
+  const failed = new Set(merged.unreadable.map((u) => u.path));
+  const order = projectOrder([...sources].filter((f) => !failed.has(f)).concat(merged.loaded.filter((f) => !sources.has(f))));
+  return (file) => order.get(file) ?? Number.MAX_SAFE_INTEGER;
+}
+
+/** Calls, diagnostics, coverage and file counts of the batches, in the order of a single-project scan. */
+function finish(scope: Scope, merged: Merged, input: LanguageScanInput, registry: Registry, packages: PackageJsonReader): LanguageScanResult {
+  const { unreadable, leftOut } = reportScope(scope, merged, input);
+  const rank = singleProjectOrder(scope, merged);
+  const relative = new Map(merged.loaded.map((f) => [relativePosix(scope.dir, f), rank(f)]));
+  const rankOf = (file: string): number => relative.get(file) ?? Number.MAX_SAFE_INTEGER;
+  merged.log.flush(input.diag, rankOf);
+  const selected = new Set(merged.selected);
+  const pages = [...scope.html.keys()].filter((p) => !input.changed || input.changed.has(p) || selected.has(p));
+  const scanned = new Set(merged.scanned);
+  const calls = [...sortedBy(merged.calls, (c) => rankOf(c.location.file)), ...formCalls(scope, pages, scanned)];
+  const plainPages = pages.filter((p) => !scope.html.get(p)!.script);
+  const pageImports = pages.filter((p) => scanned.has(p) || plainPages.includes(p)).map((p) => ({ file: p, packages: scope.html.get(p)!.cdnPackages }));
+  const imports = new Map(sortedBy([...merged.imports], ([f]) => rank(f)));
+  // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
+  const coverage = input.changed ? [] : importsCoverage(scope.dir, imports, calls, registry, pageImports, packages).sdks;
+  const kept = sortedBy(input.changed ? merged.selected : merged.loaded, rank);
+  const seen = [...kept, ...(input.changed ? [] : leftOut), ...unreadable.map((u) => u.path)];
+  return { calls, files: fileCounts([...seen, ...plainPages], [...scanned, ...plainPages]), coverage };
+}
+
 function scanTypeScript(input: LanguageScanInput): LanguageScanResult | undefined {
-  const { rootDir, opts, diag } = input;
+  const { rootDir, opts } = input;
   const languages = CHECKER_LANGUAGES.filter((l) => input.languages.includes(l));
   // a directory without TypeScript, JavaScript or HTML (a Python repository) never pays for a ts-morph Project
   if (tsFiles(rootDir, undefined, [], languages).length === 0) return undefined;
   const registry = opts.registry ?? defaultRegistry();
-  const loaded = loadProject({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude, languages });
-  setDocumentRoot(loaded.project, rootDir);
-  const { files, pages, seen } = filesInScope(loaded, input);
+  const scope = scopeOf({ dir: rootDir, tsconfig: opts.tsconfig, include: opts.include, exclude: opts.exclude, languages });
   const packages = new PackageJsonReader(rootDir);
-  const { raws, scanned } = detectAll(files, registry, input, packages);
-  const scannedPaths = new Set(scanned.map((sf) => sf.getFilePath() as string));
-  const ctx: BuildCtx = { rootDir, envHints: loaded.envHints, sdkVersion: (file, name) => packages.versionOf(file, name) };
-  const calls = [...buildAll(raws, ctx, diag), ...formCalls(loaded, pages, scannedPaths, rootDir)];
-  const plainPages = pages.filter((p) => !loaded.html.get(p)!.script);
-  const pageImports = pages.filter((p) => scannedPaths.has(p) || plainPages.includes(p)).map((p) => ({ file: p, packages: loaded.html.get(p)!.cdnPackages }));
-  // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-  const coverage = input.changed ? [] : sdkCoverage(rootDir, scanned, calls, registry, pageImports, packages).sdks;
-  return { calls, files: fileCounts([...seen, ...plainPages], [...scannedPaths, ...plainPages]), coverage };
+  return finish(scope, scanBatches(scope, input, registry, packages), input, registry, packages);
 }
 
 export const typescript: LanguageFrontEnd = { ids: CHECKER_LANGUAGES, ecosystem: "npm", scan: (input) => Promise.resolve(scanTypeScript(input)) };

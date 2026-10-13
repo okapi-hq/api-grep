@@ -2,6 +2,7 @@ import { closeSync, openSync, readFileSync, readSync, statSync } from "node:fs";
 import path from "node:path";
 import { Project, ts, type SourceFile } from "ts-morph";
 import { isConfigFile, isInside, realPath, relativePosix } from "./files.js";
+import { leanResolution } from "./module-resolution.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
 import { parseHtml, type HtmlDoc } from "./lang/html/extract.js";
 
@@ -51,14 +52,26 @@ export interface LoadOptions {
   languages?: CheckerLanguage[];
 }
 
-export interface Loaded {
-  project: Project;
-  files: SourceFile[];
-  /** HTML pages in scope: their forms and CDN scripts (inline scripts are source files of the project). */
+/** What every batch of a scan shares: the files in scope, the compiler options, the HTML pages. */
+export interface Scope {
+  dir: string;
+  opts: LoadOptions;
+  tsconfig?: string;
+  /** Files in scope (absolute paths), in the order they are loaded. */
+  files: string[];
+  options: ts.CompilerOptions;
+  /** HTML pages in scope: their forms and CDN scripts (inline scripts become source files of a batch). */
   html: Map<string, HtmlDoc>;
   envHints: Record<string, string>;
-  /** Source files in scope that --exclude / --include left out (paths relative to the scanned directory). */
-  leftOut: LeftOut[];
+  /** HTML pages that could not be read. */
+  unreadable: Unreadable[];
+}
+
+/** Some files of the scope in a project of their own. */
+export interface Loaded {
+  project: Project;
+  /** Files to scan: those of the batch, and what they import inside the scanned directory. */
+  files: SourceFile[];
   /** Files the parser could not load (a stack overflow on absurd nesting, an unreadable file). */
   unreadable: Unreadable[];
 }
@@ -158,18 +171,32 @@ function addFiles(project: Project, dir: string, files: string[], html: Map<stri
   const unreadable: Unreadable[] = [];
   for (const f of files) {
     try {
-      if (!/\.html?$/i.test(f)) {
-        project.addSourceFileAtPath(f);
-        continue;
-      }
-      const doc = parseHtml(readFileSync(f, "utf8"));
-      html.set(f, doc);
-      if (doc.script) project.createSourceFile(f, doc.script, { overwrite: true, scriptKind: ts.ScriptKind.JS });
+      const doc = html.get(f);
+      if (!doc) project.addSourceFileAtPath(f);
+      else if (doc.script) project.createSourceFile(f, doc.script, { overwrite: true, scriptKind: ts.ScriptKind.JS });
     } catch (err) {
-      unreadable.push({ path: f, file: relativePosix(dir, f), detail: (err instanceof Error ? err.message : String(err)).split("\n")[0]! });
+      unreadable.push(unreadableFile(dir, f, err));
     }
   }
   return unreadable;
+}
+
+function unreadableFile(dir: string, f: string, err: unknown): Unreadable {
+  return { path: f, file: relativePosix(dir, f), detail: (err instanceof Error ? err.message : String(err)).split("\n")[0]! };
+}
+
+/** HTML pages, read once for every batch. */
+function readPages(dir: string, files: string[]): { html: Map<string, HtmlDoc>; unreadable: Unreadable[] } {
+  const html = new Map<string, HtmlDoc>();
+  const unreadable: Unreadable[] = [];
+  for (const f of files.filter((p) => /\.html?$/i.test(p))) {
+    try {
+      html.set(f, parseHtml(readFileSync(f, "utf8")));
+    } catch (err) {
+      unreadable.push(unreadableFile(dir, f, err));
+    }
+  }
+  return { html, unreadable };
 }
 
 /** JavaScript is read with the TypeScript checker (no type errors reported, no JavaScript from node_modules). */
@@ -180,8 +207,8 @@ function compilerOptions(languages: CheckerLanguage[]): ts.CompilerOptions {
 
 function createProject(tsconfig: string | undefined, languages: CheckerLanguage[]): Project {
   const extra = compilerOptions(languages);
-  if (!tsconfig) return new Project({ compilerOptions: { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true, ...extra } });
-  return new Project({ tsConfigFilePath: tsconfig, skipAddingFilesFromTsConfig: true, compilerOptions: { skipLibCheck: true, noEmit: true, ...extra } });
+  if (!tsconfig) return new Project({ resolutionHost: leanResolution, compilerOptions: { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true, ...extra } });
+  return new Project({ resolutionHost: leanResolution, tsConfigFilePath: tsconfig, skipAddingFilesFromTsConfig: true, compilerOptions: { skipLibCheck: true, noEmit: true, ...extra } });
 }
 
 function tsconfigFor(dir: string, explicit: string | undefined): string | undefined {
@@ -191,14 +218,20 @@ function tsconfigFor(dir: string, explicit: string | undefined): string | undefi
   return file;
 }
 
-export function loadProject(opts: LoadOptions): Loaded {
+export function scopeOf(opts: LoadOptions): Scope {
   const dir = path.resolve(opts.dir);
   const languages = opts.languages ?? ["typescript"];
-  const exclude = [...DEFAULT_EXCLUDES, ...(opts.exclude ?? [])];
   const tsconfig = tsconfigFor(dir, opts.tsconfig);
-  const project = createProject(tsconfig, languages);
-  const html = new Map<string, HtmlDoc>();
-  const unreadable = addFiles(project, dir, tsFiles(dir, opts.include, opts.exclude, languages), html);
+  const files = tsFiles(dir, opts.include, opts.exclude, languages);
+  const options = createProject(tsconfig, languages).getCompilerOptions();
+  return { dir, opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
+}
+
+/** Some files of the scope in a project of their own, with what they import. */
+export function loadBatch(scope: Scope, files: string[]): Loaded {
+  const { dir, opts, tsconfig } = scope;
+  const project = createProject(tsconfig, opts.languages ?? ["typescript"]);
+  const unreadable = addFiles(project, dir, files, scope.html);
   if (tsconfig) {
     try {
       project.resolveSourceFileDependencies();
@@ -206,9 +239,12 @@ export function loadProject(opts: LoadOptions): Loaded {
       // imported files only sharpen types: the files in scope are still scanned without them
     }
   }
-  const files = selectFiles(project, dir, opts, exclude);
-  // an unreadable file is already reported as such
-  const kept = new Set<string>([...files.map((sf) => sf.getFilePath() as string), ...html.keys(), ...unreadable.map((u) => u.path)]);
-  const leftOut = leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, extensionsOf(languages), DEFAULT_EXCLUDES, kept, (f) => !looksLikeBuildOrData(f));
-  return { project, files, html, envHints: readEnvHints(dir), leftOut, unreadable };
+  return { project, files: selectFiles(project, dir, opts, [...DEFAULT_EXCLUDES, ...(opts.exclude ?? [])]), unreadable };
+}
+
+/** Source files in scope that --exclude / --include left out, given the files kept (unreadable ones included). */
+export function leftOutOf(scope: Scope, kept: Iterable<string>): LeftOut[] {
+  const { dir, opts } = scope;
+  const all = new Set<string>([...kept, ...scope.html.keys()]);
+  return leftOutFiles({ dir, include: opts.include, exclude: opts.exclude }, extensionsOf(opts.languages ?? ["typescript"]), DEFAULT_EXCLUDES, all, (f) => !looksLikeBuildOrData(f));
 }

@@ -1,4 +1,4 @@
-import { ts, type Node, type Type } from "ts-morph";
+import { ts, type Node, type Symbol, type Type } from "ts-morph";
 import { isSafeKey } from "../record-keys.js";
 import type { Shape } from "../types.js";
 
@@ -55,8 +55,19 @@ export function mergeLiterals(shapes: Shape[]): Shape | undefined {
   return { type, enum: values };
 }
 
+/**
+ * The members of a union in an order of their own, by their text. The checker orders them by when it first met each
+ * type, which depends on every file read before: `"a" | "b"` came out as `["b", "a"]` once another file had used
+ * `"b"`. Where a type is declared depends on the files read too (a global interface merges declarations in the order
+ * files come), so the text is the key.
+ */
+function unionMembers(t: Type): Type[] {
+  const keyed = t.getUnionTypes().map((m) => ({ m, k: m.getText() }));
+  return keyed.sort((a, b) => (a.k < b.k ? -1 : a.k > b.k ? 1 : 0)).map((x) => x.m);
+}
+
 function unionShape(t: Type, node: Node, depth: number, visited: Set<string>): TypedShape {
-  const members = t.getUnionTypes();
+  const members = unionMembers(t);
   const optional = members.some((m) => m.isUndefined());
   const kept = members.filter((m) => !m.isUndefined());
   const hasNull = kept.some((m) => m.isNull());
@@ -90,6 +101,22 @@ function isBuiltinObject(t: Type): Shape | undefined {
   return undefined;
 }
 
+type MappedType = ts.ObjectType & { declaration?: ts.MappedTypeNode };
+
+/**
+ * A type's properties in an order of their own. A mapped type over a union of keys (`{ [k in "b" | "a"]?: V }`,
+ * `Record<K, V>`) lists them in the union's order, which is the checker's (see `unionMembers`): those are sorted by
+ * name. One over `keyof T` keeps the order `T` declares them in.
+ */
+function propertiesOf(t: Type): Symbol[] {
+  const props = t.getProperties();
+  const c = t.compilerType as MappedType;
+  if (!(c.objectFlags & ts.ObjectFlags.Mapped)) return props;
+  const constraint = c.declaration?.typeParameter.constraint;
+  if (constraint && ts.isTypeOperatorNode(constraint) && constraint.operator === ts.SyntaxKind.KeyOfKeyword) return props;
+  return [...props].sort((a, b) => (a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0));
+}
+
 function objectShape(t: Type, node: Node, depth: number, visited: Set<string>): Shape {
   const builtin = isBuiltinObject(t);
   if (builtin) return builtin;
@@ -99,7 +126,7 @@ function objectShape(t: Type, node: Node, depth: number, visited: Set<string>): 
   visited.add(id);
   const properties: Record<string, Shape> = {};
   const required: string[] = [];
-  const props = t.getProperties();
+  const props = propertiesOf(t);
   for (const prop of props.slice(0, MAX_PROPS)) {
     if (prop.getName().startsWith("__@") || !isSafeKey(prop.getName())) continue;
     const pt = prop.getTypeAtLocation(node);
