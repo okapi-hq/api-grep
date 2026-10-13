@@ -106,9 +106,13 @@ function lowerBinary(n: SyntaxNode, st: KtState): Expr {
   const left = lowerExpr(l, st);
   const right = lowerExpr(r, st);
   if (op === "+") return { k: "concat", parts: [...(left.k === "concat" ? left.parts : [left]), right] };
-  if (op === "?:") return { k: "or", left, right };
+  // `u ?: continue`, `u ?: return`, `u ?: throw ...`: the right side leaves, so the value is the left one
+  if (op === "?:") return leaves(r) ? left : { k: "or", left, right };
   return unknown(n);
 }
+
+/** `continue` and `break` parse as identifiers (`continue@outer` too). */
+const leaves = (n: SyntaxNode): boolean => n.type === "return_expression" || n.type === "throw_expression" || /^(?:continue|break)(?:@\w+)?$/.test(n.text);
 
 /** `if (c) a else b` as a value: either branch. */
 function lowerIf(n: SyntaxNode, st: KtState): Expr {
@@ -215,9 +219,10 @@ function lowerCompound(n: SyntaxNode, st: KtState): Expr {
     case "annotated_lambda":
     case "anonymous_function":
       return { k: "fnref", fn: hook("lambda")(n, st).fn };
-    case "object_literal":
-      hook("objectLiteral")(n, st);
-      return unknown(n);
+    case "object_literal": {
+      const only = hook("objectLiteral")(n, st);
+      return only ? { k: "fnref", fn: only } : unknown(n);
+    }
     case "return_expression": {
       const label = field(n, "label");
       const value = named(n).find((c) => c.id !== label?.id);

@@ -1,5 +1,3 @@
-import type { Expr } from "../ir/model.js";
-
 const ESCAPES: Record<string, string> = { n: "\n", t: "\t", r: "\r", b: "\b", "\\": "\\", "'": "'", '"': '"', $: "$" };
 
 /** `\n`, `\$`, `A`. */
@@ -28,20 +26,4 @@ const IDENT = /^[\p{L}_][\p{L}\p{N}_]*/u;
 export function shortTemplate(next: string): { name: string; rest: string } | undefined {
   const m = IDENT.exec(next);
   return m ? { name: m[0], rest: next.slice(m[0].length) } : undefined;
-}
-
-/**
- * Spring placeholders (`@Value("\${api.url:https://x}")`): each `${key}` / `${key:default}` is a configuration read,
- * with its default; the text around them stays.
- */
-export function springPlaceholders(text: string): Expr {
-  const parts: Expr[] = [];
-  let last = 0;
-  for (const m of text.matchAll(/\$\{([^}:]+)(?::([^}]*))?\}/g)) {
-    if (m.index > last) parts.push({ k: "str", v: text.slice(last, m.index) });
-    parts.push({ k: "env", name: m[1]!.trim(), ...(m[2] ? { fallback: { k: "str", v: m[2] } } : {}) });
-    last = m.index + m[0].length;
-  }
-  if (last < text.length || parts.length === 0) parts.push({ k: "str", v: text.slice(last) });
-  return parts.length === 1 ? parts[0]! : { k: "tmpl", parts };
 }

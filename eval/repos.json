@@ -31,5 +31,11 @@
   { "name": "rss-bridge", "url": "https://github.com/RSS-Bridge/rss-bridge.git", "language": "php" },
   { "name": "symfony-notifier", "url": "https://github.com/symfony/symfony.git", "subdir": "src/Symfony/Component/Notifier", "language": "php" },
   { "name": "wordpress", "url": "https://github.com/WordPress/WordPress.git", "language": "php" },
-  { "name": "firefly-iii", "url": "https://github.com/firefly-iii/firefly-iii.git", "language": "php" }
+  { "name": "firefly-iii", "url": "https://github.com/firefly-iii/firefly-iii.git", "language": "php" },
+  { "name": "mihon", "url": "https://github.com/mihonapp/mihon.git", "language": "kotlin" },
+  { "name": "pocketcasts-android", "url": "https://github.com/Automattic/pocket-casts-android.git", "subdir": "modules", "language": "kotlin" },
+  { "name": "thunderbird-android", "url": "https://github.com/thunderbird/thunderbird-android.git", "language": "kotlin" },
+  { "name": "kotlinconf-app", "url": "https://github.com/JetBrains/kotlinconf-app.git", "language": "kotlin" },
+  { "name": "tivi", "url": "https://github.com/chrisbanes/tivi.git", "language": "kotlin" },
+  { "name": "mixit", "url": "https://github.com/mixitconf/mixit.git", "language": "kotlin" }
 ]

@@ -60,6 +60,9 @@ export type Expr =
   | { k: "qname"; path: string[]; pos: Pos }
   /** A function value: a nested `def`, a lambda or closure assigned to a name. */
   | { k: "fnref"; fn: FunctionDef }
+  /** An expression of another function, read in that function's scope: the engine builds these when it puts together
+   *  a request from pieces written in several places (a URL builder's base and its query parameters). */
+  | { k: "scoped"; expr: Expr; fn: FunctionDef }
   | { k: "unknown"; text: string; pos?: Pos };
 
 export interface CallExpr {
@@ -146,6 +149,8 @@ export interface ClassDef {
   /** Field order with optionality, for request bodies built from a class (dataclass, TypedDict, pydantic). */
   annotations: { name: string; type: Expr; optional: boolean }[];
   module: ModuleModel;
+  /** Annotations of the class itself (JVM: `@FeignClient(url = ...)`). */
+  classAnnotations?: Annotation[];
 }
 
 export interface ImportRef {
@@ -201,6 +206,8 @@ export function exprText(e: Expr): string {
       return `${exprText(e.obj)}[]`;
     case "str":
       return JSON.stringify(e.v);
+    case "scoped":
+      return exprText(e.expr);
     default:
       return e.k === "unknown" ? e.text : e.k;
   }

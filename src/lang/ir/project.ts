@@ -142,7 +142,9 @@ function wildcardMember(mod: ModuleModel, name: string, idx: ProjectIndex, depth
     const b = bindingOfPath([...w, name], idx, mod, depth + 1);
     if (b.kind !== "external" && b.kind !== "none") return b;
   }
-  return undefined;
+  // `HttpClient` under `import io.ktor.client.*`: a library class the language lists, when one wildcard can give it
+  const known = (mod.wildcards ?? []).filter((w) => idx.lang.wildcardTypes?.has([...w, name].join(".")));
+  return known.length === 1 ? { kind: "external", path: [...known[0]!, name] } : undefined;
 }
 
 /**
