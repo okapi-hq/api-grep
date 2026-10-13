@@ -8,6 +8,8 @@
     { "file": "Notifier.kt", "line": 32, "provider": "slack" },
     { "file": "Notifier.kt", "line": 33, "provider": "posthog" },
     { "file": "Notifier.kt", "line": 36, "provider": "slack" },
-    { "file": "Notifier.kt", "line": 39, "provider": "slack" }
+    { "file": "Notifier.kt", "line": 39, "provider": "slack" },
+    { "file": "Notifier.kt", "line": 43, "provider": "slack" },
+    { "file": "Notifier.kt", "line": 45, "provider": "slack" }
   ]
 }

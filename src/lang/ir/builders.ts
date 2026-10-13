@@ -2,6 +2,8 @@ import { valueChain } from "./chain.js";
 import type { Scoped, SetterRules } from "./language.js";
 import { dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
+import { appliedSteps } from "./applied.js";
+import { mayNotRun } from "./edits.js";
 import { scopedIn } from "./fluent.js";
 import type { IrCtx } from "./raw.js";
 
@@ -21,19 +23,30 @@ const NOT_SETTERS = new Set(["build", "toString", "equals", "hashCode", "validat
 interface Setter {
   name: string;
   args: Arg[];
+  /** Called in a branch or a loop body before `build()`: the field may not be sent. */
+  optional?: boolean;
 }
 
 /** `X.builder()`: the class `X` it builds, else undefined. */
 const startOf = (e: Expr): Expr | undefined => (e.k === "call" && e.fn.k === "attr" && STARTS.has(e.fn.name) && e.args.length === 0 ? e.fn.obj : undefined);
 
-/** `x.a(1).b(2)`: the receiver at its root (`x`) and the setters called on it, in order. */
+/** Kotlin `apply { model(m) }` / `also { it.model(m) }` on a builder: the lambda's calls on it, read in the lambda. */
+function appliedSetters(call: CallExpr): Setter[] {
+  return appliedSteps(call.applied).flatMap(({ call: c, fn }) => {
+    const name = c.fn.k === "name" || c.fn.k === "attr" ? c.fn.name : undefined;
+    return name ? [{ name, args: c.args.map((a) => ({ ...a, value: { k: "scoped", expr: a.value, fn } })) }] : [];
+  });
+}
+
+/** `x.a(1).b(2)`: the receiver at its root (`x`) and the setters called on it, in order, with those of `apply { }`. */
 function setterChain(e: Expr): { root: Expr; setters: Setter[] } {
   const setters: Setter[] = [];
   let cur = e;
   while (cur.k === "call" && cur.fn.k === "attr" && !startOf(cur)) {
-    setters.unshift({ name: cur.fn.name, args: cur.args });
+    setters.unshift({ name: cur.fn.name, args: cur.args }, ...appliedSetters(cur));
     cur = cur.fn.obj;
   }
+  if (cur.k === "call") setters.unshift(...appliedSetters(cur));
   return { root: cur, setters };
 }
 
@@ -61,6 +74,8 @@ function rulesFor(cls: Expr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuild
 
 /** `Model.CLAUDE_SONNET_4_5` -> `"claude-sonnet-4-5"`, `ChatModel.GPT_4_1` -> `"gpt-4.1"`, for the enum classes the rules name. */
 function constant(e: Expr, fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr | undefined {
+  // a setter written in an `apply { }` lambda: its argument is read there
+  if (e.k === "scoped") return constant(e.expr, e.fn, ctx, rules);
   if ((e.k !== "attr" && e.k !== "name") || !CONSTANT.test(e.name)) return undefined;
   const path = externalPath(e, fn, ctx);
   if (!path || path.length < 2 || !inPackages(path, rules)) return undefined;
@@ -117,11 +132,13 @@ const str = (v: string): Expr => ({ k: "str", v });
 function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr {
   const entries: Entry[] = [];
   const byField = new Map<string, Entry>();
+  const always = new Set<string>();
   for (const s of setters) {
     const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
     const f = named?.kind === "item" ? { ...named, kind: b ? ("put" as const) : ("add" as const) } : named;
     if (!f || !a) continue;
+    if (!s.optional) always.add(f.field);
     const value = constant(a, fn, ctx, rules) ?? a;
     let entry = byField.get(f.field);
     if (f.kind === "set" || !entry) {
@@ -134,7 +151,8 @@ function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRul
     else if (f.kind === "put" && b && entry.value.k === "dict") entry.value.entries.push({ key: a, value: constant(b, fn, ctx, rules) ?? b });
     else if (f.kind === "putAll" && entry.value.k === "dict") entry.value.entries.push({ value, spread: true });
   }
-  return { k: "dict", entries };
+  // a field set only in a branch (`if (stream) b.stream(true)`) may not be sent
+  return { k: "dict", entries: entries.map((en) => (en.key?.k === "str" && !always.has(en.key.v) ? { ...en, optional: true } : en)) };
 }
 
 /** Calls in `fn` between `from` and `to` whose receiver chain starts at the variable `name`: steps of a builder. */
@@ -143,14 +161,18 @@ function steps(fn: FunctionDef, name: string, from: number, to: number): Setter[
   for (const c of fn.calls) {
     if (c.pos.offset <= from || c.pos.offset >= to || c.fn.k !== "attr") continue;
     const { root } = setterChain(c.fn.obj);
-    if (root.k === "name" && root.name === name) out.push({ name: c.fn.name, args: c.args });
+    if (root.k !== "name" || root.name !== name) continue;
+    // `b.apply { model(m) }` on the variable stands for the lambda's calls
+    const own = c.applied && (c.fn.name === "apply" || c.fn.name === "also") ? [] : [{ name: c.fn.name, args: c.args }];
+    const optional = mayNotRun(fn, c.pos.offset, Number.isFinite(to) ? to : undefined);
+    out.push(...[...own, ...appliedSetters(c)].map((s) => (optional ? { ...s, optional } : s)));
   }
   return out;
 }
 
 /** Setters written in `from`, read in `into`. */
 const settersIn = (setters: Setter[], from: FunctionDef, into: FunctionDef): Setter[] =>
-  from === into ? setters : setters.map((s) => ({ name: s.name, args: s.args.map((a) => ({ ...a, value: scopedIn(a.value, from, into) })) }));
+  from === into ? setters : setters.map((s) => ({ ...s, args: s.args.map((a) => ({ ...a, value: scopedIn(a.value, from, into) })) }));
 
 /** The setter rules of a built value and its setters, in order (those of the value it was copied from first). */
 function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuilders | undefined, depth: number): { rules: SetterRules; setters: Setter[] } | undefined {

@@ -81,7 +81,9 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   if (!m2) return undefined;
   const target = m2[1] === "instance" ? before[before.length - 1] : m.method;
   const base = m2[1] === "kw" ? argOf(target, undefined, m2[2]) : argOf(target, Number(m2[2]), name);
-  return { expr: m2[3] ? propOf(base, m2[3], ctx) : base };
+  if (m2[3]) return { expr: propOf(base, m2[3], ctx) };
+  // a JVM path id given inside the params object (`retrieve(FileRetrieveParams.builder().fileId(id).build())`)
+  return { expr: (m.entry.setters && m2[1] === "arg" ? propOf(base, name, ctx) : undefined) ?? base };
 }
 
 function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {

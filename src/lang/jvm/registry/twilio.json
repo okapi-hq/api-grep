@@ -1,5 +1,5 @@
 {
-  "$comment": "twilio-java (also used from Kotlin): `Twilio.init(sid, token)`, then a resource's creator, fetcher, reader, updater or deleter sends the request: `Message.creator(PhoneNumber(to), PhoneNumber(from), body).create()`, `Message.fetcher(sid).fetch()`. Setters between them (`setMediaUrl(...)`) only add fields. `{AccountSid}` comes from `Twilio.init`. The creator's positional arguments are form fields the SDK names itself: the body is not listed.",
+  "$comment": "twilio-java (also used from Kotlin): `Twilio.init(sid, token)`, then a resource's creator, fetcher, reader, updater or deleter sends the request: `Message.creator(PhoneNumber(to), PhoneNumber(from), body).create()`, `Message.fetcher(sid).fetch()`. The creator's positional arguments are the form fields the SDK names (`argFields`: `To`, `From`, `Body`; a path argument is skipped), and the setters between them add one each (`setMediaUrl(u)` -> `MediaUrl`). `{AccountSid}` comes from `Twilio.init`.",
   "package": "com.twilio.sdk:twilio",
   "imports": ["com.twilio.rest.api.v2010.account", "com.twilio.rest.verify.v2.service", "com.twilio.rest.lookups.v2", "com.twilio.rest.conversations.v1"],
   "provider": "twilio",
@@ -8,24 +8,24 @@
   "generatedFrom": "manual (keys of the Python Twilio registry under twilio-java's resource classes)",
   "builders": ["set*"],
   "methods": {
-    "Message.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages.json","encoding":"form","operationId":"CreateMessage"},
-    "Message.creator.createAsync": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages.json","encoding":"form","operationId":"CreateMessage"},
+    "Message.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages.json","encoding":"form","operationId":"CreateMessage","argFields":{"seg":"creator","fields":["To","From","Body"],"setters":"set"}},
+    "Message.creator.createAsync": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages.json","encoding":"form","operationId":"CreateMessage","argFields":{"seg":"creator","fields":["To","From","Body"],"setters":"set"}},
     "Message.reader.read": {"method":"GET","path":"/2010-04-01/Accounts/{AccountSid}/Messages.json","operationId":"ListMessage"},
     "Message.fetcher.fetch": {"method":"GET","path":"/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json","params":{"Sid":"seg:fetcher:0"},"operationId":"FetchMessage"},
-    "Message.updater.update": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json","params":{"Sid":"seg:updater:0"},"encoding":"form"},
+    "Message.updater.update": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json","params":{"Sid":"seg:updater:0"},"encoding":"form","argFields":{"seg":"updater","fields":[""],"setters":"set"}},
     "Message.deleter.delete": {"method":"DELETE","path":"/2010-04-01/Accounts/{AccountSid}/Messages/{Sid}.json","params":{"Sid":"seg:deleter:0"}},
-    "Call.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Calls.json","encoding":"form","operationId":"CreateCall"},
+    "Call.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Calls.json","encoding":"form","operationId":"CreateCall","argFields":{"seg":"creator","fields":["To","From","Url"],"setters":"set"}},
     "Call.reader.read": {"method":"GET","path":"/2010-04-01/Accounts/{AccountSid}/Calls.json","operationId":"ListCall"},
     "Call.fetcher.fetch": {"method":"GET","path":"/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json","params":{"Sid":"seg:fetcher:0"}},
-    "Call.updater.update": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json","params":{"Sid":"seg:updater:0"},"encoding":"form"},
-    "IncomingPhoneNumber.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json","encoding":"form","operationId":"CreateIncomingPhoneNumber"},
+    "Call.updater.update": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/Calls/{Sid}.json","params":{"Sid":"seg:updater:0"},"encoding":"form","argFields":{"seg":"updater","fields":[""],"setters":"set"}},
+    "IncomingPhoneNumber.creator.create": {"method":"POST","path":"/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json","encoding":"form","operationId":"CreateIncomingPhoneNumber","argFields":{"seg":"creator","fields":[],"setters":"set"}},
     "IncomingPhoneNumber.reader.read": {"method":"GET","path":"/2010-04-01/Accounts/{AccountSid}/IncomingPhoneNumbers.json"},
-    "Verification.creator.create": {"method":"POST","path":"/v2/Services/{ServiceSid}/Verifications","params":{"ServiceSid":"seg:creator:0"},"encoding":"form","host":"verify.twilio.com","operationId":"CreateVerification"},
-    "VerificationCheck.creator.create": {"method":"POST","path":"/v2/Services/{ServiceSid}/VerificationCheck","params":{"ServiceSid":"seg:creator:0"},"encoding":"form","host":"verify.twilio.com","operationId":"CreateVerificationCheck"},
+    "Verification.creator.create": {"method":"POST","path":"/v2/Services/{ServiceSid}/Verifications","params":{"ServiceSid":"seg:creator:0"},"encoding":"form","host":"verify.twilio.com","operationId":"CreateVerification","argFields":{"seg":"creator","fields":["","To","Channel"],"setters":"set"}},
+    "VerificationCheck.creator.create": {"method":"POST","path":"/v2/Services/{ServiceSid}/VerificationCheck","params":{"ServiceSid":"seg:creator:0"},"encoding":"form","host":"verify.twilio.com","operationId":"CreateVerificationCheck","argFields":{"seg":"creator","fields":[""],"setters":"set"}},
     "PhoneNumber.fetcher.fetch": {"method":"GET","path":"/v2/PhoneNumbers/{PhoneNumber}","params":{"PhoneNumber":"seg:fetcher:0"},"host":"lookups.twilio.com","operationId":"FetchPhoneNumber"},
-    "Conversation.creator.create": {"method":"POST","path":"/v1/Conversations","encoding":"form","host":"conversations.twilio.com"},
+    "Conversation.creator.create": {"method":"POST","path":"/v1/Conversations","encoding":"form","host":"conversations.twilio.com","argFields":{"seg":"creator","fields":[],"setters":"set"}},
     "Conversation.reader.read": {"method":"GET","path":"/v1/Conversations","host":"conversations.twilio.com"},
-    "conversation.Message.creator.create": {"method":"POST","path":"/v1/Conversations/{ConversationSid}/Messages","params":{"ConversationSid":"seg:creator:0"},"encoding":"form","host":"conversations.twilio.com"},
-    "conversation.Participant.creator.create": {"method":"POST","path":"/v1/Conversations/{ConversationSid}/Participants","params":{"ConversationSid":"seg:creator:0"},"encoding":"form","host":"conversations.twilio.com"}
+    "conversation.Message.creator.create": {"method":"POST","path":"/v1/Conversations/{ConversationSid}/Messages","params":{"ConversationSid":"seg:creator:0"},"encoding":"form","host":"conversations.twilio.com","argFields":{"seg":"creator","fields":[""],"setters":"set"}},
+    "conversation.Participant.creator.create": {"method":"POST","path":"/v1/Conversations/{ConversationSid}/Participants","params":{"ConversationSid":"seg:creator:0"},"encoding":"form","host":"conversations.twilio.com","argFields":{"seg":"creator","fields":[""],"setters":"set"}}
   }
 }

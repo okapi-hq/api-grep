@@ -25,6 +25,16 @@ export interface IrMethodSpec extends MethodSpec {
   documentKw?: string;
   /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */
   baseUrlKw?: string[];
+  /** The method sends to the URL given as this argument (Slack's `send(webhookUrl, payload)`). */
+  urlArg?: number;
+  /**
+   * Body fields the SDK names itself: the positional arguments of a call of the chain (Twilio `Message.creator(to,
+   * from, body)` -> `To`, `From`, `Body`; `""` skips a path argument) and the chain's setters with this prefix
+   * (`setMediaUrl(u)` -> `MediaUrl`).
+   */
+  argFields?: { seg: string; fields: string[]; setters?: string };
+  /** The call builds a model client whose settings are its requests' (LangChain4j `OpenAiChatModel.builder()...build()`): the built value is the body. */
+  bodySelf?: boolean;
 }
 
 /**
@@ -82,6 +92,12 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   sameClassesAs?: string[];
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): the call goes where it routes. */
   routeByModel?: boolean;
+  /**
+   * The host comes from a configuration call made once elsewhere (`PostHog.setup(PostHogConfig(key, host = h))`):
+   * the calls by the end of their name, the position of the config argument (`-1`: the last), and where the config's
+   * constructor takes the host (`kw:host|1`). See `setup.ts`.
+   */
+  setupUrl?: { calls: string[]; arg: number; host: string };
   methods: Record<string, IrMethodSpec>;
 }
 

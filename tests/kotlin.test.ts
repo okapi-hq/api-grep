@@ -24,6 +24,8 @@ describe("kotlin: an Android project", () => {
     expect(r.calls[0]).toMatchObject({ queryShape: { properties: { hourly: { type: "string", enum: ["temperature_2m"] } } } });
     // a data class written to Firestore gives the body
     expect(r.calls[1]!.body).toMatchObject({ properties: { place_name: { type: "string" }, lat: { type: "number" } }, fromType: "SavedPlace" });
+    // the host of the config given to `PostHog.setup`, called elsewhere (#50)
+    expect(r.calls[2]).toMatchObject({ host: "eu.i.posthog.com", urlTemplate: "https://eu.i.posthog.com/batch" });
     expect(r.diagnostics).toMatchObject({ filesSeen: 6, filesScanned: 6, skipped: [], unfollowed: [], languages: { kotlin: { filesSeen: 6, filesScanned: 6 } }, complete: true });
     expect(r.coverage?.sdks.map((s) => [s.package, s.ecosystem, s.provider, s.status, s.importSites])).toEqual([
       ["com.google.firebase:firebase-firestore", "maven", "firebase", "ok", 1],

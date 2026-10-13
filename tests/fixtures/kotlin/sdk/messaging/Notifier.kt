@@ -37,4 +37,10 @@ class Notifier(private val sender: String, private val verifyService: String) {
 
     // a `Slack` given as a typed parameter, its `methods` client made on the spot
     fun team(app: Slack, token: String) = app.methods(token).teamInfo { it }
+
+    // incoming webhooks: the URL is the argument
+    fun announce(text: String) =
+        Slack.getInstance().send(System.getenv("SLACK_WEBHOOK_URL") ?: "https://hooks.slack.com/services/T000/B000/XXXX", com.slack.api.webhook.Payload.builder().text(text).iconEmoji(":bell:").build())
+
+    fun announceRaw(app: Slack, json: String) = app.send("https://hooks.slack.com/services/T000/B000/YYYY", json)
 }

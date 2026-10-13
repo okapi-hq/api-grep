@@ -609,6 +609,14 @@ exports[`regression fixtures > kotlin/sdk/cloud 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/sdk/forms 1`] = `
+[
+  "Drafts.kt:13 openai POST /v1/chat/completions",
+  "Drafts.kt:25 openai POST /v1/chat/completions",
+  "Drafts.kt:29 openai GET /v1/files/{file_id}",
+]
+`;
+
 exports[`regression fixtures > kotlin/sdk/llm 1`] = `
 [
   "Ask.kt:10 openai POST /v1/chat/completions",
@@ -638,6 +646,8 @@ exports[`regression fixtures > kotlin/sdk/messaging 1`] = `
   "Notifier.kt:33 posthog POST /batch",
   "Notifier.kt:36 slack POST /api/chat.postMessage",
   "Notifier.kt:39 slack POST /api/team.info",
+  "Notifier.kt:43 slack POST /services/T000/B000/XXXX",
+  "Notifier.kt:45 slack POST /services/T000/B000/YYYY",
 ]
 `;
 
