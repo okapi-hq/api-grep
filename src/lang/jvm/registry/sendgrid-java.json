@@ -1,0 +1,14 @@
+{
+  "$comment": "sendgrid-java (also used from Kotlin): `val sg = SendGrid(key)`, then `sg.api(request)` sends a `Request` filled by setters (`request.setMethod(Method.POST)`, `setEndpoint(\"mail/send\")`, `setBody(mail.build())`, or the Kotlin properties): the endpoint is the path under `/v3`, the body what `setBody` gets (read through the `Request` fluent map of `clients.json`). The method set on the request is not read: the call is listed as a POST, the method of `mail/send`.",
+  "package": "com.sendgrid:sendgrid-java",
+  "imports": ["com.sendgrid.SendGrid", "com.sendgrid.SendGridAPI"],
+  "provider": "sendgrid",
+  "host": "api.sendgrid.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (sendgrid-java SendGrid.api and Request, paths of the PHP sendgrid registry)",
+  "instance": { "names": ["SendGrid", "SendGridAPI"] },
+  "methods": {
+    "api": {"method":"POST","path":"/v3/{endpoint}","params":{"endpoint":"arg:0.endpoint"},"bodyArg":0,"bodyProp":"body","operationId":"api"}
+  }
+}

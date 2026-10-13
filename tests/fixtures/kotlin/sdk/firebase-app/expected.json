@@ -1,0 +1,17 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Journal.kt", "line": 15, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 17, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 19, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 24, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 26, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 28, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 30, "provider": "firebase" },
+    { "file": "Journal.kt", "line": 32, "provider": "firebase" },
+    { "file": "Photos.java", "line": 12, "provider": "firebase" },
+    { "file": "Photos.java", "line": 16, "provider": "firebase" },
+    { "file": "Photos.java", "line": 21, "provider": "firebase" }
+  ]
+}

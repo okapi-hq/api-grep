@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Helpdesk.java", "line": 20, "provider": "azure-openai" },
+    { "file": "Helpdesk.java", "line": 24, "provider": "azure-openai" },
+    { "file": "Triage.java", "line": 10, "provider": "google-ai" },
+    { "file": "Triage.java", "line": 16, "provider": "mistral" },
+    { "file": "Triage.java", "line": 21, "provider": "aws-bedrock" }
+  ]
+}

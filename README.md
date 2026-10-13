@@ -566,7 +566,9 @@ and Maven manifests are read, so `coverage.sdks` lists the JVM SDKs a project de
 SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): the official OpenAI and Anthropic Java SDKs, Stripe,
 AWS (S3, the S3 Transfer Manager, DynamoDB and its enhanced client, SQS, SNS, SES, SES v2 and Bedrock Runtime from the
 AWS SDK for Java 2.x and the AWS SDK for Kotlin; S3 from the AWS SDK for Java 1.x), Google Gen AI, Firestore and
-Firebase Admin, Twilio, Slack, Sentry and PostHog ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin client, Azure OpenAI, LangChain4j model
+clients, Firebase for Android (Auth, Realtime Database, Storage, Functions), supabase-kt, SendGrid, Resend and Mailgun
+([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
 in steps or filled by a lambda, and the AWS SDK for Kotlin's `PutObjectRequest { bucket = b }`) are read as the
 request body, and enum constants as the model ids they stand for.
@@ -757,8 +759,8 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in
-  `coverage.sdks` only (#50); a client injected through `Lazy<T>` / `Provider<T>`, a
+- Kotlin: the JVM SDKs without a registry (Spring AI, [sdk-support.md](docs/sdk-support.md)) are listed in
+  `coverage.sdks` only (#89); a client injected through `Lazy<T>` / `Provider<T>`, a
   multibinding or a service locator other than Koin is known by its type only (#75). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.

@@ -149,7 +149,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog) and the AWS ones of #49 (DynamoDB and its
   enhanced client, SQS, SNS, SES, SES v2, the S3 Transfer Manager, the AWS SDK for Kotlin as `variants` of the Java
   2.x registries, its requests built by lambdas that assign properties: `FunctionDef.props`, S3 from the SDK for
-  Java 1.x). Other JVM SDKs and builder forms #50. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  Java 1.x). #50 adds openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend and
+  Mailgun, the registry fields `argFields`, `bodySelf`, `urlArg`, `setupUrl` (`src/lang/ir/setup.ts`),
+  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`; Spring AI
+  and the remaining forms are #89. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,

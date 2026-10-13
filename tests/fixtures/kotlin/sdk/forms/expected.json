@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Drafts.kt", "line": 13, "provider": "openai" },
+    { "file": "Drafts.kt", "line": 25, "provider": "openai" },
+    { "file": "Drafts.kt", "line": 29, "provider": "openai" }
+  ]
+}

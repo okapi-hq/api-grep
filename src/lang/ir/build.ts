@@ -71,7 +71,10 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   const chain = /^chain:([\w,]+)$/.exec(source);
   if (chain) {
     const names = new Set(chain[1]!.split(","));
-    const pieces = before.filter((s) => s.call && names.has(s.name)).map((s) => argOf(s, 0));
+    const segs = before.filter((s) => s.call && names.has(s.name));
+    // a root reference first (`getReference()` with no argument, then `child(path)`) adds nothing to the path
+    while (segs.length > 1 && segs[0]!.call!.args.length === 0) segs.shift();
+    const pieces = segs.map((s) => argOf(s, 0));
     if (pieces.length === 0 || pieces.some((p) => !p)) return {};
     return { parts: pieces.flatMap((p, i) => [...(i ? [{ kind: "static", text: "/" } as Part] : []), ...urlParts(p!, ctx)]) };
   }
@@ -81,7 +84,9 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   if (!m2) return undefined;
   const target = m2[1] === "instance" ? before[before.length - 1] : m.method;
   const base = m2[1] === "kw" ? argOf(target, undefined, m2[2]) : argOf(target, Number(m2[2]), name);
-  return { expr: m2[3] ? propOf(base, m2[3], ctx) : base };
+  if (m2[3]) return { expr: propOf(base, m2[3], ctx) };
+  // a JVM path id given inside the params object (`retrieve(FileRetrieveParams.builder().fileId(id).build())`)
+  return { expr: (m.entry.setters && m2[1] === "arg" ? propOf(base, name, ctx) : undefined) ?? base };
 }
 
 function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {

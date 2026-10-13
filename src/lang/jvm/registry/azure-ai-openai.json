@@ -1,0 +1,24 @@
+{
+  "$comment": "Azure OpenAI client library for Java (`com.azure:azure-ai-openai`, also used from Kotlin): `new OpenAIClientBuilder().endpoint(e).credential(new AzureKeyCredential(k)).buildClient()`; operations take the deployment (or model) name first and an options object (`new ChatCompletionsOptions(messages).setMaxTokens(200)`) the SDK serializes itself. Paths as in the Python Azure registry, under the endpoint the builder gets; every request also carries `?api-version=`.",
+  "package": "com.azure:azure-ai-openai",
+  "imports": ["com.azure.ai.openai.OpenAIClientBuilder", "com.azure.ai.openai.OpenAIClient", "com.azure.ai.openai.OpenAIAsyncClient"],
+  "provider": "azure-openai",
+  "host": "{resource}.openai.azure.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (OpenAIClient methods of azure-ai-openai 1.0.0-beta, paths of the Python Azure registry)",
+  "instance": {
+    "names": ["buildClient", "buildAsyncClient", "OpenAIClient", "OpenAIAsyncClient"],
+    "urlArg": { "endpoint": "0" }
+  },
+  "methods": {
+    "getChatCompletions": {"method":"POST","path":"/openai/deployments/{model}/chat/completions","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getChatCompletions"},
+    "getChatCompletionsStream": {"method":"POST","path":"/openai/deployments/{model}/chat/completions","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getChatCompletions"},
+    "getCompletions": {"method":"POST","path":"/openai/deployments/{model}/completions","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getCompletions"},
+    "getCompletionsStream": {"method":"POST","path":"/openai/deployments/{model}/completions","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getCompletions"},
+    "getEmbeddings": {"method":"POST","path":"/openai/deployments/{model}/embeddings","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getEmbeddings"},
+    "getImageGenerations": {"method":"POST","path":"/openai/deployments/{model}/images/generations","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"getImageGenerations"},
+    "getAudioTranscription": {"method":"POST","path":"/openai/deployments/{model}/audio/transcriptions","pathArgs":[0],"modelArg":0,"encoding":"multipart","operationId":"getAudioTranscription"},
+    "getAudioTranslation": {"method":"POST","path":"/openai/deployments/{model}/audio/translations","pathArgs":[0],"modelArg":0,"encoding":"multipart","operationId":"getAudioTranslation"},
+    "generateSpeechFromText": {"method":"POST","path":"/openai/deployments/{model}/audio/speech","pathArgs":[0],"modelArg":0,"bodyArg":1,"operationId":"generateSpeechFromText"}
+  }
+}

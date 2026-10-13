@@ -1,0 +1,23 @@
+{
+  "$comment": "LangChain4j Gemini models (`dev.langchain4j:langchain4j-google-ai-gemini`): `GoogleAiGeminiChatModel.builder().apiKey(k).modelName(\"gemini-2.0-flash\").build()` is the call, its request settings the body and its model the path (as in `langchain4j-open-ai.json`).",
+  "package": "dev.langchain4j:langchain4j-google-ai-gemini",
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (LangChain4j Gemini model builders, paths of the Python langchain-google-genai registry)",
+  "instance": { "names": [], "urlArg": { "baseUrl": "0" } },
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.googleai"],
+    "case": "camel",
+    "fields": {
+      "modelName": "model", "apiKey": "", "baseUrl": "", "timeout": "", "maxRetries": "", "logRequestsAndResponses": "", "logRequests": "", "logResponses": "", "logger": "",
+      "httpClientBuilder": "", "listeners": "", "defaultRequestParameters": "", "safetySettings": "", "allowCodeExecution": "", "includeCodeExecutionOutput": "",
+      "returnThinking": "", "sendThinking": "", "supportedCapabilities": ""
+    }
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.googleai.GoogleAiGeminiChatModel", "dev.langchain4j.model.googleai.GoogleAiGeminiStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/v1beta/models/{model}:generateContent","bodySelf":true,"pathFromBody":["model"],"operationId":"generateContent"} } },
+    { "imports": ["dev.langchain4j.model.googleai.GoogleAiEmbeddingModel"], "methods": { "build": {"method":"POST","path":"/v1beta/models/{model}:embedContent","bodySelf":true,"pathFromBody":["model"],"operationId":"embedContent"} } }
+  ]
+}

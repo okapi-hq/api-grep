@@ -1,5 +1,5 @@
 {
-  "$comment": "PostHog for Android and the JVM (`com.posthog:posthog`, the core of posthog-android): `PostHog.setup(config)` (or `PostHogAndroid.setup(context, config)`), then the `com.posthog.PostHog` facade: `PostHog.capture(event = ...)`. Events are queued and sent in batches to /batch, flags are evaluated by /flags/?v=2 (checked against posthog-android PostHogApi). Named arguments are the event fields. The host of the `PostHogConfig` given to `setup` is not followed.",
+  "$comment": "PostHog for Android and the JVM (`com.posthog:posthog`, the core of posthog-android): `PostHog.setup(config)` (or `PostHogAndroid.setup(context, config)`), then the `com.posthog.PostHog` facade: `PostHog.capture(event = ...)`. Events are queued and sent in batches to /batch, flags are evaluated by /flags/?v=2 (checked against posthog-android PostHogApi). Named arguments are the event fields. The host is the one of the `PostHogConfig` / `PostHogAndroidConfig` given to the project's `setup` call (`setupUrl`).",
   "package": "com.posthog:posthog",
   "aliases": [
     "com.posthog:posthog-android"
@@ -11,6 +11,7 @@
   "host": "us.i.posthog.com",
   "auth": "none",
   "generatedFrom": "manual (posthog-android PostHogApi endpoints and the PostHog facade)",
+  "setupUrl": { "calls": ["PostHog.setup", "PostHogAndroid.setup"], "arg": -1, "host": "kw:host|1" },
   "methods": {
     "capture": {"method":"POST","path":"/batch","bodyKwargs":true},
     "identify": {"method":"POST","path":"/batch","bodyKwargs":true},

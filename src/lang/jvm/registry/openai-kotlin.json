@@ -1,0 +1,38 @@
+{
+  "$comment": "openai-kotlin (`com.aallam.openai:openai-client`, community): `OpenAI(token)` or `OpenAI(OpenAIConfig(token = k, host = OpenAIHost(baseUrl = u)))`; suspend methods take request data classes built by named arguments (`chatCompletion(ChatCompletionRequest(model = ModelId(\"gpt-4o\"), messages = listOf(ChatMessage(role = ChatRole.User, content = q))))`), read as the JSON body in snake_case; `ModelId(...)` stands for its id, `ChatRole.User` for `user`. Streaming variants (`chatCompletions`, `completions`) send the same request. Overloads of one name (`imageURL` for generations, edits and variations) are listed under the first.",
+  "package": "com.aallam.openai:openai-client",
+  "imports": ["com.aallam.openai.client.OpenAI"],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (keys of the openai-java registry under openai-kotlin's OpenAI methods)",
+  "basePath": "/v1",
+  "instance": {
+    "names": ["OpenAI"],
+    "urlArg": { "OpenAI": "kw:host|0.host" }
+  },
+  "setters": {
+    "packages": ["com.aallam.openai.api", "com.aallam.openai.client"],
+    "case": "snake",
+    "constructors": true,
+    "wrappers": ["ModelId", "FileId", "OpenAIHost"],
+    "fields": { "token": "", "timeout": "", "logging": "", "retry": "", "headers": "", "organization": "", "proxy": "", "httpClientConfig": "" },
+    "constants": { "ChatRole": "lower", "Role": "lower" }
+  },
+  "methods": {
+    "chatCompletion": {"method":"POST","path":"/v1/chat/completions","bodyArg":0,"operationId":"createChatCompletion"},
+    "chatCompletions": {"method":"POST","path":"/v1/chat/completions","bodyArg":0,"operationId":"createChatCompletion"},
+    "completion": {"method":"POST","path":"/v1/completions","bodyArg":0,"operationId":"createCompletion"},
+    "completions": {"method":"POST","path":"/v1/completions","bodyArg":0,"operationId":"createCompletion"},
+    "embeddings": {"method":"POST","path":"/v1/embeddings","bodyArg":0,"operationId":"createEmbedding"},
+    "imageURL": {"method":"POST","path":"/v1/images/generations","bodyArg":0,"operationId":"createImage"},
+    "imageJSON": {"method":"POST","path":"/v1/images/generations","bodyArg":0,"operationId":"createImage"},
+    "transcription": {"method":"POST","path":"/v1/audio/transcriptions","bodyArg":0,"encoding":"multipart","operationId":"createTranscription"},
+    "translation": {"method":"POST","path":"/v1/audio/translations","bodyArg":0,"encoding":"multipart","operationId":"createTranslation"},
+    "speech": {"method":"POST","path":"/v1/audio/speech","bodyArg":0,"operationId":"createSpeech"},
+    "moderations": {"method":"POST","path":"/v1/moderations","bodyArg":0,"operationId":"createModeration"},
+    "models": {"method":"GET","path":"/v1/models","operationId":"listModels"},
+    "model": {"method":"GET","path":"/v1/models/{model}","pathArgs":[0],"operationId":"retrieveModel"},
+    "files": {"method":"GET","path":"/v1/files","operationId":"listFiles"}
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "$comment": "Slack's Java SDK (also used from Kotlin): `Slack.getInstance().methods(token).chatPostMessage(req)` is `POST https://slack.com/api/chat.postMessage`. The request is a builder (`ChatPostMessageRequest.builder().channel(c).text(t).build()`) or a lambda that fills it (`chatPostMessage { it.channel(c).text(t) }`); its setters are the form fields (`threadTs` -> `thread_ts`). `methodsAsync(token)` sends the same requests.",
+  "$comment": "Slack's Java SDK (also used from Kotlin): `Slack.getInstance().methods(token).chatPostMessage(req)` is `POST https://slack.com/api/chat.postMessage`. The request is a builder (`ChatPostMessageRequest.builder().channel(c).text(t).build()`) or a lambda that fills it (`chatPostMessage { it.channel(c).text(t) }`); its setters are the form fields (`threadTs` -> `thread_ts`). `methodsAsync(token)` sends the same requests. Incoming webhooks: `Slack.getInstance().send(url, payload)` posts the payload (a JSON string or `Payload.builder().text(t).build()`) to the URL it is given.",
   "package": "com.slack.api:slack-api-client",
   "imports": ["com.slack.api.Slack", "com.slack.api.methods.MethodsClient", "com.slack.api.methods.AsyncMethodsClient"],
   "provider": "slack",
@@ -8,7 +8,7 @@
   "generatedFrom": "manual (methods of the Python slack-sdk registry under the Java SDK's names)",
   "instance": { "names": ["methods", "methodsAsync", "MethodsClient", "AsyncMethodsClient"] },
   "setters": {
-    "packages": ["com.slack.api.methods.request"],
+    "packages": ["com.slack.api.methods.request", "com.slack.api.webhook"],
     "case": "snake"
   },
   "methods": {
@@ -51,6 +51,8 @@
     "filesCompleteUploadExternal": {"method":"POST","path":"/api/files.completeUploadExternal","bodyArg":0,"encoding":"form","operationId":"files_completeUploadExternal"},
     "botsInfo": {"method":"POST","path":"/api/bots.info","bodyArg":0,"encoding":"form","operationId":"bots_info"},
     "emojiList": {"method":"POST","path":"/api/emoji.list","bodyArg":0,"encoding":"form","operationId":"emoji_list"},
-    "oauthV2Access": {"method":"POST","path":"/api/oauth.v2.access","bodyArg":0,"encoding":"form","auth":"basic","operationId":"oauth_v2_access"}
+    "oauthV2Access": {"method":"POST","path":"/api/oauth.v2.access","bodyArg":0,"encoding":"form","auth":"basic","operationId":"oauth_v2_access"},
+    "getInstance.send": {"method":"POST","path":"/","urlArg":0,"bodyArg":1,"host":"hooks.slack.com","auth":"none"},
+    "Slack.send": {"method":"POST","path":"/","urlArg":0,"bodyArg":1,"host":"hooks.slack.com","auth":"none"}
   }
 }
