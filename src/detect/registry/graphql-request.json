@@ -1,0 +1,19 @@
+{
+  "$comment": "graphql-request (#54) talks to the GraphQL endpoint the code gives it: `new GraphQLClient(url, { headers })`, or the URL its own `request(url, document)` takes first.",
+  "package": "graphql-request",
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["GraphQLClient"] },
+  "endpoint": {
+    "clients": {
+      "GraphQLClient": { "url": "0", "headers": "1.headers" }
+    }
+  },
+  "methods": {
+    "request": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "headersArg": 2, "endpointFirst": true },
+    "rawRequest": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "headersArg": 2, "endpointFirst": true }
+  }
+}

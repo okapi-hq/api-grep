@@ -54,7 +54,7 @@ function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { ur
 }
 
 function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
-  if (raw.sdk) return { names: [], values: {}, authScheme: raw.sdk.auth ?? "unknown" };
+  if (raw.sdk && !raw.sdk.anyHost) return { names: [], values: {}, authScheme: raw.sdk.auth ?? "unknown" };
   const call = resolveHeaders(raw.headersExpr, ctx);
   for (const [k, v] of raw.headerPairs ?? []) {
     const name = staticText(evaluate(k, ctx));
@@ -66,13 +66,16 @@ function resolveAuth(raw: RawCall, ctx: EvalCtx): ResolvedCall["headers"] {
   const authScheme = definite(fromHeaders) || !raw.authHint ? fromHeaders : raw.authHint;
   // a header the call sets replaces the instance's, alternatives included
   const alternatives = { ...Object.fromEntries(Object.entries(inst.alternatives ?? {}).filter(([k]) => !(k in call.values))), ...call.alternatives };
-  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme };
+  // a GraphQL client's headers the scan does not see (an auth link, a `fetchOptions` callback) may carry credentials
+  const scheme = raw.sdk && !definite(authScheme) ? (raw.sdk.auth ?? "unknown") : authScheme;
+  return { names: [...new Set([...call.names, ...inst.names])], values: { ...inst.values, ...call.values }, alternatives, authScheme: scheme };
 }
 
-/** The GraphQL document an SDK method takes as an argument. */
+/** The GraphQL document an SDK method takes as an argument; one it is not given is unknown. */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
-  const arg = sdk?.spec.documentArg !== undefined ? sdk.args[sdk.spec.documentArg] : undefined;
-  return arg ? shapeOf(arg, ctx).shape : undefined;
+  if (sdk?.spec.documentArg === undefined) return undefined;
+  const arg = sdk.args[sdk.spec.documentArg];
+  return arg ? shapeOf(arg, ctx).shape : { type: "unknown" };
 }
 
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */

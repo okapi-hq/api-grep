@@ -6,7 +6,7 @@ import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
 import { resolveReference } from "../../resolve/url-reference.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
-import type { AuthScheme, BodyEncoding, DynamicPart, Part, UrlShape } from "../../types.js";
+import type { AuthScheme, BodyEncoding, DynamicPart, Part, Shape, UrlShape } from "../../types.js";
 import { argAt, argOf, propOf } from "./args.js";
 import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
@@ -108,9 +108,18 @@ function defaultEncoding(raw: IrRaw, method: string): BodyEncoding {
 }
 
 function authOf(raw: IrRaw, fromHeaders: AuthScheme): AuthScheme {
-  if (raw.sdk) return raw.sdk.spec.auth ?? raw.sdk.entry.auth ?? "unknown";
   const definite = fromHeaders !== "none" && fromHeaders !== "unknown";
+  // a GraphQL client's headers are the code's; credentials it sets elsewhere stay unknown
+  if (raw.sdk && (!raw.sdk.entry.endpoint || !definite)) return raw.sdk.spec.auth ?? raw.sdk.entry.auth ?? "unknown";
   return definite || !raw.auth ? fromHeaders : raw.auth;
+}
+
+/** The GraphQL document an SDK method takes (`client.execute(gql("..."))`); one it is not given is unknown. */
+function documentOf(raw: IrRaw, ctx: IrCtx): Shape | undefined {
+  const m = raw.sdk;
+  if (m?.spec.documentArg === undefined) return undefined;
+  const arg = argOf(m.method, m.spec.documentArg, "document");
+  return arg ? shapeOf(arg.expr, arg.fn, ctx).shape : { type: "unknown" };
 }
 
 /** Resolves a detected call into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
@@ -127,7 +136,8 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveIrQuery(raw.query, ctx);
-  const headers: HeadersResult = raw.sdk ? { names: [], values: {}, authScheme: "none", known: true } : resolveIrHeaders(raw.headers, ctx);
+  const ownHeaders = !raw.sdk || !!raw.sdk.entry.endpoint;
+  const headers: HeadersResult = ownHeaders ? resolveIrHeaders(raw.headers, ctx) : { names: [], values: {}, authScheme: "none", known: true };
   const pairs = raw.sdk ? undefined : resolvePairs(raw.pairs, ctx, headers, q);
   dynamic.push(...q.dynamic);
   const fromHeaders = headers.authScheme === "none" && pairs?.queryAuth ? pairs.queryAuth : headers.authScheme;
@@ -147,6 +157,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
     codeBaseUrl: !!raw.baseUrl,
     optionsOpaque: raw.optionsOpaque,
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
+    document: documentOf(raw, ctx),
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,

@@ -109,6 +109,33 @@ export interface MethodSpec {
   baseUrlProp?: string[];
   /** The settings mix the client's (keys, callbacks, retries) with the request's: only the request's are body. */
   clientKwargs?: boolean;
+  /** Argument holding per-request headers (graphql-request `client.request(document, variables, headers)`). */
+  headersArg?: number;
+  /**
+   * Called as the package's own function rather than on a client (graphql-request `request(url, document)`), the call
+   * takes the endpoint first and the method's arguments after it, or one object with its `url`.
+   */
+  endpointFirst?: boolean;
+  /** A property of an argument naming the client to use (`useQuery(DOC, { client })`): `1.client`. */
+  clientArg?: string;
+  /** Sent over the client's subscription transport (often a WebSocket of its own): its endpoint is not the client's URL. */
+  subscription?: boolean;
+}
+
+/** Where a GraphQL client or one of its transports takes its URL and headers: `0`, `0.uri`, `1.headers` (TypeScript). */
+export interface EndpointSource {
+  url?: string;
+  headers?: string;
+}
+
+/**
+ * GraphQL clients (#54) talk to whatever URL the code gives them. `clients` are their constructors and factories
+ * (`new ApolloClient({ uri })`), with the option holding a transport built apart (`link`); `transports` are the
+ * constructors of those (`new HttpLink({ uri })`). Python writes the positions as `kw:url|0`.
+ */
+export interface EndpointSpec {
+  clients: Record<string, EndpointSource & { transport?: string }>;
+  transports?: Record<string, EndpointSource>;
 }
 
 export interface RegistryEntry {
@@ -133,6 +160,8 @@ export interface RegistryEntry {
   commands?: Record<string, MethodSpec>;
   /** The library picks the provider from the model name (LangChain's `initChatModel`): the call goes where it routes. */
   routeByModel?: boolean;
+  /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */
+  endpoint?: EndpointSpec;
 }
 
 export interface FrameworkKeys {
@@ -167,6 +196,8 @@ export interface SdkMatch {
   inlinePath?: boolean;
   basePath?: string;
   routeByModel?: boolean;
+  /** A GraphQL client (`endpoint` in the registry): its headers and auth come from the code too. */
+  anyHost?: boolean;
 }
 
 export type Shape =

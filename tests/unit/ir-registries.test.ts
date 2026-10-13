@@ -23,7 +23,8 @@ function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer
     expect(known, `${e.package} is not in providers.json packages.${ecosystem}`).toContain(normalize(e.package));
     for (const [key, spec] of Object.entries(e.methods)) {
       expect(spec.method, `${e.package} ${key}`).toMatch(/^(?:GET|POST|PUT|PATCH|DELETE|HEAD)$/);
-      expect(spec.path.startsWith("/"), `${e.package} ${key}: ${spec.path}`).toBe(true);
+      // a GraphQL client's endpoint is the URL the code gives it, with nothing appended
+      expect(e.endpoint ? spec.path === "" : spec.path.startsWith("/"), `${e.package} ${key}: ${spec.path}`).toBe(true);
       for (const source of Object.values(spec.params ?? {})) expect(source, `${e.package} ${key}`).toMatch(SOURCE_RE);
       for (const name of Object.keys(spec.params ?? {})) expect(spec.path, `${e.package} ${key}: param ${name}`).toContain(`{${name}}`);
     }

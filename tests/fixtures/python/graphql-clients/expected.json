@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/54",
+  "calls": [
+    {"file": "inventory.py", "line": 25, "provider": "api.example-warehouse.io", "operation": "ListBins"},
+    {"file": "inventory.py", "line": 29, "provider": "api.example-warehouse.io", "operation": "MovePallet"},
+    {"file": "inventory.py", "line": 34, "provider": "env:STOCK_GRAPHQL_URL", "operation": "StockLevels"},
+    {"file": "inventory.py", "line": 38, "provider": "unknown", "operation": "DockEvents"}
+  ]
+}

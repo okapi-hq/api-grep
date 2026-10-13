@@ -33,6 +33,9 @@ import openaiAgents from "./openai-agents.json" with { type: "json" };
 import groqSdk from "./groq-sdk.json" with { type: "json" };
 import mistralai from "./mistralai.json" with { type: "json" };
 import ollama from "./ollama.json" with { type: "json" };
+import apolloClient from "./apollo-client.json" with { type: "json" };
+import graphqlRequest from "./graphql-request.json" with { type: "json" };
+import urql from "./urql.json" with { type: "json" };
 
 export class Registry {
   private byPkg = new Map<string, RegistryEntry>();
@@ -65,5 +68,7 @@ export function defaultRegistry(): Registry {
   entries.push(resend, revenuecat, lemonsqueezy, posthogJs, posthogNode, convex, awsBedrock, mcp);
   // model clients and agents
   entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);
+  // GraphQL clients of any API (#54)
+  entries.push(apolloClient, urql, graphqlRequest);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

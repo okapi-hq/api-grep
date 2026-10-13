@@ -1,0 +1,25 @@
+{
+  "$comment": "urql (#54) talks to the GraphQL endpoint its client is built with (`createClient({ url })`). Hooks name no client: they use the project's one client, else the endpoint is unknown. Subscriptions go through an exchange of their own.",
+  "package": "urql",
+  "aliases": ["@urql/core", "@urql/preact", "@urql/svelte", "@urql/vue"],
+  "provider": "graphql",
+  "host": "{graphqlEndpoint}",
+  "auth": "unknown",
+  "generatedFrom": "manual",
+  "inlinePathLiterals": true,
+  "instance": { "names": ["createClient", "Client", "useClient"] },
+  "endpoint": {
+    "clients": {
+      "createClient": { "url": "0.url", "headers": "0.fetchOptions.headers" },
+      "Client": { "url": "0.url", "headers": "0.fetchOptions.headers" }
+    }
+  },
+  "methods": {
+    "query": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1 },
+    "mutation": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1 },
+    "subscription": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "subscription": true },
+    "useQuery": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables" },
+    "useMutation": { "method": "POST", "path": "", "documentArg": 0 },
+    "useSubscription": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables", "subscription": true }
+  }
+}

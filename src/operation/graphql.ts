@@ -172,14 +172,24 @@ function queryOperations(r: ResolvedCall): Operation[] {
 }
 
 /**
+ * A document argument: the document itself, or the options holding it (Octokit `graphql({ query })`, Apollo
+ * `client.mutate({ mutation })`, graphql-request `request({ document })`).
+ */
+function documentEnvelope(d: Shape): Envelope {
+  if (d.type !== "object") return { query: d, hinted: true, persisted: false };
+  const { query, mutation, document } = d.properties;
+  return bodyEnvelope({ ...d, properties: { ...d.properties, query: query ?? mutation ?? document ?? { type: "unknown" } } }, "graphql");
+}
+
+/**
  * The operations a request sends. An SDK method that takes a document (Octokit `graphql()`) gives it apart from the
  * body; a document holding several operations with no `operationName` that picks one gives each of them.
  */
 export function graphqlOperations(r: ResolvedCall): Operation[] {
   if (r.document) {
-    const d = r.document;
-    const envelope: Envelope = d.type === "object" ? bodyEnvelope(d, "graphql") : { query: d, hinted: true, persisted: false };
-    return distinct(envelopeOperations(envelope, "document"));
+    const ops = envelopeOperations(documentEnvelope(r.document), "document");
+    // the method sends a GraphQL operation whatever the scan could read of its document
+    return ops.length > 0 ? distinct(ops) : [graphql(null, "document")];
   }
   if (r.client === "sdk") return [];
   const fromBody = bodyOperations(r);

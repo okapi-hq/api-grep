@@ -20,6 +20,7 @@ import googleCloudFirestore from "./registry/google-cloud-firestore.json" with {
 import googleGenai from "./registry/google-genai.json" with { type: "json" };
 import googleGenerativeai from "./registry/google-generativeai.json" with { type: "json" };
 import groq from "./registry/groq.json" with { type: "json" };
+import gql from "./registry/gql.json" with { type: "json" };
 import mistralai from "./registry/mistralai.json" with { type: "json" };
 import openaiAzure from "./registry/openai-azure.json" with { type: "json" };
 import openai from "./registry/openai.json" with { type: "json" };
@@ -97,6 +98,7 @@ export const PYTHON_REGISTRY = [
   autogenExt,
   googleAdk,
   ollama,
+  gql,
 ] as unknown as IrRegistryEntry[];
 
 const MODULES: Record<string, string[]> = modules.modules;
@@ -136,7 +138,8 @@ export const pythonLanguage: IrLanguage = {
   clients: clients.clients as unknown as ClientSpec[],
   detectors: [detectUrllib],
   passthrough: {
-    functions: new Set(["str", "quote", "quote_plus", "unquote", "escape"]),
+    // `gql("query ...")` (the gql package) parses a document: its value is the text
+    functions: new Set(["str", "quote", "quote_plus", "unquote", "escape", "gql"]),
     methods: new Set(["strip", "rstrip", "lstrip", "lower", "upper", "casefold", "encode", "decode", "removesuffix"]),
   },
   serializers: {
