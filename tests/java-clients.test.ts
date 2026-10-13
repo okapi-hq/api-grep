@@ -55,7 +55,9 @@ describe("java: fluent request clients (#65)", () => {
       ["Alerts.java", 50, "vertx-webclient", "POST", "https://api.example-alerts.com/v1/events"],
       ["Alerts.java", 59, "vertx-webclient", "GET", "https://api.example-alerts.com/v1/health"],
       ["Alerts.java", 65, "vertx-webclient", "POST", "http://api.example-alerts.com/v1/workers"],
-      ["Alerts.java", 78, "async-http-client", "DYNAMIC", "{url}"],
+      // started in two branches of a switch: one call per start (#73)
+      ["Alerts.java", 78, "async-http-client", "POST", "{url}"],
+      ["Alerts.java", 78, "async-http-client", "GET", "{url}"],
       ["Alerts.java", 84, "vertx-webclient", "POST", "https://search.example-alerts.com/v1/query"],
       ["Lookalikes.java", 32, "unirest", "GET", "https://api.example-alerts.com/v1/status"],
     ]);

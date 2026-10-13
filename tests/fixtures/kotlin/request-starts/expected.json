@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/73",
+  "calls": [
+    {"file": "Relay.kt", "line": 25, "provider": "api.example-relay.com"},
+    {"file": "Relay.kt", "line": 27, "provider": "api.example-relay.com"}
+  ]
+}

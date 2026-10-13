@@ -8,7 +8,7 @@ import { argFor, dottedPath, type Arg, type CallExpr, type Expr, type FunctionDe
 import { bindingOfPath, classField, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSelf, withSubst, type IrCtx, type Subst } from "./raw.js";
 import { scalarShape } from "./types.js";
-import { dictOf, dictValue, knownConstant } from "./values.js";
+import { constantAt, dictOf, dictValue, knownConstant } from "./values.js";
 
 /** Steps followed to resolve one value (a name's value, a wrapper argument, a field): enough for four wrappers. */
 const MAX_DEPTH = 10;
@@ -57,6 +57,9 @@ function evalBinding(b: Binding, e: Expr & { k: "name" }, fn: FunctionDef, ctx: 
     if (dflt && staticText(dflt) !== undefined && b.param.default?.k !== "null") return markConst(dflt);
     return dyn(e, "param", b.param.type ? scalarShape(b.param.type) : undefined);
   }
+  // `import static javax.ws.rs.HttpMethod.GET`
+  const imported = b.kind === "external" ? constantAt(b.path, ctx) : undefined;
+  if (imported !== undefined) return [{ kind: "static", text: imported }];
   if (b.kind === "value") {
     const value = renameSingle(markConst(evaluate(b.assign.value, b.fn, ctx, depth + 1)), e.name);
     if (!b.assign.augmented) return value;

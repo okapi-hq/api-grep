@@ -13,7 +13,7 @@ import { detectIn, type Candidate, type IrUnfollowed } from "./detect.js";
 import { sourcesOf, type IrLanguage, type IrSource } from "./language.js";
 import type { ModuleModel } from "./model.js";
 import { ProjectIndex } from "./project.js";
-import type { IrCtx, IrRaw } from "./raw.js";
+import { withAlternatives, type IrCtx, type IrRaw } from "./raw.js";
 import { expandWrappers } from "./wrappers.js";
 
 /** A file's syntax tree and its first syntax error; the language's same-length repair is tried when there is one. */
@@ -105,7 +105,7 @@ function detectAll(modules: ModuleModel[], ctx: IrCtx, input: LanguageScanInput)
 
 function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): Call[] {
   const calls: Call[] = [];
-  for (const raw of raws) {
+  for (const raw of raws.flatMap(withAlternatives)) {
     try {
       calls.push(...buildIrCall(raw, ctx));
     } catch (err) {

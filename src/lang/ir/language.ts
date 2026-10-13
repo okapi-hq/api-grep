@@ -41,6 +41,8 @@ export interface SetterRules {
   prefixes?: ("set" | "add" | "put")[];
   /** Setters the rules above do not name: field (`addUserMessage` -> `messages:user`, an item with that role), `""` for none. */
   fields?: Record<string, string>;
+  /** Setters adding one item to a list field, or one key to a map field when given two arguments (Lombok `@Singular`: `tag(t)` -> `tags`). */
+  items?: Record<string, string>;
   /** Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`. */
   constants?: Record<string, "kebab" | "snake">;
   /** Rewrites of a constant's string after its case (`gpt-4-1` -> `gpt-4.1`): pattern and replacement. */

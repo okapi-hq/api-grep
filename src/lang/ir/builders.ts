@@ -2,6 +2,7 @@ import { valueChain } from "./chain.js";
 import type { Scoped, SetterRules } from "./language.js";
 import { dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
+import { scopedIn } from "./fluent.js";
 import type { IrCtx } from "./raw.js";
 
 /**
@@ -11,6 +12,8 @@ import type { IrCtx } from "./raw.js";
  */
 
 const STARTS = new Set(["builder", "newBuilder"]);
+/** Copies followed (`a.toBuilder()...build()` of a value itself copied). */
+const MAX_COPIES = 4;
 const CONSTANT = /^[A-Z][A-Z0-9_]*$/;
 /** Calls on a builder that set no field (`builder.toString()` between two steps). */
 const NOT_SETTERS = new Set(["build", "toString", "equals", "hashCode", "validate", "toBuilder"]);
@@ -83,7 +86,8 @@ function cased(name: string, rules: SetterRules): string {
 
 interface Field {
   field: string;
-  kind: "set" | "add" | "addAll" | "put" | "putAll";
+  /** `item`: one item of a list, or one key of a map with a second argument (Lombok `@Singular`). */
+  kind: "set" | "add" | "addAll" | "put" | "putAll" | "item";
   role?: string;
 }
 
@@ -97,6 +101,8 @@ function fieldOf(name: string, rules: SetterRules): Field | undefined {
     base = lowerFirst(base.slice(3));
     kind = kind === "put" ? "putAll" : "addAll";
   }
+  const item = own(rules.items, name);
+  if (item !== undefined) return { field: item, kind: "item" };
   const mapped = own(rules.fields, name);
   if (mapped === "") return undefined;
   const [field, role] = mapped?.split(":") ?? [];
@@ -112,8 +118,9 @@ function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRul
   const entries: Entry[] = [];
   const byField = new Map<string, Entry>();
   for (const s of setters) {
-    const f = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
+    const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
+    const f = named?.kind === "item" ? { ...named, kind: b ? ("put" as const) : ("add" as const) } : named;
     if (!f || !a) continue;
     const value = constant(a, fn, ctx, rules) ?? a;
     let entry = byField.get(f.field);
@@ -141,27 +148,41 @@ function steps(fn: FunctionDef, name: string, from: number, to: number): Setter[
   return out;
 }
 
-/**
- * `X.builder() ... .build()`, or a variable holding `X.builder() ...` with steps before `.build()`, for a class of an SDK
- * with setter rules or a project class `project` gives rules for.
- */
-export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): Scoped | undefined {
-  if (call.fn.k !== "attr" || call.fn.name !== "build" || call.args.length > 0) return undefined;
+/** Setters written in `from`, read in `into`. */
+const settersIn = (setters: Setter[], from: FunctionDef, into: FunctionDef): Setter[] =>
+  from === into ? setters : setters.map((s) => ({ name: s.name, args: s.args.map((a) => ({ ...a, value: scopedIn(a.value, from, into) })) }));
+
+/** The setter rules of a built value and its setters, in order (those of the value it was copied from first). */
+function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuilders | undefined, depth: number): { rules: SetterRules; setters: Setter[] } | undefined {
+  if (call.fn.k !== "attr" || call.fn.name !== "build" || call.args.length > 0 || depth > MAX_COPIES) return undefined;
   const { root, setters } = setterChain(call.fn.obj);
   const cls = startOf(root);
   if (cls) {
     const rules = rulesFor(cls, fn, ctx, project);
-    return rules ? { expr: dictOf(setters, fn, ctx, rules), fn } : undefined;
+    return rules ? { rules, setters } : undefined;
   }
   if (root.k !== "name") return undefined;
   const b = lookup(root.name, fn, root.pos.offset, ctx.idx);
-  if (b.kind !== "value" || b.fn !== fn) return undefined;
+  if (b.kind !== "value") return undefined;
+  // `base.toBuilder().a(1).build()` (Lombok `toBuilder = true`): what `base` was built with, then the new setters
+  if (setters[0]?.name === "toBuilder") {
+    const base = b.assign.value.k === "call" ? built(b.assign.value, b.fn, ctx, project, depth + 1) : undefined;
+    return base ? { rules: base.rules, setters: [...settersIn(base.setters, b.fn, fn), ...setters] } : undefined;
+  }
+  if (b.fn !== fn) return undefined;
   const start = setterChain(b.assign.value);
   const varCls = startOf(start.root);
   const rules = varCls ? rulesFor(varCls, fn, ctx, project) : undefined;
-  if (!rules) return undefined;
-  const all = [...start.setters, ...steps(fn, root.name, b.assign.offset, call.pos.offset), ...setters];
-  return { expr: dictOf(all, fn, ctx, rules), fn };
+  return rules ? { rules, setters: [...start.setters, ...steps(fn, root.name, b.assign.offset, call.pos.offset), ...setters] } : undefined;
+}
+
+/**
+ * `X.builder() ... .build()`, or a variable holding `X.builder() ...` with steps before `.build()`, for a class of an SDK
+ * with setter rules or a project class `project` gives rules for; also a copy made with `toBuilder()`.
+ */
+export function builderValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project?: ProjectBuilders): Scoped | undefined {
+  const b = built(call, fn, ctx, project, 0);
+  return b ? { expr: dictOf(b.setters, fn, ctx, b.rules), fn } : undefined;
 }
 
 /** A lambda that fills a builder (`{ it.bucket(b).key(k) }`, `{ req -> req.channel(c) }`): the dict of what it sets. */

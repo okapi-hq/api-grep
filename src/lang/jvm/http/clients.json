@@ -401,6 +401,13 @@
     "HttpHeaders.Authorization": "Authorization",
     "HttpHeaders.ContentType": "Content-Type",
     "HttpHeaders.Accept": "Accept",
-    "HttpHeaders.UserAgent": "User-Agent"
+    "HttpHeaders.UserAgent": "User-Agent",
+    "HttpMethod.GET": "GET",
+    "HttpMethod.POST": "POST",
+    "HttpMethod.PUT": "PUT",
+    "HttpMethod.PATCH": "PATCH",
+    "HttpMethod.DELETE": "DELETE",
+    "HttpMethod.HEAD": "HEAD",
+    "HttpMethod.OPTIONS": "OPTIONS"
   }
 }

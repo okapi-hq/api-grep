@@ -127,9 +127,10 @@ export function expandWrappers(candidates: Candidate[], ctx: IrCtx): { calls: Ir
     for (const e of expansions) {
       const subst: Subst = new Map([...e.subst, ...outer]);
       const redetected = detectCall(e.raw.call, e.raw.fn, withSelf(withSubst(ctx, subst), self)).raw ?? e.raw;
+      const via = `wrapper:${[wrapperName(cand.target), ...e.via].join(">")}`;
       // the detector's own bindings (a request factory's parameters) stay, under the wrapper's
-      const all: Subst = redetected.subst ? new Map([...redetected.subst, ...subst]) : subst;
-      calls.push({ ...redetected, call: cand.call, fn: cand.fn, via: `wrapper:${[wrapperName(cand.target), ...e.via].join(">")}`, subst: all, ...(self ? { self } : {}) });
+      const at = (r: IrRaw): IrRaw => ({ ...r, call: cand.call, fn: cand.fn, via, subst: r.subst ? new Map([...r.subst, ...subst]) : subst, ...(self ? { self } : {}) });
+      calls.push({ ...at(redetected), alternatives: redetected.alternatives?.map(at) });
     }
   }
   return { calls, unfollowed };

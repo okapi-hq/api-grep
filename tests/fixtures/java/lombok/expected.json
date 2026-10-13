@@ -3,6 +3,8 @@
   "calls": [
     {"file": "Orders.java", "line": 49, "provider": "api.example-shop.com"},
     {"file": "Orders.java", "line": 53, "provider": "api.example-shop.com"},
-    {"file": "Orders.java", "line": 59, "provider": "api.example-shop.com"}
+    {"file": "Orders.java", "line": 59, "provider": "api.example-shop.com"},
+    {"file": "Carts.java", "line": 27, "provider": "api.example-shop.com"},
+    {"file": "Carts.java", "line": 33, "provider": "api.example-shop.com"}
   ]
 }
