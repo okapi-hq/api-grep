@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/65",
+  "calls": [
+    {"file": "Links.java", "line": 30, "provider": "api.example-links.com"},
+    {"file": "Links.java", "line": 38, "provider": "api.example-links.com"},
+    {"file": "Links.java", "line": 48, "provider": "auth.example-links.com"},
+    {"file": "Links.java", "line": 53, "provider": "api.example-links.com"},
+    {"file": "Links.java", "line": 57, "provider": "api.example-links.com"},
+    {"file": "Links.java", "line": 65, "provider": "api.example-links.com"},
+    {"file": "Links.java", "line": 69, "provider": "api.example-links.com"},
+    {"file": "Reports.java", "line": 28, "provider": "api.example-reports.com"},
+    {"file": "Reports.java", "line": 32, "provider": "api.example-reports.com"},
+    {"file": "Reports.java", "line": 41, "provider": "api.example-reports.com"}
+  ]
+}

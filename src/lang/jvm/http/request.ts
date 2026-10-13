@@ -40,7 +40,9 @@ export function unwrapBody(s: Scoped | undefined, ctx: IrCtx): { body?: Scoped; 
     if (w.none) return {};
     const split = w.value === "content" ? contentAndMedia(call, d.fn, ctx) : undefined;
     const media = split ? split.media : typeof w.contentType === "number" ? argAt({ call, fn: d.fn }, w.contentType) : undefined;
-    encoding = encoding ?? encodingOfType(textOf(media, ctx));
+    // `new StringEntity(json, "UTF-8")`: a charset, not a content type
+    const type = textOf(media, ctx);
+    encoding = encoding ?? w.encoding ?? encodingOfType(type && MEDIA.test(type) ? type : undefined);
     cur = split ? split.value : w.value === "receiver" && call.fn.k === "attr" ? { expr: call.fn.obj, fn: d.fn } : argAt({ call, fn: d.fn }, typeof w.value === "number" ? w.value : undefined);
   }
   return { body: cur, encoding };

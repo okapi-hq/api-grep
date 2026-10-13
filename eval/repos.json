@@ -44,5 +44,8 @@
   { "name": "antennapod", "url": "https://github.com/AntennaPod/AntennaPod.git", "language": "java" },
   { "name": "newpipe", "url": "https://github.com/TeamNewPipe/NewPipe.git", "language": "java" },
   { "name": "accept-a-payment", "url": "https://github.com/stripe-samples/accept-a-payment.git", "language": "java" },
-  { "name": "halo", "url": "https://github.com/halo-dev/halo.git", "language": "java" }
+  { "name": "halo", "url": "https://github.com/halo-dev/halo.git", "language": "java" },
+  { "name": "scribejava", "url": "https://github.com/scribejava/scribejava.git", "language": "java" },
+  { "name": "docker-client", "url": "https://github.com/spotify/docker-client.git", "language": "java" },
+  { "name": "vertx-examples", "url": "https://github.com/vert-x3/vertx-examples.git", "language": "java" }
 ]

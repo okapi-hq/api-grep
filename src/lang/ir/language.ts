@@ -164,8 +164,8 @@ export interface FluentMapSpec {
   /** Methods removing the entry of their argument (`map.remove("k")`). */
   remove?: string[];
   /**
-   * A general-purpose map (`HashMap`): a value only once entries are put on it. One filled some other way
-   * (`body["k"] = v` in Kotlin) stays a value the scan cannot read rather than an empty object.
+   * A general-purpose map (`HashMap`): a value only once entries are put on it (`put`, Kotlin's `body["k"] = v`). One
+   * filled some other way stays a value the scan cannot read rather than an empty object.
    */
   filledOnly?: boolean;
   /** How a body built this way is sent. */

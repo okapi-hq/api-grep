@@ -328,10 +328,50 @@ original's URL, method and body;
   a `RequestBody`, protobuf, Wire or XML; a `Content-Type` in `@Headers` replaces the converter's. Values come from
   the callers of the interface's methods (#39). A file must import `retrofit2.http` (or the interface be created on a
   Retrofit builder): JAX-RS resources use the same annotation names.
+- **Request objects sent by a call** (`requests.ts`, tables in `requests.json`): a request built from a start call and
+  steps (also over several statements, through fields, factories and wrappers), reported at the call that sends it.
+  The client is the library's when the send is made on one of its objects, or the start call is its (a file importing
+  the library, `new HttpPost(...)` resolving to it). A request read through a response (`target.request().get()
+  .getHeaders().get("X")`) is not sent again, and one started in several places (`case GET: b = c.prepareGet(u)`) has
+  a `DYNAMIC` method. A wrapper whose request comes from its callers is a wrapper: as an argument of a library client
+  (`client.execute(request)`), or a parameter declared with one of the library's request types (`requestTypes`:
+  `Invocation.Builder request` with `request.async().method(m, type)`).
+  - **Apache HttpClient 4 and 5** (`apache-httpclient`): `client.execute(request)` (also `execute(host, request)`,
+    with a response handler, and the async client's `execute(request, callback)`) of `new HttpGet(url)` ...
+    `HttpOptions`, `RequestBuilder` / `ClassicRequestBuilder` / `SimpleRequestBuilder` / `SimpleHttpRequests` chains,
+    with `setHeader`, `addHeader`, `setEntity`, `setBody(text, ContentType)`, `setUri`; `addParameter(k, v)` is a form
+    body for a POST, PUT or PATCH without an entity, query parameters otherwise. The fluent API
+    (`Request.Post(url).bodyString(json, ContentType.APPLICATION_JSON).execute()`, `bodyForm(Form.form().add(...)
+    .build())`). Entities: `StringEntity(text, ContentType)` (a charset argument is not a content type),
+    `ByteArrayEntity`, `UrlEncodedFormEntity` of a list of `BasicNameValuePair`s (`List.of(...)`, or a list filled with
+    `add`), `MultipartEntityBuilder.create().addTextBody(...)`; URLs from `URIBuilder` (`setPath`, `addParameter`).
+  - **JAX-RS client** (`jaxrs-client`; Jersey, RESTEasy): `client.target(url)` with `path`, `queryParam`,
+    `request(...)` (required), `header`, `headers`, sent by `get`, `post(entity)`, `put(entity)`, `delete`, `head`,
+    `options`, `method(name, entity)`, `buildX(...).invoke()` / `submit()`, also after `async()`; `Entity.json` /
+    `form` / `text` / `xml` / `entity(x, type)` give the encoding, `new Form().param(k, v)` is a form; a response type
+    (`Version.class`, `new GenericType<...>() {}`, a `Class<T>` parameter) is not an entity. `resolveTemplate` leaves
+    the `{name}` placeholder. JAX-RS resources (`@Path` classes) are endpoints the service serves, never calls.
+  - **AsyncHttpClient** (`async-http-client`): `prepareGet(url)` ... `prepare(method, url)` chains ended by `execute`,
+    `executeRequest(new RequestBuilder("POST").setUrl(...).build())` and `Dsl.post(url)`; `setHeader`, `addHeader`,
+    `addQueryParam`, `setQueryParams`, `setBody`, `addFormParam` / `setFormParams` (form).
+  - **Unirest** (`unirest`): `Unirest.get(url)` ... `request(method, url)`, also on an instance, ended by any `as*`
+    call (`asJson`, `asString`, `asObject`, their `Async` forms, `asPaged`, `thenConsume`); `header`, `headers`,
+    `queryString(k, v)` or `queryString(map)`, `contentType`, `basicAuth`, `body`, `field(k, v)` / `fields(map)`
+    (form); `routeParam` leaves the `{name}` placeholder.
+  - **Vert.x `WebClient`** (`vertx-webclient`, also the RxJava and Mutiny packages): `get(port, host, uri)`,
+    `get(host, uri)`, `get(uri)` ... `request(method, ...)` and the `*Abs(url)` forms, with `putHeader`,
+    `putHeaders`, `addQueryParam`, `setQueryParam`, `bearerTokenAuthentication`, `basicAuthentication`, sent by
+    `send`, `sendJson`, `sendJsonObject` (JSON), `sendForm` (form), `sendMultipartForm`, `sendBuffer`, `sendStream`
+    and their `rx` / `AndAwait` forms. The host and port of the arguments, else the `setDefaultHost` /
+    `setDefaultPort` of the `WebClientOptions` the client is created with; `https` with `setSsl(true)` or port 443,
+    `http` otherwise; a literal port other than 80 and 443 is in the URL. `new JsonObject().put(...)` and
+    `MultiMap.caseInsensitiveMultiMap().add(...)` are bodies.
 - **Bodies**: `JSONObject().put(...)` chains (also `val o = JSONObject(); o.put(...)`), `JSONArray`, Gson
-  `JsonObject`, Jackson `createObjectNode()`, a `HashMap` / `LinkedHashMap` filled with `put` / `putAll` (only once
-something is put on it: a map filled with `map["k"] = v` stays unread rather than empty), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data
-  classes, `LinkedMultiValueMap` (form); `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
+  `JsonObject` (and Vert.x's), Jackson `createObjectNode()`, a `HashMap` / `LinkedHashMap` filled with `put` /
+  `putAll` or `map["k"] = v` (only once something is put on it, else it stays unread rather than empty), a
+  `mutableMapOf()` / `hashMapOf()` filled with `map["k"] = v` (#38: a key set in an `if` / `when` branch or a loop is
+  optional), `mapOf(...)` serialized by Gson, Moshi, Jackson or kotlinx, data classes, `LinkedMultiValueMap` (form);
+  `HttpHeaders` and OkHttp `Headers.Builder` as header maps.
 
 **Java.** The detectors read the engine's model only (calls, chains, annotations), and the tables are in
 `src/lang/jvm/http/clients.json`, so Java gets the same clients by being lowered into the same model (`new
@@ -412,7 +452,9 @@ file. A file that does not parse is then read once more with a `;` in place of t
 ## Java
 
 **Status:** parsed, lowered and resolved by the Kotlin front end (#43): the HTTP clients, Retrofit and Feign declarations
-and SDK registries of [Kotlin](#kotlin) apply to Java as they are, since they read the engine's model only.
+and SDK registries of [Kotlin](#kotlin) apply to Java as they are, since they read the engine's model only; so do the
+clients most used from Java (#65: Apache HttpClient, the JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`),
+and Lombok builders and getters are read from the class's annotations.
 
 **One front end for Kotlin and Java.** Android and Spring projects mix the two languages, and the code crosses between
 them: a Kotlin repository calls a Retrofit interface declared in Java, a Java activity reads a Kotlin `object`'s
@@ -469,15 +511,21 @@ nested a few thousand deep still skip their file as an `internal-error`.
 - As in Kotlin, clients provided by a DI framework (Spring beans, Dagger / Hilt providers) are known by their type only
   (#46), a member inherited from a base class is only read through `this.x`, and a star import of an external package
   does not tell which names it provides.
-- Code generated at build time is not there: Lombok builders, getters and setters, annotation processors (Dagger,
-  AutoValue, MapStruct), protobuf and OpenAPI-generated clients. An OpenAPI-generated `ApiClient` checked into the
-  repository is read like any other code.
+- Code generated at build time is not there: annotation processors (Dagger, AutoValue, MapStruct), protobuf and
+  OpenAPI-generated clients. An OpenAPI-generated `ApiClient` checked into the repository is read like any other code.
+  Lombok is read from the class's annotations instead (`src/lang/jvm/lombok.ts`, the JVM `resolveCall`): on a project
+  class annotated `@Builder` or `@SuperBuilder` (and without a `builder()` of its own), `X.builder().a(1).b(x).build()`,
+  also built on a variable, is the dict of the fields it sets, under their `@JsonProperty` / `@SerializedName` names
+  (`@SuperBuilder` includes the base class's fields); on a `@Data`, `@Getter` or `@Value` class without the method,
+  `x.getA()` / `x.isA()` reads the field `a` when the project sets it (an initializer, a constructor). `@Data`
+  classes built with `new X()` and setters give the class's field shape like any POJO. `@Singular` adders and
+  `toBuilder()` are not read.
 - A `StringBuilder` filled in a loop or in branches lists every piece appended before `toString()`, once each.
 - Overloaded methods resolve to the first one declared, as in Kotlin; overloads of constructors to the widest one.
-- The grammar does not parse an annotation between a varargs type and its `...` (`String @Nullable ... names`); such a
-  file is skipped with a `parse-error` diagnostic.
-- Apache HttpClient, the JAX-RS client, AsyncHttpClient, Unirest and Vert.x `WebClient` have no table yet; they, Lombok
-  builders and Kotlin map index sets are #65.
+- Request objects of the clients above: a request built from a factory with several `return`s, or sent to an
+  `HttpHost` given apart (`execute(host, request)`), keeps the path it was built with only; Unirest's
+  `config().defaultBaseUrl(...)`, JAX-RS and Apache client filters and interceptors, Vert.x `authentication(...)` and
+  the core Vert.x `HttpClient` are not read.
 
 ## JavaScript and HTML
 
@@ -758,6 +806,7 @@ becomes a call's arguments or body, the statements of the same function that run
 | Python | `kwargs["k"] = v`, `kwargs.update(k=v)`, `.update({...})`, `.update(**other)`, `.setdefault("k", v)`, `kwargs \|= {...}`, `kwargs = {**kwargs, ...}` | `del kwargs["k"]`, `kwargs.pop("k")` |
 | TypeScript / JavaScript | `params.k = v`, `params["k"] = v`, `Object.assign(params, {...})` | `delete params.k`, `params.k = undefined` |
 | PHP | `$params['k'] = $v`, `$params += [...]` (keys not set yet), `$params = array_merge($params, [...])`, `$data['k'] = $v` with no `$data = [...]` before | `unset($params['k'])` |
+| Kotlin | `map["k"] = v` on a local `mutableMapOf(...)` / `hashMapOf(...)`, or on a `HashMap()` (an entry of the fluent map, `src/lang/ir/fluent.ts`) | |
 
 - **Branches.** Every key set on some path is reported. A key set in a block that may not run (an `if` branch, a loop
   body, a `case`, an `except` / `catch`, the right side of `&&`) is left out of `required`, unless every branch of an
@@ -765,7 +814,7 @@ becomes a call's arguments or body, the statements of the same function that run
   "o3"]`), and literal values count for the `model` fact like those of a dict literal.
 - **Order.** Only statements before the call count; a later edit, or one in a nested function or callback, does not. A
   removal in a branch makes the key optional; an unconditional one drops it.
-- **Where.** Python and PHP: the front ends lower each statement as an edit of the variable (`Assign.edit` in
+- **Where.** Python, PHP and Kotlin: the front ends lower each statement as an edit of the variable (`Assign.edit` in
   `src/lang/ir/model.ts`, blocks that may not run in `FunctionDef.branches`); `lookup` (`src/lang/ir/project.ts`)
   folds the edits into one dict literal (`src/lang/ir/edits.ts`), so shapes, options, the model and every other reader
   see them. TypeScript: `src/resolve/object-edits.ts` collects the edits of a variable declared with an object, and
