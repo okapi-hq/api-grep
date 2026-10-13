@@ -149,6 +149,8 @@ function lowerAssignment(n: SyntaxNode, st: KtState): void {
   const target = left.type === "identifier" ? nameRef(left.text, posOf(left), st) : left.type === "navigation_expression" ? lowerExpr(left, st) : undefined;
   if (target?.k === "name") st.fn.assigns.push({ target: target.name, value, offset: n.endIndex, ...(op === "+=" ? { augmented: true } : {}) });
   else if (target?.k === "attr" && target.obj.k === "this" && st.cls && op === "=") addField(st.cls.def, target.name, value, st.fn);
+  // `conn.requestMethod = "POST"`: a property set on a local object, read by detectors as `conn.requestMethod`
+  else if (target?.k === "attr" && target.obj.k === "name" && op === "=") st.fn.assigns.push({ target: `${target.obj.name}.${target.name}`, value, offset: n.endIndex });
 }
 
 /** `for (u in urls) { ... }`: the loop variables are names of its body. */
@@ -196,14 +198,19 @@ export function lowerStatement(c: SyntaxNode, st: KtState): Expr {
   }
 }
 
-/** `object : Callback { override fun onResponse(...) { ... } }`: its functions are closures of the enclosing code. */
-function lowerObjectLiteral(n: SyntaxNode, st: KtState): void {
+/**
+ * `object : Callback { override fun onResponse(...) { ... } }`: its functions are closures of the enclosing code. One
+ * with a single function (`object : Interceptor { override fun intercept(...) }`) stands for it, like a lambda.
+ */
+function lowerObjectLiteral(n: SyntaxNode, st: KtState): FunctionDef | undefined {
   const body = named(n).find((c) => c.type === "class_body");
+  const fns: FunctionDef[] = [];
   for (const m of body ? named(body) : []) {
-    if (m.type === "function_declaration") lowerFunction(m, st, true);
+    if (m.type === "function_declaration") fns.push(lowerFunction(m, st, true));
     else if (m.type === "property_declaration") propertyParts(m, st);
     else if (m.type === "anonymous_initializer") for (const b of named(m)) lowerStatement(b, st);
   }
+  return fns.length === 1 ? fns[0] : undefined;
 }
 
 setHooks({ lambda: lowerLambda, statement: lowerStatement, objectLiteral: lowerObjectLiteral });

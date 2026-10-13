@@ -1,0 +1,285 @@
+{
+  "$comment": "JVM HTTP clients, read on the IR so Kotlin and Java (#43) share them. A step table maps a builder method to what it sets from its arguments (`BuilderStep` in src/lang/ir/steps.ts: argument positions, `receiver` for the object the call is made on). `sends` are client methods taking a built request (argument N); `starts` are the calls a request or URL builder starts from; `terminals` end a fluent request (Spring); `interceptors` are client builder methods taking an interceptor, whose header and query steps apply to every request of the client.",
+  "okhttp": {
+    "client": "okhttp",
+    "imports": ["okhttp3"],
+    "sends": { "newCall": 0 },
+    "starts": ["Request.Builder", "newBuilder"],
+    "request": {
+      "url": { "url": 0 },
+      "get": { "method": "GET" },
+      "head": { "method": "HEAD" },
+      "post": { "method": "POST", "body": 0 },
+      "put": { "method": "PUT", "body": 0 },
+      "patch": { "method": "PATCH", "body": 0 },
+      "delete": { "method": "DELETE", "body": 0 },
+      "method": { "methodArg": 0, "body": 1 },
+      "header": { "header": [0, 1] },
+      "addHeader": { "header": [0, 1] },
+      "headers": { "headers": 0 }
+    },
+    "interceptors": ["addInterceptor", "addNetworkInterceptor"],
+    "interceptor": {
+      "header": { "header": [0, 1] },
+      "addHeader": { "header": [0, 1] },
+      "addQueryParameter": { "query": [0, 1] },
+      "setQueryParameter": { "query": [0, 1] },
+      "addEncodedQueryParameter": { "query": [0, 1] },
+      "setEncodedQueryParameter": { "query": [0, 1] }
+    }
+  },
+  "javaHttp": {
+    "client": "java-http",
+    "imports": ["java.net.http"],
+    "sends": { "send": 0, "sendAsync": 0 },
+    "starts": ["HttpRequest.newBuilder"],
+    "request": {
+      "newBuilder": { "url": 0 },
+      "uri": { "url": 0 },
+      "GET": { "method": "GET" },
+      "DELETE": { "method": "DELETE" },
+      "HEAD": { "method": "HEAD" },
+      "POST": { "method": "POST", "body": 0 },
+      "PUT": { "method": "PUT", "body": 0 },
+      "method": { "methodArg": 0, "body": 1 },
+      "header": { "header": [0, 1] },
+      "setHeader": { "header": [0, 1] },
+      "headers": { "headerList": true }
+    }
+  },
+  "urls": {
+    "starts": {
+      "newBuilder": { "url": "receiver" },
+      "HttpUrl.Builder": {},
+      "fromHttpUrl": { "url": 0 },
+      "fromUriString": { "url": 0 },
+      "fromUri": { "url": 0 },
+      "UriComponentsBuilder.newInstance": {},
+      "URLBuilder": { "url": 0 },
+      "buildUpon": { "url": "receiver" },
+      "Uri.Builder": {}
+    },
+    "steps": {
+      "addQueryParameter": { "query": [0, 1] },
+      "setQueryParameter": { "query": [0, 1] },
+      "addEncodedQueryParameter": { "query": [0, 1] },
+      "setEncodedQueryParameter": { "query": [0, 1] },
+      "addPathSegment": { "path": 0 },
+      "addPathSegments": { "path": 0 },
+      "addEncodedPathSegment": { "path": 0 },
+      "addEncodedPathSegments": { "path": 0 },
+      "scheme": { "scheme": 0 },
+      "host": { "host": 0 },
+      "path": { "path": 0 },
+      "pathSegment": { "path": "rest" },
+      "queryParam": { "query": [0, 1] },
+      "queryParamIfPresent": { "query": [0, 1] },
+      "queryParams": { "queryMap": 0 },
+      "appendPath": { "path": 0 },
+      "appendEncodedPath": { "path": 0 },
+      "appendQueryParameter": { "query": [0, 1] },
+      "authority": { "host": 0 }
+    }
+  },
+  "bodies": {
+    "toRequestBody": { "value": "receiver", "contentType": 0 },
+    "RequestBody.create": { "value": "content", "contentType": "media" },
+    "BodyPublishers.ofString": { "value": 0 },
+    "BodyPublishers.ofByteArray": { "value": 0 },
+    "BodyPublishers.noBody": { "none": true },
+    "BodyInserters.fromValue": { "value": 0 },
+    "Mono.just": { "value": 0 }
+  },
+  "contentTypes": [
+    { "match": "json", "encoding": "json" },
+    { "match": "x-www-form-urlencoded", "encoding": "form" },
+    { "match": "multipart/", "encoding": "multipart" }
+  ],
+  "ktor": {
+    "client": "ktor",
+    "imports": ["io.ktor.client"],
+    "clients": ["HttpClient"],
+    "verbs": {
+      "get": { "method": "GET", "url": 0 },
+      "post": { "method": "POST", "url": 0 },
+      "put": { "method": "PUT", "url": 0 },
+      "patch": { "method": "PATCH", "url": 0 },
+      "delete": { "method": "DELETE", "url": 0 },
+      "head": { "method": "HEAD", "url": 0 },
+      "options": { "method": "OPTIONS", "url": 0 },
+      "request": { "url": 0 },
+      "prepareGet": { "method": "GET", "url": 0 },
+      "preparePost": { "method": "POST", "url": 0 },
+      "preparePut": { "method": "PUT", "url": 0 },
+      "prepareDelete": { "method": "DELETE", "url": 0 },
+      "prepareRequest": { "url": 0 },
+      "submitForm": { "method": "POST", "url": 0, "body": 1, "bodyRole": "body:form" }
+    },
+    "defaults": ["defaultRequest"],
+    "tables": {
+      "request": {
+        "url": { "url": 0, "lambda": "url" },
+        "parameter": { "query": [0, 1] },
+        "header": { "header": [0, 1] },
+        "headers": { "lambda": "headers" },
+        "setBody": { "body": 0 },
+        "contentType": { "contentType": 0 },
+        "bearerAuth": { "bearer": 0 },
+        "basicAuth": { "basic": true }
+      },
+      "url": {
+        "path": { "path": "rest" },
+        "appendPathSegments": { "path": "rest" },
+        "encodedPath": { "path": 0 },
+        "parameters.append": { "query": [0, 1] }
+      },
+      "headers": {
+        "append": { "header": [0, 1] },
+        "set": { "header": [0, 1] }
+      }
+    }
+  },
+  "spring": [
+    {
+      "client": "spring-webclient",
+      "imports": ["org.springframework.web.reactive.function.client"],
+      "clients": ["WebClient"],
+      "terminals": ["retrieve", "exchange", "exchangeToMono", "exchangeToFlux", "awaitExchange"],
+      "clientSteps": {
+        "create": { "baseUrl": 0 },
+        "baseUrl": { "baseUrl": 0 },
+        "defaultHeader": { "header": [0, 1] }
+      }
+    },
+    {
+      "client": "spring-rest",
+      "imports": ["org.springframework.web.client"],
+      "clients": ["RestClient"],
+      "terminals": ["retrieve", "exchange"],
+      "clientSteps": {
+        "create": { "baseUrl": 0 },
+        "baseUrl": { "baseUrl": 0 },
+        "defaultHeader": { "header": [0, 1] }
+      }
+    }
+  ],
+  "springRequest": {
+    "get": { "method": "GET" },
+    "head": { "method": "HEAD" },
+    "options": { "method": "OPTIONS" },
+    "delete": { "method": "DELETE" },
+    "post": { "method": "POST" },
+    "put": { "method": "PUT" },
+    "patch": { "method": "PATCH" },
+    "method": { "methodArg": 0 },
+    "uri": { "url": 0 },
+    "header": { "header": [0, 1] },
+    "headers": { "lambda": "headers" },
+    "contentType": { "contentType": 0 },
+    "bodyValue": { "body": 0 },
+    "body": { "body": 0 }
+  },
+  "springHeaders": {
+    "setBearerAuth": { "bearer": 0 },
+    "setBasicAuth": { "basic": true },
+    "set": { "header": [0, 1] },
+    "add": { "header": [0, 1] }
+  },
+  "restTemplate": {
+    "client": "spring-rest",
+    "imports": ["org.springframework.web.client", "org.springframework.boot.web.client"],
+    "instances": { "names": ["RestTemplate", "RestTemplateBuilder"] },
+    "functions": {
+      "getForObject": { "method": "GET" },
+      "getForEntity": { "method": "GET" },
+      "headForHeaders": { "method": "HEAD" },
+      "optionsForAllow": { "method": "OPTIONS" },
+      "delete": { "method": "DELETE" },
+      "postForObject": { "method": "POST", "bodyArg": 1 },
+      "postForEntity": { "method": "POST", "bodyArg": 1 },
+      "postForLocation": { "method": "POST", "bodyArg": 1 },
+      "put": { "method": "PUT", "bodyArg": 1 },
+      "patchForObject": { "method": "PATCH", "bodyArg": 1 },
+      "exchange": { "methodArg": 1, "bodyArg": 2 },
+      "execute": { "methodArg": 1 }
+    },
+    "modifiers": {
+      "rootUri": { "baseUrlArg": 0 },
+      "defaultHeader": { "headerArgs": [0, 1] },
+      "basicAuthentication": { "auth": "basic" },
+      "build": {},
+      "setConnectTimeout": {},
+      "setReadTimeout": {},
+      "connectTimeout": {},
+      "readTimeout": {},
+      "requestFactory": {},
+      "errorHandler": {},
+      "additionalInterceptors": {},
+      "additionalMessageConverters": {},
+      "messageConverters": {}
+    },
+    "keys": {}
+  },
+  "entities": ["HttpEntity", "RequestEntity"],
+  "feign": {
+    "clients": ["FeignClient"],
+    "mappings": { "GetMapping": "GET", "PostMapping": "POST", "PutMapping": "PUT", "PatchMapping": "PATCH", "DeleteMapping": "DELETE", "RequestMapping": "" },
+    "requestLine": "RequestLine",
+    "headers": "Headers",
+    "params": { "RequestParam": "query", "Param": "query", "RequestHeader": "header", "RequestBody": "body", "SpringQueryMap": "queryMap", "QueryMap": "queryMap", "HeaderMap": "headers" },
+    "targets": ["target"]
+  },
+  "fluentMaps": [
+    { "objects": ["JSONObject"], "put": ["put", "putOpt", "accumulate"], "encoding": "json" },
+    { "objects": ["JSONArray"], "items": ["put"] },
+    { "objects": ["JsonObject"], "put": ["addProperty", "add"], "encoding": "json" },
+    { "objects": ["JsonArray"], "items": ["add"] },
+    { "objects": ["createObjectNode"], "put": ["put", "set"], "encoding": "json" },
+    { "objects": ["FormBody.Builder"], "put": ["add", "addEncoded"], "encoding": "form" },
+    { "objects": ["MultipartBody.Builder"], "put": ["addFormDataPart"], "skip": ["setType"], "encoding": "multipart" },
+    { "objects": ["Headers.Builder", "Headers.of"], "put": ["add", "set"] },
+    { "objects": ["LinkedMultiValueMap"], "put": ["add", "set"], "encoding": "form" },
+    { "objects": ["HttpHeaders"], "put": ["set", "add"], "auth": { "setBearerAuth": "bearer", "setBasicAuth": "basic" }, "props": { "contentType": "Content-Type", "accept": "Accept" } }
+  ],
+  "wildcardTypes": [
+    "okhttp3.OkHttpClient",
+    "okhttp3.Request",
+    "okhttp3.HttpUrl",
+    "okhttp3.Headers",
+    "okhttp3.FormBody",
+    "okhttp3.MultipartBody",
+    "okhttp3.RequestBody",
+    "okhttp3.Interceptor",
+    "java.net.http.HttpClient",
+    "java.net.http.HttpRequest",
+    "io.ktor.client.HttpClient",
+    "org.springframework.web.client.RestTemplate",
+    "org.springframework.web.client.RestClient",
+    "org.springframework.boot.web.client.RestTemplateBuilder",
+    "org.springframework.web.reactive.function.client.WebClient"
+  ],
+  "constants": {
+    "MediaType.APPLICATION_JSON": "application/json",
+    "MediaType.APPLICATION_JSON_VALUE": "application/json",
+    "MediaType.APPLICATION_FORM_URLENCODED": "application/x-www-form-urlencoded",
+    "MediaType.APPLICATION_FORM_URLENCODED_VALUE": "application/x-www-form-urlencoded",
+    "MediaType.MULTIPART_FORM_DATA": "multipart/form-data",
+    "MediaType.MULTIPART_FORM_DATA_VALUE": "multipart/form-data",
+    "MediaType.TEXT_PLAIN": "text/plain",
+    "MediaType.TEXT_PLAIN_VALUE": "text/plain",
+    "MediaType.APPLICATION_XML": "application/xml",
+    "MediaType.APPLICATION_XML_VALUE": "application/xml",
+    "ContentType.Application.Json": "application/json",
+    "ContentType.Application.FormUrlEncoded": "application/x-www-form-urlencoded",
+    "ContentType.MultiPart.FormData": "multipart/form-data",
+    "ContentType.Text.Plain": "text/plain",
+    "HttpHeaders.AUTHORIZATION": "Authorization",
+    "HttpHeaders.CONTENT_TYPE": "Content-Type",
+    "HttpHeaders.ACCEPT": "Accept",
+    "HttpHeaders.USER_AGENT": "User-Agent",
+    "HttpHeaders.Authorization": "Authorization",
+    "HttpHeaders.ContentType": "Content-Type",
+    "HttpHeaders.Accept": "Accept",
+    "HttpHeaders.UserAgent": "User-Agent"
+  }
+}

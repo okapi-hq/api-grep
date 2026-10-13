@@ -73,13 +73,30 @@ export function typeChain(type: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): C
 }
 
 /** The first value of a field that resolves (`self.client = None` then `self.client = OpenAI()`), else its declared type. */
-function fieldChain(cls: ClassDef, name: string, ctx: IrCtx, depth: number): Chain | undefined {
-  let fallback: Chain | undefined;
-  for (const f of classField(cls, name, ctx.idx)) {
-    const c = valueChain(f.value, f.fn, ctx, depth + 1);
-    if (resolved(c)) return c;
-    fallback ??= c;
+/** Fields being resolved: `account = account.copy(...)` assigned in many places would otherwise branch at every level. */
+const resolving = new WeakMap<ClassDef, Set<string>>();
+
+/** The values of a field that resolve to something, read once per field along a chain (a value reading the field itself is skipped). */
+function fieldValues(cls: ClassDef, name: string, ctx: IrCtx, depth: number): { resolved?: Chain; fallback?: Chain } {
+  const open = resolving.get(cls) ?? new Set<string>();
+  if (open.has(name)) return {};
+  resolving.set(cls, open.add(name));
+  try {
+    let fallback: Chain | undefined;
+    for (const f of classField(cls, name, ctx.idx)) {
+      const c = valueChain(f.value, f.fn, ctx, depth + 1);
+      if (resolved(c)) return { resolved: c };
+      fallback ??= c;
+    }
+    return { fallback };
+  } finally {
+    open.delete(name);
   }
+}
+
+function fieldChain(cls: ClassDef, name: string, ctx: IrCtx, depth: number): Chain | undefined {
+  const { resolved: value, fallback } = fieldValues(cls, name, ctx, depth);
+  if (value) return value;
   const type = classFieldType(cls, name, ctx.idx);
   if (type) {
     const typed = typeChain(type, cls.module.top, ctx, depth + 1);
@@ -167,6 +184,8 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
     }
     case "fnref":
       return { root: { kind: "function", fn: e.fn }, segs: [] };
+    case "scoped":
+      return valueChain(e.expr, e.fn, ctx, depth + 1);
     // members and calls are structure (bounded by the expression); only lookups count against the depth
     case "attr":
       return member(valueChain(e.obj, fn, ctx, depth), e.name, ctx, depth);

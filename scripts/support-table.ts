@@ -30,7 +30,11 @@ function typescriptColumn(): Column {
 }
 
 /** Clients read by a language's own detectors rather than its client tables. */
-const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = { python: ["urllib"], php: ["curl", "php-stream"] };
+const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = {
+  python: ["urllib"],
+  php: ["curl", "php-stream"],
+  kotlin: ["okhttp", "java-http", "ktor", "spring-webclient", "feign"],
+};
 
 function irColumn(title: string, lang: IrLanguage): Column {
   return {

@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/32",
+  "calls": [
+    {"file": "Catalog.kt", "line": 22, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 28, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 30, "provider": "api.example-catalog.com"},
+    {"file": "Catalog.kt", "line": 48, "provider": "notion"},
+    {"file": "Catalog.kt", "line": 50, "provider": "notion"},
+    {"file": "Catalog.kt", "line": 56, "provider": "notion"},
+    {"file": "Catalog.kt", "line": 63, "provider": "feeds.example.com"},
+    {"file": "Wildcards.kt", "line": 11, "provider": "forecast.example.com"}
+  ]
+}

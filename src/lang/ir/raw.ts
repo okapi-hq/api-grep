@@ -37,6 +37,23 @@ export interface Seg {
   typed?: boolean;
 }
 
+/** Where a query parameter or header comes from when the client adds it to every request rather than the call. */
+export type ClientPartFrom = "interceptor" | "default";
+
+/**
+ * One query parameter or header set by name (`header("X", v)`, `addQueryParameter("k", v)`), read where it is
+ * written: an interceptor's values read with the interceptor's constructor arguments (`subst`) and class (`self`).
+ */
+export interface IrPair {
+  where: "query" | "header";
+  name: Scoped;
+  value?: Scoped;
+  /** Added by the client (an interceptor, a default of its builder) to every request it sends. */
+  from?: ClientPartFrom;
+  subst?: Subst;
+  self?: ClassDef;
+}
+
 export interface IrSdkMatch {
   entry: IrRegistryEntry;
   key: string;
@@ -60,6 +77,8 @@ export interface IrRaw {
   encoding?: BodyEncoding;
   query?: Scoped;
   headers: Scoped[];
+  /** Query parameters and headers set one at a time (builder steps, interceptors, annotated parameters). */
+  pairs?: IrPair[];
   auth?: AuthScheme;
   sdk?: IrSdkMatch;
   /** Options present but not readable (a variable holding unknown options): method and body may be wrong. */

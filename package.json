@@ -1,13 +1,14 @@
 {
   "name": "api-grep",
   "version": "0.2.0",
-  "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP and HTML repositories",
+  "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP, Kotlin and HTML repositories",
   "keywords": [
     "typescript",
     "html",
     "javascript",
     "python",
     "php",
+    "kotlin",
     "static-analysis",
     "api",
     "http",

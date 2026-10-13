@@ -9,8 +9,8 @@ Guidance for AI agents working in this repository. Human-facing docs: [README.md
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python and PHP; Kotlin is parsed and its Gradle / Maven manifests read, its clients come
-with #31-#33, Java with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
+(inline scripts and forms), Python, PHP and Kotlin (HTTP clients; Retrofit #31 and SDK registries #33 next), Java
+with #43 (`docs/languages.md`). It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -45,7 +45,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
-  values are in `src/lang/jvm/`, shared with Java later.
+  values are in `src/lang/jvm/`, shared with Java later; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
+  its interceptors, `java.net.http`, Ktor, Spring, Feign), detectors over the IR driven by `clients.json`, with the
+  engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
+  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds).
 - Pure helpers shared by all languages: `src/resolve/{parts,url-shape,header-names,shape-utils,sdk-template,string-template}.ts`.
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
@@ -99,6 +102,6 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 
 - Issues #3 to #8 (recall, diagnostics, fixtures, provider roadmap, coverage, provider resolution) apply to every
   language; `docs/languages.md` has a table of how each is covered in TypeScript, Python and PHP.
-- Kotlin: #29 (parsing, lowering, manifests) is done; Retrofit #31, OkHttp / `java.net.http` / Ktor / Spring / Feign
-  #32, JVM SDK registries #33, Java #43.
+- Kotlin: #29 (parsing, lowering, manifests) and #32 (OkHttp with interceptors, `java.net.http`, Ktor, Spring, Feign)
+  are done; Retrofit #31 (reads `.client(okHttp)` through `okHttpClientFacts`), JVM SDK registries #33, Java #43.
 - Next language candidates (Go, Ruby, Java, C#) and what each needs are listed at the end of `docs/languages.md`.

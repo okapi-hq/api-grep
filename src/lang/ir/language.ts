@@ -85,6 +85,8 @@ export interface ClientModifier {
   auth?: AuthScheme;
   encoding?: BodyEncoding;
   headersArg?: number;
+  /** One header from its name and value arguments (`defaultHeader("X", v)`), a default of every request. */
+  headerArgs?: [number, number];
   baseUrlArg?: number;
   queryArg?: number;
   optionsArg?: number;
@@ -105,6 +107,28 @@ export interface ClientSpec {
   /** Fluent calls before the request (`Http::withToken($t)->asForm()->post(...)`). */
   modifiers?: Record<string, ClientModifier>;
   keys: Record<string, OptionRole>;
+}
+
+/**
+ * A value built entry by entry through calls: `JSONObject().put("a", 1)`, `FormBody.Builder().add("a", b)`,
+ * `HttpHeaders().set("X", v)`, also on a variable (`val o = JSONObject(); o.put(...)`). It reads as a dict literal
+ * (a list for `items`), so body, query and header shapes need nothing more.
+ */
+export interface FluentMapSpec {
+  /** Constructors, as written or qualified (`JSONObject`, `FormBody.Builder`). */
+  objects: string[];
+  /** Methods adding an entry from their key and value arguments. */
+  put?: string[];
+  /** Methods adding an item from their argument (`JSONArray().put(x)`): the value is a list. */
+  items?: string[];
+  /** Methods setting the Authorization entry (`setBearerAuth(token)`). */
+  auth?: Record<string, "bearer" | "basic">;
+  /** Properties set on a variable holding the object (`headers.contentType = ...`): the entry each sets. */
+  props?: Record<string, string>;
+  /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
+  skip?: string[];
+  /** How a body built this way is sent. */
+  encoding?: BodyEncoding;
 }
 
 /** Manifests of the language's ecosystem: what a repository declares and at which version. */
@@ -143,6 +167,14 @@ export interface IrLanguage {
   clients: ClientSpec[];
   /** Detectors for calls that tables cannot describe (`urlopen(Request(...))`, curl handles). */
   detectors?: IrDetector[];
+  /** Detectors for requests a declaration describes rather than a call (an annotated interface method: Feign, Retrofit). */
+  declarations?: IrDeclarationDetector[];
+  /** Values built entry by entry (`JSONObject().put(...)`), read as dicts and lists. */
+  fluentMaps?: FluentMapSpec[];
+  /** Library classes a wildcard import can stand for (`io.ktor.client.HttpClient` under `import io.ktor.client.*`). */
+  wildcardTypes?: Set<string>;
+  /** Library constants with a known string value (`MediaType.APPLICATION_JSON`), by the end of their dotted name. */
+  constants?: Record<string, string>;
   /** A call that stands for another expression of the project (Laravel `config('services.x.url')`: an entry of `config/services.php`). */
   resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
@@ -158,3 +190,6 @@ export interface IrLanguage {
 
 /** A detector for one language's own patterns; it sees the call, its scope and what the callee resolved to. */
 export type IrDetector = (call: CallExpr, fn: FunctionDef, ctx: IrCtx, chain: Chain) => IrRaw | undefined;
+
+/** Requests a module declares (one per annotated method), located at the declaration. */
+export type IrDeclarationDetector = (mod: ModuleModel, ctx: IrCtx) => IrRaw[];
