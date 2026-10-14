@@ -7,7 +7,8 @@ describe("JVM DI: wrapped interceptors, lists built in steps, handed builders (#
   it("follows interceptors wrapped by a project extension, lists built with buildList and add (Kotlin)", async () => {
     const r = await scanFixture("kotlin/di-wrapped");
     expect(r).toMatchSnapshot();
-    expect(at(r, "Stations.kt", 11)).toMatchObject({ headers: ["user-agent", "x-radio-region"], headerValues: { "user-agent": "RadioApp/2.1", "x-radio-region": "eu-west" } });
+    // a step written as an extension of the request builder adds its header too
+    expect(at(r, "Stations.kt", 11)).toMatchObject({ headers: ["user-agent", "x-radio-region", "x-radio-locale"], headerValues: { "user-agent": "RadioApp/2.1", "x-radio-region": "eu-west", "x-radio-locale": "fr" } });
     expect(at(r, "Stations.kt", 15).clientParts).toEqual(fromInterceptor(["user-agent"]));
     // a local function of the provider adds the token; the header set on the response is not the request's
     expect(at(r, "Stations.kt", 19)).toMatchObject({ headers: ["user-agent", "authorization"], authScheme: "bearer" });

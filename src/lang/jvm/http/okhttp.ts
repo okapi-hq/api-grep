@@ -67,10 +67,35 @@ const requestStep = (c: ScopedCall): boolean => c.call.args.length >= 2 && !(c.c
  */
 function interceptorPairs(i: Interceptor, outer: Subst | undefined): IrPair[] {
   const parts = emptyParts();
-  const own = withClosures(i.fn);
-  for (const f of [...own, ...localHelpers(own, i.ctx)]) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
+  const own = [...withClosures(i.fn), ...localHelpers(withClosures(i.fn), i.ctx)];
+  for (const f of own) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
   const subst = outer || i.subst ? new Map([...(outer ?? []), ...(i.subst ?? [])]) : undefined;
-  return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(subst ? { subst } : {}), ...(i.self ? { self: i.self } : {}) }));
+  const mark = (pairs: IrPair[], s: Subst | undefined): IrPair[] => pairs.map((p) => ({ ...p, from: "interceptor", ...(s ? { subst: s } : {}), ...(i.self ? { self: i.self } : {}) }));
+  return [...mark(parts.pairs, subst), ...builderExtensions(own, i.ctx).flatMap((x) => mark(x.pairs, new Map([...(subst ?? []), ...x.subst])))];
+}
+
+/** Whether an extension's receiver is OkHttp's request builder (`fun Request.Builder.addHeaderIfNotEmpty(...)`). */
+const onRequestBuilder = (ext: FunctionDef): boolean => {
+  const path = ext.receiver?.type ? dottedPath(ext.receiver.type)?.join(".") : undefined;
+  return !!path && (path.endsWith("Request.Builder") || (path === "Builder" && ext.module.importPaths.some((p) => p.join(".") === "okhttp3.Request.Builder")));
+};
+
+/**
+ * A project extension of the request builder an interceptor calls as a step (`newBuilder().addHeaderIfNotEmpty(name,
+ * value)`, #100): the headers it sets, read with the call's arguments.
+ */
+function builderExtensions(fns: FunctionDef[], ctx: IrCtx): { pairs: IrPair[]; subst: Subst }[] {
+  const out: { pairs: IrPair[]; subst: Subst }[] = [];
+  for (const f of fns) {
+    for (const c of f.calls) {
+      const exts = c.fn.k === "attr" ? (ctx.idx.extensions.get(c.fn.name) ?? []).filter(onRequestBuilder) : [];
+      if (exts.length !== 1) continue;
+      const parts = emptyParts();
+      for (const g of withClosures(exts[0]!)) readSteps(lambdaCalls(g).filter(requestStep), JVM.okhttp.interceptor!, parts);
+      if (parts.pairs.length > 0) out.push({ pairs: parts.pairs, subst: substitutionFor(exts[0]!, c, f) });
+    }
+  }
+  return out;
 }
 
 /**

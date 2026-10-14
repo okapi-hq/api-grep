@@ -412,6 +412,11 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
           "name": "x-radio-region",
           "where": "header",
         },
+        {
+          "from": "interceptor",
+          "name": "x-radio-locale",
+          "where": "header",
+        },
       ],
       "dynamic": [
         {
@@ -428,6 +433,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
           "bodyEncoding": "none",
           "headers": {
             "user-agent": "RadioApp/2.1",
+            "x-radio-locale": "fr",
             "x-radio-region": "eu-west",
           },
           "method": "GET",
@@ -440,11 +446,13 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
       ],
       "headerValues": {
         "user-agent": "RadioApp/2.1",
+        "x-radio-locale": "fr",
         "x-radio-region": "eu-west",
       },
       "headers": [
         "user-agent",
         "x-radio-region",
+        "x-radio-locale",
       ],
       "host": "catalog.radio-example.com",
       "hostKind": "literal",

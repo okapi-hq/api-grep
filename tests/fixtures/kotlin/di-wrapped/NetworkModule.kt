@@ -27,7 +27,14 @@ interface Session {
 }
 
 class RegionInterceptor(private val region: String) : Interceptor {
-    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request().newBuilder().header("X-Radio-Region", region).build())
+    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request().newBuilder().header("X-Radio-Region", region).addIfPresent(LOCALE_HEADER, "fr").build())
+
+    // a step of the request builder written as an extension
+    private fun Request.Builder.addIfPresent(name: String, value: String): Request.Builder = if (value.isNotEmpty()) header(name, value) else this
+
+    companion object {
+        const val LOCALE_HEADER = "X-Radio-Locale"
+    }
 }
 
 @Module

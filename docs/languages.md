@@ -557,7 +557,14 @@ its builder's base URL, interceptors and default headers.
   each scalar property reads as the configuration value `weather.base-url` (the canonical kebab-case name) with the
   default the class gives it (a constructor default, a field initializer, a record component's `@DefaultValue`), as
   `@Value("${weather.base-url:...}")` does; `props.baseUrl`, `props.getBaseUrl()` and a record's `props.baseUrl()`
-  read it. A class without the annotation that nothing binds stays unknown, not its default.
+  read it. A class without the annotation that nothing binds stays unknown, not its default. With #100: a property typed
+  with a project class (`val api: Api = Api()`, also a class nested in the properties class) is a nested group
+  (`weather.api.base-url`, read by `props.api.baseUrl` and `props.getApi().getBaseUrl()`; `instanceField` reads a
+  member of such an object, `src/lang/ir/instance.ts`), three levels deep at most; a `@Bean` method annotated
+  `@ConfigurationProperties(prefix = "inventory")` binds the class it returns (declared or constructed; two such
+  methods for one class: unknown); and the module's `application.yml` / `.properties` (as `spring-config.ts` reads
+  them) gives the default of each read before the class does, a `${X:d}` in it the environment variable it names. Values are read with the scanned directory only: a read without it (a caller's argument, #39) is
+  cached apart (`inject.ts`).
 - **More collections** (#94): Koin's `getAll<T>()` is every definition bound to `T`; Spring's
   `ObjectProvider<T>.orderedStream()` / `stream()` every bean of `T`, and `ObjectProvider<List<T>>.getObject()` the
   injected list. Interceptors added in a `for` loop over a collection (`for (Interceptor i : interceptors)
@@ -567,6 +574,21 @@ its builder's base URL, interceptors and default headers.
   (`fun OkHttpClient.Builder.addInterceptors(list: List<Interceptor>)` adding each, also by `fold(this) { b, i -> ...
   }`, read with the call's arguments) each apply. A Koin definition returning a builder variable
   (`val b = OkHttpClient.Builder(); ...; b.build()`) is a binding of what it builds.
+- **Wrapped interceptors and lists built in steps** (#100, `src/lang/jvm/http/interceptors.ts`): an interceptor
+  handing the request to another (`Interceptor { wrapped.intercept(it) }`, a class whose `intercept` calls
+  `inner.intercept(chain)` with `inner` a constructor argument, the lambda of a project `fun interface` written in an
+  extension: `fun Interceptor.toAppInterceptor() = AppInterceptor { chain -> intercept(chain) }`) has the headers of the
+  one it wraps, four levels deep at most; `x.toAppInterceptor()` is the extension's one return with `x` its receiver.
+  An interceptor's local helper functions (`fun withToken(r: Request) = r.newBuilder().addHeader(...)` declared in its
+  provider) are its steps, and so are the project extensions of the request builder it calls as steps
+  (`newBuilder().addHeaderIfNotEmpty(NAME, value)` whose body calls `header(name, value)`), read with the call's
+  arguments. Lists of interceptors: `buildList { add(a); if (debug) add(b) }` (an item added in a
+  branch counts), a variable made by `mutableListOf(...)`, `ArrayList<>()`... and filled with `add` / `addAll`
+  (`src/lang/jvm/elements.ts`), also through parameters and providers. A builder variable given to a project function
+  that is not an extension (`Interceptors.addAll(builder, list)`, a Java static helper) gets the interceptors that
+  function adds, read with the call's arguments. One interceptor added on several paths (`when (x) { is A ->
+  addInterceptor(...); is B -> addNetworkInterceptor(...) }`) counts once. Headers set on a builder of the response
+  (`var b = response.newBuilder(); b = b.header(...)`, also in a `let` on it) are not the request's.
 
 **Builder steps in `apply { }`** (Kotlin, #46): `Request.Builder().apply { url(u); header(k, v) }.build()`,
 `builder.apply { ... }` on a variable, `OkHttpClient.Builder().apply { addInterceptor(i) }` and
@@ -639,9 +661,9 @@ file. A file that does not parse is then read once more with a `;` in place of t
 
 **Limitations:**
 
-- DI (#94): interceptors that wrap another (`Interceptor { other.intercept(it) }`), lists built with
-  `buildList { add(...) }`, a builder handed to a project method as a parameter, nested `@ConfigurationProperties`
-  classes and the values of `application.yml` for them are not followed (#100).
+- DI (#94, #100): a `Call.Factory` built by hand and handed to a class, and Spring's implicit `default` profile
+  (`application-default.properties` when no profile is active) are not read; a header an interceptor adds under a
+  condition (`if (isHostAllowed(url))`) is listed as if always added.
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - Extension functions (#86): an extension called inside `with(client) { ... }` or `client.run { ... }`, one called
   from Java (`StorageKt.delete(client, ...)`), and a builder extension used as a step (`Request.Builder().authed()`,
