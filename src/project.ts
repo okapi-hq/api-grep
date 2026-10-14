@@ -6,7 +6,7 @@ import { isInside, realPath, relativePosix } from "./files.js";
 import { leanResolution } from "./module-resolution.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
 import { parseHtml, type HtmlDoc } from "./lang/html/extract.js";
-import { tsconfigFor, type TsconfigChoice } from "./tsconfig.js";
+import { readRoot, tsconfigFor, type TsconfigChoice } from "./tsconfig.js";
 
 export { readEnvHints, type LeftOut } from "./lang/files.js";
 
@@ -57,6 +57,8 @@ export interface LoadOptions {
 /** What every batch of a scan shares: the files in scope, the compiler options, the HTML pages. */
 export interface Scope {
   dir: string;
+  /** What the checker may read (#112): the repository holding `dir`, or `dir` outside any (`readRoot`). */
+  root: string;
   opts: LoadOptions;
   tsconfig?: string;
   /** Files in scope (absolute paths), in the order they are loaded. */
@@ -211,13 +213,13 @@ export function scopeOf(opts: LoadOptions): Scope {
   const files = tsFiles(dir, opts.include, opts.exclude, languages);
   // the tsconfig may be above `dir` (in its repository): read here, not by the batches
   const options = compilerOptionsOf(choice, languages);
-  return { dir, opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
+  return { dir, root: readRoot(dir), opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
 }
 
 /** Some files of the scope in a project of their own, with what they import. */
 export function loadBatch(scope: Scope, files: string[]): Loaded {
   const { dir, opts, tsconfig } = scope;
-  const project = new Project({ resolutionHost: leanResolution, fileSystem: new BoundedFileSystem(dir), compilerOptions: scope.options });
+  const project = new Project({ resolutionHost: leanResolution, fileSystem: new BoundedFileSystem(scope.root), compilerOptions: scope.options });
   const unreadable = addFiles(project, dir, files, scope.html);
   if (tsconfig) {
     try {

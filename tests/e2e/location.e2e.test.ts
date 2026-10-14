@@ -68,4 +68,23 @@ describe("a report depends on the scanned directory only (#112)", () => {
     const repo = tempRepo({ ".git/HEAD": "ref: refs/heads/main\n", "tsconfig.json": aliases, ...under("checkout", code) });
     expect(bodyOf(reportOf(path.join(repo, "checkout"), repo), "/v1/seats")).toMatchObject({ properties: { seats: { enum: [5] } } });
   });
+
+  it("reads the sibling packages of its repository from a subdirectory, and nothing above the repository", () => {
+    const monorepo = {
+      // a worktree's `.git` is a file
+      ".git": "gitdir: /nowhere/.git/worktrees/repo\n",
+      "packages/shared/src/limits.ts": `export const MAX_SEATS = 5;`,
+      "apps/api/src/billing.ts": [
+        `import { MAX_SEATS } from "../../../packages/shared/src/limits";`,
+        `import { makeId } from "idgen";`,
+        `export const buy = () => fetch("https://api.example.com/v1/seats", { method: "POST", body: JSON.stringify({ seats: MAX_SEATS, ref: makeId() }) });`,
+      ].join("\n"),
+    };
+    const parent = tempRepo({ ...PACKAGES, ...under("repo", monorepo) });
+    const report = reportOf(path.join(parent, "repo", "apps", "api"), parent);
+    expect(bodyOf(report, "/v1/seats")).toMatchObject({ properties: { seats: { enum: [5] } } });
+    expect(bodyOf(report, "/v1/seats")).not.toMatchObject({ properties: { ref: { type: "string" } } });
+    const alone = tempRepo(under("repo", monorepo));
+    expect(report).toEqual(reportOf(path.join(alone, "repo", "apps", "api"), alone));
+  });
 });

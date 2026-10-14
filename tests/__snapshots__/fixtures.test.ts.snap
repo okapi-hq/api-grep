@@ -4415,8 +4415,8 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "body": {
         "properties": {
           "Body": {
-            "hint": "body",
-            "origin": "param",
+            "hint": "Buffer",
+            "origin": "unknown",
             "type": "dynamic",
           },
           "Bucket": {
@@ -4467,7 +4467,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "examples": [
         {
           "body": {
-            "Body": "Xenon grove canyon linen delta echo.",
+            "Body": "<binary>",
             "Bucket": "my-bucket",
             "ContentType": "image/png",
             "Key": "<key>",
@@ -4479,7 +4479,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "method": "PUT",
           "query": {},
-          "url": "https://s3.{region}.amazonaws.com/copper/%3CKey%3E",
+          "url": "https://s3.{region}.amazonaws.com/xenon/%3CKey%3E",
           "variant": "minimal",
         },
       ],
@@ -5453,7 +5453,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
                   "line1": {
                     "type": "string",
                   },
+                  "line2": {
+                    "type": "string",
+                  },
                   "postal_code": {
+                    "type": "string",
+                  },
+                  "state": {
                     "type": "string",
                   },
                 },
@@ -5466,11 +5472,174 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "balance": {
             "type": "number",
           },
+          "business_name": {
+            "type": "string",
+          },
+          "cash_balance": {
+            "fromType": "CashBalance",
+            "properties": {
+              "settings": {
+                "fromType": "Settings",
+                "properties": {
+                  "reconciliation_mode": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "automatic",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "manual",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "merchant_default",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+                "required": [],
+                "type": "object",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
           "description": {
             "type": "string",
           },
           "email": {
             "type": "string",
+          },
+          "expand": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "individual_name": {
+            "type": "string",
+          },
+          "invoice_prefix": {
+            "type": "string",
+          },
+          "invoice_settings": {
+            "fromType": "InvoiceSettings",
+            "properties": {
+              "custom_fields": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "items": {
+                      "fromType": "CustomField",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                        },
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "name",
+                        "value",
+                      ],
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                ],
+                "type": "union",
+              },
+              "default_payment_method": {
+                "type": "string",
+              },
+              "footer": {
+                "type": "string",
+              },
+              "rendering_options": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "fromType": "RenderingOptions",
+                    "properties": {
+                      "amount_tax_display": {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "",
+                            ],
+                            "type": "string",
+                          },
+                          {
+                            "enum": [
+                              "exclude_tax",
+                            ],
+                            "type": "string",
+                          },
+                          {
+                            "enum": [
+                              "include_inclusive_tax",
+                            ],
+                            "type": "string",
+                          },
+                          {
+                            "fromType": "OtherString",
+                            "properties": {
+                              "length": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [
+                              "length",
+                            ],
+                            "type": "object",
+                          },
+                        ],
+                        "type": "union",
+                      },
+                      "template": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [],
+                    "type": "object",
+                  },
+                ],
+                "type": "union",
+              },
+            },
+            "required": [],
+            "type": "object",
           },
           "metadata": {
             "anyOf": [
@@ -5482,7 +5651,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               },
               {
                 "dynamicKeys": true,
-                "fromType": "Record",
+                "fromType": "MetadataParam",
                 "properties": {},
                 "required": [],
                 "type": "object",
@@ -5492,6 +5661,897 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "name": {
             "type": "string",
+          },
+          "next_invoice_sequence": {
+            "type": "number",
+          },
+          "payment_method": {
+            "type": "string",
+          },
+          "phone": {
+            "type": "string",
+          },
+          "preferred_locales": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "shipping": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "Shipping",
+                "properties": {
+                  "address": {
+                    "fromType": "AddressParam",
+                    "properties": {
+                      "city": {
+                        "type": "string",
+                      },
+                      "country": {
+                        "type": "string",
+                      },
+                      "line1": {
+                        "type": "string",
+                      },
+                      "line2": {
+                        "type": "string",
+                      },
+                      "postal_code": {
+                        "type": "string",
+                      },
+                      "state": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [],
+                    "type": "object",
+                  },
+                  "name": {
+                    "type": "string",
+                  },
+                  "phone": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "address",
+                  "name",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "source": {
+            "type": "string",
+          },
+          "tax": {
+            "fromType": "Tax",
+            "properties": {
+              "ip_address": {
+                "type": "string",
+              },
+              "validate_location": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "deferred",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "immediately",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
+                  },
+                ],
+                "type": "union",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "tax_exempt": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "exempt",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "none",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "reverse",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "tax_id_data": {
+            "items": {
+              "fromType": "TaxIdDatum",
+              "properties": {
+                "type": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "ad_nrt",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ae_trn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "al_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "am_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ao_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ar_cuit",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "au_abn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "au_arn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "aw_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "az_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ba_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bb_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bd_bin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bf_ifu",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bg_uic",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bh_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bj_ifu",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bo_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "br_cnpj",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "br_cpf",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "bs_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "by_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_bn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_gst_hst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_pst_bc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_pst_mb",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_pst_sk",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ca_qst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cd_nif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ch_uid",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ch_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cl_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cm_niu",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cn_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "co_nit",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cr_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "cv_nif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "de_stn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "do_rcn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ec_ruc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "eg_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "es_cif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "et_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "eu_oss_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "eu_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "fo_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "gb_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ge_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "gi_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "gn_nif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "hk_br",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "hr_oib",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "hu_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ic_nif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "id_npwp",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "il_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "in_gst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "is_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "it_cf",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "jp_cn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "jp_rn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "jp_trn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ke_pin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "kg_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "kh_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "kr_brn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "kz_bin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "la_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "li_uid",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "li_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "lk_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ma_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "md_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "me_pib",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "mk_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "mr_nif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "mx_rfc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "my_frp",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "my_itn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "my_sst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ng_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "no_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "no_voec",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "np_pan",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "nz_gst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "om_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "pe_ruc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ph_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "pl_nip",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "py_ruc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ro_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "rs_pib",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ru_inn",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ru_kpp",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sa_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sg_gst",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sg_uen",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "si_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sn_ninea",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sr_fin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "sv_nit",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "th_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "tj_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "tr_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "tw_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "tz_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ua_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ug_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "us_ein",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "uy_ruc",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "uz_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "uz_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "ve_rif",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "vn_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "za_vat",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "zm_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "enum": [
+                        "zw_tin",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "fromType": "OtherString",
+                      "properties": {
+                        "length": {
+                          "type": "number",
+                        },
+                      },
+                      "required": [
+                        "length",
+                      ],
+                      "type": "object",
+                    },
+                  ],
+                  "type": "union",
+                },
+                "value": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+                "value",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "test_clock": {
+            "type": "string",
+          },
+          "validate": {
+            "type": "boolean",
           },
         },
         "required": [],
@@ -5507,10 +6567,48 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           "body": {
             "address": "",
             "balance": 4116,
-            "description": "Nimbus quiet pebble falcon indigo onyx.",
-            "email": "bruno.moreau@example.com",
+            "business_name": "nimbus quiet",
+            "cash_balance": {
+              "settings": {
+                "reconciliation_mode": "automatic",
+              },
+            },
+            "description": "Pebble falcon indigo onyx meadow wander.",
+            "email": "olga.ibarra@example.com",
+            "expand": [
+              "quartz velvet",
+            ],
+            "individual_name": "amber zephyr",
+            "invoice_prefix": "nimbus inlet",
+            "invoice_settings": {
+              "custom_fields": "",
+              "default_payment_method": "delta estuary",
+              "footer": "sable xenon",
+              "rendering_options": "",
+            },
             "metadata": "",
-            "name": "Estuary Birch",
+            "name": "Zephyr Pebble",
+            "next_invoice_sequence": 80,
+            "payment_method": "falcon echo",
+            "phone": "+14155552803",
+            "preferred_locales": [
+              "onyx falcon",
+            ],
+            "shipping": "",
+            "source": "echo marble",
+            "tax": {
+              "ip_address": "164 Indigo Street",
+              "validate_location": "deferred",
+            },
+            "tax_exempt": "",
+            "tax_id_data": [
+              {
+                "type": "ad_nrt",
+                "value": "mosaic echo",
+              },
+            ],
+            "test_clock": "koala zephyr",
+            "validate": true,
           },
           "bodyEncoding": "form",
           "headers": {
@@ -5524,17 +6622,139 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         },
         {
           "body": {
+            "address": "",
+            "balance": 8820,
+            "business_name": "indigo maple",
+            "cash_balance": {
+              "settings": {
+                "reconciliation_mode": "automatic",
+              },
+            },
+            "description": "Umber compass nectar quartz compass opal.",
+            "email": "leo.ekwall@example.com",
+            "expand": [
+              "beacon amber",
+              "zenith willow",
+            ],
+            "individual_name": "velvet ember",
+            "invoice_prefix": "koala umber",
+            "invoice_settings": {
+              "custom_fields": "",
+              "default_payment_method": "fjord prairie",
+              "footer": "saffron saffron",
+              "rendering_options": "",
+            },
+            "metadata": "",
+            "name": "Island Ultra",
+            "next_invoice_sequence": 45,
+            "payment_method": "summit island",
+            "phone": "+14155557430",
+            "preferred_locales": [
+              "quill velvet",
+              "orbit maple",
+            ],
+            "shipping": "",
+            "source": "pebble dune",
+            "tax": {
+              "ip_address": "65 Mosaic Street",
+              "validate_location": "deferred",
+            },
+            "tax_exempt": "",
+            "tax_id_data": [
+              {
+                "type": "ad_nrt",
+                "value": "atlas marble",
+              },
+              {
+                "type": "ad_nrt",
+                "value": "verdant compass",
+              },
+            ],
+            "test_clock": "verdant quiet",
+            "validate": true,
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.stripe.com/v1/customers",
+          "variant": "full",
+        },
+        {
+          "body": {
             "address": {
               "city": "Graz",
               "country": "US",
               "line1": "198 Cedar Street",
-              "postal_code": "99071",
+              "line2": "jetty harbor",
+              "postal_code": "35991",
+              "state": "active",
             },
-            "balance": 321,
-            "description": "Lagoon amber verdant raven harbor quill.",
-            "email": "dario.galli@example.com",
+            "balance": 114,
+            "business_name": "verdant raven",
+            "cash_balance": {
+              "settings": {
+                "reconciliation_mode": "manual",
+              },
+            },
+            "description": "Harbor quill ember umber amber garden.",
+            "email": "elena.brook@example.com",
+            "expand": [
+              "linen amber",
+            ],
+            "individual_name": "beacon lantern",
+            "invoice_prefix": "ridge delta",
+            "invoice_settings": {
+              "custom_fields": [
+                {
+                  "name": "Lagoon Xenon",
+                  "value": "jetty prairie",
+                },
+              ],
+              "default_payment_method": "horizon anchor",
+              "footer": "indigo delta",
+              "rendering_options": {
+                "amount_tax_display": "exclude_tax",
+                "template": "garden prairie",
+              },
+            },
             "metadata": {},
-            "name": "Amber Garden",
+            "name": "Lagoon Ridge",
+            "next_invoice_sequence": 20,
+            "payment_method": "lagoon lagoon",
+            "phone": "+14155557746",
+            "preferred_locales": [
+              "summit koala",
+            ],
+            "shipping": {
+              "address": {
+                "city": "Graz",
+                "country": "US",
+                "line1": "59 Garden Street",
+                "line2": "willow nectar",
+                "postal_code": "44599",
+                "state": "active",
+              },
+              "name": "Hollow Horizon",
+              "phone": "+14155558908",
+            },
+            "source": "nectar cedar",
+            "tax": {
+              "ip_address": "3 Indigo Street",
+              "validate_location": "immediately",
+            },
+            "tax_exempt": "exempt",
+            "tax_id_data": [
+              {
+                "type": "ae_trn",
+                "value": "pebble opal",
+              },
+            ],
+            "test_clock": "xenon quiet",
+            "validate": false,
           },
           "bodyEncoding": "form",
           "headers": {
@@ -5575,14 +6795,920 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "authScheme": "bearer",
       "body": {
         "properties": {
+          "add_invoice_items": {
+            "items": {
+              "fromType": "AddInvoiceItem",
+              "properties": {
+                "discountable": {
+                  "type": "boolean",
+                },
+                "discounts": {
+                  "items": {
+                    "fromType": "Discount",
+                    "properties": {
+                      "coupon": {
+                        "type": "string",
+                      },
+                      "discount": {
+                        "type": "string",
+                      },
+                      "promotion_code": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+                "metadata": {
+                  "dynamicKeys": true,
+                  "fromType": "MetadataParam",
+                  "properties": {},
+                  "required": [],
+                  "type": "object",
+                },
+                "period": {
+                  "fromType": "Period",
+                  "properties": {
+                    "end": {
+                      "fromType": "End",
+                      "properties": {
+                        "timestamp": {
+                          "type": "number",
+                        },
+                        "type": {
+                          "anyOf": [
+                            {
+                              "type": "unknown",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                      },
+                      "required": [
+                        "type",
+                      ],
+                      "type": "object",
+                    },
+                    "start": {
+                      "fromType": "Start",
+                      "properties": {
+                        "timestamp": {
+                          "type": "number",
+                        },
+                        "type": {
+                          "anyOf": [
+                            {
+                              "type": "unknown",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                      },
+                      "required": [
+                        "type",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "end",
+                    "start",
+                  ],
+                  "type": "object",
+                },
+                "price": {
+                  "type": "string",
+                },
+                "price_data": {
+                  "fromType": "PriceData",
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                    },
+                    "product": {
+                      "type": "string",
+                    },
+                    "tax_behavior": {
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "exclusive",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "inclusive",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "unspecified",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "unit_amount": {
+                      "type": "number",
+                    },
+                    "unit_amount_decimal": {
+                      "fromType": "Decimal",
+                      "properties": {
+                        "_coefficient": {
+                          "type": "unknown",
+                        },
+                        "_exponent": {
+                          "type": "unknown",
+                        },
+                      },
+                      "required": [
+                        "_coefficient",
+                        "_exponent",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "currency",
+                    "product",
+                  ],
+                  "type": "object",
+                },
+                "quantity": {
+                  "type": "number",
+                },
+                "tax_rates": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  ],
+                  "type": "union",
+                },
+              },
+              "required": [],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "application_fee_percent": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
+            ],
+            "type": "union",
+          },
+          "automatic_tax": {
+            "fromType": "AutomaticTax",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+              },
+              "liability": {
+                "fromType": "Liability",
+                "properties": {
+                  "account": {
+                    "type": "string",
+                  },
+                  "type": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "account",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "self",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+                "required": [
+                  "type",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "enabled",
+            ],
+            "type": "object",
+          },
+          "billing_cycle_anchor": {
+            "anyOf": [
+              {
+                "enum": [
+                  "now",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "unchanged",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "billing_schedules": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "items": {
+                  "fromType": "BillingSchedule",
+                  "properties": {
+                    "applies_to": {
+                      "items": {
+                        "fromType": "AppliesTo",
+                        "properties": {
+                          "price": {
+                            "type": "unknown",
+                          },
+                          "type": {
+                            "type": "unknown",
+                          },
+                        },
+                        "required": [
+                          "type",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "bill_until": {
+                      "fromType": "BillUntil",
+                      "properties": {
+                        "duration": {
+                          "fromType": "Duration",
+                          "properties": {
+                            "interval": {
+                              "type": "unknown",
+                            },
+                            "interval_count": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "interval",
+                          ],
+                          "type": "object",
+                        },
+                        "timestamp": {
+                          "type": "number",
+                        },
+                        "type": {
+                          "anyOf": [
+                            {
+                              "type": "unknown",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                      },
+                      "required": [
+                        "type",
+                      ],
+                      "type": "object",
+                    },
+                    "key": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [],
+                  "type": "object",
+                },
+                "type": "array",
+              },
+            ],
+            "type": "union",
+          },
+          "billing_thresholds": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "BillingThresholds",
+                "properties": {
+                  "amount_gte": {
+                    "type": "number",
+                  },
+                  "reset_billing_cycle_anchor": {
+                    "type": "boolean",
+                  },
+                },
+                "required": [],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "cancel_at": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "max_billed_until",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "max_period_end",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "min_period_end",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+              {
+                "type": "number",
+              },
+            ],
+            "type": "union",
+          },
           "cancel_at_period_end": {
             "enum": [
               true,
             ],
             "type": "boolean",
           },
+          "cancellation_details": {
+            "fromType": "CancellationDetails",
+            "properties": {
+              "comment": {
+                "type": "string",
+              },
+              "feedback": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "customer_service",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "low_quality",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "missing_features",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "other",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "switched_service",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "too_complex",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "too_expensive",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "unused",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
+                  },
+                ],
+                "type": "union",
+              },
+              "feedback_option": {
+                "type": "string",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "collection_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "charge_automatically",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "send_invoice",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "days_until_due": {
+            "type": "number",
+          },
           "default_payment_method": {
             "type": "string",
+          },
+          "default_source": {
+            "type": "string",
+          },
+          "default_tax_rates": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "items": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+            ],
+            "type": "union",
+          },
+          "description": {
+            "type": "string",
+          },
+          "discounts": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "items": {
+                  "fromType": "Discount",
+                  "properties": {
+                    "coupon": {
+                      "type": "string",
+                    },
+                    "discount": {
+                      "type": "string",
+                    },
+                    "promotion_code": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [],
+                  "type": "object",
+                },
+                "type": "array",
+              },
+            ],
+            "type": "union",
+          },
+          "expand": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "invoice_settings": {
+            "fromType": "InvoiceSettings",
+            "properties": {
+              "account_tax_ids": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                ],
+                "type": "union",
+              },
+              "custom_fields": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "items": {
+                      "fromType": "CustomField",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                        },
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "name",
+                        "value",
+                      ],
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                ],
+                "type": "union",
+              },
+              "description": {
+                "type": "string",
+              },
+              "footer": {
+                "type": "string",
+              },
+              "issuer": {
+                "fromType": "Issuer",
+                "properties": {
+                  "account": {
+                    "type": "string",
+                  },
+                  "type": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "account",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "self",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+                "required": [
+                  "type",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "items": {
+            "items": {
+              "fromType": "Item",
+              "properties": {
+                "billing_thresholds": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "fromType": "BillingThresholds",
+                      "properties": {
+                        "usage_gte": {
+                          "type": "number",
+                        },
+                      },
+                      "required": [
+                        "usage_gte",
+                      ],
+                      "type": "object",
+                    },
+                  ],
+                  "type": "union",
+                },
+                "clear_usage": {
+                  "type": "boolean",
+                },
+                "deleted": {
+                  "type": "boolean",
+                },
+                "discounts": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "items": {
+                        "fromType": "Discount",
+                        "properties": {
+                          "coupon": {
+                            "type": "unknown",
+                          },
+                          "discount": {
+                            "type": "unknown",
+                          },
+                          "promotion_code": {
+                            "type": "unknown",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                  ],
+                  "type": "union",
+                },
+                "id": {
+                  "type": "string",
+                },
+                "metadata": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "dynamicKeys": true,
+                      "fromType": "MetadataParam",
+                      "properties": {},
+                      "required": [],
+                      "type": "object",
+                    },
+                  ],
+                  "type": "union",
+                },
+                "plan": {
+                  "type": "string",
+                },
+                "price": {
+                  "type": "string",
+                },
+                "price_data": {
+                  "fromType": "PriceData",
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                    },
+                    "product": {
+                      "type": "string",
+                    },
+                    "recurring": {
+                      "fromType": "Recurring",
+                      "properties": {
+                        "interval": {
+                          "anyOf": [
+                            {
+                              "type": "unknown",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                        "interval_count": {
+                          "type": "number",
+                        },
+                      },
+                      "required": [
+                        "interval",
+                      ],
+                      "type": "object",
+                    },
+                    "tax_behavior": {
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "exclusive",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "inclusive",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "unspecified",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "unit_amount": {
+                      "type": "number",
+                    },
+                    "unit_amount_decimal": {
+                      "fromType": "Decimal",
+                      "properties": {
+                        "_coefficient": {
+                          "type": "unknown",
+                        },
+                        "_exponent": {
+                          "type": "unknown",
+                        },
+                      },
+                      "required": [
+                        "_coefficient",
+                        "_exponent",
+                      ],
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "currency",
+                    "product",
+                    "recurring",
+                  ],
+                  "type": "object",
+                },
+                "quantity": {
+                  "type": "number",
+                },
+                "tax_rates": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "",
+                      ],
+                      "type": "string",
+                    },
+                    {
+                      "items": {
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  ],
+                  "type": "union",
+                },
+              },
+              "required": [],
+              "type": "object",
+            },
+            "type": "array",
           },
           "metadata": {
             "anyOf": [
@@ -5594,7 +7720,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
               },
               {
                 "dynamicKeys": true,
-                "fromType": "Record",
+                "fromType": "MetadataParam",
                 "properties": {},
                 "required": [],
                 "type": "object",
@@ -5602,13 +7728,1023 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
             ],
             "type": "union",
           },
-          "proration_behavior": {
-            "enum": [
-              "always_invoice",
-              "create_prorations",
-              "none",
-            ],
+          "off_session": {
+            "type": "boolean",
+          },
+          "on_behalf_of": {
             "type": "string",
+          },
+          "pause_collection": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "PauseCollection",
+                "properties": {
+                  "behavior": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "keep_as_draft",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "mark_uncollectible",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "void",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "resumes_at": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "behavior",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "payment_behavior": {
+            "anyOf": [
+              {
+                "enum": [
+                  "allow_incomplete",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "default_incomplete",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "error_if_incomplete",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "pending_if_incomplete",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "payment_settings": {
+            "fromType": "PaymentSettings",
+            "properties": {
+              "payment_method_options": {
+                "fromType": "PaymentMethodOptions",
+                "properties": {
+                  "acss_debit": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "AcssDebit",
+                        "properties": {
+                          "mandate_options": {
+                            "fromType": "MandateOptions",
+                            "properties": {
+                              "transaction_type": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                          "verification_method": {
+                            "anyOf": [
+                              {
+                                "type": "unknown",
+                              },
+                            ],
+                            "type": "union",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "bancontact": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Bancontact",
+                        "properties": {
+                          "preferred_language": {
+                            "anyOf": [
+                              {
+                                "type": "unknown",
+                              },
+                            ],
+                            "type": "union",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "billie": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Billie",
+                        "properties": {},
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "card": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Card",
+                        "properties": {
+                          "mandate_options": {
+                            "fromType": "MandateOptions",
+                            "properties": {
+                              "amount": {
+                                "type": "unknown",
+                              },
+                              "amount_type": {
+                                "type": "unknown",
+                              },
+                              "description": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                          "network": {
+                            "anyOf": [
+                              {
+                                "type": "unknown",
+                              },
+                            ],
+                            "type": "union",
+                          },
+                          "request_three_d_secure": {
+                            "anyOf": [
+                              {
+                                "type": "unknown",
+                              },
+                            ],
+                            "type": "union",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "customer_balance": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "CustomerBalance",
+                        "properties": {
+                          "bank_transfer": {
+                            "fromType": "BankTransfer",
+                            "properties": {
+                              "eu_bank_transfer": {
+                                "type": "unknown",
+                              },
+                              "type": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                          "funding_type": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "konbini": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Konbini",
+                        "properties": {},
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "payto": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Payto",
+                        "properties": {
+                          "mandate_options": {
+                            "fromType": "MandateOptions",
+                            "properties": {
+                              "amount": {
+                                "type": "unknown",
+                              },
+                              "purpose": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "pix": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Pix",
+                        "properties": {
+                          "expires_after_seconds": {
+                            "type": "number",
+                          },
+                          "mandate_options": {
+                            "fromType": "MandateOptions",
+                            "properties": {
+                              "amount": {
+                                "type": "unknown",
+                              },
+                              "amount_includes_iof": {
+                                "type": "unknown",
+                              },
+                              "end_date": {
+                                "type": "unknown",
+                              },
+                              "payment_schedule": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "sepa_debit": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "SepaDebit",
+                        "properties": {},
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "upi": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "Upi",
+                        "properties": {
+                          "mandate_options": {
+                            "fromType": "MandateOptions",
+                            "properties": {
+                              "amount": {
+                                "type": "unknown",
+                              },
+                              "amount_type": {
+                                "type": "unknown",
+                              },
+                              "description": {
+                                "type": "unknown",
+                              },
+                              "end_date": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "us_bank_account": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "UsBankAccount",
+                        "properties": {
+                          "financial_connections": {
+                            "fromType": "FinancialConnections",
+                            "properties": {
+                              "filters": {
+                                "type": "unknown",
+                              },
+                              "permissions": {
+                                "type": "unknown",
+                              },
+                              "prefetch": {
+                                "type": "unknown",
+                              },
+                            },
+                            "required": [],
+                            "type": "object",
+                          },
+                          "verification_method": {
+                            "anyOf": [
+                              {
+                                "type": "unknown",
+                              },
+                            ],
+                            "type": "union",
+                          },
+                        },
+                        "required": [],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+                "required": [],
+                "type": "object",
+              },
+              "payment_method_types": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "enum": [
+                            "ach_credit_transfer",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "ach_debit",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "acss_debit",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "affirm",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "alipay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "amazon_pay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "au_becs_debit",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "bacs_debit",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "bancontact",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "billie",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "boleto",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "card",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "cashapp",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "crypto",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "custom",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "customer_balance",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "eps",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "fpx",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "giropay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "grabpay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "ideal",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "jp_credit_transfer",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "kakao_pay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "klarna",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "konbini",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "kr_card",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "link",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "mb_way",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "multibanco",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "naver_pay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "nz_bank_account",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "p24",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "pay_by_bank",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "payco",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "paynow",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "paypal",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "payto",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "pix",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "promptpay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "revolut_pay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "satispay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "sepa_credit_transfer",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "sepa_debit",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "sofort",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "swish",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "twint",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "upi",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "us_bank_account",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "enum": [
+                            "wechat_pay",
+                          ],
+                          "type": "string",
+                        },
+                        {
+                          "fromType": "OtherString",
+                          "properties": {
+                            "length": {
+                              "type": "unknown",
+                            },
+                          },
+                          "required": [
+                            "length",
+                          ],
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                ],
+                "type": "union",
+              },
+              "save_default_payment_method": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "off",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "enum": [
+                      "on_subscription",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "fromType": "OtherString",
+                    "properties": {
+                      "length": {
+                        "type": "number",
+                      },
+                    },
+                    "required": [
+                      "length",
+                    ],
+                    "type": "object",
+                  },
+                ],
+                "type": "union",
+              },
+            },
+            "required": [],
+            "type": "object",
+          },
+          "pending_invoice_item_interval": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "PendingInvoiceItemInterval",
+                "properties": {
+                  "interval": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "day",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "month",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "week",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "year",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "interval_count": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "interval",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "proration_behavior": {
+            "anyOf": [
+              {
+                "enum": [
+                  "always_invoice",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "create_prorations",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "none",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "OtherString",
+                "properties": {
+                  "length": {
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "length",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "proration_date": {
+            "type": "number",
+          },
+          "transfer_data": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                ],
+                "type": "string",
+              },
+              {
+                "fromType": "TransferData",
+                "properties": {
+                  "amount_percent": {
+                    "type": "number",
+                  },
+                  "destination": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "destination",
+                ],
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "trial_end": {
+            "anyOf": [
+              {
+                "enum": [
+                  "now",
+                ],
+                "type": "string",
+              },
+              {
+                "type": "number",
+              },
+            ],
+            "type": "union",
+          },
+          "trial_from_plan": {
+            "type": "boolean",
+          },
+          "trial_settings": {
+            "fromType": "TrialSettings",
+            "properties": {
+              "end_behavior": {
+                "fromType": "EndBehavior",
+                "properties": {
+                  "missing_payment_method": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "cancel",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "create_invoice",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "enum": [
+                          "pause",
+                        ],
+                        "type": "string",
+                      },
+                      {
+                        "fromType": "OtherString",
+                        "properties": {
+                          "length": {
+                            "type": "number",
+                          },
+                        },
+                        "required": [
+                          "length",
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+                "required": [
+                  "missing_payment_method",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "end_behavior",
+            ],
+            "type": "object",
           },
         },
         "required": [
@@ -5643,10 +8779,212 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         },
         {
           "body": {
+            "add_invoice_items": [
+              {
+                "discountable": true,
+                "discounts": [
+                  {
+                    "coupon": "S8VK9O",
+                    "discount": "hollow kestrel",
+                    "promotion_code": "anchor jetty",
+                  },
+                  {
+                    "coupon": "4H6OYH",
+                    "discount": "nimbus quartz",
+                    "promotion_code": "lagoon zephyr",
+                  },
+                ],
+                "metadata": {},
+                "period": {
+                  "end": {
+                    "timestamp": 1748128971,
+                    "type": "verdant verdant",
+                  },
+                  "start": {
+                    "timestamp": 1736188844,
+                    "type": "garden yonder",
+                  },
+                },
+                "price": "6332",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "quartz birch",
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 8048,
+                  "unit_amount_decimal": {
+                    "_coefficient": "hollow cedar",
+                    "_exponent": "tundra anchor",
+                  },
+                },
+                "quantity": 9,
+                "tax_rates": "",
+              },
+              {
+                "discountable": true,
+                "discounts": [
+                  {
+                    "coupon": "Z1F250",
+                    "discount": "copper ultra",
+                    "promotion_code": "marble onyx",
+                  },
+                  {
+                    "coupon": "4VSQNR",
+                    "discount": "wander estuary",
+                    "promotion_code": "grove orbit",
+                  },
+                ],
+                "metadata": {},
+                "period": {
+                  "end": {
+                    "timestamp": 1721524443,
+                    "type": "fable island",
+                  },
+                  "start": {
+                    "timestamp": 1718023084,
+                    "type": "compass glacier",
+                  },
+                },
+                "price": "7632",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "cedar atlas",
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 1290,
+                  "unit_amount_decimal": {
+                    "_coefficient": "jasper echo",
+                    "_exponent": "copper fjord",
+                  },
+                },
+                "quantity": 8,
+                "tax_rates": "",
+              },
+            ],
+            "application_fee_percent": "",
+            "automatic_tax": {
+              "enabled": true,
+              "liability": {
+                "account": "delta nimbus",
+                "type": "account",
+              },
+            },
+            "billing_cycle_anchor": "now",
+            "billing_schedules": "",
+            "billing_thresholds": "",
+            "cancel_at": "",
             "cancel_at_period_end": true,
-            "default_payment_method": "cedar grove",
+            "cancellation_details": {
+              "comment": "Sable wander horizon beacon copper jasper.",
+              "feedback": "",
+              "feedback_option": "2422",
+            },
+            "collection_method": "charge_automatically",
+            "days_until_due": 14,
+            "default_payment_method": "kestrel anchor",
+            "default_source": "amber zephyr",
+            "default_tax_rates": "",
+            "description": "Garden nimbus ultra orbit jetty anchor.",
+            "discounts": "",
+            "expand": [
+              "estuary falcon",
+              "island saffron",
+            ],
+            "invoice_settings": {
+              "account_tax_ids": "",
+              "custom_fields": "",
+              "description": "Marble marble island sable compass glacier.",
+              "footer": "fjord willow",
+              "issuer": {
+                "account": "ridge lantern",
+                "type": "account",
+              },
+            },
+            "items": [
+              {
+                "billing_thresholds": "",
+                "clear_usage": true,
+                "deleted": true,
+                "discounts": "",
+                "id": "nuaztgzm",
+                "metadata": "",
+                "plan": "marble walnut",
+                "price": "4881",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "glacier ridge",
+                  "recurring": {
+                    "interval": "wander dune",
+                    "interval_count": 870,
+                  },
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 1284,
+                  "unit_amount_decimal": {
+                    "_coefficient": "estuary nectar",
+                    "_exponent": "sable anchor",
+                  },
+                },
+                "quantity": 4,
+                "tax_rates": "",
+              },
+              {
+                "billing_thresholds": "",
+                "clear_usage": true,
+                "deleted": true,
+                "discounts": "",
+                "id": "cidmi73d",
+                "metadata": "",
+                "plan": "ember falcon",
+                "price": "3692",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "zephyr cedar",
+                  "recurring": {
+                    "interval": "sable jasper",
+                    "interval_count": 421,
+                  },
+                  "tax_behavior": "exclusive",
+                  "unit_amount": 551,
+                  "unit_amount_decimal": {
+                    "_coefficient": "quiet meadow",
+                    "_exponent": "fable koala",
+                  },
+                },
+                "quantity": 3,
+                "tax_rates": "",
+              },
+            ],
             "metadata": "",
+            "off_session": true,
+            "on_behalf_of": "beacon velvet",
+            "pause_collection": "",
+            "payment_behavior": "allow_incomplete",
+            "payment_settings": {
+              "payment_method_options": {
+                "acss_debit": "",
+                "bancontact": "",
+                "billie": "",
+                "card": "",
+                "customer_balance": "",
+                "konbini": "",
+                "payto": "",
+                "pix": "",
+                "sepa_debit": "",
+                "upi": "",
+                "us_bank_account": "",
+              },
+              "payment_method_types": "",
+              "save_default_payment_method": "off",
+            },
+            "pending_invoice_item_interval": "",
             "proration_behavior": "always_invoice",
+            "proration_date": 1757984545,
+            "transfer_data": "",
+            "trial_end": "now",
+            "trial_from_plan": true,
+            "trial_settings": {
+              "end_behavior": {
+                "missing_payment_method": "cancel",
+              },
+            },
           },
           "bodyEncoding": "form",
           "headers": {
@@ -5655,15 +8993,253 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "method": "POST",
           "query": {},
-          "url": "https://api.stripe.com/v1/subscriptions/vk9ovj49",
+          "url": "https://api.stripe.com/v1/subscriptions/vmue7lin",
           "variant": "full",
         },
         {
           "body": {
+            "add_invoice_items": [
+              {
+                "discountable": false,
+                "discounts": [
+                  {
+                    "coupon": "MBIMH7",
+                    "discount": "saffron xenon",
+                    "promotion_code": "hollow orbit",
+                  },
+                ],
+                "metadata": {},
+                "period": {
+                  "end": {
+                    "timestamp": 1704348268,
+                    "type": "velvet island",
+                  },
+                  "start": {
+                    "timestamp": 1734780919,
+                    "type": "koala timber",
+                  },
+                },
+                "price": "4102",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "valley quill",
+                  "tax_behavior": "inclusive",
+                  "unit_amount": 9283,
+                  "unit_amount_decimal": {
+                    "_coefficient": "amber falcon",
+                    "_exponent": "zenith ultra",
+                  },
+                },
+                "quantity": 7,
+                "tax_rates": [
+                  "0.32",
+                ],
+              },
+            ],
+            "application_fee_percent": 8668,
+            "automatic_tax": {
+              "enabled": false,
+              "liability": {
+                "account": "marble nimbus",
+                "type": "self",
+              },
+            },
+            "billing_cycle_anchor": "unchanged",
+            "billing_schedules": [
+              {
+                "applies_to": [
+                  {
+                    "price": "7478",
+                    "type": "marble copper",
+                  },
+                ],
+                "bill_until": {
+                  "duration": {
+                    "interval": "haven pebble",
+                    "interval_count": "river linen",
+                  },
+                  "timestamp": 1722966879,
+                  "type": "estuary delta",
+                },
+                "key": "<key>",
+              },
+            ],
+            "billing_thresholds": {
+              "amount_gte": 1202,
+              "reset_billing_cycle_anchor": false,
+            },
+            "cancel_at": "max_billed_until",
             "cancel_at_period_end": true,
-            "default_payment_method": "pebble quiet",
+            "cancellation_details": {
+              "comment": "Yarrow summit tundra quiet yonder lantern.",
+              "feedback": "customer_service",
+              "feedback_option": "5093",
+            },
+            "collection_method": "send_invoice",
+            "days_until_due": 8,
+            "default_payment_method": "onyx atlas",
+            "default_source": "maple willow",
+            "default_tax_rates": [
+              "0.95",
+            ],
+            "description": "Wander saffron zenith ridge ember ridge.",
+            "discounts": [
+              {
+                "coupon": "VB2AWD",
+                "discount": "fjord zenith",
+                "promotion_code": "inlet river",
+              },
+            ],
+            "expand": [
+              "garden lagoon",
+            ],
+            "invoice_settings": {
+              "account_tax_ids": [
+                "16igeziw",
+              ],
+              "custom_fields": [
+                {
+                  "name": "Jasper Ember",
+                  "value": "jasper opal",
+                },
+              ],
+              "description": "Orbit canyon marble ember hollow prairie.",
+              "footer": "anchor meadow",
+              "issuer": {
+                "account": "maple marble",
+                "type": "self",
+              },
+            },
+            "items": [
+              {
+                "billing_thresholds": {
+                  "usage_gte": 80,
+                },
+                "clear_usage": false,
+                "deleted": false,
+                "discounts": [
+                  {
+                    "coupon": "HF6F76",
+                    "discount": "marble island",
+                    "promotion_code": "horizon dune",
+                  },
+                ],
+                "id": "2wr0fkjp",
+                "metadata": {},
+                "plan": "willow hollow",
+                "price": "6275",
+                "price_data": {
+                  "currency": "usd",
+                  "product": "summit maple",
+                  "recurring": {
+                    "interval": "dune canyon",
+                    "interval_count": 297,
+                  },
+                  "tax_behavior": "inclusive",
+                  "unit_amount": 6215,
+                  "unit_amount_decimal": {
+                    "_coefficient": "anchor meadow",
+                    "_exponent": "tundra pebble",
+                  },
+                },
+                "quantity": 3,
+                "tax_rates": [
+                  "0.57",
+                ],
+              },
+            ],
             "metadata": {},
+            "off_session": false,
+            "on_behalf_of": "onyx summit",
+            "pause_collection": {
+              "behavior": "mark_uncollectible",
+              "resumes_at": 1701425810,
+            },
+            "payment_behavior": "default_incomplete",
+            "payment_settings": {
+              "payment_method_options": {
+                "acss_debit": {
+                  "mandate_options": {
+                    "transaction_type": "birch jasper",
+                  },
+                  "verification_method": "river ember",
+                },
+                "bancontact": {
+                  "preferred_language": "falcon kestrel",
+                },
+                "billie": {},
+                "card": {
+                  "mandate_options": {
+                    "amount": "9756",
+                    "amount_type": "9679",
+                    "description": "River yarrow ember timber xenon opal.",
+                  },
+                  "network": "velvet delta",
+                  "request_three_d_secure": "orbit quiet",
+                },
+                "customer_balance": {
+                  "bank_transfer": {
+                    "eu_bank_transfer": "delta birch",
+                    "type": "ultra ridge",
+                  },
+                  "funding_type": "beacon koala",
+                },
+                "konbini": {},
+                "payto": {
+                  "mandate_options": {
+                    "amount": "1883",
+                    "purpose": "saffron saffron",
+                  },
+                },
+                "pix": {
+                  "expires_after_seconds": 17,
+                  "mandate_options": {
+                    "amount": "4998",
+                    "amount_includes_iof": "8455",
+                    "end_date": "2025-08-15T21:09:20Z",
+                    "payment_schedule": "quartz opal",
+                  },
+                },
+                "sepa_debit": {},
+                "upi": {
+                  "mandate_options": {
+                    "amount": "9670",
+                    "amount_type": "3043",
+                    "description": "Island kestrel ember raven quill estuary.",
+                    "end_date": "2025-12-14T19:25:59Z",
+                  },
+                },
+                "us_bank_account": {
+                  "financial_connections": {
+                    "filters": "ridge ember",
+                    "permissions": "verdant lantern",
+                    "prefetch": "atlas quartz",
+                  },
+                  "verification_method": "indigo compass",
+                },
+              },
+              "payment_method_types": [
+                "ach_debit",
+              ],
+              "save_default_payment_method": "on_subscription",
+            },
+            "pending_invoice_item_interval": {
+              "interval": "month",
+              "interval_count": 151,
+            },
             "proration_behavior": "create_prorations",
+            "proration_date": 1702564250,
+            "transfer_data": {
+              "amount_percent": 729,
+              "destination": "island mosaic",
+            },
+            "trial_end": 3,
+            "trial_from_plan": false,
+            "trial_settings": {
+              "end_behavior": {
+                "missing_payment_method": "create_invoice",
+              },
+            },
           },
           "bodyEncoding": "form",
           "headers": {
@@ -5672,7 +9248,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
           },
           "method": "POST",
           "query": {},
-          "url": "https://api.stripe.com/v1/subscriptions/imh7n3vf",
+          "url": "https://api.stripe.com/v1/subscriptions/0oc842d2",
           "variant": "alt",
         },
       ],

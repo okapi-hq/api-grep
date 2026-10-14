@@ -62,9 +62,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
   and assert on it in `tests/fixtures.test.ts` (or `tests/python.test.ts`, `tests/php.test.ts`) with
   `at(report, "<file>", <line>)`.
 - Negative cases (code that must **not** be reported) go in `tests/fixtures/negatives/`.
-- Fixtures are written from scratch with invented names and only public provider hosts. A fixture
-  that needs a package's types ships a few of them in its own `node_modules`
-  (`tests/fixtures/sdk/node_modules/stripe`): a scan never reads above the scanned directory.
+- Fixtures are written from scratch with invented names and only public provider hosts.
 - Regression fixtures: a directory under `tests/fixtures/` with an `expected.json` lists the
   calls a scan must find (`file`, `line`, `provider`). An empty `calls` list marks a negative
   fixture; `orUnfollowed` accepts a `diagnostics.unfollowed` entry instead of a call; `operation`
@@ -267,7 +265,8 @@ The report is a contract other tools read. Its source is [`src/report/schema.ts`
   or a verdict: leave any judgement to its consumer.
 - Treat everything read from a scanned repository as hostile: print it through `printable()`,
   read config files and manifests through `readConfigFile()`, let the TypeScript checker read the
-  disk through `src/bounded-fs.ts` (nothing above the scanned directory), and add a case to
+  disk through `src/bounded-fs.ts` (nothing above the repository root, or above the scanned
+  directory when it is in no git repository), and add a case to
   `tests/e2e/security.e2e.test.ts` when a new output can carry it.
 
 ## Pull requests

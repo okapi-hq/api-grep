@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { scopeOf } from "../../src/project.js";
-import { findTsconfig, repositoryRoot } from "../../src/tsconfig.js";
+import { findTsconfig, readRoot, repositoryRoot } from "../../src/tsconfig.js";
 
 const tmp = mkdtempSync(path.join(os.tmpdir(), "api-grep-tsconfig-"));
 afterAll(() => rmSync(tmp, { recursive: true, force: true }));
@@ -24,6 +24,13 @@ describe("the tsconfig of a scan (#112)", () => {
     const repo = tree("in-repo", { ".git/HEAD": "ref: refs/heads/main\n", "tsconfig.json": STRICT, "apps/web/src/a.ts": "" });
     expect(repositoryRoot(path.join(repo, "apps", "web"))).toBe(repo);
     expect(findTsconfig(path.join(repo, "apps", "web"))).toEqual({ file: path.join(repo, "tsconfig.json"), bound: repo });
+  });
+
+  it("bounds what a scan reads at the repository root, a worktree's `.git` file included, else at the scanned directory", () => {
+    const parent = tree("roots", { "worktree/.git": "gitdir: /nowhere\n", "worktree/apps/web/a.ts": "", "plain/apps/web/a.ts": "" });
+    expect(readRoot(path.join(parent, "worktree", "apps", "web"))).toBe(path.join(parent, "worktree"));
+    expect(readRoot(path.join(parent, "plain", "apps", "web"))).toBe(path.join(parent, "plain", "apps", "web"));
+    expect(scopeOf({ dir: path.join(parent, "worktree", "apps", "web") }).root).toBe(path.join(parent, "worktree"));
   });
 
   it("is never one above the repository or, outside any, above the scanned directory", () => {

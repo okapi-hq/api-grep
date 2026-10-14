@@ -743,15 +743,17 @@ A scanned repository is treated as hostile input:
 - Paths, URLs and values it chooses are printed with control characters escaped, so they cannot
   drive the terminal. `--curl` quotes every value and uses `--data-raw` / `--form-string`, so a
   value such as `@/etc/passwd` is sent as written, never read from disk.
-- Symlinks that lead out of the scanned directory are not followed, and `package.json`,
+- Symlinks that lead out of the scanned directory are not scanned, nor followed by the
+  TypeScript checker once out of the repository root (the scanned directory when it is in no
+  git repository), and `package.json`,
   `.env.example` and `tsconfig.json` are read only when they are small regular files.
-- The TypeScript checker reads nothing outside the scanned directory: imports, `/// <reference>`
-  paths, `node_modules` packages and `@types` resolve inside it only. A package installed above
-  the checkout (a stray `~/node_modules`), or a sibling package of a monorepo scanned from a
-  subdirectory, is not read, so a report does not depend on where the repository is checked out
-  or where the scan runs. The nearest `tsconfig.json` is looked for up to the root of the
-  repository (the directory holding `.git`; the scanned directory when there is none), never
-  above, and gives the compiler options only; `--tsconfig` names one anywhere.
+- The TypeScript checker reads nothing above the repository root (the nearest directory holding
+  `.git`), or above the scanned directory when it is in no git repository: imports,
+  `/// <reference>` paths, `node_modules` packages, `@types` and the nearest `tsconfig.json`
+  resolve inside it only, symlinks included. A subdirectory of a monorepo still reads the sibling
+  packages it imports; a package installed above the checkout (a stray `~/node_modules`) is not
+  read, so a report does not depend on where the repository is checked out or where the scan
+  runs. `--tsconfig` names a tsconfig anywhere.
 - `--changed-since` runs `git` in the scanned directory with `core.fsmonitor` off and without
   external diff or textconv drivers. A `.git` directory that arrived with untrusted files (an
   archive, not a clone) can still configure other filters: use it on checkouts you made.
