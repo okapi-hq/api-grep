@@ -503,6 +503,21 @@ its builder's base URL, interceptors and default headers.
   (`named<Uploads>()`, `qualifier<T>()`).
 - **Injekt** (#75): `addSingletonFactory { ... }`, `addSingleton(x)`, `addFactory { ... }` in files importing
   `uy.kohesive.injekt`, looked up by `injectLazy<T>()`, `Injekt.get<T>()` and `val x: T by injectLazy()`.
+- **Configuration properties** (#94, `config-props.ts`): a Spring injection point typed with a project class annotated
+  `@ConfigurationProperties(prefix = "weather")` (a Kotlin class, a Java POJO or record) is the configuration it binds:
+  each scalar property reads as the configuration value `weather.base-url` (the canonical kebab-case name) with the
+  default the class gives it (a constructor default, a field initializer, a record component's `@DefaultValue`), as
+  `@Value("${weather.base-url:...}")` does; `props.baseUrl`, `props.getBaseUrl()` and a record's `props.baseUrl()`
+  read it. A class without the annotation that nothing binds stays unknown, not its default.
+- **More collections** (#94): Koin's `getAll<T>()` is every definition bound to `T`; Spring's
+  `ObjectProvider<T>.orderedStream()` / `stream()` every bean of `T`, and `ObjectProvider<List<T>>.getObject()` the
+  injected list. Interceptors added in a `for` loop over a collection (`for (Interceptor i : interceptors)
+  builder.addInterceptor(i)`, `for (i in list)`: `FunctionDef.loops`, read where one element stands for each, never
+  as the variable's value; a variable reassigned in the loop is not the element), through a method reference on the
+  builder (`interceptors.forEach(builder::addInterceptor)`) or by a project extension of the client builder
+  (`fun OkHttpClient.Builder.addInterceptors(list: List<Interceptor>)` adding each, also by `fold(this) { b, i -> ...
+  }`, read with the call's arguments) each apply. A Koin definition returning a builder variable
+  (`val b = OkHttpClient.Builder(); ...; b.build()`) is a binding of what it builds.
 
 **Builder steps in `apply { }`** (Kotlin, #46): `Request.Builder().apply { url(u); header(k, v) }.build()`,
 `builder.apply { ... }` on a variable, `OkHttpClient.Builder().apply { addInterceptor(i) }` and
@@ -575,9 +590,9 @@ file. A file that does not parse is then read once more with a `;` in place of t
 
 **Limitations:**
 
-- DI (#75): Spring `@ConfigurationProperties` values, interceptors added in a Java `for` loop or with a method
-  reference on a builder variable, a list handed to a project helper that adds them, Koin `getAll<T>()` and
-  `ObjectProvider<List<T>>` are not followed (#94).
+- DI (#94): interceptors that wrap another (`Interceptor { other.intercept(it) }`), lists built with
+  `buildList { add(...) }`, a builder handed to a project method as a parameter, nested `@ConfigurationProperties`
+  classes and the values of `application.yml` for them are not followed (#100).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - Extension functions (#86): an extension called inside `with(client) { ... }` or `client.run { ... }`, one called
   from Java (`StorageKt.delete(client, ...)`), and a builder extension used as a step (`Request.Builder().authed()`,

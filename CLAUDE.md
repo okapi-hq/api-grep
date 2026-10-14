@@ -161,7 +161,10 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; so is #75 (`Lazy<T>` / `Provider<T>` holders, multibinding sets and Spring `List<T>` in
   `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of
-  injected collections in `src/lang/jvm/elements.ts`); `@ConfigurationProperties` and the remaining forms are #94.
+  injected collections in `src/lang/jvm/elements.ts`); #94 adds `@ConfigurationProperties`
+  (`src/lang/jvm/di/config-props.ts`), Koin `getAll<T>()`, `ObjectProvider` streams, loops over collections
+  (`FunctionDef.loops`), method references on builder variables and builder extensions adding interceptors; what it
+  leaves is #100.
   Calls in extension functions of a client type (#86: `FunctionDef.receiver`, `implicit` names, the extension a call
   runs in `src/lang/ir/extensions.ts`) are done.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
