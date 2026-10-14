@@ -43,20 +43,22 @@ const hasMethod = (registry: Registry, key: string): boolean => registry.entries
  * parameter property): the receiver is that parameter, whatever `new` passes for it. The field is set nowhere else.
  */
 function fieldReceiver(mc: Chain, registry: Registry): Receiver | undefined {
+  const rest: Chain = { root: mc.nodes[1]!, nodes: mc.nodes.slice(1), chain: mc.chain.slice(1) };
+  const key = rest.chain.join(".");
+  // cheapest test first: most `this.x.y()` are no registry method
+  if (!hasMethod(registry, key)) return undefined;
   const cls = enclosingClass(mc.root);
   const field = mc.chain[0]!;
   if (!cls || cls.getProperty(field)?.getInitializer()) return undefined;
   const prop = parameterProperty(cls, field);
-  const assigned = fieldAssignments(cls, field);
   const value = prop ? undefined : constructorAssignment(cls, field);
-  const ident = value && assigned.length === 1 ? unwrap(value) : undefined;
-  const param = prop && assigned.length === 0 ? prop : ident && Node.isIdentifier(ident) ? ident.getSymbol()?.getDeclarations()[0] : undefined;
+  const ident = value ? unwrap(value) : undefined;
+  const param = prop ?? (ident && Node.isIdentifier(ident) ? ident.getSymbol()?.getDeclarations()[0] : undefined);
   if (!param || !Node.isParameterDeclaration(param) || param.getInitializer() || !untyped(param)) return undefined;
   const ctor = param.getParent();
   if (!Node.isConstructorDeclaration(ctor) || ctor.getParent() !== cls) return undefined;
-  const rest: Chain = { root: mc.nodes[1]!, nodes: mc.nodes.slice(1), chain: mc.chain.slice(1) };
-  const key = rest.chain.join(".");
-  return hasMethod(registry, key) ? { param, fn: ctor, mc: rest, key, field: true } : undefined;
+  // the constructor's assignment is the field's only one (a parameter property has none)
+  return fieldAssignments(cls, field).length === (prop ? 0 : 1) ? { param, fn: ctor, mc: rest, key, field: true } : undefined;
 }
 
 /**

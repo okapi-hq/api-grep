@@ -1158,6 +1158,13 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sgqlc-helpers 1`] = `
+[
+  "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
+  "orchard.py:35 unknown POST / harvest",
+]
+`;
+
 exports[`regression fixtures > python/shopify-rest 1`] = `
 [
   "store.py:11 shopify GET /admin/api/{version}/shop.json",

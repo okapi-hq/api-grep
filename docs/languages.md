@@ -698,7 +698,7 @@ operation?: {
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi #85 |
-| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); bound diagnostic #55, literal arguments #56 |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
 ### JSON-RPC (#34)
@@ -869,11 +869,17 @@ document with the `graphql` package's parser (no schema, no network):
     `__generated__/*.graphql.ts` module's `{ kind: "Request", params: { name, operationKind, text, id } }`, written as
     a literal or returned by the function the compiler calls in place, gives the text of `params.text`; a persisted
     query (`text: null` and an `id`) gives the operation's name and type from `params`, its fields left out.
-  - Not covered: `QueryRenderer` and the other container components (JSX, not calls), `loadQuery` and
-    `useQueryLoader` (the query is reported where `usePreloadedQuery` reads it), refetch and pagination of fragments
-    (#83).
-- **Shopify's clients** (#67) are clients of one provider: registries of the `shopify` provider (no host in
-  `providers.json`: raw calls to `{shop}.myshopify.com` keep the host's domain as their provider, #83) with `documentArg`,
+  - **#83**: `loadQuery(environment, query, variables)` (the request is sent there, and reported again where
+    `usePreloadedQuery` reads it); the refetch query of `createRefetchContainer(Component, fragments, query)` and the
+    pagination query of `createPaginationContainer(Component, fragments, { query })` (a fragment container sends
+    nothing); `<QueryRenderer environment query variables />`, a JSX element rather than a call: a registry's
+    `components` list such components, their props in `props` read as the method's arguments
+    (`src/detect/component.ts`). An artifact loaded with `require("./__generated__/Query.graphql")` is read from the
+    scanned file it names (`export default` or `module.exports`).
+  - Not covered: the `loadQuery` function `useQueryLoader` returns, and the refetch and pagination of fragments
+    through hooks (`useRefetchableFragment`, `usePaginationFragment`), whose query the compiler generates.
+- **Shopify's clients** (#67) are clients of one provider: registries of the `shopify` provider (whose host,
+  `.myshopify.com`, also names raw calls to `{shop}.myshopify.com` since #83) with `documentArg`,
   as Octokit's `graphql`, at `{shop}.myshopify.com` (the shop is the session's or the code's) and the path
   `/admin/api/{version}/graphql.json`, or `/api/{version}/graphql.json` for the Storefront API. The version is written
   in when the client is given one (`apiVersion: "2025-01"`), else `{version}` stays. The body is the variables.
@@ -885,11 +891,38 @@ document with the `graphql` package's parser (no schema, no network):
     call returns (`const { admin } = await authenticate.admin(request)`): with no installed types, such a binding
     stands for the call's result and the property (`src/detect/callee.ts`, `destructuredCallee`).
   - `@shopify/admin-api-client` and `@shopify/storefront-api-client`: `request`, `fetch` and `requestStream` on a
-    client their factory built (the keys keep the factory's name, so the REST client of the same package, or a
-    typed parameter, is not matched); `shopify-api-node`: `graphql(document, variables)`.
+    client their factory built (the keys keep the factory's name, so a typed parameter is not matched);
+    `shopify-api-node`: `graphql(document, variables)`.
   - Python `ShopifyAPI` (`src/lang/python/registry/shopify.json`): `shopify.GraphQL().execute(query, variables)`.
-  - Not covered: Hydrogen's `storefront.query` (the client comes from the request's context), and the REST resources
-    of these libraries, clients a project factory returns inside an object (#83).
+  - **Clients from project code** (#83, `src/detect/callee.ts`): a factory that returns an object holding the client
+    (`graphqlClient: async ({ shop }) => ({ client: new shopify.clients.Graphql({ session }), shop })`, a function, an
+    arrow or a method of a local object, `clientProvider.online.graphqlClient`) gives the client to the property the
+    caller destructures or reads (`const { client } = await clientProvider.online.graphqlClient(...)`); a class
+    keeping the client it is given in a field (`this.client = client`) is followed through the `new` expressions of
+    the class (`src/detect/receiver.ts`, see #37 below).
+  - **Hydrogen** (#83, `src/detect/registry/hydrogen.json`): `storefront.query(document, { variables })` and `mutate`
+    (Storefront API, `/api/{version}/graphql.json`), `customerAccount.query` and `mutate` (Customer Account API,
+    `shopify.com/{shopId}/account/customer/api/{version}/graphql`). Route handlers get these clients from the request's
+    context (`context.storefront`, `{ context: { storefront } }`, a helper's `storefront: Storefront`), not from an
+    import: the registry lists them in `contextClients`, and in a file whose manifests declare `@shopify/hydrogen` a
+    value of that name read from anywhere, with the method after it, is the key (`ReceiverResolver.contextCall`,
+    `clientFrom: "manifest"`). The store is the one `createStorefrontClient` is given: the host stays
+    `{shop}.myshopify.com`.
+  - **REST** (#83): `shopify-api-node`'s resources (`shopify.product.list(params)`, `productImage.get(productId, id)`,
+    `order.close(id)`: the methods its base and child mixins give each resource, and those built the same way, read
+    from the library's sources by a one-off script; the body goes under the resource's key, `bodyWrap`:
+    `{ product: params }`); `@shopify/shopify-api`'s REST client (`new shopify.clients.Rest({ session }).get({ path:
+    "products", query })`, `post({ path, data })`, also `admin.rest` of the app packages) and REST resources
+    (`shopify.rest.Product.all({ session })`, `find({ session, id })`, `count`, `delete`, the paths of the 2026-07
+    resources, a method with several paths left out); `createAdminRestApiClient(...)` `.get(path)`, `.post(path, {
+    data })`; Python `ShopifyAPI` (`shopify.Product.find()` lists, `find(id)` reads one: `argPath`; `count`,
+    `create(attributes)`, `delete(id)`, `Shop.current()`, top-level resources only). Paths are
+    `/admin/api/{version}/<resource>.json`; a path the code gives already carrying the slash or the `.json` is not
+    doubled. Resource names are common words (`order.list`, `Order.find`): these registries are `callersOnly`, so an
+    untyped parameter is theirs only when its callers pass one of their clients.
+  - Not covered: `admin.rest.resources` of the app packages, records saved through an instance (`product.save()`),
+    nested and owner-dependent Python resources (`Variant`, `Metafield`), `shopify-api-node` methods whose body
+    the library builds itself (`customerAddress.create`).
 - **sgqlc** (#67, `src/lang/python/registry/sgqlc.json`): the endpoint is called directly
   (`HTTPEndpoint(url, base_headers)(document, variables)`, also `RequestsEndpoint`): the registry's key is `()`, the
   call of the instance, and the endpoint is the one the instance is built with. The document is text, or an
@@ -897,9 +930,11 @@ document with the `graphql` package's parser (no schema, no network):
   the one the class named (`Query`, `Mutation`, `Subscription`), and its fields the selections the function that
   builds it makes on it, through variables (`issues = op.repository(owner=o).issues(first=10)`, `issues.nodes.title()`,
   `.__fields__("a", "b")`; `__as__(Type)` is an inline fragment), written in GraphQL as sgqlc writes them (`created_at`
-  is `createdAt`), at most 2,000 paths 32 deep. Selections a helper given the operation makes are not read: the field
-  they hang under is a leaf. An endpoint the code receives as a parameter its callers do not give leaves the call
-  unreported (#83).
+  is `createdAt`), at most 2,000 paths 32 deep. A project function given the operation or one of its selections
+  (`fetch_issues(op, issues)`, #83) makes its selections under what it is given, three helpers at most. An endpoint
+  the code receives as a parameter (`def download(endpoint): endpoint(op)`, #83) is the one its callers pass, else, in a
+  project whose manifests declare `sgqlc`, an endpoint whose URL is unknown; a parameter called with anything but an
+  `Operation` is a callback, not an endpoint.
 - **Bounds.** The document comes from a hostile repository: 100,000 characters, 50,000 parser tokens, 32 levels of
   selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
   code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
@@ -985,6 +1020,16 @@ Decisions:
   fact is `clientFrom` and the weighing is left to the consumer.
 - One member after the parameter (`session.post(url)`) stays an HTTP client verb (`injected-client`): many objects
   have a `get` or a `post`, few have a `chat.completions.create`.
+- A client a TypeScript / JavaScript constructor keeps in a field from an untyped parameter (`constructor(client) {
+  this.client = client }`, or a parameter property, the field set nowhere else) is that parameter: `this.client.graphql(q)`
+  follows the `new` expressions of the class (#83). A one-member method there (`graphql`) is followed through the callers
+  only: neither the manifests nor a `receiver-unknown` diagnostic speak for so common a name.
+- A registry whose method names are common words (`callersOnly`: `shopify-api-node`'s `order.list`, ShopifyAPI's
+  `Order.find`, Hydrogen) is followed through the callers only: a Prisma client given as `db` does not become Shopify
+  because the manifests declare `shopify-api-node`, and its `db.product.create` is no `receiver-unknown`.
+- A Python parameter called directly (`endpoint(op)`, #83) is a receiver only when its argument is a document the
+  library builds as an object (an sgqlc `Operation`): the registry key `()`, the callers' endpoint, else the one the
+  manifests declare (`unknown` host). Any other parameter called is a callback.
 - Bounds: 50 callers per function, 4 distinct clients per call. Callers are only followed one level; a client passed
   through two helpers is found at the outer call site by wrapper expansion and inside the inner helper through the
   manifests.
@@ -993,7 +1038,7 @@ Decisions:
 |---|---|
 | Python | callers (functions, methods, constructors), manifests, `receiver-unknown` |
 | PHP | same engine, same behaviour (`tests/fixtures/php/receiver/`) |
-| TypeScript / JavaScript | callers (functions, arrow functions, methods) in the scanned files, `package.json` manifests, `receiver-unknown`; a client stored on `this` by a constructor parameter is not followed yet |
+| TypeScript / JavaScript | callers (functions, arrow functions, methods, and the `new` of a class keeping the client in a field, #83) in the scanned files, `package.json` manifests, `receiver-unknown` |
 | Kotlin, Java | does not apply: every parameter has a type, and one that names no client stays unresolved (`typedParams`) |
 
 ## Keys added after a dict is built (#38)
@@ -1064,8 +1109,8 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), the rest in #49 / #50 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
-| #37 SDK client as an untyped parameter | callers, manifests, `receiver-unknown`, `clientFrom`; not constructor parameters stored on `this` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #37 SDK client as an untyped parameter | callers (constructor parameters stored on `this` too, #83), manifests, `receiver-unknown`, `clientFrom` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 
 ## Adding a language

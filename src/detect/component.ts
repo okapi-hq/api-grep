@@ -39,9 +39,19 @@ function componentCall(el: JsxOpeningLikeElement, registry: Registry): RawCall |
   return raw;
 }
 
+const NAMES = new WeakMap<Registry, string[]>();
+
+function componentNames(registry: Registry): string[] {
+  let names = NAMES.get(registry);
+  if (!names) NAMES.set(registry, (names = registry.entries().flatMap((e) => Object.keys(e.components ?? {}))));
+  return names;
+}
+
 /** Requests sent by the JSX components of the registries, under `root`. */
 export function detectComponents(root: Node, registry: Registry): RawCall[] {
-  if (!registry.entries().some((e) => e.components)) return [];
+  // most files name no such component: a text search spares walking their syntax tree
+  const text = root.getSourceFile().getFullText();
+  if (!componentNames(registry).some((n) => text.includes(n))) return [];
   const elements = [...root.getDescendantsOfKind(SyntaxKind.JsxOpeningElement), ...root.getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement)];
   return elements.flatMap((el) => componentCall(el, registry) ?? []);
 }
