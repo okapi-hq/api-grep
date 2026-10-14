@@ -789,8 +789,8 @@ package. `--changed-since` scans have no coverage section.
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in `coverage.sdks` only;
-  Spring AI calls through a shared interface in a project with two model starters are not listed (#96); a client injected through `Lazy<T>` / `Provider<T>`, a
-  multibinding or a service locator other than Koin is known by its type only (#75). The
+  Spring AI calls through a shared interface in a project with two model starters are not listed (#96); interceptors
+  that wrap another one and lists of them built in steps are not followed (#100). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation

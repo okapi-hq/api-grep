@@ -86,10 +86,42 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
   for (const step of fc.steps) {
     // the interceptor is often a lambda: the argument as written, not a step value
     const first = calleeIs(step.call, names) !== undefined ? step.call.args[0] : undefined;
+    const added = first ? [{ arg: { expr: first.value, fn: step.fn }, ctx }] : helperAdds(step, names, ctx);
     // each interceptor of a collection (an injected `Set<Interceptor>` added in a `forEach`)
-    for (const arg of first ? elementsOf({ expr: first.value, fn: step.fn }, ctx) : []) {
-      const i = interceptorOf(arg, ctx);
-      if (i) out.push(...interceptorPairs(i, fc.subst));
+    for (const a of added) {
+      for (const arg of elementsOf(a.arg, a.ctx)) {
+        const i = interceptorOf(arg, a.ctx);
+        if (i) out.push(...interceptorPairs(i, a.ctx.subst || fc.subst ? new Map([...(fc.subst ?? []), ...(a.ctx.subst ?? [])]) : undefined));
+      }
+    }
+  }
+  return out;
+}
+
+/** Whether an extension's receiver is OkHttp's client builder (`fun OkHttpClient.Builder.addInterceptors(...)`). */
+const onClientBuilder = (ext: FunctionDef): boolean => {
+  const path = ext.receiver?.type ? dottedPath(ext.receiver.type)?.join(".") : undefined;
+  return !!path && (path.endsWith("OkHttpClient.Builder") || (path === "Builder" && ext.module.importPaths.some((p) => p.join(".") === "okhttp3.OkHttpClient.Builder")));
+};
+
+/**
+ * `builder.addInterceptors(list)`, a project extension of the client builder (#94): the interceptors it adds
+ * (`list.forEach { addInterceptor(it) }`, `forEach(::addInterceptor)`, a `for` loop, `fold(this) { b, i -> ... }`),
+ * read with the call's arguments.
+ */
+function helperAdds(step: ScopedCall, names: string[], ctx: IrCtx): { arg: Scoped; ctx: IrCtx }[] {
+  if (step.call.fn.k !== "attr") return [];
+  const exts = (ctx.idx.extensions.get(step.call.fn.name) ?? []).filter(onClientBuilder);
+  const ext = exts.length === 1 ? exts[0]! : undefined;
+  if (!ext) return [];
+  const inner = withSubst(ctx, substitutionFor(ext, step.call, step.fn));
+  const out: { arg: Scoped; ctx: IrCtx }[] = [];
+  for (const f of withClosures(ext)) {
+    for (const c of f.calls) {
+      const ref = c.fn.k === "attr" && c.fn.name === "forEach" ? c.args[0]?.value : undefined;
+      const refName = ref?.k === "name" || ref?.k === "attr" ? ref.name : undefined;
+      if (refName && names.includes(refName) && c.fn.k === "attr") out.push({ arg: { expr: c.fn.obj, fn: f }, ctx: inner });
+      else if (calleeIs(c, names) !== undefined && c.args[0]) out.push({ arg: { expr: c.args[0].value, fn: f }, ctx: inner });
     }
   }
   return out;

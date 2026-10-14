@@ -199,10 +199,16 @@ function lowerAssignment(n: SyntaxNode, st: KtState): void {
 function lowerFor(n: SyntaxNode, st: KtState): void {
   addBranch(st.fn, n.startIndex, n.endIndex);
   const inner = inBlock(st);
+  let variable: string | undefined;
   for (const c of named(n)) {
-    if (c.type === "variable_declaration") inner.scope.names.add(named(c)[0]?.text ?? "");
+    if (c.type === "variable_declaration") inner.scope.names.add((variable = named(c)[0]?.text ?? ""));
     else if (c.type === "multi_variable_declaration") for (const v of named(c)) inner.scope.names.add(named(v)[0]?.text ?? "");
-    else if (c.type !== "label" && c.type !== "annotation" && !isComment(c)) lowerStatement(c, inner);
+    else if (c.type !== "label" && c.type !== "annotation" && !isComment(c)) {
+      const value = lowerStatement(c, inner);
+      // `for (i in interceptors)`: the expression after the variable is the collection, then comes the body
+      if (variable && c.type !== "control_structure_body" && c.type !== "block") (st.fn.loops ??= []).push({ name: variable, over: value, from: n.startIndex, to: n.endIndex });
+      variable = undefined;
+    }
   }
 }
 
