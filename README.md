@@ -273,9 +273,17 @@ through the connected wallet and are not reported. For contracts: TypeChain fact
 (`Token__factory.connect(address, runner)`, also when the generated file is missing), `contract.connect(signer)` /
 `attach(address)`, contracts typed as parameters (`token: Contract`), and ABIs imported from JSON files (also a Hardhat
 artifact's `abi`), read to tell a view from a transaction. Calls to Solana's public clusters (`api.mainnet-beta.solana.com`,
-`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`. Clients handed down by an app's own
-React context, injected client factories and wagmi configs built by other libraries are
-[#98](https://github.com/okapi-hq/api-grep/issues/98).
+`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`.
+
+Since [#98](https://github.com/okapi-hq/api-grep/issues/98), for any SDK client: a client handed down by the app's
+own React context (`useContext(RpcContext)`, also through the app's own hook, reads the `value` of its
+`<RpcContext.Provider>` elements: one host when they agree), a value memoized with `useMemo`, a client held in a
+context object given as an untyped parameter (`settle(ctx)` then `ctx.provider.getBalance(...)`: the callers' object),
+and a factory a constructor is handed (`constructor(private getProvider: (chainId) => Provider)`, then
+`this.getProvider(id)`: what the functions passed by the class's `new` expressions return, often a cache). wagmi
+configs memoized in a component, ConnectKit's `getDefaultConfig` (its transports, else wagmi's default HTTP ones) and a
+config picked at build time (`isTest ? testConfig : appConfig`) are read too. In Python, a client kept in a module's
+dict that a helper fills (`_clients[chain_id] = Web3(...)`) goes to one host only when every cached client agrees.
 
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
