@@ -3,6 +3,7 @@ import { memberChain, unwrap } from "../ast/expr.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
 import { cachedEndpoint } from "./rpc-cache.js";
+import { componentEndpoint, configEndpoint, optionValues } from "./rpc-config.js";
 import { urlOrNetwork, vendorEndpoint } from "./rpc-vendor.js";
 import {
   argsOf,
@@ -54,13 +55,14 @@ export function fromRpcClient(name: string, args: Expression[], reg: RegistryEnt
   if (source.vendor) return vendorEndpoint(source.vendor, args);
   if (source.urlOrNetwork) return urlOrNetwork(at(args, source.url));
   if (!source.transport) return { url: at(args, source.url), headers: at(args, source.headers) };
-  const given = at(args, source.transport);
-  if (!given) return null;
+  const given = optionValues(args, source.transport, !!source.deep);
+  if (given.length === 0) return source.defaultHttp ? {} : null;
   const transports = spec.transports ?? {};
   const nonHttp = new Set(spec.nonHttp);
   const names: Record<string, EndpointSource> = { ...transports, ...Object.fromEntries([...nonHttp].map((n) => [n, {}])) };
   const found = new Set<Construction>();
-  transportsIn(given, names, found, { left: MAX_VISITS }, 0);
+  const budget = { left: MAX_VISITS, deep: source.deep };
+  for (const g of given) transportsIn(g, names, found, budget, 0);
   const all = [...found];
   if (all.some((c) => nonHttp.has(calledName(c) ?? ""))) return null;
   if (all.length === 1) return fromTransport(all[0]!, transports);
@@ -86,7 +88,8 @@ function projectRpcEndpoint(project: Project, reg: RegistryEntry): Endpoint | nu
     const nodes: Construction[] = [...sf.getDescendantsOfKind(SyntaxKind.NewExpression), ...sf.getDescendantsOfKind(SyntaxKind.CallExpression)];
     for (const c of nodes) {
       const name = calledName(c) ?? "";
-      const client = Object.hasOwn(spec.clients, name);
+      // a config's client (`usePublicClient()`) is no client of its own
+      const client = Object.hasOwn(spec.clients, name) && spec.clients[name]!.config === undefined && !spec.clients[name]!.component;
       if ((!client && !nonHttp.includes(name)) || !ofClients(describeCallee(c).package)) continue;
       const endpoint = client ? fromRpcClient(name, argsOf(c), reg) : null;
       if (!endpoint) return null;
@@ -136,17 +139,23 @@ function clientTyped(node: Construction, reg: RegistryEntry): boolean {
 /** The endpoint of a JSON-RPC client call, null when it is not an HTTP request of the app (see above). */
 export function rpcEndpoint(node: Construction, reg: RegistryEntry, spec: MethodSpec, callee: Callee, args: Expression[], given?: Expression): Endpoint | null {
   const clients = reg.endpoint!.clients;
+  // a config's client (wagmi's `usePublicClient()`) or a context's (`useConnection()`) sends through that config or provider (#85)
+  const built = (name: string, a: Expression[]): Endpoint | null => {
+    const source = Object.hasOwn(clients, name) ? clients[name]! : undefined;
+    if (source?.component) return componentEndpoint(node.getProject(), source.component, reg);
+    return source?.config !== undefined ? configEndpoint(node, source, a, reg) : fromRpcClient(name, a, reg);
+  };
   const client = given ?? (spec.clientArg !== undefined ? at(args, spec.clientArg) : undefined);
   if (client) {
     const c = constructionOf(client, reg);
-    return c ? fromRpcClient(calledName(c) ?? "", argsOf(c), reg) : cachedProjectEndpoint(node.getProject(), reg);
+    return c ? built(calledName(c) ?? "", argsOf(c)) : cachedProjectEndpoint(node.getProject(), reg);
   }
   // a client from a cache (#85): every value it may hold; none read as a guess
   if (callee.cached) return cachedEndpoint(callee.cached, reg) ?? null;
   for (const inst of [callee.instance, callee.rootInstance]) {
     // a default import (`import Web3 from "web3"`) has an empty chain
     const ctor = inst ? (inst.chain.at(-1) ?? "default") : undefined;
-    if (inst && ctor !== undefined && Object.hasOwn(clients, ctor)) return fromRpcClient(ctor, inst.args, reg);
+    if (inst && ctor !== undefined && Object.hasOwn(clients, ctor)) return built(ctor, inst.args);
   }
   if (callee.instance || !clientTyped(node, reg)) return null;
   return cachedProjectEndpoint(node.getProject(), reg);

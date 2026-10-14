@@ -1498,6 +1498,8 @@ exports[`regression fixtures > rpc-clients/cached 1`] = `
   "archive.ts:17 archive.example-node.io POST /rpc eth_getBalance",
   "chains.ts:19 unknown POST / eth_call",
   "chains.ts:24 unknown POST / eth_blockNumber",
+  "context.ts:7 jobs.example-node.io POST /rpc eth_gasPrice",
+  "context.ts:11 jobs.example-node.io POST /rpc eth_getBlockByNumber",
   "proxied.ts:21 unknown POST / eth_call",
 ]
 `;
@@ -1532,8 +1534,8 @@ exports[`regression fixtures > rpc-clients/solana 1`] = `
 
 exports[`regression fixtures > rpc-clients/solana-cluster 1`] = `
 [
-  "faucet.ts:6 api.devnet.solana.com POST / requestAirdrop",
-  "faucet.ts:10 api.mainnet-beta.solana.com POST / getMinimumBalanceForRentExemption",
+  "faucet.ts:6 solana-public-rpc POST / requestAirdrop",
+  "faucet.ts:10 solana-public-rpc POST / getMinimumBalanceForRentExemption",
 ]
 `;
 
@@ -1552,6 +1554,35 @@ exports[`regression fixtures > rpc-clients/viem 1`] = `
   "chain.ts:22 unknown POST / eth_gasPrice",
   "chain.ts:26 eth.example-node.io POST /v1/demo eth_chainId",
   "chain.ts:30 eth.example-node.io POST /v1/demo eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi 1`] = `
+[
+  "vault.tsx:12 eth.example-node.io POST /v1 eth_call",
+  "vault.tsx:13 eth.example-node.io POST /v1 eth_getBalance",
+  "vault.tsx:16 eth.example-node.io POST /v1 eth_getTransactionReceipt",
+  "vault.tsx:20 eth.example-node.io POST /v1 eth_getLogs",
+  "vault.tsx:26 eth.example-node.io POST /v1 eth_call",
+  "vault.tsx:30 eth.example-node.io POST /v1 eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
+[
+  "prices.ts:6 unknown POST / eth_blockNumber",
+  "prices.ts:7 unknown POST / eth_gasPrice",
+  "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-wallet 1`] = `[]`;
+
+exports[`regression fixtures > rpc-clients/wallet-adapter 1`] = `
+[
+  "wallet-panel.tsx:11 solana.example-node.io POST /rpc getBalance",
+  "wallet-panel.tsx:17 solana.example-node.io POST /rpc getSignatureStatuses",
+  "wallet-panel.tsx:24 solana.example-node.io POST /rpc getSlot",
 ]
 `;
 

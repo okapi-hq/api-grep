@@ -185,13 +185,38 @@ export interface VendorSource {
   path: string;
 }
 
+/** How a client construction gives its endpoint, beside the URL and headers of `EndpointSource`. */
+export interface ClientSource {
+  /** Where it takes its transports (`0.transport`; `|` separates places tried in turn). */
+  transport?: string;
+  /**
+   * The transports are read through the options as code builds them (wagmi's `createConfig`, #85): object literals
+   * (one transport per chain), functions returning a client (`client({ chain })`), spreads and reassigned variables.
+   */
+  deep?: boolean;
+  /** No transport given means the library's default HTTP one, to a URL the code does not say (RainbowKit). */
+  defaultHttp?: boolean;
+  /**
+   * The client is the one of a config (wagmi's `usePublicClient({ config })`, #85): where the config is given, the
+   * project's one config otherwise.
+   */
+  config?: string;
+  /**
+   * The client is handed down by a React context whose provider component builds it from its props (`useConnection()`
+   * under `<ConnectionProvider endpoint={url}>`, #85): the component, and the props holding the URL and headers.
+   */
+  component?: { name: string; url: string; headers?: string };
+  vendor?: VendorSource;
+  urlOrNetwork?: boolean;
+}
+
 /**
  * GraphQL clients (#54) talk to whatever URL the code gives them. `clients` are their constructors and factories
  * (`new ApolloClient({ uri })`), with the option holding a transport built apart (`link`); `transports` are the
  * constructors of those (`new HttpLink({ uri })`). Python writes the positions as `kw:url|0`.
  */
 export interface EndpointSpec {
-  clients: Record<string, EndpointSource & { transport?: string; vendor?: VendorSource; urlOrNetwork?: boolean }>;
+  clients: Record<string, EndpointSource & ClientSource>;
   transports?: Record<string, EndpointSource>;
   /**
    * JSON-RPC clients (#52) also talk to browser wallets and sockets: with this list, a call is reported only when its

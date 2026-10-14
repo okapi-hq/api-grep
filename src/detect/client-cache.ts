@@ -123,7 +123,7 @@ function localFunction(c: CallExpression): FunctionLike | undefined {
   return undefined;
 }
 
-function returnsOf(fn: FunctionLike): Expression[] {
+export function returnsOf(fn: FunctionLike): Expression[] {
   const body = fn.getBody?.();
   if (!body) return [];
   if (Node.isExpression(body)) return [body];
@@ -206,6 +206,28 @@ export function cachedClients(e: Expression): ClientValues | undefined {
   if (!values || values.length === 0) return undefined;
   // the same construction reached twice is one candidate
   return { values: [...new Set(values)], keyed: w.keyed };
+}
+
+/**
+ * What options built in code may hold (wagmi's `createConfig`, #85), for walks that look for transports: an object
+ * literal's values (one per chain) and methods' returns, a function's returns, a spread, a variable reassigned after
+ * its declaration (`rpcs = [http(a), ...rpcs]`). Undefined for anything else.
+ */
+export function innerValues(u: Node): Expression[] | undefined {
+  if (Node.isObjectLiteralExpression(u)) {
+    return u.getProperties().flatMap((p) => {
+      if (Node.isPropertyAssignment(p)) return [p.getInitializer()!];
+      if (Node.isShorthandPropertyAssignment(p)) return [p.getNameNode()];
+      if (Node.isSpreadAssignment(p)) return [p.getExpression()];
+      return Node.isMethodDeclaration(p) ? returnsOf(p) : [];
+    });
+  }
+  if (Node.isArrowFunction(u) || Node.isFunctionExpression(u)) return returnsOf(u);
+  if (Node.isSpreadElement(u)) return [u.getExpression()];
+  const decl = Node.isIdentifier(u) ? variableOf(u) : undefined;
+  const assigned = decl ? assignedValues(decl) : [];
+  const init = decl?.getInitializer();
+  return assigned.length > 0 ? [...(init ? [init] : []), ...assigned] : undefined;
 }
 
 /**

@@ -3,6 +3,7 @@ import { memberChain, unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp } from "../ast/object.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
+import { innerValues } from "./client-cache.js";
 import { fetchEndpoint } from "./fetch-endpoint.js";
 
 /**
@@ -59,10 +60,18 @@ export function valueOf(e: Expression): Expression | undefined {
   return undefined;
 }
 
-/** Transport constructions reachable from a client option: through variables, arrays, `from([...])`, `a.concat(b)`, `split(...)`. */
-export function transportsIn(e: Expression, names: Record<string, EndpointSource>, out: Set<Construction>, budget: { left: number }, depth: number): void {
+/**
+ * Transport constructions reachable from a client option: through variables, arrays, `from([...])`, `a.concat(b)`,
+ * `split(...)`; with `deep`, also through object literals, functions, spreads and reassigned variables (#85).
+ */
+export function transportsIn(e: Expression, names: Record<string, EndpointSource>, out: Set<Construction>, budget: { left: number; deep?: boolean }, depth: number): void {
   if (--budget.left < 0 || depth > MAX_DEPTH) return;
   const u = unwrap(e);
+  const inner = budget.deep ? innerValues(u) : undefined;
+  if (inner) {
+    for (const v of inner) transportsIn(v, names, out, budget, depth + 1);
+    return;
+  }
   if (Node.isIdentifier(u)) {
     const value = valueOf(u);
     if (value) transportsIn(value, names, out, budget, depth + 1);

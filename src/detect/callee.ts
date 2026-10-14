@@ -184,6 +184,10 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
       const c = calleeFromChain(merged, depth + 1);
       return c.viaType ? typeFallback(mc, 0) : c;
     }
+    // `const ctx = { provider: new JsonRpcProvider(url) }`: a client held in a context object (#85)
+    const held = Node.isObjectLiteralExpression(u) && chain.length > 1 ? constructed(getProp(u, chain[0]!)) : undefined;
+    const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
+    if (c?.package) return c;
   }
   const typed = typeFallback(mc, 0, decl);
   return typed.package || !Node.isBindingElement(decl) ? typed : (destructuredCallee(decl, chain, depth) ?? typed);

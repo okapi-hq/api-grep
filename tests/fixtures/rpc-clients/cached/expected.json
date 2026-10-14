@@ -4,6 +4,8 @@
     {"file": "archive.ts", "line": 17, "provider": "archive.example-node.io", "operation": "eth_getBalance"},
     {"file": "chains.ts", "line": 19, "provider": "unknown", "operation": "eth_call"},
     {"file": "chains.ts", "line": 24, "provider": "unknown", "operation": "eth_blockNumber"},
+    {"file": "context.ts", "line": 7, "provider": "jobs.example-node.io", "operation": "eth_gasPrice"},
+    {"file": "context.ts", "line": 11, "provider": "jobs.example-node.io", "operation": "eth_getBlockByNumber"},
     {"file": "proxied.ts", "line": 21, "provider": "unknown", "operation": "eth_call"}
   ]
 }
