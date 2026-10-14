@@ -19,7 +19,7 @@ read files outside the scanned directory or open connections. For `api-grep serv
 its temporary directory, brings a link or leaves files behind, a request that gets past the token, or a child process
 that outlives its request. The
 protections in place are
-listed in the README's [Scanning untrusted code](README.md#scanning-untrusted-code) section and
+listed in [docs/security-model.md](docs/security-model.md#scanning-untrusted-code) and
 tested in [`tests/e2e/security.e2e.test.ts`](tests/e2e/security.e2e.test.ts).
 
 ## Dependencies

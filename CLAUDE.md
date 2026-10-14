@@ -1,8 +1,11 @@
 # CLAUDE.md
 
-Guidance for AI agents working in this repository. Human-facing docs: [README.md](README.md),
-[CONTRIBUTING.md](CONTRIBUTING.md), [docs/languages.md](docs/languages.md) (architecture, per-language status, plan),
-[docs/sdk-support.md](docs/sdk-support.md) (generated SDK matrix).
+Guidance for AI agents working in this repository. Human-facing docs: [README.md](README.md) (short pitch, quick
+start, links: keep it short and put reference material in `docs/`), [CONTRIBUTING.md](CONTRIBUTING.md),
+[docs/detection.md](docs/detection.md) (clients and patterns per language, resolution rules, limitations),
+[docs/report.md](docs/report.md) (the report field by field), [docs/server.md](docs/server.md) (server, Docker),
+[docs/security-model.md](docs/security-model.md) (redaction, untrusted input), [docs/languages.md](docs/languages.md)
+(architecture, per-language status, plan), [docs/sdk-support.md](docs/sdk-support.md) (generated SDK matrix).
 
 ## What this is
 
@@ -17,7 +20,7 @@ Retrofit, Feign and the JVM SDK registries; `docs/languages.md`). It must stay s
 ```sh
 pnpm install
 pnpm dev scan <dir> [--json] [--language python,php]   # CLI from source
-pnpm dev serve [--port 8080]                           # HTTP server from source (README "HTTP server")
+pnpm dev serve [--port 8080]                           # HTTP server from source (docs/server.md)
 pnpm test                    # vitest: fixture snapshots, recall check, unit tests
 pnpm test:e2e                # builds dist/ and runs the CLI as a subprocess (incl. hostile-repository cases)
 pnpm vitest run -u           # update snapshots after an intended change, then review the diff

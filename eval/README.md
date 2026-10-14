@@ -1,7 +1,7 @@
 # Evaluation
 
 - `pnpm eval` scans the open-source repositories of [`repos.json`](repos.json) and writes
-  [`results.md`](results.md) (see the README, "Evaluation").
+  [`results.md`](results.md).
 - `pnpm eval:score` scores hand-labeled samples of those reports ([`label/README.md`](label/README.md)).
 - `pnpm eval:inventory` compares scans with a reference inventory of call sites and prints the totals of the four
   checks of [#114](https://github.com/okapi-hq/api-grep/issues/114). It is meant for repositories that cannot be
