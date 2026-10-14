@@ -101,6 +101,11 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
     if (t) st.fn.cls.fieldTypes.set(attr, t);
     return;
   }
+  const obj = left.type === "attribute" && !augmented ? field(left, "object") : undefined;
+  if (obj?.type === "identifier" && obj.text !== st.receiver) {
+    (st.fn.attrSets ??= []).push({ target: obj.text, name: field(left, "attribute")!.text, value, offset: n.endIndex });
+    return;
+  }
   if ((left.type === "pattern_list" || left.type === "tuple_pattern") && value.k === "list") {
     named(left).forEach((t, i) => {
       if (t.type === "identifier" && value.items[i]) st.fn.assigns.push({ target: t.text, value: value.items[i], offset: n.endIndex });

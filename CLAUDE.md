@@ -104,7 +104,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `MethodSpec`: `record:<id>` params and the body read from the properties set on it, `withId` for `save()` as a
   `PUT`), candidate `paths` picked by the ids given (`src/resolve/sdk-template.ts`), `keyAliases`
   (`admin.rest.resources.`), dotted `bodyWrap`; Hydrogen's cart (`document`: a document the library writes); Relay
-  `useQueryLoader` and fragment hooks (`sendsThrough`, `refetchQuery`, `src/resolve/relay-refetch.ts`). JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  `useQueryLoader` and fragment hooks (`sendsThrough`, `refetchQuery`, `src/resolve/relay-refetch.ts`). #102: records
+  read with `find` (`recordFrom`, `RawCall.record.found`), Python record attributes (`FunctionDef.attrSets`,
+  `src/lang/ir/record.ts`), `loadQuery` variables (`sendsThrough.bodyArg`, `src/detect/sender.ts`,
+  `RawCall.bodyAlternatives`), `optionalId` (`article.tags`), `<factory>#<method>` keys for what a factory returns,
+  Hydrogen 2026.10 (React Router context reads in `builtHere`). JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP

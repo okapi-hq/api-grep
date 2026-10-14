@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/102",
+  "calls": [
+    {"file": "delivery.tsx", "line": 9, "provider": "shopify", "operation": "cartDeliveryAddressesAdd"},
+    {"file": "delivery.tsx", "line": 11, "provider": "shopify", "operation": "cartDeliveryAddressesUpdate"},
+    {"file": "delivery.tsx", "line": 13, "provider": "shopify", "operation": "cartDeliveryAddressesRemove"},
+    {"file": "delivery.tsx", "line": 15, "provider": "shopify", "operation": "cartDeliveryAddressesReplace"},
+    {"file": "delivery.tsx", "line": 17, "provider": "shopify", "operation": "cartGiftCardCodesAdd"},
+    {"file": "delivery.tsx", "line": 19, "provider": "shopify", "operation": "cartGiftCardCodesRemove"}
+  ]
+}
