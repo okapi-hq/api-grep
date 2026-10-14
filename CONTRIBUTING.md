@@ -124,7 +124,10 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    (`order.list`) out of the manifest fallback for untyped parameters (#83). #92 adds `paths` (other paths the
    library picks by the ids it is given), `record` (a method of a record built with `new`, key `<Class>#<method>`:
    `record:<name>` params, `body`, `withId`), `keyAliases`, a dotted `bodyWrap`, `document` (a document the library
-   writes itself), `refetchQuery` and `sendsThrough` (Relay's fragment hooks). A JSON-RPC client library is the same
+   writes itself), `refetchQuery` and `sendsThrough` (Relay's fragment hooks). #102 adds `recordFrom` (class
+   methods that read one record, `find`), `sendsThrough.bodyArg` (the body is that argument of the returned function's
+   calls), `optionalId` (an optional leading id the library tells from the options by their kind) and keys
+   `<factory>#<method>` for a method of what a factory returns (`createCartServerHandlers#get`). A JSON-RPC client library is the same
    under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in

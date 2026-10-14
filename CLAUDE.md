@@ -55,7 +55,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `requests.json`: Apache HttpClient, JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`), detectors over the IR
   driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
-  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
+  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds, `optional` when an interceptor
+  adds them on some requests only, `ir/conditional.ts`), and the JVM SDK registries
   (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
   language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`; Lombok `@Builder` classes and
   getters of the project in `src/lang/jvm/lombok.ts`). Clients a DI container provides (#46: Dagger / Hilt, Spring,
@@ -106,7 +107,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `MethodSpec`: `record:<id>` params and the body read from the properties set on it, `withId` for `save()` as a
   `PUT`), candidate `paths` picked by the ids given (`src/resolve/sdk-template.ts`), `keyAliases`
   (`admin.rest.resources.`), dotted `bodyWrap`; Hydrogen's cart (`document`: a document the library writes); Relay
-  `useQueryLoader` and fragment hooks (`sendsThrough`, `refetchQuery`, `src/resolve/relay-refetch.ts`). JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  `useQueryLoader` and fragment hooks (`sendsThrough`, `refetchQuery`, `src/resolve/relay-refetch.ts`). #102: records
+  read with `find` (`recordFrom`, `RawCall.record.found`), Python record attributes (`FunctionDef.attrSets`,
+  `src/lang/ir/record.ts`), `loadQuery` variables (`sendsThrough.bodyArg`, `src/detect/sender.ts`,
+  `RawCall.bodyAlternatives`), `optionalId` (`article.tags`), `<factory>#<method>` keys for what a factory returns,
+  Hydrogen 2026.10 (React Router context reads in `builtHere`). JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
@@ -118,7 +123,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   from a cache a helper fills (`src/detect/client-cache.ts`, `rpc-cache.ts`, `Callee.cached`: one endpoint only when
   every cached client agrees), a context object or provider (`useConnection()`, `endpoint.clients.*.component`), wagmi
   configs (`wagmi.json`, `src/detect/rpc-config.ts`: `config`, `deep` transports), TypeChain factories
-  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`).
+  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`). #98, for
+  every SDK: the app's React contexts (`react-context.ts`) and `useMemo` (`src/ast/react.ts`) read by `held.ts` in
+  `callee.ts`, context objects given as untyped parameters (`Receiver.held`), factories a constructor is handed
+  (`injected-fn.ts`), ConnectKit configs (`innerConfig` in `rpc-config.ts`); Python dict caches (`src/lang/ir/cache.ts`,
+  `Seg.cache`).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

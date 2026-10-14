@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "rates.tsx", "line": 8, "provider": "unknown", "operation": "eth_call"},
+    {"file": "rates.tsx", "line": 13, "provider": "unknown", "operation": "eth_getBalance"}
+  ]
+}

@@ -163,11 +163,24 @@ export interface FunctionDef {
    */
   props?: { name: string; value: Expr; offset: number }[];
   /**
+   * Attributes set on a local variable (`product.title = t`, not `self.x`), in order: what a record it holds is given
+   * one by one before it is saved (#102).
+   */
+  attrSets?: { target: string; name: string; value: Expr; offset: number }[];
+  /**
    * Loops over a collection (`for (Interceptor i : interceptors)`, `for (i in interceptors)`): the variable is each
    * element of `over` between `from` and `to` (the loop's offsets). Read where one element stands for all
    * (interceptors added in the loop), never as the variable's value.
    */
   loops?: { name: string; over: Expr; from: number; to: number }[];
+  /**
+   * `return` statements (Kotlin and Java), for the code after an early return that may not run (a header an
+   * interceptor sets after `if (x) return chain.proceed(request)`). `maybe`: one that runs on some paths only
+   * wherever it is (`x ?: return ...`).
+   */
+  exits?: { offset: number; maybe?: boolean }[];
+  /** A lambda run on some paths only (`token?.let { ... }`), for what its parent sets in it each time (`conditional.ts`). */
+  sometimes?: boolean;
 }
 
 export interface ClassDef {

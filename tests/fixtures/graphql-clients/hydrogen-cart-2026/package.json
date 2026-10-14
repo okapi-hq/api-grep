@@ -1,0 +1,8 @@
+{
+  "name": "example-tea-delivery",
+  "private": true,
+  "dependencies": {
+    "@shopify/hydrogen": "2026.4.7",
+    "react-router": "7.9.2"
+  }
+}

@@ -1,11 +1,14 @@
-import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
-import { isFunctionLike, type FunctionLike } from "../ast/function.js";
+import { isFunctionLike, nestedReturnsOf, returnsOf, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
+import { memoValue } from "../ast/react.js";
 import type { Callee, InstanceInfo } from "../types.js";
-import { cacheRead, cachedClients, returnsOf } from "./client-cache.js";
+import { cacheRead, cachedClients } from "./client-cache.js";
+import { heldValue, hookValues, namedValue } from "./held.js";
+import { injectedFunctions } from "./injected-fn.js";
 import { annotatedPackage } from "./type-annotation.js";
 import { typechainContract } from "./typechain.js";
 
@@ -74,13 +77,16 @@ function calleeFromChain(mc: Chain, depth: number): Callee {
   return typeFallback(mc, 0);
 }
 
-/** The call or construction an expression is, or the one a local variable it names was initialized with. */
+/**
+ * The call or construction an expression is, or the one a local variable it names was initialized with; a memoized
+ * value (`useMemo(() => new Client(url), deps)`) is the value itself.
+ */
 function constructed(expr: Expression | undefined): CallExpression | NewExpression | undefined {
   let u = expr ? unwrap(expr) : undefined;
   if (u && Node.isIdentifier(u)) {
     const decl = declarationsOf(u)[0];
     const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
-    u = init ? unwrap(init) : undefined;
+    u = init ? unwrap(memoValue(init)) : undefined;
   }
   return u && (Node.isCallExpression(u) || Node.isNewExpression(u)) ? u : undefined;
 }
@@ -101,13 +107,14 @@ function calledFunction(inner: Callee): FunctionLike | undefined {
  */
 function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | undefined {
   const fn = depth <= MAX_DEPTH ? calledFunction(inner) : undefined;
-  const body = fn?.getBody?.();
-  if (!body) return undefined;
-  const returned = Node.isExpression(body) ? [body] : body.getDescendantsOfKind(SyntaxKind.ReturnStatement).flatMap((r) => r.getExpression() ?? []);
-  for (const expr of returned) {
+  if (!fn?.getBody?.()) return undefined;
+  for (const expr of nestedReturnsOf(fn)) {
     const u = constructed(expr);
+    // `return useContext(RpcContext)` in the app's own hook (#98)
+    const hook = u ? hookCallee(u, chain, depth + 1) : undefined;
+    if (hook?.package) return hook;
     // `let p = cache.get(k)`: a cache entry, read below
-    if (u && !(Node.isCallExpression(u) && cacheRead(u))) {
+    if (u && !hook && !(Node.isCallExpression(u) && cacheRead(u))) {
       const c = describeCallee(u, depth + 1);
       if (c.package || c.global) return { ...c, instance: instanceOf(u, c), chain };
       continue;
@@ -140,6 +147,8 @@ function fromCache(returned: Expression[], chain: string[], depth: number): Call
 function instanceCallee(init: CallExpression | NewExpression, chain: string[], depth: number): Callee {
   const typechain = typechainContract(init, chain);
   if (typechain) return typechain;
+  const handed = depth <= MAX_DEPTH ? (hookCallee(init, chain, depth) ?? injectedCallee(init, chain, depth)) : undefined;
+  if (handed) return handed;
   const inner = describeCallee(init, depth + 1);
   const viaFactory = factoryReturn(inner, chain, depth);
   if (viaFactory) return viaFactory;
@@ -157,6 +166,46 @@ function instanceCallee(init: CallExpression | NewExpression, chain: string[], d
     rootInstance: inner.rootInstance ?? inner.instance,
     chain,
   };
+}
+
+/** `useMemo(() => client, deps)` is the client; `useContext(Ctx)` the value of the app's `<Ctx.Provider value>` (#98). */
+function hookCallee(init: CallExpression | NewExpression, chain: string[], depth: number): Callee | undefined {
+  const values = Node.isCallExpression(init) ? hookValues(init) : undefined;
+  return values && values.length > 0 ? agreedCallee(values, chain, depth + 1) : undefined;
+}
+
+/** What `chain` calls on a value: a construction's member, else what the identifier it is names. */
+function valueCallee(value: Expression, chain: string[], depth: number): Callee {
+  const u = constructed(value);
+  if (u) return instanceCallee(u, chain, depth);
+  const id = namedValue(value);
+  return id ? calleeFromChain({ root: id, nodes: [id], chain }, depth) : { chain };
+}
+
+/** What `chain` calls on each value a hook hands out: one client, or several of one package kept for the endpoint. */
+function agreedCallee(values: Expression[], chain: string[], depth: number): Callee | undefined {
+  const held = values.map((v) => heldValue(v, chain));
+  const found = held.map((h) => valueCallee(h.value, h.chain, depth));
+  const first = found[0]!;
+  if (found.length === 1) return first;
+  if (!first.package || found.some((c) => c.package !== first.package)) return undefined;
+  const built = held.map((h) => constructed(h.value));
+  const distinct = [...new Set(built)];
+  if (distinct.some((b) => !b)) return undefined;
+  return distinct.length === 1 ? first : { ...first, cached: { values: distinct as (CallExpression | NewExpression)[], keyed: false } };
+}
+
+/** `this.getProvider(chainId)` where the constructor is handed the function (#98): what the functions passed return. */
+function injectedCallee(init: CallExpression | NewExpression, chain: string[], depth: number): Callee | undefined {
+  const fns = Node.isCallExpression(init) ? injectedFunctions(init) : undefined;
+  if (!fns) return undefined;
+  // a cache the functions fill: every client in it
+  const cached = fromCache([init], chain, depth);
+  if (cached) return cached;
+  const found = fns.map((fn) => factoryReturn({ localDecl: fn, chain: [] }, chain, depth));
+  const first = found[0];
+  const args = (c: Callee | undefined): string => (c?.instance?.args ?? []).map((a) => a.getText()).join(",");
+  return first?.package && found.every((c) => c?.package === first.package && args(c) === args(first)) ? first : undefined;
 }
 
 /** Initializer of a local; a parameter's default (`fetchImpl = fetch`) counts, since it is what runs unless overridden. */
@@ -255,6 +304,11 @@ function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
 export function calleeThrough(value: Expression, mc: Chain): Callee {
   const u = unwrap(value);
   if (Node.isCallExpression(u) || Node.isNewExpression(u)) return instanceCallee(u, mc.chain, 1);
+  // `run({ provider })`: the client the object holds (#98)
+  if (Node.isObjectLiteralExpression(u)) {
+    const held = heldValue(u, mc.chain);
+    return held.value !== u ? valueCallee(held.value, held.chain, 1) : { chain: mc.chain };
+  }
   const inner = memberChain(u);
   return calleeFromChain({ root: inner.root, nodes: [...inner.nodes, ...mc.nodes.slice(1)], chain: [...inner.chain, ...mc.chain] }, 1);
 }

@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/102",
+  "calls": [
+    {"file": "environment.js", "line": 4, "provider": "api.example-garden.dev"},
+    {"file": "Garden.tsx", "line": 23, "provider": "api.example-garden.dev", "operation": "PlotQuery"},
+    {"file": "Garden.tsx", "line": 31, "provider": "api.example-garden.dev", "operation": "SeedsQuery"},
+    {"file": "Garden.tsx", "line": 36, "provider": "api.example-garden.dev", "operation": "HarvestQuery"}
+  ]
+}

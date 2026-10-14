@@ -90,6 +90,15 @@ exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen-2026-10 1`] = `
+[
+  "routes.tsx:13 shopify POST /api/{version}/graphql.json TeaProduct",
+  "routes.tsx:14 shopify POST /api/{version}/graphql.json Cart",
+  "routes.tsx:20 shopify POST /api/{version}/graphql.json Cart",
+  "storefront.ts:18 shopify POST /api/{version}/graphql.json TeaShop",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
 [
   "cart.tsx:9 shopify POST /api/{version}/graphql.json cartLinesAdd",
@@ -98,6 +107,17 @@ exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
   "cart.tsx:15 shopify POST /api/{version}/graphql.json cartNoteUpdate",
   "cart.tsx:20 shopify POST /api/{version}/graphql.json CartQuery",
   "cart.tsx:24 shopify POST /api/{version}/graphql.json cartDiscountCodesUpdate",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/hydrogen-cart-2026 1`] = `
+[
+  "delivery.tsx:9 shopify POST /api/{version}/graphql.json cartDeliveryAddressesAdd",
+  "delivery.tsx:11 shopify POST /api/{version}/graphql.json cartDeliveryAddressesUpdate",
+  "delivery.tsx:13 shopify POST /api/{version}/graphql.json cartDeliveryAddressesRemove",
+  "delivery.tsx:15 shopify POST /api/{version}/graphql.json cartDeliveryAddressesReplace",
+  "delivery.tsx:17 shopify POST /api/{version}/graphql.json cartGiftCardCodesAdd",
+  "delivery.tsx:19 shopify POST /api/{version}/graphql.json cartGiftCardCodesRemove",
 ]
 `;
 
@@ -136,6 +156,15 @@ exports[`regression fixtures > graphql-clients/relay-fragments 1`] = `
   "Shelf.js:33 api.example-library.dev POST /graphql LoanListRefetchQuery",
   "Shelf.js:59 api.example-library.dev POST /graphql ShelfQuery",
   "Shelf.js:64 api.example-library.dev POST /graphql ShelfQuery",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-loader-variables 1`] = `
+[
+  "environment.js:4 api.example-garden.dev POST /graphql null",
+  "Garden.tsx:23 api.example-garden.dev POST /graphql PlotQuery",
+  "Garden.tsx:31 api.example-garden.dev POST /graphql SeedsQuery",
+  "Garden.tsx:36 api.example-garden.dev POST /graphql HarvestQuery",
 ]
 `;
 
@@ -399,6 +428,14 @@ exports[`regression fixtures > java/okhttp-auth 1`] = `
 [
   "Registry.java:25 registry.example.com GET /v2/_catalog",
   "Registry.java:33 registry.example.com GET /v2/{image}/tags/list",
+]
+`;
+
+exports[`regression fixtures > java/optional-headers 1`] = `
+[
+  "Atlas.java:68 atlas.example.com GET /tiles/{z}",
+  "Atlas.java:77 atlas.example.com GET /v1/places/{id}",
+  "Atlas.java:88 atlas.example.com GET /health",
 ]
 `;
 
@@ -759,6 +796,15 @@ exports[`regression fixtures > kotlin/okhttp-auth 1`] = `
 [
   "Registry.kt:17 registry.example.com GET /v2/{image}/tags/list",
   "Registry.kt:28 registry.example.com GET /v2/_catalog",
+]
+`;
+
+exports[`regression fixtures > kotlin/optional-headers 1`] = `
+[
+  "Atlas.kt:89 atlas.example.com GET /tiles/{z}",
+  "Atlas.kt:92 atlas.example.com GET /legends/{id}",
+  "Atlas.kt:96 atlas.example.com GET /places",
+  "Atlas.kt:98 atlas.example.com GET /labels",
 ]
 `;
 
@@ -1371,6 +1417,15 @@ exports[`regression fixtures > python/resolve/string-replace 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/rpc-cache 1`] = `
+[
+  "nodes.py:18 unknown POST / eth_getBlockByNumber",
+  "nodes.py:33 env:ARCHIVE_NODE_URL POST / eth_getBalance",
+  "nodes.py:49 unknown POST / getBalance",
+  "streams.py:23 local.example-node.io POST / eth_getCode",
+]
+`;
+
 exports[`regression fixtures > python/rpc-clients 1`] = `
 [
   "node.py:14 eth.example-node.io POST / eth_getBalance",
@@ -1434,6 +1489,20 @@ exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 [
   "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
   "orchard.py:35 unknown POST / harvest",
+]
+`;
+
+exports[`regression fixtures > python/shopify-record-attributes 1`] = `
+[
+  "kites.py:10 shopify POST /admin/api/{version}/products.json",
+  "kites.py:17 shopify POST /admin/api/{version}/products.json",
+  "kites.py:25 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:29 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:33 shopify PUT /admin/api/{version}/products/{id}.json",
+  "regions.py:5 shopify GET /admin/api/{version}/admin/countries/{country_id}/provinces.json",
+  "regions.py:9 shopify GET /admin/api/{version}/admin/countries/{country_id}/provinces/{id}.json",
+  "regions.py:11 shopify PUT /admin/api/{version}/admin/countries/{country_id}/provinces/{id}.json",
+  "regions.py:18 shopify POST /admin/api/{version}/admin/gift_cards/{gift_card_id}/adjustments.json",
 ]
 `;
 
@@ -1681,6 +1750,15 @@ exports[`regression fixtures > robustness/odd-body 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rpc-clients/app-context 1`] = `
+[
+  "archive.tsx:12 archive.example-node.io POST /rpc eth_getBlockByNumber",
+  "ledger.tsx:8 ledger.example-node.io POST /rpc eth_blockNumber",
+  "ledger.tsx:15 ledger.example-node.io POST /rpc eth_getBalance",
+  "regions.tsx:17 unknown POST / eth_gasPrice",
+]
+`;
+
 exports[`regression fixtures > rpc-clients/cached 1`] = `
 [
   "archive.ts:17 archive.example-node.io POST /rpc eth_getBalance",
@@ -1689,6 +1767,12 @@ exports[`regression fixtures > rpc-clients/cached 1`] = `
   "context.ts:7 jobs.example-node.io POST /rpc eth_gasPrice",
   "context.ts:11 jobs.example-node.io POST /rpc eth_getBlockByNumber",
   "proxied.ts:21 unknown POST / eth_call",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/context-param 1`] = `
+[
+  "jobs.js:7 jobs.example-node.io POST /rpc eth_getBalance",
 ]
 `;
 
@@ -1707,6 +1791,14 @@ exports[`regression fixtures > rpc-clients/ethers-helpers 1`] = `
   "node.ts:9 eth.example-node.io POST /rpc eth_blockNumber (wrapper:rpc)",
   "node.ts:11 eth.example-node.io POST /rpc net_peerCount (wrapper:rpc)",
   "node.ts:14 eth.example-node.io POST /rpc eth_getCode",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/injected-factory 1`] = `
+[
+  "services.ts:11 reader.example-node.io POST /rpc eth_call",
+  "services.ts:16 reader.example-node.io POST /rpc eth_blockNumber",
+  "services.ts:31 unknown POST / eth_getBlockByNumber",
 ]
 `;
 
@@ -1761,6 +1853,27 @@ exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
   "prices.ts:6 unknown POST / eth_blockNumber",
   "prices.ts:7 unknown POST / eth_gasPrice",
   "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-connectkit 1`] = `
+[
+  "reads.ts:5 eth.example-node.io POST /v1 eth_blockNumber",
+  "reads.ts:9 unknown POST / eth_gasPrice",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-context 1`] = `
+[
+  "rates.tsx:8 unknown POST / eth_call",
+  "rates.tsx:13 unknown POST / eth_getBalance",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-memo 1`] = `
+[
+  "pool.tsx:6 eth.example-node.io POST /v1 eth_call",
+  "pool.tsx:7 eth.example-node.io POST /v1 eth_blockNumber",
 ]
 `;
 
@@ -1973,6 +2086,12 @@ exports[`regression fixtures > sdk/posthog 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/react-context 1`] = `
+[
+  "assistant.tsx:15 anthropic POST /v1/messages",
+]
+`;
+
 exports[`regression fixtures > sdk/receiver/ambiguous 1`] = `[]`;
 
 exports[`regression fixtures > sdk/receiver/different-clients 1`] = `
@@ -2037,6 +2156,22 @@ exports[`regression fixtures > sdk/shopify-app-auth 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/shopify-found-records 1`] = `
+[
+  "app.kites.edit.tsx:6 shopify GET /admin/api/{version}/redirects/{id}.json",
+  "app.kites.edit.tsx:8 shopify PUT /admin/api/{version}/redirects/{id}.json",
+  "kites.ts:7 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.ts:11 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.ts:16 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.ts:17 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.ts:21 shopify GET /admin/api/{version}/variants/{id}.json",
+  "kites.ts:23 shopify PUT /admin/api/{version}/variants/{id}.json",
+  "kites.ts:27 shopify GET /admin/api/{version}/orders/{id}.json",
+  "kites.ts:28 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.ts:33 shopify GET /admin/api/{version}/products.json",
+]
+`;
+
 exports[`regression fixtures > sdk/shopify-node-bodies 1`] = `
 [
   "fulfillment.js:6 shopify POST /admin/api/2024-07/customers/{customer_id}/addresses.json",
@@ -2044,6 +2179,16 @@ exports[`regression fixtures > sdk/shopify-node-bodies 1`] = `
   "fulfillment.js:14 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/close.json",
   "fulfillment.js:18 shopify POST /admin/api/2024-07/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json",
   "fulfillment.js:22 shopify POST /admin/api/2024-07/gift_cards/{id}/disable.json",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-node-tags 1`] = `
+[
+  "tags.ts:11 shopify GET /admin/blogs/{blog_id}/articles/tags.json",
+  "tags.ts:15 shopify GET /admin/articles/tags.json",
+  "tags.ts:19 shopify GET /admin/articles/tags.json",
+  "tags.ts:23 shopify GET /admin/blogs/{blog_id}/articles/tags.json",
+  "tags.ts:27 shopify GET /admin/articles/tags.json",
 ]
 `;
 

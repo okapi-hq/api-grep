@@ -121,7 +121,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.13.0           # report format version; readers check the major
+schemaVersion: 1.16.0           # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -162,6 +162,7 @@ calls:                          # one entry per call, sorted by file, line, colu
     bodySource: literal         # literal | type | unknown | none: where the body shape came from
     clientParts:                # query parameters and headers the client adds, not the call (absent when none)
       - { where: header, name: authorization, from: interceptor }   # interceptor (OkHttp) | default (Ktor defaultRequest, Spring defaultHeader)
+      - { where: header, name: accept, from: interceptor, optional: true }   # added on some requests only (in a branch, after an early return)
     examples:                   # concrete requests with invented values
       - variant: minimal        # minimal | full | alt
         method: POST
@@ -273,9 +274,17 @@ through the connected wallet and are not reported. For contracts: TypeChain fact
 (`Token__factory.connect(address, runner)`, also when the generated file is missing), `contract.connect(signer)` /
 `attach(address)`, contracts typed as parameters (`token: Contract`), and ABIs imported from JSON files (also a Hardhat
 artifact's `abi`), read to tell a view from a transaction. Calls to Solana's public clusters (`api.mainnet-beta.solana.com`,
-`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`. Clients handed down by an app's own
-React context, injected client factories and wagmi configs built by other libraries are
-[#98](https://github.com/okapi-hq/api-grep/issues/98).
+`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`.
+
+Since [#98](https://github.com/okapi-hq/api-grep/issues/98), for any SDK client: a client handed down by the app's
+own React context (`useContext(RpcContext)`, also through the app's own hook, reads the `value` of its
+`<RpcContext.Provider>` elements: one host when they agree), a value memoized with `useMemo`, a client held in a
+context object given as an untyped parameter (`settle(ctx)` then `ctx.provider.getBalance(...)`: the callers' object),
+and a factory a constructor is handed (`constructor(private getProvider: (chainId) => Provider)`, then
+`this.getProvider(id)`: what the functions passed by the class's `new` expressions return, often a cache). wagmi
+configs memoized in a component, ConnectKit's `getDefaultConfig` (its transports, else wagmi's default HTTP ones) and a
+config picked at build time (`isTest ? testConfig : appConfig`) are read too. In Python, a client kept in a module's
+dict that a helper fills (`_clients[chain_id] = Web3(...)`) goes to one host only when every cached client agrees.
 
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
@@ -326,6 +335,15 @@ product_id })`, Python `Variant.find(product_id=p)`), `shopify-api-node` methods
 sends the `cartLinesAdd` mutation), Relay's `useQueryLoader(query)` and the refetch and pagination of fragments
 (`usePaginationFragment`, `useRefetchableFragment`: the query generated for the fragment's `@refetchable(queryName)`,
 read from its artifact when the scan has it), when the code keeps the function that sends.
+
+[#102](https://github.com/okapi-hq/api-grep/issues/102) completes them: a Shopify record read with `find`
+(`const product = await shopify.rest.Product.find({ session, id })`, then `product.title = t; await product.save()`)
+is a `PUT` of what the code sets to the id `find` was given; Python records get the attributes set one by one
+(`product.title = t`) in their body; `useQueryLoader` reports the variables its `loadQuery` is given in the component;
+`shopify-api-node`'s `article.tags(blogId?, params)` picks the blog's path or every article's from the arguments;
+ShopifyAPI's `Province` and `GiftCardAdjustment`; the delivery address and gift card methods of Hydrogen's cart
+handler (2025.4 to 2026.4); and Hydrogen 2026.10's storefront client (`client.graphql(query, { variables })`, also
+read from React Router's context), `getCart(...)` and `cartHandlers.get(...)`.
 
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
@@ -580,7 +598,7 @@ definitions and lookups (`single { ... }`, `singleOf(::Repo)`, `get()`, `by inje
 
 | client | patterns |
 |---|---|
-| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class, one wrapping another, lists of them built with `buildList` or `add`) on every call it makes |
+| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class, one wrapping another, lists of them built with `buildList` or `add`) on every call it makes, `optional` in `clientParts` when set in a branch or after an early return |
 | `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body, also in a helper the connection is passed to) |
 | Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, `submitForm(url, formParameters = parameters { ... })`, `FormDataContent`, `MultiPartFormDataContent(formData { ... })`, kotlinx `buildJsonObject { ... }` bodies; the client's `defaultRequest { url(...); header(...) }` and `install(Auth) { bearer { ... } }` |
 | Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity` or a `RequestEntity`, `UriComponentsBuilder` URLs, the headers of its interceptors), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl`, `defaultHeader`, `defaultHeaders { }` and filters of their builder; `BodyInserters.fromFormData(...)` |
@@ -751,7 +769,7 @@ A scanned repository is treated as hostile input:
   (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
-  `graphql-limit` (schema 1.16) is a call whose GraphQL document was read past a bound: the call is reported with
+  `graphql-limit` (schema 1.17) is a call whose GraphQL document was read past a bound: the call is reported with
   the `name` and `type` the document's header gives, without `operation.fields` (past `operations`, without a name),
   and `detail` names the bound: `document-size` (100,000 characters), `document-parts` (built from 1,000 parts),
   `tokens` (50,000 parser tokens), `depth` (selection sets 32 deep), `fragment-expansion` (20,000 selection sets
@@ -811,7 +829,7 @@ package. `--changed-since` scans have no coverage section.
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in `coverage.sdks` only;
   Spring AI calls through a shared interface in a project with two model starters and nothing selecting one are not
-  listed, rather than guessed ([docs/languages.md](docs/languages.md#kotlin)); a header an interceptor adds under a
+  listed, rather than guessed ([docs/languages.md](docs/languages.md#kotlin)); a client default header set under a
   condition is listed as always added. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.

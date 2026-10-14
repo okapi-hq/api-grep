@@ -1,0 +1,634 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`jvm: headers an interceptor adds on some requests only (#69) > marks them optional in Java (OkHttp, Spring and Apache interceptors) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-atlas-mode",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-device",
+          "optional": true,
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "z",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "image/png",
+            "authorization": "Bearer <token>",
+            "user-agent": "atlas-java",
+            "x-atlas-mode": "v1",
+            "x-device": "<x-device>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://atlas.example.com/tiles/758",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "image/png",
+        "authorization": null,
+        "user-agent": "atlas-java",
+        "x-atlas-mode": "v1",
+        "x-device": null,
+      },
+      "headers": [
+        "user-agent",
+        "accept",
+        "x-atlas-mode",
+        "authorization",
+        "x-device",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "b88909666a49",
+      "location": {
+        "col": 16,
+        "file": "Atlas.java",
+        "language": "java",
+        "line": 68,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/tiles/{z}",
+      "provider": "atlas.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/tiles/{z}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-atlas-client",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-atlas-region",
+          "optional": true,
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-atlas-client": "web",
+            "x-atlas-region": "eu",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://atlas.example.com/v1/places/54f7eeka",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-atlas-client": "web",
+        "x-atlas-region": "eu",
+      },
+      "headers": [
+        "x-atlas-client",
+        "x-atlas-region",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "48c67559ce90",
+      "location": {
+        "col": 16,
+        "file": "Atlas.java",
+        "language": "java",
+        "line": 77,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/places/{id}",
+      "provider": "atlas.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/v1/places/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "apache-httpclient",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-trace",
+          "optional": true,
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-trace": "on",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://atlas.example.com/health",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-trace": "on",
+      },
+      "headers": [
+        "x-trace",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "6f6bc461d3e6",
+      "location": {
+        "col": 9,
+        "file": "Atlas.java",
+        "language": "java",
+        "line": 88,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/health",
+      "provider": "atlas.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/health",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "java": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.17.0",
+  "stats": {
+    "byClient": {
+      "apache-httpclient": 1,
+      "okhttp": 1,
+      "spring-rest": 1,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "java": 3,
+    },
+    "byProvider": {
+      "atlas.example.com": 3,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`jvm: headers an interceptor adds on some requests only (#69) > marks them optional in Kotlin 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "referer",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-atlas-mode",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "trace",
+          "optional": true,
+          "where": "query",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "z",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "image/png",
+            "referer": "https://atlas.example.com/",
+            "user-agent": "atlas-android",
+            "x-atlas-mode": "v1",
+          },
+          "method": "GET",
+          "query": {
+            "trace": "1",
+          },
+          "url": "https://atlas.example.com/tiles/100?trace=1",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "image/png",
+        "referer": "https://atlas.example.com/",
+        "user-agent": "atlas-android",
+        "x-atlas-mode": "v1",
+      },
+      "headers": [
+        "user-agent",
+        "accept",
+        "referer",
+        "x-atlas-mode",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "63d8f03e7613",
+      "location": {
+        "col": 25,
+        "file": "Atlas.kt",
+        "language": "kotlin",
+        "line": 89,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/tiles/{z}",
+      "provider": "atlas.example.com",
+      "query": [
+        "trace",
+      ],
+      "queryShape": {
+        "properties": {
+          "trace": {
+            "enum": [
+              "1",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "trace",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/tiles/{z}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "referer",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-atlas-mode",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "trace",
+          "optional": true,
+          "where": "query",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "image/png",
+            "referer": "https://atlas.example.com/",
+            "user-agent": "atlas-android",
+            "x-atlas-mode": "v1",
+          },
+          "method": "GET",
+          "query": {
+            "trace": "1",
+          },
+          "url": "https://atlas.example.com/legends/4qlu9jix?trace=1",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "image/png",
+        "referer": "https://atlas.example.com/",
+        "user-agent": "atlas-android",
+        "x-atlas-mode": "v1",
+      },
+      "headers": [
+        "referer",
+        "user-agent",
+        "accept",
+        "x-atlas-mode",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "71e5e67c32e4",
+      "location": {
+        "col": 30,
+        "file": "Atlas.kt",
+        "language": "kotlin",
+        "line": 92,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/legends/{id}",
+      "provider": "atlas.example.com",
+      "query": [
+        "trace",
+      ],
+      "queryShape": {
+        "properties": {
+          "trace": {
+            "enum": [
+              "1",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "trace",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/legends/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-atlas-session",
+          "optional": true,
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "x-atlas-session": "<x-atlas-session>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://atlas.example.com/places",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "x-atlas-session": null,
+      },
+      "headers": [
+        "authorization",
+        "x-atlas-session",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "8e8a56234fda",
+      "location": {
+        "col": 20,
+        "file": "Atlas.kt",
+        "language": "kotlin",
+        "line": 96,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/places",
+      "provider": "atlas.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/places",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-atlas-locale",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-device",
+          "optional": true,
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-atlas-locale": "en-GB",
+            "x-device": "<x-device>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://atlas.example.com/labels",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-atlas-locale": "en-GB",
+        "x-device": null,
+      },
+      "headers": [
+        "x-atlas-locale",
+        "x-device",
+      ],
+      "host": "atlas.example.com",
+      "hostKind": "literal",
+      "id": "4463bed34390",
+      "location": {
+        "col": 20,
+        "file": "Atlas.kt",
+        "language": "kotlin",
+        "line": 98,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/labels",
+      "provider": "atlas.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://atlas.example.com/labels",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.17.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 4,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "kotlin": 4,
+    },
+    "byProvider": {
+      "atlas.example.com": 4,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

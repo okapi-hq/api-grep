@@ -15,6 +15,7 @@ import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
 import { resolvePairs } from "./pairs.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
+import { recordAttribute } from "./record.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
 import { shapeOf } from "./shape.js";
 import { deref } from "./values.js";
@@ -94,7 +95,8 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   if (!m2) return undefined;
   const target = m2[1] === "instance" ? before[before.length - 1] : m.method;
   const base = m2[1] === "kw" ? argOf(target, undefined, m2[2]) : argOf(target, Number(m2[2]), name);
-  if (m2[3]) return { expr: propOf(base, m2[3], ctx) };
+  // a record's id set on it after it is built (`product.id = pid`, #102)
+  if (m2[3]) return { expr: propOf(base, m2[3], ctx) ?? (m.spec.record && m2[1] === "instance" ? recordAttribute(m, m2[3], ctx) : undefined) };
   // a JVM path id given inside the params object (`retrieve(FileRetrieveParams.builder().fileId(id).build())`)
   return { expr: (m.entry.setters && m2[1] === "arg" ? propOf(base, name, ctx) : undefined) ?? base };
 }

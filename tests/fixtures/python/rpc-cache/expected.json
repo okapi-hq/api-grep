@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "nodes.py", "line": 18, "provider": "unknown", "operation": "eth_getBlockByNumber"},
+    {"file": "nodes.py", "line": 33, "provider": "env:ARCHIVE_NODE_URL", "operation": "eth_getBalance"},
+    {"file": "nodes.py", "line": 49, "provider": "unknown", "operation": "getBalance"},
+    {"file": "streams.py", "line": 23, "provider": "local.example-node.io", "operation": "eth_getCode"}
+  ]
+}
