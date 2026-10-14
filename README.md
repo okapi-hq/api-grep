@@ -499,10 +499,12 @@ docker run --rm -p 8080:8080 -e API_GREP_TOKEN=<16+ characters> ghcr.io/okapi-hq
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/okapi-hq/api-grep scan /repo --json
 ```
 
-Tags: `main` follows the main branch, `X.Y.Z` and `X.Y` are releases. The version an image reports is
-`<version>+<commit>` (`0.2.0+f71db3312345`), so every report names the exact code that wrote it; the same comes from
-`API_GREP_BUILD` outside Docker. `docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) .`
-builds it locally.
+Tags: `main` follows the main branch; `X.Y.Z`, `X.Y`, `X` and `latest` are releases. Releases are automatic: every
+push to main whose commits call for one (`fix:` a patch, `feat:` a minor, a breaking change a major) is tagged
+`vX.Y.Z`, released on GitHub with its notes, and published. The version an image reports is
+`<version>+<commit>` (`1.4.0+f71db3312345`), the latest release and the commit built, so every report names the exact
+code that wrote it; the same comes from `API_GREP_BUILD` outside Docker. A build from source reports
+`0.0.0-development`. `docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) .` builds it locally.
 
 ## What it detects
 
