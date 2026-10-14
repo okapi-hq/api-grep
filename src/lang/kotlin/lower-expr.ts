@@ -115,6 +115,9 @@ function lambdaState(fn: Expr, st: KtState): KtState {
   return plain ? st : { ...st, receiver: { ...st.receiver, implicit: false } };
 }
 
+/** `x?.let`: a member called with `?.`. */
+const safeCall = (callee: SyntaxNode): boolean => callee.type === "navigation_expression" && callee.children.some((c) => c?.type === "?.");
+
 /** A call; a trailing lambda is its last argument. Calls are recorded in the current function as they are met. */
 function lowerCall(n: SyntaxNode, st: KtState): Expr {
   let kids = named(n);
@@ -130,6 +133,8 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   if (lambda) args.push({ value: { k: "fnref", fn: lambda.fn } });
   const pos = posOf(n);
   if (lambda) applied(fn, args, pos, lambda.fn, st);
+  // `token?.let { ... }`: the lambda runs when the value is not null, a block that may not run (`ir/edits.ts`)
+  if (lambdaNode && safeCall(kids[0]!)) addBranch(st.fn, lambdaNode.startIndex, lambdaNode.endIndex);
   const value = special(fn, args, lambda, pos);
   if (value) return value;
   const targs = kids.find((c) => c.type === "type_arguments");
@@ -165,6 +170,9 @@ function lowerBinary(n: SyntaxNode, st: KtState): Expr {
   const right = lowerExpr(r, st);
   if (op === "+") return { k: "concat", parts: [...(left.k === "concat" ? left.parts : [left]), right] };
   // `u ?: continue`, `u ?: return`, `u ?: throw ...`: the right side leaves, so the value is the left one
+  // `x ?: return ...` returns on some paths only
+  const exit = op === "?:" && r.type === "return_expression" ? st.fn.exits?.find((x) => x.offset === r.startIndex) : undefined;
+  if (exit) exit.maybe = true;
   if (op === "?:") return leaves(r) ? left : { k: "or", left, right };
   return unknown(n);
 }
@@ -296,6 +304,7 @@ function lowerCompound(n: SyntaxNode, st: KtState): Expr {
       const label = field(n, "label");
       const value = named(n).find((c) => c.id !== label?.id);
       if (value) st.fn.returns.push(lowerExpr(value, st));
+      (st.fn.exits ??= []).push({ offset: n.startIndex });
       return unknown(n);
     }
     case "callable_reference": {

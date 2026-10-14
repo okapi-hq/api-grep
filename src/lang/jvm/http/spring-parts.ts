@@ -3,6 +3,7 @@ import type { ScopedCall } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
 import type { CallExpr, ClassDef, Expr, FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
+import { perRequestPairs } from "../../ir/conditional.js";
 import type { IrCtx, IrPair, IrRaw, Seg, Subst } from "../../ir/raw.js";
 import { applyStep, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
@@ -59,10 +60,10 @@ function onClientRequest(call: CallExpr): boolean {
   return false;
 }
 
+/** The headers a handler sets on the request, those set on some runs only optional (`conditional.ts`). */
 function handlerPairs(h: Handler): IrPair[] {
-  const parts = emptyParts();
-  for (const f of withClosures(h.fn)) readSteps(lambdaCalls(f).filter((c) => onHeaders(c.call) || (calleeIs(c.call, ["header"]) && onClientRequest(c.call))), HEADERS, parts);
-  return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(h.subst ? { subst: h.subst } : {}), ...(h.self ? { self: h.self } : {}) }));
+  const steps = withClosures(h.fn).flatMap((f) => lambdaCalls(f).filter((c) => onHeaders(c.call) || (calleeIs(c.call, ["header"]) && onClientRequest(c.call))));
+  return perRequestPairs(steps, HEADERS, { root: h.fn }).map((p) => ({ ...p, from: "interceptor", ...(h.subst ? { subst: h.subst } : {}), ...(h.self ? { self: h.self } : {}) }));
 }
 
 /** The headers of the interceptors (or filters) given as these values: each one, or the items of a list of them. */

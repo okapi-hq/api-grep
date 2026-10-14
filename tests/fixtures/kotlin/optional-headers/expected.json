@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/69",
+  "calls": [
+    {"file": "Atlas.kt", "line": 89, "provider": "atlas.example.com"},
+    {"file": "Atlas.kt", "line": 92, "provider": "atlas.example.com"},
+    {"file": "Atlas.kt", "line": 96, "provider": "atlas.example.com"},
+    {"file": "Atlas.kt", "line": 98, "provider": "atlas.example.com"}
+  ]
+}

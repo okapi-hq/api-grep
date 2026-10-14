@@ -402,6 +402,14 @@ exports[`regression fixtures > java/okhttp-auth 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/optional-headers 1`] = `
+[
+  "Atlas.java:68 atlas.example.com GET /tiles/{z}",
+  "Atlas.java:77 atlas.example.com GET /v1/places/{id}",
+  "Atlas.java:88 atlas.example.com GET /health",
+]
+`;
+
 exports[`regression fixtures > java/request-factories 1`] = `
 [
   "Catalog.java:24 api.example-catalog.com GET /{version}/items (wrapper:Catalog.request)",
@@ -759,6 +767,15 @@ exports[`regression fixtures > kotlin/okhttp-auth 1`] = `
 [
   "Registry.kt:17 registry.example.com GET /v2/{image}/tags/list",
   "Registry.kt:28 registry.example.com GET /v2/_catalog",
+]
+`;
+
+exports[`regression fixtures > kotlin/optional-headers 1`] = `
+[
+  "Atlas.kt:89 atlas.example.com GET /tiles/{z}",
+  "Atlas.kt:92 atlas.example.com GET /legends/{id}",
+  "Atlas.kt:96 atlas.example.com GET /places",
+  "Atlas.kt:98 atlas.example.com GET /labels",
 ]
 `;
 
