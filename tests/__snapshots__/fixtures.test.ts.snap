@@ -9515,7 +9515,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 52,
+    "filesSeen": 56,
     "languages": {
       "javascript": {
         "filesScanned": 0,
@@ -9523,7 +9523,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 48,
+        "filesSeen": 52,
       },
     },
     "skipped": [
@@ -9628,6 +9628,22 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "shopify-found-records/app.kites.edit.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-found-records/kites.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-found-records/local-models.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-found-records/shopify.server.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "shopify-node-bodies/fulfillment.js",
         "reason": "excluded",
       },
@@ -9705,7 +9721,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 44,
+      "excluded": 48,
     },
     "unfollowed": [],
   },

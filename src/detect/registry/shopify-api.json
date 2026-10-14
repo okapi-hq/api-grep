@@ -9,6 +9,7 @@
   "inlinePathLiterals": true,
   "instance": {"names": ["shopifyApi", "shopifyApp", "default"]},
   "keyAliases": {"admin.rest.resources.": "rest.", "api.rest.": "rest."},
+  "recordFrom": ["find"],
   "methods": {
     "admin.graphql": {"method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables"},
     "admin.rest.delete": {"method": "DELETE", "path": "/admin/api/{version}/{path}.json", "params": {"path": "arg:0.path"}},

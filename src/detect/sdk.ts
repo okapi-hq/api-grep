@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression, type VariableDeclaration } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { declarationsOf, getProp } from "../ast/object.js";
@@ -17,6 +17,10 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
     const instChain = callee.instance.chain.filter((n) => !ctorNames.has(n));
     // a method of a record built with `new` (`new shopify.rest.Product({ session }).save()`, #92)
     if (callee.instance.kind === "new" && instChain.length > 0 && callee.chain.length === 1) keys.add(`${instChain.join(".")}#${callee.chain[0]}`);
+    // a record read with `find` (`await shopify.rest.Product.find({ session, id })`, #102)
+    if (callee.instance.kind === "call" && instChain.length > 1 && callee.chain.length === 1 && reg.recordFrom?.includes(instChain.at(-1)!)) {
+      keys.add(`${instChain.slice(0, -1).join(".")}#${callee.chain[0]}`);
+    }
     const flat = [...instChain, ...callee.chain].join(".");
     if (flat) keys.add(flat);
   } else if (!callee.viaType) {
@@ -28,12 +32,20 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
   return [...keys];
 }
 
-/** The variable a record method is called on (`product` of `product.save()`), declared with the record's `new`. */
-function recordOf(node: CallExpression): VariableDeclaration | undefined {
+/**
+ * The variable a record method is called on (`product` of `product.save()`), declared with the record's `new` or read
+ * with one of `recordFrom` (`find`): then `found` is the options that read it (`{ session, id }`), whose ids it holds.
+ */
+function recordOf(node: CallExpression, reg: RegistryEntry): RawCall["record"] {
   const callee = unwrap(node.getExpression());
   const target = Node.isPropertyAccessExpression(callee) ? unwrap(callee.getExpression()) : undefined;
   const decl = target && Node.isIdentifier(target) ? declarationsOf(target)[0] : undefined;
-  return decl && Node.isVariableDeclaration(decl) ? decl : undefined;
+  if (!decl || !Node.isVariableDeclaration(decl)) return undefined;
+  const init = decl.getInitializer();
+  const read = init ? unwrap(init) : undefined;
+  const reader = read && Node.isCallExpression(read) ? unwrap(read.getExpression()) : undefined;
+  const found = reader && Node.isPropertyAccessExpression(reader) && reg.recordFrom?.includes(reader.getName()) ? (read as CallExpression).getArguments()[0] : undefined;
+  return { decl, ...(found ? { found: found as Expression } : {}) };
 }
 
 /** Base URL passed to the client's constructor (`createClient(url, key)`, `new OpenAI({ baseURL })`), also through builders. */
@@ -112,8 +124,8 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
-  const record = spec.record && Node.isCallExpression(node) ? recordOf(node) : undefined;
-  if (record) raw.record = { decl: record };
+  const record = spec.record && Node.isCallExpression(node) ? recordOf(node, reg) : undefined;
+  if (record) raw.record = record;
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;

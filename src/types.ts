@@ -79,8 +79,11 @@ export interface RawCall {
   modelExpr?: Expression;
   /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
   clientFrom?: "caller" | "manifest";
-  /** The variable holding the record a `record` method is called on, with the properties set on it before the call. */
-  record?: { decl: VariableDeclaration };
+  /**
+   * The variable holding the record a `record` method is called on, with the properties set on it before the call;
+   * `found`: the options of the `find` that read it (`{ session, id }`, #102).
+   */
+  record?: { decl: VariableDeclaration; found?: Expression };
 }
 
 export interface MethodSpec {
@@ -311,6 +314,11 @@ export interface RegistryEntry {
   contextClients?: string[];
   /** Key prefixes the code may write for the registry's (`admin.rest.resources.` for `rest.`, #92). */
   keyAliases?: Record<string, string>;
+  /**
+   * Class methods that read one record (`find`, #102): `const p = await shopify.rest.Product.find({ session, id })`
+   * then `p.save()` is the key `rest.Product#save`, the record holding the ids `find` was given.
+   */
+  recordFrom?: string[];
 }
 
 export interface FrameworkKeys {

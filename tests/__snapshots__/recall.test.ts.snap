@@ -1421,6 +1421,20 @@ exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/shopify-record-attributes 1`] = `
+[
+  "kites.py:10 shopify POST /admin/api/{version}/products.json",
+  "kites.py:17 shopify POST /admin/api/{version}/products.json",
+  "kites.py:25 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:29 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:33 shopify PUT /admin/api/{version}/products/{id}.json",
+  "regions.py:5 shopify GET /admin/api/{version}/admin/countries/{country_id}/provinces.json",
+  "regions.py:9 shopify GET /admin/api/{version}/admin/countries/{country_id}/provinces/{id}.json",
+  "regions.py:11 shopify PUT /admin/api/{version}/admin/countries/{country_id}/provinces/{id}.json",
+  "regions.py:18 shopify POST /admin/api/{version}/admin/gift_cards/{gift_card_id}/adjustments.json",
+]
+`;
+
 exports[`regression fixtures > python/shopify-records 1`] = `
 [
   "kites.py:8 shopify POST /admin/api/{version}/products.json",
@@ -2018,6 +2032,22 @@ exports[`regression fixtures > sdk/shopify-app-auth 1`] = `
   "sessions.js:10 shopify POST /admin/oauth/access_token",
   "sessions.js:15 shopify POST /admin/oauth/access_token",
   "sessions.js:25 shopify POST /admin/api/{version}/graphql.json null",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-found-records 1`] = `
+[
+  "app.kites.edit.tsx:6 shopify GET /admin/api/{version}/redirects/{id}.json",
+  "app.kites.edit.tsx:8 shopify PUT /admin/api/{version}/redirects/{id}.json",
+  "kites.ts:7 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.ts:11 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.ts:16 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.ts:17 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.ts:21 shopify GET /admin/api/{version}/variants/{id}.json",
+  "kites.ts:23 shopify PUT /admin/api/{version}/variants/{id}.json",
+  "kites.ts:27 shopify GET /admin/api/{version}/orders/{id}.json",
+  "kites.ts:28 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.ts:33 shopify GET /admin/api/{version}/products.json",
 ]
 `;
 
