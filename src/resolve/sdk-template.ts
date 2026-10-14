@@ -159,11 +159,38 @@ export function templatedUrl<E>(src: SdkSource<E>, pathT: string): UrlShape {
   return url;
 }
 
+/** Whether the call gives a value for the placeholder `name` through its `params` source. */
+function given<E>(src: SdkSource<E>, name: string): boolean {
+  const source = src.spec.params?.[name];
+  const value = source ? src.param(source, name) : undefined;
+  return value?.expr !== undefined || value?.parts !== undefined;
+}
+
+/**
+ * Of paths a library picks by the ids it is given (Shopify's REST resources, #92): the one most placeholders of which
+ * the call gives, all of those it maps through `params` given; the first when none is.
+ */
+function pickPath<E>(src: SdkSource<E>, candidates: string[]): string {
+  let best: { path: string; score: number } | undefined;
+  for (const path of candidates) {
+    const mapped = placeholderNames(path).filter((n) => src.spec.params?.[n] !== undefined);
+    if (mapped.every((n) => given(src, n)) && (!best || mapped.length > best.score)) best = { path, score: mapped.length };
+  }
+  return best?.path ?? candidates[0]!;
+}
+
+/** The method and path of a call: a record's request once its id is set (`withId`), the path the ids pick. */
+function chosenRoute<E>(src: SdkSource<E>): { method: string; pathT: string } {
+  const withId = src.spec.record?.withId;
+  if (withId && given(src, withId.key ?? "id")) return { method: withId.method, pathT: pickPath(src, [withId.path, ...(withId.paths ?? [])]) };
+  const byArg = src.spec.argPath;
+  const pathT = byArg && src.arg(byArg.arg) !== undefined ? byArg.path : src.spec.path;
+  return { method: src.spec.method, pathT: src.spec.paths ? pickPath(src, [pathT, ...src.spec.paths]) : pathT };
+}
+
 /** URL and method of an SDK call from its registry entry. */
 export function sdkTarget<E>(src: SdkSource<E>): { url: UrlShape; method: string } {
-  let method = src.spec.method;
-  const byArg = src.spec.argPath;
-  let pathT = byArg && src.arg(byArg.arg) !== undefined ? byArg.path : src.spec.path;
+  let { method, pathT } = chosenRoute(src);
   if (src.spec.routeArg !== undefined) {
     const arg = src.arg(src.spec.routeArg);
     const route = (arg !== undefined ? staticText(src.evaluate(arg)) : undefined) ?? "";

@@ -15,6 +15,7 @@ import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
 import { wrapShape } from "./resolve/shape-utils.js";
+import { withEdits } from "./resolve/edited-shape.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
@@ -111,6 +112,8 @@ function rpcOperation(sdk: RawCall["sdk"], ctx: EvalCtx): Operation | undefined 
   return rpcClientOperation(sdk.spec, arg ? shapeOf(arg, ctx).shape : undefined);
 }
 
+const empty = (): Shape => ({ type: "object", properties: {}, required: [] });
+
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -121,6 +124,11 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
   const body = resolveBody(raw.bodyExpr, raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
+  // a record sends the properties the code set on it (`product.title = t; product.save()`)
+  if (raw.record && raw.sdk?.spec.record?.body) {
+    body.shape = withEdits(empty(), raw.record.decl, raw.node, (e) => shapeOf(e, ctx), body.dynamic);
+    body.encoding = "json";
+  }
   body.shape = wrapShape(body.shape, raw.sdk?.spec.bodyWrap);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });

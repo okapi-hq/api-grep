@@ -1,5 +1,5 @@
 import type { ClientValues } from "./detect/client-cache.js";
-import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration } from "ts-morph";
+import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration, VariableDeclaration } from "ts-morph";
 
 /** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
 export type JsxOpeningLikeElement = JsxOpeningElement | JsxSelfClosingElement;
@@ -79,6 +79,8 @@ export interface RawCall {
   modelExpr?: Expression;
   /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
   clientFrom?: "caller" | "manifest";
+  /** The variable holding the record a `record` method is called on, with the properties set on it before the call. */
+  record?: { decl: VariableDeclaration };
 }
 
 export interface MethodSpec {
@@ -112,6 +114,13 @@ export interface MethodSpec {
    * `Product.find()` lists them.
    */
   argPath?: { arg: number; path: string };
+  /** Other paths the library picks by the ids it is given (#92): the one most placeholders of which have a value. */
+  paths?: string[];
+  /**
+   * Called on a record (`product.save()`, #92; key `<Class>#<method>`): `record:<name>` params read what the code sets
+   * on it (`product.id = 1`), `body` sends those properties; `withId` is the request once its `key` (`id`) is set.
+   */
+  record?: { body?: boolean; withId?: { method: string; path: string; paths?: string[]; key?: string } };
   /**
    * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
    * method is called on, `from(table)`), `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`) or
@@ -293,6 +302,8 @@ export interface RegistryEntry {
    * the context is the key `<name>.<method>` of this registry.
    */
   contextClients?: string[];
+  /** Key prefixes the code may write for the registry's (`admin.rest.resources.` for `rest.`, #92). */
+  keyAliases?: Record<string, string>;
 }
 
 export interface FrameworkKeys {

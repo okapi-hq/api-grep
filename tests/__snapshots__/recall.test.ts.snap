@@ -1935,6 +1935,16 @@ exports[`regression fixtures > sdk/shopify-app-auth 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/shopify-node-bodies 1`] = `
+[
+  "fulfillment.js:6 shopify POST /admin/api/2024-07/customers/{customer_id}/addresses.json",
+  "fulfillment.js:10 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/hold.json",
+  "fulfillment.js:14 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/close.json",
+  "fulfillment.js:18 shopify POST /admin/api/2024-07/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json",
+  "fulfillment.js:22 shopify POST /admin/api/2024-07/gift_cards/{id}/disable.json",
+]
+`;
+
 exports[`regression fixtures > sdk/shopify-rest 1`] = `
 [
   "admin.ts:9 shopify GET /admin/api/2024-07/orders.json",
@@ -1950,6 +1960,20 @@ exports[`regression fixtures > sdk/shopify-rest 1`] = `
   "legacy.js:20 shopify POST /admin/api/2024-07/orders/{id}/close.json",
   "legacy.js:25 shopify POST /admin/api/2024-07/customers.json",
   "legacy.js:33 shopify POST /admin/api/2024-07/customers.json (wrapper:newCustomer)",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-rest-records 1`] = `
+[
+  "app.kites.tsx:6 shopify GET /admin/api/{version}/products.json",
+  "app.kites.tsx:14 shopify POST /admin/api/{version}/redirects.json",
+  "kites.ts:10 shopify POST /admin/api/{version}/products.json",
+  "kites.ts:18 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.ts:25 shopify POST /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.ts:31 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.ts:37 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.ts:41 shopify GET /admin/api/{version}/products/{product_id}/metafields.json",
+  "kites.ts:45 shopify GET /admin/api/{version}/metafields.json",
 ]
 `;
 
