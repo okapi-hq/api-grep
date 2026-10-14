@@ -1,7 +1,7 @@
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { ScopedCall } from "../../ir/fluent.js";
-import type { CallExpr, ClassDef, Expr, FunctionDef } from "../../ir/model.js";
+import { dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
@@ -108,15 +108,21 @@ function copiedRequest(fc: FluentChain, spec: BuiltRequestClient, ctx: IrCtx): F
   return { start: base.start, steps: [...base.steps, ...fc.steps], ...(subst ? { subst } : {}) };
 }
 
-const FACTORIES = ["callFactory", "Call.Factory"];
+/** `callFactory(...)`, `Call.Factory { ... }`, ExoPlayer's `OkHttpDataSource.Factory { ... }`. */
+const factoryCall = (c: CallExpr): boolean => {
+  const last = c.fn.k === "attr" ? c.fn.name : (dottedPath(c.fn)?.pop() ?? "");
+  return last === "callFactory" || last.endsWith("Factory");
+};
 
 /**
  * A call factory (`callFactory { request -> client.get().newCall(request) }`, `Call.Factory { ... }`): it sends the
  * requests Retrofit or another library builds, read where they are declared, not a request of its own.
  */
-function forwards(fn: FunctionDef): boolean {
+function forwards(fn: FunctionDef, request: Scoped): boolean {
+  // the request is the one the factory is given (`request -> client.newCall(request)`)
+  const given = request.expr.k === "name" && fn.params.some((p) => request.expr.k === "name" && p.name === request.expr.name);
   const isFn = (a: { name?: string; value: Expr }): boolean => a.value.k === "fnref" && a.value.fn === fn;
-  return fn.name === "lambda" && !!fn.parent?.calls.some((c) => c.args.some((a) => isFn(a) && (a.name === "callFactory" || calleeIs(c, FACTORIES) !== undefined)));
+  return given && fn.name === "lambda" && !!fn.parent?.calls.some((c) => c.args.some((a) => isFn(a) && (a.name === "callFactory" || factoryCall(c))));
 }
 
 /**
@@ -127,7 +133,7 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   const send = chain.segs[chain.segs.length - 1];
   const index = send && send.call === call && Object.hasOwn(spec.sends, send.name) ? spec.sends[send.name] : undefined;
   const request = index !== undefined ? argAt({ call, fn }, index) : undefined;
-  if (!request || forwards(fn)) return undefined;
+  if (!request || forwards(fn, request)) return undefined;
   const fc = copiedRequest(fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx), spec, ctx);
   // `Request.Builder()` names its library; a bare `newBuilder()` (protobuf, gRPC descriptors) needs the client to
   const own = !!fc.start && calleeIs(fc.start.call, spec.starts.filter((s) => s.includes("."))) !== undefined;

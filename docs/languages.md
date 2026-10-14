@@ -460,7 +460,7 @@ original's URL, method and body;
   `object` or a companion object, a Java `static final`, also statically imported) is read in every client above, as
   a literal name is (`tests/fixtures/kotlin/const-names/`, `tests/fixtures/java/const-names/`).
 
-**Clients a DI container provides** (#46, `src/lang/jvm/di/`, the language's `injection`): a parameter or field
+**Clients a DI container provides** (#46 and #75, `src/lang/jvm/di/`, the language's `injection`): a parameter or field
 nothing in the code sets gets the value of the binding a container gives it, so a client injected by its type keeps
 its builder's base URL, interceptors and default headers.
 
@@ -485,6 +485,23 @@ its builder's base URL, interceptors and default headers.
   the call keeps its unknown parts (`tests/fixtures/kotlin/di-ambiguous/`).
 - A provider never injects its own parameters (`@Named("raw") client: OkHttpClient` in an `OkHttpClient` provider), and
   each parameter is resolved once per scan.
+- **Holders** (#75): an injection point typed `Lazy<T>` (Dagger), `Provider<T>` (JSR-330) or `ObjectProvider<T>`
+  (Spring) is read where its `get()` / `getObject()` is called: `client.get().newCall(...)` gets the binding of `T` its
+  qualifiers select. A Retrofit `callFactory { request -> client.get().newCall(request) }` (also `Call.Factory { ... }`)
+  is its client, as `.client(okHttp)` is, and the lambda forwarding the request is not a request of its own (nor one
+  given to another library's `*.Factory { ... }`).
+- **Collections** (#75, `collections.ts`): a Dagger or kotlin-inject `Set<T>` is the `@IntoSet` and `@ElementsIntoSet`
+  contributions of its qualifier, or the one provider of the whole set (both: unknown); a Spring `List<T>` / `Set<T>`
+  is every bean of `T`. Interceptors added from one (`apply { interceptors.forEach(::addInterceptor) }`,
+  `interceptors.forEach { builder.addInterceptor(it) }`, `additionalInterceptors(list)`) each apply
+  (`src/lang/jvm/elements.ts`). A contribution is never the binding of a single `T`.
+- **Other types** (#75, `locators.ts`): a Spring bean of a project class is also a bean of the classes and interfaces it
+  extends (`@Component class AuthInterceptor : ClientHttpRequestInterceptor` injected as the interface; two beans
+  implementing it, neither primary nor named like the point: unknown). Koin `single { ... } bind Api::class`,
+  `.bind<Api>()`, `.binds(arrayOf(...))` and `singleOf(::Impl) { named("x"); bind<Api>() }`; type qualifiers
+  (`named<Uploads>()`, `qualifier<T>()`).
+- **Injekt** (#75): `addSingletonFactory { ... }`, `addSingleton(x)`, `addFactory { ... }` in files importing
+  `uy.kohesive.injekt`, looked up by `injectLazy<T>()`, `Injekt.get<T>()` and `val x: T by injectLazy()`.
 
 **Builder steps in `apply { }`** (Kotlin, #46): `Request.Builder().apply { url(u); header(k, v) }.build()`,
 `builder.apply { ... }` on a variable, `OkHttpClient.Builder().apply { addInterceptor(i) }` and
@@ -543,10 +560,9 @@ file. A file that does not parse is then read once more with a `;` in place of t
 
 **Limitations:**
 
-- DI (#46): `Lazy<T>` / `Provider<T>` injection points (and a Retrofit `callFactory { lazyClient.get().newCall(it) }`),
-  multibindings (`@IntoSet`, `Set<Interceptor>`), Spring beans injected by an interface their class implements or as
-  a `List<T>`, Koin `bind` / `binds` and type qualifiers, and service locators other than Koin (Injekt) are not
-  followed (#75).
+- DI (#75): Spring `@ConfigurationProperties` values, interceptors added in a Java `for` loop or with a method
+  reference on a builder variable, a list handed to a project helper that adds them, Koin `getAll<T>()` and
+  `ObjectProvider<List<T>>` are not followed (#94).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - An extension function of a client type (`suspend fun S3Client.delete(...) { deleteObject(...) }`) has no receiver
   in the lowering: its calls on `this` are not found (#86).
