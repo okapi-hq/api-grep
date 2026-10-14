@@ -9,6 +9,8 @@ export class DiagnosticsCollector {
   readonly skipped: SkippedFile[] = [];
   readonly droppedCalls: DroppedCall[] = [];
   readonly unfollowed: UnfollowedCall[] = [];
+  /** `graphql-limit` entries already listed: a wrapper reaching one document twice from one place lists it once. */
+  private readonly limits = new Set<string>();
 
   constructor(private readonly onWarning?: (message: string) => void) {}
 
@@ -23,6 +25,11 @@ export class DiagnosticsCollector {
   }
 
   unfollow(entry: UnfollowedCall): void {
+    if (entry.reason === "graphql-limit") {
+      const key = `${entry.file}:${entry.line}:${entry.detail}`;
+      if (this.limits.has(key)) return;
+      this.limits.add(key);
+    }
     this.unfollowed.push(entry);
   }
 
@@ -43,8 +50,8 @@ export function plural(n: number, one: string, many: string): string {
 }
 
 /**
- * `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 call dropped` (or `..., complete`); with several
- * languages, the files of each: `scanned 40/40 files (typescript 30, python 10), complete`.
+ * `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 2 GraphQL documents not fully read, 1 call dropped` (or
+ * `..., complete`); with several languages, the files of each: `scanned 40/40 files (typescript 30, python 10), complete`.
  */
 export function diagnosticsLine(d: Omit<Diagnostics, "languages"> & Partial<Pick<Diagnostics, "languages">>): string {
   const langs = Object.entries(d.languages ?? {});
@@ -52,7 +59,10 @@ export function diagnosticsLine(d: Omit<Diagnostics, "languages"> & Partial<Pick
   const parts = [`scanned ${d.filesScanned}/${d.filesSeen} files${perLanguage}`];
   const skipped = Object.values(d.skippedCounts).reduce((a, b) => a + b, 0);
   if (skipped > 0) parts.push(`${skipped} skipped`);
-  if (d.unfollowed.length > 0) parts.push(`${plural(d.unfollowed.length, "call", "calls")} not followed`);
+  const limits = d.unfollowed.filter((u) => u.reason === "graphql-limit").length;
+  const unfollowed = d.unfollowed.length - limits;
+  if (unfollowed > 0) parts.push(`${plural(unfollowed, "call", "calls")} not followed`);
+  if (limits > 0) parts.push(`${plural(limits, "GraphQL document", "GraphQL documents")} not fully read`);
   if (d.droppedCalls.length > 0) parts.push(`${plural(d.droppedCalls.length, "call", "calls")} dropped`);
   if (d.complete) parts.push("complete");
   return parts.join(", ");

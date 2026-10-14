@@ -940,7 +940,7 @@
         },
         "complete": {
           "type": "boolean",
-          "description": "False when something was lost that was not asked for: an unreadable file, a dropped call or a call not followed."
+          "description": "False when something was lost that was not asked for: an unreadable file, a dropped call, a call not followed or a GraphQL document not fully read."
         }
       },
       "required": [
@@ -1027,9 +1027,10 @@
             "injected-fetch",
             "injected-client",
             "wrapper-depth",
-            "receiver-unknown"
+            "receiver-unknown",
+            "graphql-limit"
           ],
-          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have."
+          "description": "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have. graphql-limit: a call whose GraphQL document was read past a bound; it is reported with the name and type the document's header gives, and without `operation.fields` (past `operations`, without a name)."
         },
         "expr": {
           "description": "The callee expression, for injected-fetch, injected-client and receiver-unknown.",
@@ -1038,6 +1039,10 @@
         "via": {
           "description": "The wrapper called, for wrapper-depth.",
           "type": "string"
+        },
+        "detail": {
+          "description": "For graphql-limit, the bound reached: document-size (over 100,000 characters), document-parts (built from over 1,000 parts), tokens (over 50,000 parser tokens), depth (selection sets over 32 deep), fragment-expansion (over 20,000 selection sets visited inlining fragments), fields (over 2,000 field paths), operations (over 50 operations in one request), ast-size, ast-nodes, ast-nesting (a document written as its AST over 4,000,000 characters, 200,000 values or 128 levels of nesting).",
+          "type": "string"
         }
       },
       "required": [
@@ -1045,7 +1050,7 @@
         "line",
         "reason"
       ],
-      "description": "A call site the scan saw but could not follow to a request."
+      "description": "A call site the scan saw but could not follow to a request, or a call whose GraphQL document it could not fully read."
     },
     "Coverage": {
       "type": "object",

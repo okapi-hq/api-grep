@@ -194,7 +194,7 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "ktor": 2,
@@ -359,7 +359,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "okhttp": 1,
@@ -701,7 +701,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -953,7 +953,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "ktor": 3,
@@ -1183,7 +1183,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

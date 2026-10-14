@@ -1,3 +1,4 @@
+import type { GraphqlLimit } from "../../operation/limits.js";
 import type { ClientKind, Ecosystem, Language } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding, MethodSpec, RegistryEntry } from "../../types.js";
 import type { SyntaxNode } from "../tree-sitter.js";
@@ -316,8 +317,11 @@ export interface IrLanguage extends IrSource {
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.
    */
   instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number) => ClassDef | undefined;
-  /** GraphQL documents a library builds as objects (sgqlc's `Operation`): the text the object at `arg` sends. */
-  documentOf?: (arg: Scoped, ctx: IrCtx) => string | undefined;
+  /**
+   * GraphQL documents a library builds as objects (sgqlc's `Operation`): the text the object at `arg` sends, and the
+   * bound past which its selections were not read (#55).
+   */
+  documentOf?: (arg: Scoped, ctx: IrCtx) => { text: string; limit?: GraphqlLimit } | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

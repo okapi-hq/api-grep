@@ -13,7 +13,8 @@ export function stringShapeOf(parts: Part[]): Shape {
   const text = staticText(parts);
   if (text !== undefined) return { type: "string", enum: [text] };
   const shape: Shape = { type: "string" };
-  if (parts.some((p) => p.kind === "static" && p.text !== "")) templates.set(shape, parts);
+  // a GraphQL document cut short keeps the bound it was cut at (#55), even with no text before it
+  if (parts.some((p) => (p.kind === "static" && p.text !== "") || (p.kind === "dynamic" && p.limit))) templates.set(shape, parts);
   return shape;
 }
 

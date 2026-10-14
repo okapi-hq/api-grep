@@ -1757,7 +1757,7 @@ exports[`jvm: requests started in several places (#73) > reads a factory with se
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 3,
@@ -2663,7 +2663,7 @@ exports[`kotlin: requests started in several places (#73) > reads Kotlin \`when\
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.18.0",
+  "schemaVersion": "1.19.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,

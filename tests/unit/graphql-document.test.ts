@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { documentHeader, documentOperations, MAX_DOCUMENT_CHARS, MAX_FIELDS, operationDocument } from "../../src/operation/graphql-document.js";
+import { documentHeader, documentOperations, MAX_DOCUMENT_CHARS, MAX_FIELDS, operationDocument, readDocument } from "../../src/operation/graphql-document.js";
 
 describe("documentOperations", () => {
   it("reads type, name and sorted leaf paths, aliases resolved", () => {
@@ -48,7 +48,16 @@ describe("documentOperations bounds", () => {
   it("leaves a document past the size bound unparsed", () => {
     const big = `query Big { a ${"b ".repeat(MAX_DOCUMENT_CHARS / 2)} }`;
     expect(documentOperations(big)).toBeUndefined();
+    expect(readDocument(big)).toEqual({ limit: "document-size" });
     expect(documentHeader(big)).toEqual({ type: "query", name: "Big" });
+  });
+
+  it("names the token bound, and no bound for a text that is not GraphQL (#55)", () => {
+    // 7 tokens in 7 characters: past 50,000 tokens well within 100,000 characters
+    const punctuation = `query Many { ${"x(a:$b)".repeat(8_000)} }`;
+    expect(readDocument(punctuation)).toEqual({ limit: "tokens" });
+    expect(readDocument("red shoes")).toEqual({});
+    expect(readDocument("query Broken { a(")).toEqual({});
   });
 
   it("leaves the fields out when fragments expand past the bounds", () => {
@@ -56,18 +65,29 @@ describe("documentOperations bounds", () => {
     const levels = Array.from({ length: 30 }, (_, i) => `fragment F${i + 1} on T { a: x { ...F${i} } b: y { ...F${i} } }`);
     const bomb = `query Bomb { root { ...F30 } } fragment F0 on T { id } ${levels.join(" ")}`;
     const [op] = documentOperations(bomb)!;
-    expect(op).toEqual({ type: "query", name: "Bomb", named: true });
+    expect(op).toEqual({ type: "query", name: "Bomb", named: true, limit: "depth" });
+  });
+
+  it("names the bound of fragments expanded too many times without nesting too deep (#55)", () => {
+    // 2^15 selection sets visited, 16 deep
+    const levels = Array.from({ length: 15 }, (_, i) => `fragment F${i + 1} on T { ...F${i} ...F${i} }`);
+    const wide = `query Expand { root { ...F15 } } fragment F0 on T { x { id } } ${levels.join(" ")}`;
+    expect(documentOperations(wide)?.[0]).toEqual({ type: "query", name: "Expand", named: true, limit: "fragment-expansion" });
   });
 
   it("leaves the fields out past the number of paths", () => {
     const wide = `query Wide { ${Array.from({ length: MAX_FIELDS + 1 }, (_, i) => `f${i}`).join(" ")} }`;
     expect(documentOperations(wide)?.[0]?.fields).toBeUndefined();
+    expect(documentOperations(wide)?.[0]?.limit).toBe("fields");
   });
 
   it("leaves the fields out past the nesting bound", () => {
     const deep = `query Deep ${"{ a ".repeat(40)}${"}".repeat(40)}`;
     expect(documentOperations(deep)?.[0]).toMatchObject({ name: "Deep" });
     expect(documentOperations(deep)?.[0]?.fields).toBeUndefined();
+    expect(documentOperations(deep)?.[0]?.limit).toBe("depth");
+    // a document within every bound names none
+    expect(documentOperations("query Small { a { b } }")?.[0]).not.toHaveProperty("limit");
   });
 });
 
