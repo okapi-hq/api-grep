@@ -826,7 +826,7 @@ operation?: {
 
 | protocol | issue | status |
 |---|---|---|
-| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi #85 |
+| JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi, `useConnection()`, TypeChain factories, `connect` / `attach`, typed contracts and JSON ABIs (#85) |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
@@ -904,9 +904,45 @@ one-value enum:
     calls too.
   - **`@solana/spl-token`** helpers taking a Connection first (`getAccount`, `getMint`, `transfer`, `mintTo`), with
     the project's one Connection for a typed parameter (`endpoint.clientPackage`).
-  - Not covered yet (#85): clients kept in a cache or handed in a context (`getProvider(chainId)` returning a record
-    entry, `useConnection()`), wagmi actions and hooks, TypeChain factories, `contract.connect(signer)`, contracts
-    typed as parameters, ABIs imported from JSON files.
+  - **Cached clients** (#85): a helper that returns a cache entry it fills (`getProvider(chainId)` returning
+    `providers[chainId]`, `cache.get(key)` after `cache.set(key, client)`, `??=`) hands out every client written into
+    that cache (`src/detect/client-cache.ts`: the helper's returns, the variables they go through with their
+    assignments, `??`, `||`, conditionals; `Callee.cached` keeps them for a call made on the helper's result). The call
+    goes to their endpoint when they all agree on it, else to an unknown host (`src/detect/rpc-cache.ts`): a client built
+    with a URL picked by the same run-time key (`new JsonRpcProvider(urls[chainId])`) does not take the table's first
+    URL. A wallet among them gives no call; a provider class of the app counts as an HTTP client when it extends one
+    (its URL is not read: it may send elsewhere) or extends a base class and builds only HTTP clients; any other value
+    leaves the call as before (a runner not followed).
+  - **Context clients** (#85): a client held in an object (`const services = { rpc: new JsonRpcProvider(url) }`, then
+    `services.rpc.getBlock(...)`, `src/detect/callee.ts`); `@solana/wallet-adapter-react`'s `useConnection()` hands
+    out the `Connection` its `<ConnectionProvider endpoint={...}>` builds: the endpoint of the project's one such
+    element, else unknown (`endpoint.clients.*.component`, `src/detect/rpc-config.ts`;
+    `solana-wallet-adapter.json` has the methods of `solana-web3.json` on `connection`).
+  - **wagmi** (#85, `wagmi.json`, also `@wagmi/core`): actions taking the config first (`readContract(config, {...})`,
+    `getBalance`, `waitForTransactionReceipt`), hooks (`useReadContract`, `useBalance`, `useBlockNumber`,
+    `useWaitForTransactionReceipt`; a `config` option, else the config the app gives `<WagmiProvider config>`
+    (`endpoint.contextProvider`: one built by another library is not read, no call), else the project's one config)
+    and the client of
+    `usePublicClient()` / `getPublicClient(config)` (`endpoint.clients.*.config`) send through the config's transports:
+    `createConfig({ transports: { [chain.id]: http(url) } })` or its `client({ chain })` method, read through object
+    literals, functions, spreads and reassigned variables (`deep`); RainbowKit's `getDefaultConfig` without transports
+    uses wagmi's default HTTP ones (`defaultHttp`, host unknown). One transport per chain leaves the host unknown, a
+    wallet's transport (`custom`, `unstable_connector`) or a socket gives no call. Writes (`writeContract`,
+    `sendTransaction`, `useWriteContract`) are signed and sent by the connected wallet and are not listed.
+  - **Contracts reached in other ways** (#85): TypeChain's `Token__factory.connect(address, runner)` is `new
+    Contract(address, abi, runner)` (`src/detect/typechain.ts`; by the `__factory` name, so a factory generated at build
+    time and missing from the repository still counts; the factory's `abi` when its file is there);
+    `contract.connect(signer)` and `contract.attach(address)` are the same contract on another runner or address
+    (`endpoint.rebind`, `src/detect/contract-forms.ts`); a value declared `Contract` (`token: Contract`,
+    `endpoint.contractTypes`) is a contract on the project's one client whose ABI and signer are not known
+    (alternatives). An ABI imported from a JSON file (`import abi from "./erc20.json"`, an artifact's `abi`,
+    `require`, `src/detect/json-abi.ts`) is read within the scanned directory like a config file.
+  - **Public Solana clusters**: `api.mainnet-beta.solana.com`, `api.devnet.solana.com` and `api.testnet.solana.com`
+    are the provider `solana-public-rpc` (also `clusterApiUrl(...)`), named by host only: an env var such as
+    `SOLANA_RPC_URL` may point at any node.
+  - Not covered yet (#98): a client handed down by an app's own React context (`useContext(RpcContext)`), or given as an
+    untyped parameter inside a context object; client factories injected into a service; wagmi configs memoized in a
+    component or built by another library; Python clients kept in a dict a helper fills.
 - **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
   clients (#32).
 

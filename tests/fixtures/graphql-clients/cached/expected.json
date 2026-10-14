@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/85",
+  "calls": [
+    {"file": "regions.ts", "line": 25, "provider": "unknown", "operation": "Products"}
+  ]
+}

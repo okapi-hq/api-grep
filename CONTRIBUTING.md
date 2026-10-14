@@ -126,7 +126,9 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in
    [`viem.json`](src/detect/registry/viem.json). A contract object's functions are keys with `*` for the function's
-   name (`getContract.read.*`), with `runnerArg` naming where the contract's construction takes its client. AI SDK model factories live in
+   name (`getContract.read.*`), with `runnerArg` naming where the contract's construction takes its client. A client
+   that a config or a context provider hands out names it in `endpoint.clients` (`config`: wagmi's `usePublicClient()`;
+   `component`: `useConnection()` under `<ConnectionProvider>`), as in [`wagmi.json`](src/detect/registry/wagmi.json). AI SDK model factories live in
    [`src/detect/registry/ai-sdk.json`](src/detect/registry/ai-sdk.json). See `MethodSpec` and `RegistryEntry` in [`src/types.ts`](src/types.ts)
    for every field.
 2. Register it in `defaultRegistry()` in [`src/detect/registry/index.ts`](src/detect/registry/index.ts).

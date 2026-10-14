@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/85",
+  "calls": [
+    {"file": "vault.tsx", "line": 12, "provider": "eth.example-node.io", "operation": "eth_call"},
+    {"file": "vault.tsx", "line": 13, "provider": "eth.example-node.io", "operation": "eth_getBalance"},
+    {"file": "vault.tsx", "line": 16, "provider": "eth.example-node.io", "operation": "eth_getTransactionReceipt"},
+    {"file": "vault.tsx", "line": 20, "provider": "eth.example-node.io", "operation": "eth_getLogs"},
+    {"file": "vault.tsx", "line": 26, "provider": "eth.example-node.io", "operation": "eth_call"},
+    {"file": "vault.tsx", "line": 30, "provider": "eth.example-node.io", "operation": "eth_blockNumber"}
+  ]
+}

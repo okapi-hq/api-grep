@@ -1,3 +1,4 @@
+import type { ClientValues } from "./detect/client-cache.js";
 import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration } from "ts-morph";
 
 /** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
@@ -42,6 +43,8 @@ export interface Callee {
   thisRoot?: boolean;
   /** First construction when the chain went through several (`createClient(url).from(table)`: `createClient`). */
   rootInstance?: InstanceInfo;
+  /** The client came from a cache a helper fills (`getProvider(chainId)`, #85): every construction it may hold. */
+  cached?: ClientValues;
 }
 
 export interface RawCall {
@@ -182,13 +185,38 @@ export interface VendorSource {
   path: string;
 }
 
+/** How a client construction gives its endpoint, beside the URL and headers of `EndpointSource`. */
+export interface ClientSource {
+  /** Where it takes its transports (`0.transport`; `|` separates places tried in turn). */
+  transport?: string;
+  /**
+   * The transports are read through the options as code builds them (wagmi's `createConfig`, #85): object literals
+   * (one transport per chain), functions returning a client (`client({ chain })`), spreads and reassigned variables.
+   */
+  deep?: boolean;
+  /** No transport given means the library's default HTTP one, to a URL the code does not say (RainbowKit). */
+  defaultHttp?: boolean;
+  /**
+   * The client is the one of a config (wagmi's `usePublicClient({ config })`, #85): where the config is given, the
+   * project's one config otherwise.
+   */
+  config?: string;
+  /**
+   * The client is handed down by a React context whose provider component builds it from its props (`useConnection()`
+   * under `<ConnectionProvider endpoint={url}>`, #85): the component, and the props holding the URL and headers.
+   */
+  component?: { name: string; url: string; headers?: string };
+  vendor?: VendorSource;
+  urlOrNetwork?: boolean;
+}
+
 /**
  * GraphQL clients (#54) talk to whatever URL the code gives them. `clients` are their constructors and factories
  * (`new ApolloClient({ uri })`), with the option holding a transport built apart (`link`); `transports` are the
  * constructors of those (`new HttpLink({ uri })`). Python writes the positions as `kw:url|0`.
  */
 export interface EndpointSpec {
-  clients: Record<string, EndpointSource & { transport?: string; vendor?: VendorSource; urlOrNetwork?: boolean }>;
+  clients: Record<string, EndpointSource & ClientSource>;
   transports?: Record<string, EndpointSource>;
   /**
    * JSON-RPC clients (#52) also talk to browser wallets and sockets: with this list, a call is reported only when its
@@ -206,10 +234,22 @@ export interface EndpointSpec {
    */
   signers?: Record<string, { provider?: string; signs: "local" | "node" }>;
   /**
+   * A contract's methods that give the same contract on another runner or at another address (ethers, #85): the
+   * position of the construction their first argument replaces (`connect(signer)`: `2`, `attach(address)`: `0`).
+   */
+  rebind?: Record<string, string>;
+  /** Types a contract is declared with (`token: Contract`, #85): its functions are the ABI's, on a runner not known. */
+  contractTypes?: string[];
+  /**
    * The client a call is given comes from the app's context (Relay's environment, from `useRelayEnvironment()` or a
    * prop): one the scan cannot read is the project's one client, as for a call that names none.
    */
   contextClient?: boolean;
+  /**
+   * The component that hands the app's client down to its hooks (`<WagmiProvider config={config}>`, #85): a call that
+   * names no client uses the ones the project gives it, when it renders it.
+   */
+  contextProvider?: { name: string; prop: string };
 }
 
 export interface RegistryEntry {

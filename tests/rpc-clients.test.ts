@@ -34,7 +34,8 @@ describe("JSON-RPC client libraries of Solana nodes (#52)", () => {
     expect(r.calls).toHaveLength(3);
     const c = await scanFixture("rpc-clients/solana-cluster");
     expect(at(c, "faucet.ts", 6)).toMatchObject({ urlTemplate: "https://api.devnet.solana.com", hostKind: "literal", operation: rpc("requestAirdrop") });
-    expect(at(c, "faucet.ts", 10)).toMatchObject({ provider: "api.mainnet-beta.solana.com", operation: rpc("getMinimumBalanceForRentExemption") });
+    // the public clusters are a provider of their own (#85)
+    expect(at(c, "faucet.ts", 10)).toMatchObject({ provider: "solana-public-rpc", host: "api.mainnet-beta.solana.com", operation: rpc("getMinimumBalanceForRentExemption") });
   });
 
 });
