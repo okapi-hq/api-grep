@@ -2,7 +2,7 @@ import { calleeChain, valueChain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { CallExpr, ClassDef, FunctionDef, ModuleModel } from "../../ir/model.js";
 import type { IrCtx } from "../../ir/raw.js";
-import { argAt, calleeIs, fluentChain } from "../../ir/steps.js";
+import { argAt, calleeIs, fluentChain, lambdaOf } from "../../ir/steps.js";
 import { classField, receiverClass } from "../../ir/project.js";
 import { deref } from "../../ir/values.js";
 import { JVM } from "./tables.js";
@@ -47,6 +47,21 @@ function fieldValues(s: Scoped, ctx: IrCtx): Scoped[] {
   return values.length > 0 ? values.map((v) => ({ expr: v.value, fn: v.fn })) : [s];
 }
 
+/**
+ * `callFactory { request -> client.get().newCall(request) }`, `callFactory(Call.Factory { client.newCall(it) })`: the
+ * client the factory hands each call to (#75), read like `client(...)`; any other value as it is.
+ */
+function factoryClient(arg: Scoped, ctx: IrCtx): Scoped {
+  const d = deref(arg.expr, arg.fn, ctx);
+  const lambda = d.expr.k === "fnref" ? d.expr.fn : d.expr.k === "call" ? lambdaOf(d.expr) : undefined;
+  const fns = lambda ? [lambda, ...lambda.module.allFunctions.filter((f) => f.parent === lambda)] : [];
+  for (const f of fns) {
+    const call = f.calls.find((c) => c.fn.k === "attr" && c.fn.name === "newCall");
+    if (call?.fn.k === "attr") return { expr: call.fn.obj, fn: f };
+  }
+  return arg;
+}
+
 /** The builder steps of a Retrofit value, or undefined when no `Retrofit.Builder()` is found. */
 export function readBuild(retrofit: Scoped, ctx: IrCtx): RetrofitBuild | undefined {
   const isStart = (c: CallExpr): boolean => calleeIs(c, R.builders) !== undefined;
@@ -56,10 +71,12 @@ export function readBuild(retrofit: Scoped, ctx: IrCtx): RetrofitBuild | undefin
   if (!fc) return undefined;
   const out: RetrofitBuild = { converters: [] };
   for (const step of fc.steps) {
-    const arg = argAt(step, 0);
+    // `callFactory { request -> ... }`: a lambda, not a positional value
+    const lambda = calleeIs(step.call, R.client) ? lambdaOf(step.call) : undefined;
+    const arg = argAt(step, 0) ?? (lambda ? { expr: { k: "fnref" as const, fn: lambda }, fn: step.fn } : undefined);
     if (!arg) continue;
     if (calleeIs(step.call, R.baseUrl)) out.baseUrl = arg;
-    else if (calleeIs(step.call, R.client)) out.client = arg;
+    else if (calleeIs(step.call, R.client)) out.client = factoryClient(arg, ctx);
     else if (calleeIs(step.call, R.converter)) {
       const d = deref(arg.expr, arg.fn, ctx).expr;
       const kind = d.k === "call" ? calleeIs(d, Object.keys(R.converters)) : undefined;

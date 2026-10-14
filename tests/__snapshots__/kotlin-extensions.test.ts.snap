@@ -1,0 +1,1035 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Kotlin: calls made in extension functions of a client type (#86) > reads \`this\` and bare calls on the receiver, and follows the callers' clients 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "page": "1",
+          },
+          "url": "https://api.catalog-example.com/v1/items?page=1",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.catalog-example.com",
+      "hostKind": "literal",
+      "id": "2c7cb158206c",
+      "location": {
+        "col": 5,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 16,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.catalog-example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "type": "integer",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.catalog-example.com/v1/items?page={page}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.catalog-example.com/v1/items/y1hxii2m",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+      },
+      "headers": [
+        "accept",
+      ],
+      "host": "api.catalog-example.com",
+      "hostKind": "literal",
+      "id": "02869a7c19bb",
+      "location": {
+        "col": 5,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 19,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "api.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.catalog-example.com/v1/items/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://status.catalog-example.com/haven/lantern",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "status.catalog-example.com",
+      "hostKind": "literal",
+      "id": "5e6d625c2304",
+      "location": {
+        "col": 61,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 21,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/{path}",
+      "provider": "status.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://status.catalog-example.com/{path}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "term",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "q": "verdant",
+          },
+          "url": "https://search.catalog-example.com/v1/search?q=verdant",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "search.catalog-example.com",
+      "hostKind": "literal",
+      "id": "317b7664729e",
+      "location": {
+        "col": 61,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 23,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "search.catalog-example.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "term",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://search.catalog-example.com/v1/search",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://status.catalog-example.com/legacy/glacier/canyon",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "status.catalog-example.com",
+      "hostKind": "literal",
+      "id": "f914ccfb6a24",
+      "location": {
+        "col": 51,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 28,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/legacy/{path}",
+      "provider": "status.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://status.catalog-example.com/legacy/{path}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [
+        {
+          "name": "url",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "HEAD",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "62621f51d9fe",
+      "location": {
+        "col": 89,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 38,
+      },
+      "method": "HEAD",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{url}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-catalog-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-catalog-key": "<x-catalog-key>",
+          },
+          "method": "GET",
+          "query": {
+            "page": "2",
+          },
+          "url": "https://api.catalog-example.com/v1/items?page=2",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-catalog-key": null,
+      },
+      "headers": [
+        "x-catalog-key",
+      ],
+      "host": "api.catalog-example.com",
+      "hostKind": "literal",
+      "id": "0671958e8d35",
+      "location": {
+        "col": 20,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 46,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items",
+      "provider": "api.catalog-example.com",
+      "query": [
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "enum": [
+              "2",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.catalog-example.com/v1/items?page=2",
+      "via": "wrapper:fetchPage",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-catalog-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "x-catalog-key": "<x-catalog-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.catalog-example.com/v1/items/rrfj9yxy",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "x-catalog-key": null,
+      },
+      "headers": [
+        "accept",
+        "x-catalog-key",
+      ],
+      "host": "api.catalog-example.com",
+      "hostKind": "literal",
+      "id": "ca09cb1f6fed",
+      "location": {
+        "col": 28,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 48,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/{id}",
+      "provider": "api.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.catalog-example.com/v1/items/{id}",
+      "via": "wrapper:fetchItem",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://status.catalog-example.com/v1/health",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "status.catalog-example.com",
+      "hostKind": "literal",
+      "id": "921ed40bd952",
+      "location": {
+        "col": 24,
+        "file": "Catalog.kt",
+        "language": "kotlin",
+        "line": 50,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/health",
+      "provider": "status.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://status.catalog-example.com/v1/health",
+      "via": "wrapper:health",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "enum": [
+              "gallery-photos",
+            ],
+            "type": "string",
+          },
+          "Key": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "photo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "gallery-photos",
+            "Key": "<Key>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://storage.gallery-example.com/raven/originals/grove",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "storage.gallery-example.com",
+      "hostKind": "literal",
+      "id": "26379086b2a9",
+      "location": {
+        "col": 41,
+        "file": "Gallery.kt",
+        "language": "kotlin",
+        "line": 14,
+      },
+      "method": "DELETE",
+      "operationId": "DeleteObject",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}/originals/{photo}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "deleteObject",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://storage.gallery-example.com/{Bucket}/originals/{photo}",
+      "via": "wrapper:delete",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "enum": [
+              "gallery-photos",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "gallery-photos",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "HEAD",
+          "query": {},
+          "url": "https://storage.gallery-example.com/anchor",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "storage.gallery-example.com",
+      "hostKind": "literal",
+      "id": "266591f38169",
+      "location": {
+        "col": 27,
+        "file": "Gallery.kt",
+        "language": "kotlin",
+        "line": 16,
+      },
+      "method": "HEAD",
+      "operationId": "HeadBucket",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "headBucket",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://storage.gallery-example.com/{Bucket}",
+      "via": "wrapper:exists",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "anyOf": [
+              {
+                "enum": [
+                  "gallery-photos",
+                ],
+                "type": "string",
+              },
+              {
+                "hint": "bucketName",
+                "type": "string",
+              },
+            ],
+            "type": "union",
+          },
+          "Key": {
+            "hint": "key",
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "gallery-photos",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/quiet/%3CKey%3E",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "Bucket": "Ridge Pebble",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/garden/%3CKey%3E",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "d16a29fe3bce",
+      "location": {
+        "col": 5,
+        "file": "Storage.kt",
+        "language": "kotlin",
+        "line": 10,
+      },
+      "method": "DELETE",
+      "operationId": "DeleteObject",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "deleteObject",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "enum": [
+              "gallery-photos",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "gallery-photos",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "HEAD",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/jasper",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "df0023f56fbb",
+      "location": {
+        "col": 5,
+        "file": "Storage.kt",
+        "language": "kotlin",
+        "line": 14,
+      },
+      "method": "HEAD",
+      "operationId": "HeadBucket",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "headBucket",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Bucket": {
+            "hint": "bucketName",
+            "type": "string",
+          },
+          "Key": {
+            "hint": "key",
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Bucket": "Tundra Canyon",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/raven/%3CKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "cd6e46eb32e2",
+      "location": {
+        "col": 5,
+        "file": "Storage.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "DELETE",
+      "operationId": "DeleteObject",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "deleteObject",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+      "via": "wrapper:delete",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "Body": {
+            "hint": "fromString",
+            "origin": "call",
+            "type": "dynamic",
+          },
+          "Bucket": {
+            "hint": "bucketName",
+            "type": "string",
+          },
+          "Key": {
+            "hint": "key",
+            "type": "string",
+          },
+        },
+        "required": [
+          "Bucket",
+          "Key",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "path",
+        },
+        {
+          "name": "Bucket",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Key",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Body",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Saffron fable atlas xenon walnut anchor.",
+            "Bucket": "Quill Inlet",
+            "Key": "<key>",
+          },
+          "bodyEncoding": "raw",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://s3.{region}.amazonaws.com/beacon/%3CKey%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "s3.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "fe399d8ab076",
+      "location": {
+        "col": 5,
+        "file": "Storage.kt",
+        "language": "kotlin",
+        "line": 23,
+      },
+      "method": "PUT",
+      "operationId": "PutObject",
+      "optionsOpaque": false,
+      "pathTemplate": "/{Bucket}/{Key}",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "putObject",
+        "package": "aws.sdk.kotlin:s3",
+        "version": "1.5.40",
+      },
+      "urlTemplate": "https://s3.{region}.amazonaws.com/{Bucket}/{Key}",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 6,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 2,
+        "imported": true,
+        "package": "aws.sdk.kotlin:s3",
+        "provider": "aws",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "ktor": 4,
+      "okhttp": 5,
+      "sdk": 6,
+    },
+    "byHostKind": {
+      "literal": 14,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "kotlin": 15,
+    },
+    "byProvider": {
+      "api.catalog-example.com": 4,
+      "aws": 6,
+      "search.catalog-example.com": 1,
+      "status.catalog-example.com": 3,
+      "unknown": 1,
+    },
+    "callsFound": 15,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 6,
+    "withDynamic": 12,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

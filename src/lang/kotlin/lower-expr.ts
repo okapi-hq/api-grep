@@ -4,7 +4,7 @@ import { buildConfigValue } from "../jvm/build-config.js";
 import { field, named as namedNodes, type SyntaxNode } from "../tree-sitter.js";
 import { isEnvMap } from "../jvm/calls.js";
 import { special } from "./calls.js";
-import { hook, nameRef, posOf, type KtState } from "./state.js";
+import { hook, nameRef, posOf, thisRef, type KtState } from "./state.js";
 import { charValue, numberValue, shortTemplate, unescapeKotlin } from "./strings.js";
 import { classRef, lowerType } from "./types.js";
 import { KOTLIN_PROPERTY_READS } from "./property-reads.js";
@@ -99,6 +99,17 @@ function applied(fn: Expr, args: Arg[], pos: Pos, lambda: FunctionDef, st: KtSta
   else if (fn.obj.k === "name") st.fn.calls.push({ k: "call", fn, args, pos, applied: [lambda] });
 }
 
+/** Calls whose lambda has no receiver of its own (`it`, or none): in an extension function, `this` is still its receiver. */
+const PLAIN_LAMBDA_FUNCTIONS = new Set(["run", "runCatching", "withContext", "launch", "async", "runBlocking", "coroutineScope", "supervisorScope", "lazy", "synchronized", "repeat"]);
+const PLAIN_LAMBDA_METHODS = new Set(["let", "also", "use", "takeIf", "takeUnless", "forEach", "forEachIndexed", "map", "mapNotNull", "mapIndexed", "flatMap", "filter", "filterNot", "onEach", "launch", "async", "onSuccess", "onFailure", "getOrElse", "getOrPut"]);
+
+/** The state a call's trailing lambda is lowered in: any other lambda (`apply { }`, a DSL builder) has its own receiver. */
+function lambdaState(fn: Expr, st: KtState): KtState {
+  if (!st.receiver?.implicit) return st;
+  const plain = fn.k === "name" ? PLAIN_LAMBDA_FUNCTIONS.has(fn.name) : fn.k === "attr" && PLAIN_LAMBDA_METHODS.has(fn.name);
+  return plain ? st : { ...st, receiver: { ...st.receiver, implicit: false } };
+}
+
 /** A call; a trailing lambda is its last argument. Calls are recorded in the current function as they are met. */
 function lowerCall(n: SyntaxNode, st: KtState): Expr {
   let kids = named(n);
@@ -110,7 +121,7 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   }
   const fn = lowerExpr(kids[0]!, st);
   const args = lowerArgs(kids.find((c) => c.type === "value_arguments"), st);
-  const lambda = lambdaNode ? hook("lambda")(lambdaNode, st) : undefined;
+  const lambda = lambdaNode ? hook("lambda")(lambdaNode, lambdaState(fn, st)) : undefined;
   if (lambda) args.push({ value: { k: "fnref", fn: lambda.fn } });
   const pos = posOf(n);
   if (lambda) applied(fn, args, pos, lambda.fn, st);
@@ -188,6 +199,12 @@ function lowerIndex(n: SyntaxNode, st: KtState): Expr {
 /** `a to b` is a pair (a two-item list: an entry of `mapOf(...)`); other infix calls are values the scan cannot read. */
 function lowerInfix(n: SyntaxNode, st: KtState): Expr {
   const [left, op, right] = named(n);
+  // Koin's `single { Impl() } bind Api::class`: the call `bind` stands for (#75)
+  if (left && right && (op?.text === "bind" || op?.text === "binds")) {
+    const call: CallExpr = { k: "call", fn: { k: "attr", obj: lowerExpr(left, st), name: op.text, pos: posOf(op) }, args: [{ value: lowerExpr(right, st) }], pos: posOf(n) };
+    st.fn.calls.push(call);
+    return call;
+  }
   if (!left || !right || op?.text !== "to") return lowerOther(n, st);
   return { k: "list", items: [lowerExpr(left, st), lowerExpr(right, st)] };
 }
@@ -218,7 +235,7 @@ export function lowerExpr(n: SyntaxNode, st: KtState): Expr {
     case "identifier":
       return lowerIdentifier(n, st);
     case "this_expression":
-      return { k: "this", pos: posOf(n) };
+      return thisRef(named(n)[0]?.text, posOf(n), st);
     case "navigation_expression":
       return lowerNavigation(n, st);
     case "call_expression":

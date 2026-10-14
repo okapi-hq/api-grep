@@ -47,7 +47,12 @@ export function lowerFunction(n: SyntaxNode, st: KtState, closure: boolean): Fun
   // the type after the parameters (a receiver type comes before the name)
   const returnType = paramsAt >= 0 ? lowerType(kids.slice(paramsAt + 1).find((c) => c.type.endsWith("_type"))).type : undefined;
   if (returnType) fn.returnType = returnType;
-  lowerBody(kids.find((c) => c.type === "function_body"), inFunction(st, fn, closure));
+  const nameAt = kids.findIndex((c) => c.id === field(n, "name")?.id);
+  const receiverType = nameAt > 0 ? lowerType(kids.slice(0, nameAt).find((c) => c.type.endsWith("_type"))).type : undefined;
+  if (receiverType) fn.receiver = { name: "this", index: -1, kind: "normal", type: receiverType };
+  // `this` and bare names: the receiver of an extension, the enclosing one in a local function, none in a method
+  const receiver = receiverType ? { label: fn.name, implicit: true } : closure ? st.receiver : undefined;
+  lowerBody(kids.find((c) => c.type === "function_body"), { ...inFunction(st, fn, closure), receiver });
   return fn;
 }
 
@@ -105,6 +110,11 @@ function accessor(n: SyntaxNode, st: KtState, name: string): Expr {
   return { k: "call", fn: { k: "fnref", fn }, args: [], pos: posOf(n) };
 }
 
+const LOOKUPS = new Set(["inject", "get", "injectLazy", "injectValue"]);
+
+/** A container lookup whose type a typed property gives (`by inject()`, `get()`, `injectLazy()`, `Injekt.get()`). */
+const isLookup = (fn: Expr): boolean => (fn.k === "name" && LOOKUPS.has(fn.name)) || (fn.k === "attr" && fn.name === "get" && fn.obj.k === "name" && fn.obj.name === "Injekt");
+
 export function propertyParts(n: SyntaxNode, st: KtState): PropertyParts {
   const kids = named(n).filter((c) => !isComment(c));
   const mods = modifiersOf(kids.find((c) => c.type === "modifiers"), st);
@@ -121,8 +131,9 @@ export function propertyParts(n: SyntaxNode, st: KtState): PropertyParts {
   if (setter) accessor(setter, st, `set-${id?.text ?? ""}`);
   const lowered = init ? lowerExpr(init, st) : delegate ? lowerExpr(delegate, st) : getter ? accessor(getter, st, `get-${id?.text ?? ""}`) : undefined;
   const value = injectedValue(mods.annotations) ?? lowered;
-  // `val client: HttpClient by inject()`, `= get()`: a Koin lookup of the declared type
-  if (type && value?.k === "call" && !value.typeArgs && value.fn.k === "name" && (value.fn.name === "inject" || value.fn.name === "get")) value.typeArgs = [type];
+  // `val client: HttpClient by inject()`, `= get()`: a Koin lookup of the declared type; Injekt's `by injectLazy()`,
+  // `= Injekt.get()`
+  if (type && value?.k === "call" && !value.typeArgs && isLookup(value.fn)) value.typeArgs = [type];
   return {
     ...(id?.type === "identifier" ? { name: id.text } : {}),
     destructured: multi ? named(multi).flatMap((v) => named(v)[0]?.text ?? []) : [],
@@ -208,6 +219,8 @@ export function lowerStatement(c: SyntaxNode, st: KtState): Expr {
       return NONE;
     case "function_declaration": {
       const fn = lowerFunction(c, st, true);
+      // an extension is a member of its receiver type, not a name (`ir/extensions.ts`)
+      if (fn.receiver) return NONE;
       st.fn.assigns.push({ target: fn.name, value: { k: "fnref", fn }, offset: c.startIndex });
       st.scope.names.add(fn.name);
       return NONE;
@@ -238,8 +251,10 @@ export function lowerStatement(c: SyntaxNode, st: KtState): Expr {
 function lowerObjectLiteral(n: SyntaxNode, st: KtState): FunctionDef | undefined {
   const body = named(n).find((c) => c.type === "class_body");
   const fns: FunctionDef[] = [];
+  // the object is the implicit receiver of its own functions
+  const inner: KtState = st.receiver ? { ...st, receiver: { ...st.receiver, implicit: false } } : st;
   for (const m of body ? named(body) : []) {
-    if (m.type === "function_declaration") fns.push(lowerFunction(m, st, true));
+    if (m.type === "function_declaration") fns.push(lowerFunction(m, inner, true));
     else if (m.type === "property_declaration") propertyParts(m, st);
     else if (m.type === "anonymous_initializer") for (const b of named(m)) lowerStatement(b, st);
   }

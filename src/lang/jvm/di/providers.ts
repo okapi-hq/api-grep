@@ -5,7 +5,8 @@ import type { IrCtx } from "../../ir/raw.js";
 import { lambdaOf } from "../../ir/steps.js";
 import { staticKey } from "../../ir/values.js";
 import { annotationName } from "../annotations.js";
-import { providedType, typeKey, type TypeKey } from "./types.js";
+import { injektProvider, koinBound, springAliases } from "./locators.js";
+import { generic, providedType, typeKey, type TypeKey } from "./types.js";
 
 /**
  * What a DI container provides, read from the project's declarations: Dagger / Hilt `@Provides` and `@Binds`, Spring
@@ -26,13 +27,21 @@ export interface Provider {
   primary?: boolean;
   /** The container: a binding is only ever injected by its own (a Koin backend next to a Dagger app). */
   framework: Framework;
+  /**
+   * A multibinding contribution (#75): one element (`@IntoSet`), several (`@ElementsIntoSet`), or a whole collection
+   * provided as such (`fun interceptors(): Set<Interceptor>`). Only an injected collection gets it.
+   */
+  bag?: "into" | "elements" | "plain";
 }
 
 /**
  * Dagger, Hilt and other JSR-330 containers (`@Provides`, `@Binds`, `@Inject` constructors); Spring (`@Bean`,
  * stereotypes; an injection point without a qualifier sees qualified beans too); Koin (definitions and lookups).
  */
-export type Framework = "jsr330" | "spring" | "koin";
+export type Framework = "jsr330" | "spring" | "koin" | "injekt";
+
+/** Collection types a container fills with every binding of their element type (Spring, multibindings). */
+export const COLLECTIONS = new Set(["Set", "MutableSet", "List", "MutableList", "Collection", "Iterable"]);
 
 export interface DiIndex {
   /** Providers by the last name of their type (`OkHttpClient`, `Builder`). */
@@ -76,10 +85,12 @@ export function qualifiers(anns: Annotation[] | undefined, fn: FunctionDef, ctx:
   return out;
 }
 
-/** Koin `named("x")` in a definition's or a lookup's arguments. */
+/** Koin `named("x")` / `qualifier("x")`, or a type qualifier (`named<Uploads>()`), in a definition's or a lookup's arguments. */
 export function koinQualifiers(call: CallExpr, fn: FunctionDef, ctx: IrCtx): string[] {
-  const q = call.args.map((a) => a.value).find((v): v is CallExpr => v.k === "call" && v.fn.k === "name" && v.fn.name === "named");
-  const v = q ? stringArg(q.args, fn, ctx, []) : undefined;
+  const q = call.args.map((a) => a.value).find((v): v is CallExpr => v.k === "call" && v.fn.k === "name" && (v.fn.name === "named" || v.fn.name === "qualifier"));
+  const t = q?.typeArgs?.[0] ? typeKey(q.typeArgs[0], fn, ctx) : undefined;
+  if (t) return [`type:${t.full ?? t.simple}`];
+  const v = q && !q.typeArgs ? stringArg(q.args, fn, ctx, []) : undefined;
   return v !== undefined ? [`named:${v}`] : [];
 }
 
@@ -103,12 +114,17 @@ function functionProvider(fn: FunctionDef, ctx: IrCtx): Provider | undefined {
   if (!binds && ![...anns].some((n) => PROVIDES.has(n))) return undefined;
   const impl = binds ? fn.params[0]?.type : undefined;
   const value: Scoped | undefined = impl ? { expr: { k: "call", fn: impl, args: [], pos: fn.pos }, fn } : fn.returns.length === 1 ? { expr: fn.returns[0]!, fn } : undefined;
-  const key = fn.returnType ? typeKey(fn.returnType, fn, ctx) : fn.returns[0] ? providedType(fn.returns[0], fn, ctx) : undefined;
+  // `@IntoSet fun auth(): Interceptor`, `@ElementsIntoSet fun all(): Set<Interceptor>`, `fun all(): Set<Interceptor>`
+  const declared = generic(fn.returnType);
+  const element = declared && COLLECTIONS.has(declared.name) && !anns.has("IntoSet") ? declared.arg : undefined;
+  const bag = anns.has("IntoSet") ? "into" : anns.has("ElementsIntoSet") ? "elements" : element ? "plain" : undefined;
+  const type = element ?? fn.returnType;
+  const key = type ? typeKey(type, fn, ctx) : fn.returns[0] && bag !== "elements" ? providedType(fn.returns[0], fn, ctx) : undefined;
   if (!key) return undefined;
   const bean = (fn.annotations ?? []).find((a) => annotationName(a) === "Bean");
   const name = (bean && stringArg(bean.args, fn, ctx, ["name", "value"])) ?? fn.name;
   const framework: Framework = bean ? "spring" : "jsr330";
-  return { key, fn, quals: qualifiers(fn.annotations, fn, ctx), name, framework, ...(value ? { value } : {}), ...(anns.has("Primary") ? { primary: true } : {}) };
+  return { key, fn, quals: qualifiers(fn.annotations, fn, ctx), name, framework, ...(value ? { value } : {}), ...(anns.has("Primary") ? { primary: true } : {}), ...(bag ? { bag } : {}) };
 }
 
 /** The container that builds a class: Spring for its stereotypes, else JSR-330 (CDI scopes, an `@Inject` constructor). */
@@ -129,14 +145,18 @@ function classProvider(cls: ClassDef, ctx: IrCtx): Provider | undefined {
 }
 
 /** `single { HttpClient(CIO) { ... } }`, `single<Api>(named("x")) { ... }`, `singleOf(::Repo)`. */
-function koinProvider(call: CallExpr, fn: FunctionDef, ctx: IrCtx, idx: DiIndex): Provider | undefined {
+export function koinProvider(call: CallExpr, fn: FunctionDef, ctx: IrCtx, idx: DiIndex): Provider | undefined {
   const name = call.fn.k === "name" ? call.fn.name : undefined;
   if (name && KOIN_OF.has(name)) {
     const ref = call.args.find((a) => !a.name)?.value;
     const c = ref ? valueChain(ref, fn, ctx) : undefined;
     if (c?.root.kind !== "class" || c.segs.length > 0) return undefined;
     idx.koinBuilt.add(c.root.cls);
-    return { key: { full: c.root.cls.qname, simple: c.root.cls.name }, value: construction(c.root.cls), quals: koinQualifiers(call, fn, ctx), framework: "koin" };
+    // `singleOf(::Repo) { named("x"); bind<Api>() }`: the qualifier set in the options
+    const options = lambdaOf(call);
+    const named = options?.calls.find((x) => x.fn.k === "name" && (x.fn.name === "named" || x.fn.name === "qualifier"));
+    const quals = options && named ? koinQualifiers({ ...call, args: [{ value: named }] }, options, ctx) : koinQualifiers(call, fn, ctx);
+    return { key: { full: c.root.cls.qname, simple: c.root.cls.name }, value: construction(c.root.cls), quals, framework: "koin" };
   }
   const lambda = name && KOIN_DEFS.has(name) ? lambdaOf(call) : undefined;
   if (!lambda) return undefined;
@@ -161,17 +181,23 @@ export function diIndex(ctx: IrCtx): DiIndex {
   const base: IrCtx = { idx: ctx.idx };
   for (const m of mods) {
     const koin = isKoin(m);
+    const injekt = m.importPaths.some((x) => x[0] === "uy" && x[1] === "kohesive" && x[2] === "injekt");
     for (const fn of m.allFunctions) {
       const p = fn.annotations ? functionProvider(fn, base) : undefined;
-      if (p) add(idx, p);
+      for (const a of p ? [p, ...springAliases(p, base)] : []) add(idx, a);
       for (const call of koin ? fn.calls : []) {
         const k = koinProvider(call, fn, base, idx);
+        if (k) add(idx, k);
+        for (const b of koinBound(call, fn, base, (c) => koinProvider(c, fn, base, idx))) add(idx, b);
+      }
+      for (const call of injekt ? fn.calls : []) {
+        const k = injektProvider(call, fn, base);
         if (k) add(idx, k);
       }
     }
     for (const cls of m.classes.values()) {
       const p = classProvider(cls, base);
-      if (p) add(idx, p);
+      for (const a of p ? [p, ...springAliases(p, base)] : []) add(idx, a);
     }
   }
   return idx;

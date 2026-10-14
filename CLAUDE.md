@@ -163,7 +163,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   (supabase-kt lambdas), Kotlin property reads (`src/lang/kotlin/property-reads.ts`) and builders filled across
   functions; what it leaves is #96. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
-  done; `Lazy<T>` injection points, multibindings and other locators are #75.
+  done; so is #75 (`Lazy<T>` / `Provider<T>` holders, multibinding sets and Spring `List<T>` in
+  `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of
+  injected collections in `src/lang/jvm/elements.ts`); `@ConfigurationProperties` and the remaining forms are #94.
+  Calls in extension functions of a client type (#86: `FunctionDef.receiver`, `implicit` names, the extension a call
+  runs in `src/lang/ir/extensions.ts`) are done.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
   JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`, Lombok builders and getters, Kotlin `map["k"] = v`) are
   done; so is #73 (requests started in branches: one call per start, `fluentChains` in `src/lang/ir/fluent-chain.ts`,

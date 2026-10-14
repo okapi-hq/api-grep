@@ -172,8 +172,10 @@ function walk(from: Scoped, w: Walk, isStart: (c: CallExpr) => boolean, ctx: IrC
     }
     // `this.buildRequest(url)`, `Requests.get(url)`: a method of the project returning the builder, not a step of it
     const made: Scoped | undefined = expr.k === "call" && factoryMethod(expr.fn, fn, ctx) ? factoryReturns(expr, fn, ctx, w, 1)?.[0] : undefined;
-    if (made) {
-      cur = made;
+    // `client.get()` on an injected `Lazy<OkHttpClient>`: the binding, not a step of the holder (#75)
+    const held: Scoped | undefined = made ?? (expr.k === "call" && expr.fn.k === "attr" ? injectedCall(expr, fn, ctx) : undefined);
+    if (held) {
+      cur = held;
       w.hops++;
       continue;
     }

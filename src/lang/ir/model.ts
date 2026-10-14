@@ -48,8 +48,11 @@ export type Expr =
   | { k: "format"; style: "printf" | "brace"; template: Expr; args: Arg[] }
   /** An environment variable read (`os.getenv("X", "d")`, `getenv('X')`, `env('X', 'd')`) with its default. */
   | { k: "env"; name: string; fallback?: Expr }
-  /** An identifier: a local, a parameter, a module name or an import (PHP variables keep their `$`). */
-  | { k: "name"; name: string; pos: Pos }
+  /**
+   * An identifier: a local, a parameter, a module name or an import (PHP variables keep their `$`). `implicit`: a bare
+   * name in a Kotlin extension function, a member of its receiver when nothing else declares it.
+   */
+  | { k: "name"; name: string; pos: Pos; implicit?: boolean }
   /** `a.b`, `$a->b`, `A::b`, `A::B`. */
   | { k: "attr"; obj: Expr; name: string; pos: Pos }
   | { k: "index"; obj: Expr; key: Expr }
@@ -150,6 +153,11 @@ export interface FunctionDef {
   /** The declared return type (`fun client(): OkHttpClient`), what a DI provider provides. */
   returnType?: Expr;
   /**
+   * The receiver of a Kotlin extension function (`fun S3Client.delete(...)`): a parameter named `this`, of the
+   * receiver's type, kept out of `params` (positions, overloads); a call gives it its object (`receiverArg`).
+   */
+  receiver?: Param;
+  /**
    * A Kotlin lambda's assignments to names it does not declare (`bucket = b`, `this.key = k`): properties of its
    * implicit receiver when it fills a DSL builder (`PutObjectRequest { bucket = b }`), in order.
    */
@@ -247,6 +255,17 @@ export function exprText(e: Expr): string {
 export function argFor(call: CallExpr, p: Param): Arg | undefined {
   const name = p.name.replace(/^\$/, "");
   return call.args.find((a) => a.name === name) ?? call.args.filter((a) => !a.name && !a.spread)[p.index];
+}
+
+/** What a call gives an extension function as its receiver: the object it is made on, else the caller's own `this`. */
+export function receiverArg(call: CallExpr): Expr {
+  return call.fn.k === "attr" ? call.fn.obj : { k: "name", name: "this", pos: call.pos };
+}
+
+/** The object a call is made on: `client` in `client.newCall(r)`, the extension's receiver for a bare `newCall(r)` in one. */
+export function callObject(call: CallExpr): Expr | undefined {
+  if (call.fn.k === "attr") return call.fn.obj;
+  return call.fn.k === "name" && call.fn.implicit ? { k: "name", name: "this", pos: call.pos } : undefined;
 }
 
 /** Direct sub-expressions, for walks over an expression tree. */
