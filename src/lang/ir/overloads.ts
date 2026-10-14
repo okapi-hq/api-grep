@@ -1,4 +1,4 @@
-import type { CallExpr, Expr, FunctionDef, Param } from "./model.js";
+import { exprText, type CallExpr, type Expr, type FunctionDef, type Param } from "./model.js";
 import { classField, classFieldType, lookup, receiverClass } from "./project.js";
 import type { IrCtx } from "./raw.js";
 
@@ -14,8 +14,11 @@ const SYNTHETIC = new Set(["lambda", "anonymous", "constructor"]);
 /** Types no other of the list is an instance of: two different ones never fit each other. */
 const DISTINCT = new Set(["String", "Boolean", ...NUMBERS, ...CLASSES, "GenericType", "TypeReference", "ParameterizedTypeReference", "HttpUrl", "URI", "URL"]);
 
+/** Extension functions are overloads of one another when they extend the same type, as written (Kotlin, #86). */
+const receiverText = (f: FunctionDef): string | undefined => (f.receiver?.type ? exprText(f.receiver.type) : undefined);
+
 const siblingsOf = (target: FunctionDef): FunctionDef[] =>
-  target.module.allFunctions.filter((f) => f.name === target.name && f.cls === target.cls && f.parent === target.parent);
+  target.module.allFunctions.filter((f) => f.name === target.name && f.cls === target.cls && f.parent === target.parent && receiverText(f) === receiverText(target));
 
 /** Whether the call's arguments (named ones by name) can be given to `f`: each parameter without a default gets one. */
 function fitsCount(f: FunctionDef, call: CallExpr): boolean {

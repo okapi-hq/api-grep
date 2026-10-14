@@ -483,6 +483,26 @@ exports[`regression fixtures > kotlin/di-koin 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/extensions 1`] = `
+[
+  "Catalog.kt:16 api.catalog-example.com GET /v1/items",
+  "Catalog.kt:19 api.catalog-example.com GET /v1/items/{id}",
+  "Catalog.kt:21 status.catalog-example.com GET /{path}",
+  "Catalog.kt:23 search.catalog-example.com GET /v1/search",
+  "Catalog.kt:28 status.catalog-example.com GET /legacy/{path}",
+  "Catalog.kt:38 unknown HEAD /",
+  "Catalog.kt:46 api.catalog-example.com GET /v1/items (wrapper:fetchPage)",
+  "Catalog.kt:48 api.catalog-example.com GET /v1/items/{id} (wrapper:fetchItem)",
+  "Catalog.kt:50 status.catalog-example.com GET /v1/health (wrapper:health)",
+  "Gallery.kt:14 aws DELETE /{Bucket}/originals/{photo} (wrapper:delete)",
+  "Gallery.kt:16 aws HEAD /{Bucket} (wrapper:exists)",
+  "Storage.kt:10 aws DELETE /{Bucket}/{Key}",
+  "Storage.kt:14 aws HEAD /{Bucket}",
+  "Storage.kt:22 aws DELETE /{Bucket}/{Key} (wrapper:delete)",
+  "Storage.kt:23 aws PUT /{Bucket}/{Key}",
+]
+`;
+
 exports[`regression fixtures > kotlin/feign 1`] = `
 [
   "Clients.kt:23 api.example-orders.com GET /v2/orders/{id}",

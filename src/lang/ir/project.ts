@@ -30,6 +30,8 @@ export class ProjectIndex {
   private readonly external: Set<string>;
   /** Project base classes per class, resolved once: every member lookup walks them (a Laravel model has many traits). */
   readonly bases = new Map<ClassDef, ClassDef[]>();
+  /** Extension functions by name (Kotlin `fun S3Client.delete(...)`): members of their receiver type, not names. */
+  readonly extensions = new Map<string, FunctionDef[]>();
 
   constructor(
     readonly lang: IrLanguage,
@@ -51,6 +53,7 @@ export class ProjectIndex {
       const q = m.name ? `${m.name}.${f.name}` : f.name;
       if (!this.functions.has(q)) this.functions.set(q, f);
     }
+    for (const f of m.allFunctions) if (f.receiver) this.extensions.set(f.name, [...(this.extensions.get(f.name) ?? []), f]);
     if (this.lang.packageScope) this.packages.set(m.name, [...(this.packages.get(m.name) ?? []), m]);
     if (!this.lang.sharedGlobals) return;
     for (const f of m.functions.values()) if (!this.shortFunctions.has(f.name)) this.shortFunctions.set(f.name, f);
@@ -217,7 +220,7 @@ function visibleInParent(fn: FunctionDef, name: string): boolean {
 /** Resolves a name where it is used: locals, parameters, enclosing functions, then the module and the project. */
 export function lookup(name: string, fn: FunctionDef, at: number | undefined, idx: ProjectIndex): Binding {
   const local = lastAssign(fn.assigns, name, at);
-  const param = fn.params.find((p) => p.name === name);
+  const param = fn.params.find((p) => p.name === name) ?? (fn.receiver?.name === name ? fn.receiver : undefined);
   // a parameter reassigned only later (`$url = $response->getHeader(...)` in a loop) is still the parameter here
   if (param && (!local || (at !== undefined && local.offset >= at))) {
     const edited = editedParam(fn, param, at);

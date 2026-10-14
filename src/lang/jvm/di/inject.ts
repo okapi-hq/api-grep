@@ -86,7 +86,8 @@ const params = new WeakMap<Param, Scoped | null>();
 function injectedParam(p: Param, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   // `@Value("${billing.url:https://...}") String url` of a bean method: the configuration value, not a parameter
   if (p.default && names(p.annotations).has("Value") && injecting(fn)) return { expr: p.default, fn };
-  if (p.kind !== "normal" || p.default || !p.type) return undefined;
+  // an extension function's receiver is the object it is called on, never injected
+  if (p.kind !== "normal" || p.default || !p.type || p === fn.receiver) return undefined;
   const hit = params.get(p);
   if (hit !== undefined) return hit ?? undefined;
   // set before reading: a provider reading its own type's parameter must not loop
