@@ -83,6 +83,7 @@ describe("operation", () => {
     ["an unknown GraphQL type", { type: "fragment" }],
     ["fields that are not strings", { fields: [1] }],
     ["alternatives that are not strings", { alternatives: [null] }],
+    ["arguments that are not by name", { arguments: { order: [1] } }],
   ])("rejects %s", (_, change) => {
     const report = operations();
     const call = report.calls[0]!;

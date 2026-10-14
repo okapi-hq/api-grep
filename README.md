@@ -230,8 +230,11 @@ the envelope (`rpc("getBalance", [address])`). GraphQL is recognized from the do
 a JSON body, `?query=`, a batch array, Octokit's `graphql()`), written in a string, a `gql` tagged template, an
 imported `.graphql` file or a codegen AST object (`{"kind":"Document","definitions":[...]}`, also through `print()`):
 `protocol: graphql` with the operation's `name` (its root fields when anonymous), `type`, and
-`fields`, the sorted leaf paths it selects with aliases resolved and fragments inlined; a persisted query is named by
-its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
+`fields`, the sorted leaf paths it selects with aliases resolved and fragments inlined, and `arguments`, the arguments
+written on selected fields by field path ([#56](https://github.com/okapi-hq/api-grep/issues/56)): a literal as its
+JSON value (an enum value its name), a variable `"$name"`, a computed part of a string `{name}`; a string or number
+under a credential name (`password`, `apiKey`) is `<redacted>`; a path that aliases select with different arguments
+has a list of them; absent when no selected field has any. A persisted query is named by its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
 (`Action` for AWS Query, `method` for Flickr): `protocol: action`.
@@ -365,6 +368,8 @@ by an XML library or sent with an XML content type is `xml` with its value unrea
       name: GetOrder             # null when no part of it is known
       type: query                # GraphQL only: query | mutation | subscription
       fields: [order.customer.email, order.id]   # GraphQL only: selected leaf paths, sorted, aliases resolved, fragments inlined
+      arguments:                 # GraphQL only, when a selected field has some: by field path, sorted
+        order: { id: $id }       # literals as JSON values (`first: 10`, `sortKey: CREATED_AT`), variables as "$name"
       dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
       from: document             # body | header | query | document
 ```
@@ -778,7 +783,7 @@ A scanned repository is treated as hostile input:
   (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
-  `graphql-limit` (schema 1.18) is a call whose GraphQL document was read past a bound: the call is reported with
+  `graphql-limit` (schema 1.19) is a call whose GraphQL document was read past a bound: the call is reported with
   the `name` and `type` the document's header gives, without `operation.fields` (past `operations`, without a name),
   and `detail` names the bound: `document-size` (100,000 characters), `document-parts` (built from 1,000 parts),
   `tokens` (50,000 parser tokens), `depth` (selection sets 32 deep), `fragment-expansion` (20,000 selection sets

@@ -30,11 +30,3 @@ export function partsOf(shape: Shape): Part[] | undefined {
   const value = shape.enum?.length === 1 ? shape.enum[0] : undefined;
   return typeof value === "string" ? [{ kind: "static", text: value }] : templates.get(shape);
 }
-
-/**
- * The literal text of such a string with `gap` for each computed part. A GraphQL document read with `{name}`
- * placeholders would select a field `name` (a `${Fragment}` not resolved, `` `${a} ${b}` `` sent as a search query).
- */
-export function literalOf(shape: Shape, gap: string): string | undefined {
-  return templates.get(shape)?.map((p) => (p.kind === "static" ? p.text : gap)).join("");
-}

@@ -39,7 +39,7 @@ describe("Relay (#67)", () => {
 
   it("compiled artifacts: the text of `params`, or the header of a persisted query", async () => {
     const r = await scanFixture("graphql-clients/relay");
-    expect(at(r, "Garden.tsx", 11).operation).toEqual({ protocol: "graphql", name: "SeedListQuery", type: "query", fields: ["seeds.id", "seeds.label"], dynamic: false, from: "document" });
+    expect(at(r, "Garden.tsx", 11).operation).toEqual({ protocol: "graphql", name: "SeedListQuery", type: "query", fields: ["seeds.id", "seeds.label"], arguments: { seeds: { first: "$first" } }, dynamic: false, from: "document" });
     expect(at(r, "Garden.tsx", 13).operation).toEqual({ protocol: "graphql", name: "CompostQuery", type: "query", dynamic: false, from: "document" });
   });
 

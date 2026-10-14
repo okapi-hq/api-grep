@@ -5,7 +5,7 @@ describe("documentOperations", () => {
   it("reads type, name and sorted leaf paths, aliases resolved", () => {
     const ops = documentOperations(`query GetOrder($id: ID!) { order(id: $id) { total: totalPriceSet { shopMoney { amount } } id customer { mail: email } } }`);
     expect(ops).toEqual([
-      { type: "query", name: "GetOrder", named: true, fields: ["order.customer.email", "order.id", "order.totalPriceSet.shopMoney.amount"] },
+      { type: "query", name: "GetOrder", named: true, fields: ["order.customer.email", "order.id", "order.totalPriceSet.shopMoney.amount"], arguments: { order: { id: "$id" } } },
     ]);
   });
 

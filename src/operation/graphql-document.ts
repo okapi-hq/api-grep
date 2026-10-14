@@ -1,4 +1,5 @@
 import { Kind, parse, print, type DocumentNode, type FragmentDefinitionNode, type OperationDefinitionNode, type SelectionSetNode } from "graphql";
+import { ArgumentCollector, type FieldArguments } from "./graphql-arguments.js";
 import type { GraphqlLimit } from "./limits.js";
 
 /**
@@ -28,6 +29,8 @@ export interface DocumentOperation {
   named: boolean;
   /** Sorted leaf paths (`order.customer.email`); undefined when a bound was reached. */
   fields?: string[];
+  /** The arguments of selected fields (#56), by path; undefined when none has any or a bound was reached. */
+  arguments?: FieldArguments;
   /** The bound reached while reading the fields. */
   limit?: GraphqlLimit;
 }
@@ -41,6 +44,7 @@ class Exhausted extends Error {
 interface Walk {
   fragments: Map<string, FragmentDefinitionNode>;
   paths: Set<string>;
+  args: ArgumentCollector;
   visits: number;
 }
 
@@ -51,6 +55,7 @@ function walk(set: SelectionSetNode, prefix: string, w: Walk, active: string[]):
     if (sel.kind === Kind.FIELD) {
       // an alias renames the result, not what is selected
       const path = prefix ? `${prefix}.${sel.name.value}` : sel.name.value;
+      w.args.add(path, sel.arguments);
       if (sel.selectionSet) walk(sel.selectionSet, path, w, [...active, ""]);
       else w.paths.add(path);
     } else if (sel.kind === Kind.INLINE_FRAGMENT) {
@@ -69,16 +74,17 @@ function walk(set: SelectionSetNode, prefix: string, w: Walk, active: string[]):
   }
 }
 
-/** The leaf paths an operation selects, sorted; the bound instead, past one. */
-function fieldsOf(op: OperationDefinitionNode, fragments: Map<string, FragmentDefinitionNode>): string[] | GraphqlLimit {
-  const w: Walk = { fragments, paths: new Set(), visits: 0 };
+/** The leaf paths an operation selects, sorted, and their arguments; neither past a bound, which is named instead. */
+function fieldsOf(op: OperationDefinitionNode, fragments: Map<string, FragmentDefinitionNode>): { fields?: string[]; arguments?: FieldArguments; limit?: GraphqlLimit } {
+  const w: Walk = { fragments, paths: new Set(), args: new ArgumentCollector(), visits: 0 };
   try {
     walk(op.selectionSet, "", w, []);
   } catch (err) {
-    if (err instanceof Exhausted) return err.limit;
+    if (err instanceof Exhausted) return { limit: err.limit };
     throw err;
   }
-  return [...w.paths].sort();
+  const args = w.args.result();
+  return { fields: [...w.paths].sort(), ...(args ? { arguments: args } : {}) };
 }
 
 function rootFields(fields: string[] | undefined, op: OperationDefinitionNode): string {
@@ -104,13 +110,6 @@ function parsed(text: string): DocumentNode | undefined {
   return typeof doc === "object" ? doc : undefined;
 }
 
-function operationOf(op: OperationDefinitionNode, fragments: Map<string, FragmentDefinitionNode>): DocumentOperation {
-  const read = fieldsOf(op, fragments);
-  const fields = typeof read === "string" ? undefined : read;
-  const name = op.name?.value;
-  return { type: op.operation, name: name ?? rootFields(fields, op), named: !!name, ...(typeof read === "string" ? { limit: read } : { fields: read }) };
-}
-
 /**
  * The operations of a document, in document order, or the bound past which it was not parsed. `operations` is
  * undefined when the text is not a GraphQL document with one.
@@ -121,7 +120,13 @@ export function readDocument(text: string): { operations?: DocumentOperation[]; 
   const fragments = new Map<string, FragmentDefinitionNode>();
   for (const d of doc.definitions) if (d.kind === Kind.FRAGMENT_DEFINITION) fragments.set(d.name.value, d);
   const ops = doc.definitions.filter((d): d is OperationDefinitionNode => d.kind === Kind.OPERATION_DEFINITION);
-  return ops.length === 0 ? {} : { operations: ops.map((op) => operationOf(op, fragments)) };
+  if (ops.length === 0) return {};
+  const operations = ops.map((op): DocumentOperation => {
+    const selected = fieldsOf(op, fragments);
+    const name = op.name?.value;
+    return { type: op.operation, name: name ?? rootFields(selected.fields, op), named: !!name, ...selected };
+  });
+  return { operations };
 }
 
 /** The operations of a document, in document order; undefined when the text is not a GraphQL document with one. */

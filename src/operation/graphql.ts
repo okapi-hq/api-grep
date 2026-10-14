@@ -1,8 +1,9 @@
 import type { ResolvedCall } from "../assemble.js";
 import type { Operation } from "../report/schema.js";
-import { literalOf, partsOf } from "../resolve/string-template.js";
+import { partsOf } from "../resolve/string-template.js";
 import type { Shape } from "../types.js";
 import { documentHeader, readDocument } from "./graphql-document.js";
+import { documentTemplate } from "./graphql-template.js";
 import { copyLimit, limitOf, withLimit, type GraphqlLimit } from "./limits.js";
 
 /**
@@ -55,20 +56,6 @@ function strings(s: Shape | undefined, acc: Strings = { values: [], templates: [
   return acc;
 }
 
-/** Marks a computed part while the text is checked: a private-use character, never part of a document's syntax. */
-const GAP = "\uE000";
-/** `query ${name} {`, `query Get${Kind} {`: a computed operation name. */
-const COMPUTED_NAME = /^\s*(?:#[^\n]*\n\s*)*(?:query|mutation|subscription)\s+[_0-9A-Za-z]*\uE000/;
-
-/**
- * The text of a document built with computed parts, read without them: one standing for a fragment or a selection
- * the scan could not resolve would otherwise read as a field. A computed operation name leaves the document unread.
- */
-function documentTemplate(s: Shape): string | undefined {
-  const text = literalOf(s, GAP);
-  return text === undefined || COMPUTED_NAME.test(text) ? undefined : text.replaceAll(GAP, "");
-}
-
 const graphql = (name: string | null, from: From, extra: Partial<Operation> = {}): Operation => ({ protocol: "graphql", name, ...extra, dynamic: name === null, from });
 
 /**
@@ -88,7 +75,12 @@ function fromText(text: string, operationName: string | undefined, nameFrom: Fro
   }
   const picked = operationName !== undefined ? ops.filter((op) => op.named && op.name === operationName) : ops;
   if (operationName !== undefined && picked.length === 0) return [withLimit(graphql(operationName, nameFrom), cut)];
-  return picked.map((op) => withLimit(graphql(op.name, "document", { type: op.type, ...(op.fields ? { fields: op.fields } : {}) }), op.limit ?? cut));
+  return picked.map((op) =>
+    withLimit(
+      graphql(op.name, "document", { type: op.type, ...(op.fields ? { fields: op.fields } : {}), ...(op.arguments ? { arguments: op.arguments } : {}) }),
+      op.limit ?? cut,
+    ),
+  );
 }
 
 interface Envelope {

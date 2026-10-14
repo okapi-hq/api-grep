@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/56",
+  "calls": [
+    {
+      "file": "garden.py", "line": 15, "provider": "api.example-greenhouse.dev", "operation": "RecentPlants",
+      "arguments": {"plants": {"first": 20, "after": "$cursor", "sortKey": "CREATED_AT", "filter": {"tags": ["fern"], "owner": null}}, "plants.nodes.photos": {"size": 64}}
+    },
+    {"file": "garden.py", "line": 20, "provider": "api.example-greenhouse.dev", "operation": "PlantCard", "arguments": {"plant": {"id": "{plant_id}"}, "plant.photo": [{"size": 64}, {"size": 512}]}},
+    {"file": "garden.py", "line": 25, "provider": "api.example-greenhouse.dev", "operation": "SignIn", "arguments": {"signIn": {"email": "gardener@example.com", "password": "<redacted>"}}},
+    {"file": "garden.py", "line": 29, "provider": "api.example-greenhouse.dev", "operation": "invite", "arguments": {"invite": {"code": "<redacted>"}}},
+    {"file": "garden.py", "line": 33, "provider": "api.example-greenhouse.dev", "operation": "PlantNames", "arguments": null}
+  ]
+}
