@@ -173,6 +173,14 @@ export interface FunctionDef {
    * (interceptors added in the loop), never as the variable's value.
    */
   loops?: { name: string; over: Expr; from: number; to: number }[];
+  /**
+   * `return` statements (Kotlin and Java), for the code after an early return that may not run (a header an
+   * interceptor sets after `if (x) return chain.proceed(request)`). `maybe`: one that runs on some paths only
+   * wherever it is (`x ?: return ...`).
+   */
+  exits?: { offset: number; maybe?: boolean }[];
+  /** A lambda run on some paths only (`token?.let { ... }`), for what its parent sets in it each time (`conditional.ts`). */
+  sometimes?: boolean;
 }
 
 export interface ClassDef {

@@ -54,9 +54,9 @@ function lastIndexOfKey(entries: Entry[], key: string | undefined): number {
 }
 
 /** Whether an edit always runs before the use, runs in one branch of an exhaustive chain, or may not run. */
-type Reach = { kind: "always" } | { kind: "group"; branch: Branch & { group: NonNullable<Branch["group"]> } } | { kind: "maybe" };
+export type Reach = { kind: "always" } | { kind: "group"; branch: Branch & { group: NonNullable<Branch["group"]> } } | { kind: "maybe" };
 
-function reachOf(fn: FunctionDef, offset: number, at: number | undefined): Reach {
+export function reachOf(fn: FunctionDef, offset: number, at: number | undefined): Reach {
   const inside = (b: Branch, o: number): boolean => b.start <= o && o <= b.end;
   const open = (fn.branches ?? []).filter((b) => inside(b, offset) && (at === undefined || !inside(b, at)));
   if (open.length === 0) return { kind: "always" };

@@ -190,6 +190,12 @@ export const ClientPartSchema = z
     from: z
       .enum(["interceptor", "default"])
       .describe("interceptor: an interceptor of the client (OkHttp `addInterceptor`). default: a default the client is built with (Ktor `defaultRequest`, Spring `defaultHeader`)."),
+    optional: z
+      .boolean()
+      .optional()
+      .describe(
+        "true: added on some requests only (set in a branch or a loop of the interceptor, or after an early return: `if (url.contains(...)) builder.header(...)`). Absent when added to every request.",
+      ),
   })
   .meta({ id: "ClientPart", description: "A query parameter or header the client adds to every request it sends, rather than the call itself." });
 

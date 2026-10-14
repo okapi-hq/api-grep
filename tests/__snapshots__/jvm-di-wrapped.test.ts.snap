@@ -415,6 +415,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
         {
           "from": "interceptor",
           "name": "x-radio-locale",
+          "optional": true,
           "where": "header",
         },
       ],
@@ -546,6 +547,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
         {
           "from": "interceptor",
           "name": "authorization",
+          "optional": true,
           "where": "header",
         },
       ],
