@@ -33,6 +33,7 @@
   "providers": [
     {
       "provider": "openai",
+      "id": "openai",
       "host": "api.openai.com",
       "auth": "bearer",
       "packages": ["org.springframework.ai:spring-ai-openai", "org.springframework.ai:spring-ai-starter-model-openai", "org.springframework.ai:spring-ai-openai-spring-boot-starter"],
@@ -48,6 +49,7 @@
     },
     {
       "provider": "anthropic",
+      "id": "anthropic",
       "host": "api.anthropic.com",
       "auth": "apikey",
       "packages": ["org.springframework.ai:spring-ai-anthropic", "org.springframework.ai:spring-ai-starter-model-anthropic", "org.springframework.ai:spring-ai-anthropic-spring-boot-starter"],
@@ -59,6 +61,7 @@
     },
     {
       "provider": "mistral",
+      "id": "mistral",
       "host": "api.mistral.ai",
       "auth": "bearer",
       "packages": ["org.springframework.ai:spring-ai-mistral-ai", "org.springframework.ai:spring-ai-starter-model-mistral-ai", "org.springframework.ai:spring-ai-mistral-ai-spring-boot-starter"],
@@ -71,6 +74,7 @@
     },
     {
       "provider": "ollama",
+      "id": "ollama",
       "host": "localhost:11434",
       "auth": "none",
       "packages": ["org.springframework.ai:spring-ai-ollama", "org.springframework.ai:spring-ai-starter-model-ollama", "org.springframework.ai:spring-ai-ollama-spring-boot-starter"],
@@ -79,6 +83,57 @@
       "kinds": {
         "chat": { "classes": ["OllamaChatModel"], "path": "/api/chat", "prefix": "spring.ai.ollama.chat" },
         "embedding": { "classes": ["OllamaEmbeddingModel"], "path": "/api/embed", "prefix": "spring.ai.ollama.embedding" }
+      }
+    },
+    {
+      "provider": "azure-openai",
+      "id": "azure-openai",
+      "host": "{resource}.openai.azure.com",
+      "auth": "apikey",
+      "packages": ["org.springframework.ai:spring-ai-azure-openai", "org.springframework.ai:spring-ai-starter-model-azure-openai", "org.springframework.ai:spring-ai-azure-openai-spring-boot-starter"],
+      "own": ["org.springframework.ai.azure.openai"],
+      "baseUrl": "spring.ai.azure.openai.endpoint",
+      "kinds": {
+        "chat": { "classes": ["AzureOpenAiChatModel"], "path": "/openai/deployments/{deployment}/chat/completions", "operationId": "getChatCompletions", "prefix": "spring.ai.azure.openai.chat", "modelKeys": ["options.deployment-name"] },
+        "embedding": { "classes": ["AzureOpenAiEmbeddingModel"], "path": "/openai/deployments/{deployment}/embeddings", "operationId": "getEmbeddings", "prefix": "spring.ai.azure.openai.embedding", "modelKeys": ["options.deployment-name"] },
+        "image": { "classes": ["AzureOpenAiImageModel"], "path": "/openai/deployments/{deployment}/images/generations", "operationId": "getImageGenerations", "prefix": "spring.ai.azure.openai.image", "modelKeys": ["options.deployment-name"] }
+      }
+    },
+    {
+      "provider": "aws-bedrock",
+      "id": "bedrock-converse",
+      "host": "bedrock-runtime.{region}.amazonaws.com",
+      "auth": "unknown",
+      "packages": ["org.springframework.ai:spring-ai-bedrock-converse", "org.springframework.ai:spring-ai-starter-model-bedrock-converse", "org.springframework.ai:spring-ai-bedrock-converse-spring-boot-starter"],
+      "own": ["org.springframework.ai.bedrock.converse"],
+      "region": "spring.ai.bedrock.aws.region",
+      "kinds": {
+        "chat": { "classes": ["BedrockProxyChatModel"], "path": "/model/{modelId}/converse", "streamPath": "/model/{modelId}/converse-stream", "operationId": "Converse", "prefix": "spring.ai.bedrock.converse.chat" }
+      }
+    },
+    {
+      "provider": "google-ai",
+      "id": "google-genai",
+      "host": "generativelanguage.googleapis.com",
+      "auth": "apikey",
+      "packages": ["org.springframework.ai:spring-ai-google-genai", "org.springframework.ai:spring-ai-starter-model-google-genai"],
+      "own": ["org.springframework.ai.google.genai"],
+      "vertexIf": "spring.ai.google.genai.project-id",
+      "kinds": {
+        "chat": { "classes": ["GoogleGenAiChatModel"], "path": "/v1beta/models/{model}:generateContent", "streamPath": "/v1beta/models/{model}:streamGenerateContent", "prefix": "spring.ai.google.genai.chat" },
+        "embedding": { "packages": ["org.springframework.ai:spring-ai-google-genai-embedding", "org.springframework.ai:spring-ai-starter-model-google-genai-embedding"], "classes": ["text.GoogleGenAiTextEmbeddingModel"], "bean": "googleGenAiTextEmbedding", "path": "/v1beta/models/{model}:batchEmbedContents", "prefix": "spring.ai.google.genai.embedding.text" }
+      }
+    },
+    {
+      "provider": "deepseek",
+      "id": "deepseek",
+      "host": "api.deepseek.com",
+      "auth": "bearer",
+      "packages": ["org.springframework.ai:spring-ai-deepseek", "org.springframework.ai:spring-ai-starter-model-deepseek"],
+      "own": ["org.springframework.ai.deepseek"],
+      "baseUrl": "spring.ai.deepseek.base-url",
+      "kinds": {
+        "chat": { "classes": ["DeepSeekChatModel"], "path": "/chat/completions", "prefix": "spring.ai.deepseek.chat" }
       }
     }
   ]

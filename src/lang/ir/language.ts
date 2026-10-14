@@ -136,6 +136,14 @@ export interface ConfiguredClient {
   /** Properties holding the model and the base URL, the first set wins. */
   model: string[];
   baseUrl: string[];
+  /** The value of the property choosing the provider of a kind among several starters (`spring.ai.model.chat=openai`). */
+  id?: string;
+  /** The bean name of the provider's model of this kind (`openAiChatModel`), as a `@Qualifier` or a parameter names it. */
+  bean?: string;
+  /** The property giving the region of a regional host (`bedrock-runtime.{region}.amazonaws.com`). */
+  region?: string;
+  /** A property that, when set, sends the requests elsewhere than the registry's host (Google GenAI on Vertex AI). */
+  elsewhereIf?: string;
 }
 
 /** What an option of an HTTP client call carries (`json=` -> `body:json`, `params=` -> `query`). */
@@ -242,6 +250,8 @@ export interface Manifests {
   /** Packages declared in the manifests of these directories, as `normalizePackage` writes them. */
   declared(dirs: Set<string>, rootDir: string): Set<string>;
   version(file: string, pkg: string, rootDir: string): string | undefined;
+  /** The version a BOM is declared or imported at (Maven `dependencyManagement`, a Gradle `platform`), when known. */
+  bom?(file: string, pkg: string, rootDir: string): string | undefined;
 }
 
 /** One source language of a front end: its grammar, its files and how a file lowers into the model. */

@@ -116,7 +116,8 @@ function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
     envHints: ctx.envHints,
     evaluate: (s) => urlParts(s, ctx),
     urlParts: (s) => baseUrlParts(s, ctx, m.spec.path.startsWith("/")),
-    param: (source, name) => sdkParam(m, source, name, ctx),
+    // `model`: the call's model fills the placeholder (a deployment or model id in the path, Spring AI's Bedrock)
+    param: (source, name) => (source === "model" ? (raw.model ? { expr: raw.model } : {}) : sdkParam(m, source, name, ctx)),
     arg: (i, name) => argOf(m.method, i, name),
     bodyProp: (name) => propOf(raw.body, name, ctx) ?? argAt(m.method, `kw:${name}`, ctx),
   };

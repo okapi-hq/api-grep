@@ -3,6 +3,8 @@ import type { ConfiguredClient, IrRegistryEntry, Scoped } from "../ir/language.j
 import type { CallExpr, Expr, FunctionDef } from "../ir/model.js";
 import type { IrCtx, IrRaw, Seg } from "../ir/raw.js";
 import { deref } from "../ir/values.js";
+import { selected } from "./spring-ai-beans.js";
+import { defaultModel, enumModel, springAiRelease } from "./spring-ai-models.js";
 import { springProperty } from "./spring-config.js";
 
 /**
@@ -40,15 +42,23 @@ function picked(entry: Configured, family: Configured[], declared: Set<string>, 
   return hit ? hit === entry : any && group[0] === entry;
 }
 
-/** Whether the entry is the provider of this chain: its own class, else the one provider of the family the build declares. */
-function applies(entry: Configured, model: Chain, fn: FunctionDef, ctx: IrCtx): boolean {
+/**
+ * Whether the entry is the provider of this chain: its own class, else the one provider of the family the build
+ * declares with a model of this kind, else the one a qualifier, `spring.ai.model.<kind>` or a bean name selects.
+ */
+function applies(entry: Configured, model: Chain, raw: IrRaw, ctx: IrCtx): boolean {
+  const fn = raw.fn;
   const family = familyOf(ctx).filter((e) => e.configured.family === entry.configured.family);
   const declared = ctx.declared?.(fn.module.file) ?? new Set<string>();
   const path = model.root.kind === "external" ? pathOf(model) : "";
   const owner = family.find((e) => under(path, e.configured.own));
   if (owner) return owner.provider === entry.provider && picked(entry, family, declared, true, ctx);
-  const providers = new Set(family.filter((e) => declared.has(ctx.idx.lang.normalizePackage(e.package))).map((e) => e.provider));
-  return providers.size === 1 && providers.has(entry.provider) && picked(entry, family, declared, false, ctx);
+  const ofKind = family.filter((e) => e.configured.kind === entry.configured.kind && declared.has(ctx.idx.lang.normalizePackage(e.package)));
+  const providers = new Set(ofKind.map((e) => e.provider));
+  if (!providers.has(entry.provider) || !picked(entry, family, declared, false, ctx)) return false;
+  if (providers.size === 1) return true;
+  const confs = [...providers].map((p) => ofKind.find((e) => e.provider === p)!.configured);
+  return selected(confs, raw.call.fn.k === "attr" ? raw.call.fn.obj : undefined, fn, ctx)?.id === entry.configured.id;
 }
 
 /** `X.builder().model(m)...`: the argument of its last `model(...)` setter; undefined when it sets none. */
@@ -125,15 +135,36 @@ function configured(keys: string[], fn: FunctionDef, ctx: IrCtx, edit?: (t: stri
   return undefined;
 }
 
+/** `bedrock-runtime.{region}.amazonaws.com` with the region the configuration sets. */
+function regional(entry: IrRegistryEntry, conf: ConfiguredClient, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const region = conf.region ? configured([conf.region], fn, ctx) : undefined;
+  const [before, after] = entry.host.split("{region}");
+  if (!region || after === undefined) return undefined;
+  return { expr: { k: "tmpl", parts: [{ k: "str", v: `https://${before}` }, region.expr, { k: "str", v: after }] }, fn };
+}
+
+/** The model the code or the configuration sets, else the starter's default for the release the build declares. */
+function modelOf(raw: IrRaw, chain: Chain, model: Chain, here: boolean, ctx: IrCtx): Scoped | undefined {
+  const entry = raw.sdk!.entry;
+  const conf = entry.configured!;
+  const release = springAiRelease(entry, raw.fn, ctx);
+  const code = codeModel(raw, chain, model, ctx);
+  if (code) return enumModel(code, release, ctx) ?? code;
+  if (here) return undefined;
+  return configured(conf.model, raw.fn, ctx) ?? defaultModel(conf, release, raw.fn);
+}
+
 /** The JVM's `refineSdk`: Spring AI entries apply to their provider only, with the configured model and base URL. */
 export function refineConfigured(raw: IrRaw, chain: Chain, ctx: IrCtx): IrRaw | undefined {
   const entry = raw.sdk?.entry;
   if (!entry?.configured) return raw;
   const conf = entry.configured;
   const model = modelChain(chain, ctx);
-  if (!applies(entry as Configured, model, raw.fn, ctx)) return undefined;
+  if (!applies(entry as Configured, model, raw, ctx)) return undefined;
+  // Google GenAI with a project goes to Vertex AI: another host and path, not read
+  if (conf.elsewhereIf && configured([conf.elsewhereIf], raw.fn, ctx)) return undefined;
   const here = builtHere(model, conf);
-  const modelValue = codeModel(raw, chain, model, ctx) ?? (here ? undefined : configured(conf.model, raw.fn, ctx));
-  const baseUrl = here ? builtBaseUrl(model, ctx) : configured(conf.baseUrl, raw.fn, ctx, withoutV1);
-  return { ...raw, model: raw.model ?? modelValue, baseUrl: raw.baseUrl ?? baseUrl };
+  const edit = raw.sdk!.spec.path.startsWith("/v1/") ? withoutV1 : undefined;
+  const baseUrl = here ? builtBaseUrl(model, ctx) : (configured(conf.baseUrl, raw.fn, ctx, edit) ?? regional(entry, conf, raw.fn, ctx));
+  return { ...raw, model: raw.model ?? modelOf(raw, chain, model, here, ctx), baseUrl: raw.baseUrl ?? baseUrl };
 }

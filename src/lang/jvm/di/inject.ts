@@ -140,6 +140,11 @@ function pointOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Injected | un
   return values.length === 1 && depth < 2 ? pointOf(values[0]!.value, values[0]!.fn, ctx, depth + 1) : undefined;
 }
 
+/** The injection point (qualifiers, name, declared type) an expression reads, if a container fills it. */
+export function injectionPoint(e: Expr, fn: FunctionDef, ctx: IrCtx): { at: Point; type?: Expr; fn: FunctionDef } | undefined {
+  return pointOf(e, fn, ctx);
+}
+
 /** `Lazy<T>`, `Provider<T>`, Spring's `ObjectProvider<T>`: a holder of the binding of `T`, read by `get()`. */
 const HOLDERS = new Set(["Lazy", "Provider", "ObjectProvider", "ObjectFactory"]);
 const READS = new Set(["get", "getObject", "getIfAvailable", "getIfUnique"]);
