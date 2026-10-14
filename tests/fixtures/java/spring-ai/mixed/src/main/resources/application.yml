@@ -1,0 +1,11 @@
+spring:
+  ai:
+    ollama:
+      chat:
+        options:
+          model: qwen3:8b
+    mistralai:
+      api-key: ${MISTRAL_API_KEY}
+      chat:
+        options:
+          model: mistral-small-latest

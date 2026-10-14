@@ -1,5 +1,5 @@
 {
-  "$comment": "Azure OpenAI client library for Java (`com.azure:azure-ai-openai`, also used from Kotlin): `new OpenAIClientBuilder().endpoint(e).credential(new AzureKeyCredential(k)).buildClient()`; operations take the deployment (or model) name first and an options object (`new ChatCompletionsOptions(messages).setMaxTokens(200)`) the SDK serializes itself. Paths as in the Python Azure registry, under the endpoint the builder gets; every request also carries `?api-version=`.",
+  "$comment": "Azure OpenAI client library for Java (`com.azure:azure-ai-openai`, also used from Kotlin): `new OpenAIClientBuilder().endpoint(e).credential(new AzureKeyCredential(k)).buildClient()`; operations take the deployment (or model) name first and an options object (`new ChatCompletionsOptions(messages).setMaxTokens(200)`, also filled on a variable) read as the body through the fluent maps of `clients.json` (constructor `args`, `setX` -> `x` in snake case). Paths as in the Python Azure registry, under the endpoint the builder gets; every request also carries `?api-version=`.",
   "package": "com.azure:azure-ai-openai",
   "imports": ["com.azure.ai.openai.OpenAIClientBuilder", "com.azure.ai.openai.OpenAIClient", "com.azure.ai.openai.OpenAIAsyncClient"],
   "provider": "azure-openai",

@@ -75,8 +75,17 @@
     "net.dv8tion:jda": ["net.dv8tion.jda"],
     "org.kohsuke:github-api": ["org.kohsuke.github"],
     "org.springframework.ai:spring-ai-anthropic": ["org.springframework.ai.anthropic"],
+    "org.springframework.ai:spring-ai-anthropic-spring-boot-starter": ["org.springframework.ai.anthropic"],
     "org.springframework.ai:spring-ai-mistral-ai": ["org.springframework.ai.mistralai"],
+    "org.springframework.ai:spring-ai-mistral-ai-spring-boot-starter": ["org.springframework.ai.mistralai"],
+    "org.springframework.ai:spring-ai-ollama": ["org.springframework.ai.ollama"],
+    "org.springframework.ai:spring-ai-ollama-spring-boot-starter": ["org.springframework.ai.ollama"],
     "org.springframework.ai:spring-ai-openai": ["org.springframework.ai.openai"],
+    "org.springframework.ai:spring-ai-openai-spring-boot-starter": ["org.springframework.ai.openai"],
+    "org.springframework.ai:spring-ai-starter-model-anthropic": ["org.springframework.ai.anthropic"],
+    "org.springframework.ai:spring-ai-starter-model-mistral-ai": ["org.springframework.ai.mistralai"],
+    "org.springframework.ai:spring-ai-starter-model-ollama": ["org.springframework.ai.ollama"],
+    "org.springframework.ai:spring-ai-starter-model-openai": ["org.springframework.ai.openai"],
     "org.telegram:telegrambots": ["org.telegram.telegrambots"],
     "software.amazon.awssdk:bedrockruntime": ["software.amazon.awssdk.services.bedrockruntime"],
     "software.amazon.awssdk:dynamodb": ["software.amazon.awssdk.services.dynamodb"],
@@ -88,8 +97,20 @@
     "software.amazon.awssdk:sns": ["software.amazon.awssdk.services.sns"],
     "software.amazon.awssdk:sqs": ["software.amazon.awssdk.services.sqs"]
   },
-  "$declaredOnlyComment": "Roots shared with artifacts of the same group that are not SDKs of providers.json (Android Firebase's `com.google.firebase.FirebaseApp`, `remoteconfig`, `analytics`): they count for the artifact only where the manifests declare it.",
+  "$declaredOnlyComment": "Roots shared with artifacts of the same group that are not SDKs of providers.json (Android Firebase's `com.google.firebase.FirebaseApp`, `remoteconfig`, `analytics`): they count for the artifact only where the manifests declare it. Spring AI's interfaces (`ChatClient`, `EmbeddingModel`) count for the model starter or module the manifests declare.",
   "declaredOnly": {
-    "com.google.firebase:firebase-admin": ["com.google.firebase"]
+    "com.google.firebase:firebase-admin": ["com.google.firebase"],
+    "org.springframework.ai:spring-ai-anthropic": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-anthropic-spring-boot-starter": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-mistral-ai": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-mistral-ai-spring-boot-starter": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-ollama": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-ollama-spring-boot-starter": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-openai": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-openai-spring-boot-starter": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-starter-model-anthropic": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-starter-model-mistral-ai": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-starter-model-ollama": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
+    "org.springframework.ai:spring-ai-starter-model-openai": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"]
   }
 }

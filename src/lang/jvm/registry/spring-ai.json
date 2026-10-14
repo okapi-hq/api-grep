@@ -1,0 +1,85 @@
+{
+  "$comment": "Spring AI (`org.springframework.ai`, Java and Kotlin). The code talks to beans the starter of the build configures: a `ChatClient` (from an injected `ChatClient.Builder`, or `ChatClient.create(model)` / `ChatClient.builder(model)...build()`) whose fluent chain `prompt(...).user(...).options(...).call()` is one request, sent at `call()` or `stream()`; a `ChatModel` (`call(prompt)`, `stream(prompt)`), an `EmbeddingModel` (`embed`, `call`), an `ImageModel`, a transcription or speech model. The interfaces are shared by every provider: the provider is the one model starter (or module) the manifests declare, else the provider of the model class the `ChatClient` is built on, else unknown (no call). A provider's own classes (`OpenAiChatModel`) are that provider's. The model is the one the code's options set (`OpenAiChatOptions.builder().model(m)`, in `options(...)` or the request object's second argument), else the `spring.ai.<provider>.*.model` property of `application.yml` / `application.properties`; the base URL the `base-url` property (or the `baseUrl(...)` of an API object the code builds). One entry per provider, artifact and model kind (`src/lang/jvm/registry/spring-ai.ts`).",
+  "generatedFrom": "manual (Spring AI 1.0 and 2.0 ChatClient, ChatModel, EmbeddingModel, ImageModel, TranscriptionModel, TextToSpeechModel; starter properties of each provider; paths of the openai-java, anthropic-java, LangChain4j Mistral and Ollama registries)",
+  "kinds": {
+    "chat": {
+      "shared": ["org.springframework.ai.chat.client.ChatClient", "org.springframework.ai.chat.model.ChatModel", "org.springframework.ai.chat.model.StreamingChatModel"],
+      "instances": ["ChatClient", "Builder", "builder", "create", "ChatModel", "StreamingChatModel"],
+      "builders": ["user", "system", "messages", "options", "advisors", "tools", "toolNames", "toolCallbacks", "toolContext", "functions", "function", "templateRenderer"],
+      "methods": ["prompt.call", "prompt.stream", "call", "stream"]
+    },
+    "embedding": {
+      "shared": ["org.springframework.ai.embedding.EmbeddingModel"],
+      "instances": ["EmbeddingModel", "builder"],
+      "methods": ["embed", "embedForResponse", "call"]
+    },
+    "image": {
+      "shared": ["org.springframework.ai.image.ImageModel"],
+      "instances": ["ImageModel", "builder"],
+      "methods": ["call"]
+    },
+    "transcription": {
+      "shared": ["org.springframework.ai.audio.transcription.TranscriptionModel"],
+      "instances": ["TranscriptionModel", "builder"],
+      "methods": ["call", "transcribe"],
+      "encoding": "multipart"
+    },
+    "speech": {
+      "shared": ["org.springframework.ai.audio.tts.TextToSpeechModel"],
+      "instances": ["TextToSpeechModel", "builder"],
+      "methods": ["call", "stream"]
+    }
+  },
+  "providers": [
+    {
+      "provider": "openai",
+      "host": "api.openai.com",
+      "auth": "bearer",
+      "packages": ["org.springframework.ai:spring-ai-openai", "org.springframework.ai:spring-ai-starter-model-openai", "org.springframework.ai:spring-ai-openai-spring-boot-starter"],
+      "own": ["org.springframework.ai.openai"],
+      "baseUrl": "spring.ai.openai.base-url",
+      "kinds": {
+        "chat": { "classes": ["OpenAiChatModel"], "path": "/v1/chat/completions", "operationId": "createChatCompletion", "prefix": "spring.ai.openai.chat" },
+        "embedding": { "classes": ["OpenAiEmbeddingModel"], "path": "/v1/embeddings", "operationId": "createEmbedding", "prefix": "spring.ai.openai.embedding" },
+        "image": { "classes": ["OpenAiImageModel"], "path": "/v1/images/generations", "operationId": "createImage", "prefix": "spring.ai.openai.image" },
+        "transcription": { "classes": ["OpenAiAudioTranscriptionModel"], "path": "/v1/audio/transcriptions", "operationId": "createTranscription", "prefix": "spring.ai.openai.audio.transcription" },
+        "speech": { "classes": ["OpenAiAudioSpeechModel"], "path": "/v1/audio/speech", "operationId": "createSpeech", "prefix": "spring.ai.openai.audio.speech" }
+      }
+    },
+    {
+      "provider": "anthropic",
+      "host": "api.anthropic.com",
+      "auth": "apikey",
+      "packages": ["org.springframework.ai:spring-ai-anthropic", "org.springframework.ai:spring-ai-starter-model-anthropic", "org.springframework.ai:spring-ai-anthropic-spring-boot-starter"],
+      "own": ["org.springframework.ai.anthropic"],
+      "baseUrl": "spring.ai.anthropic.base-url",
+      "kinds": {
+        "chat": { "classes": ["AnthropicChatModel"], "path": "/v1/messages", "operationId": "createMessage", "prefix": "spring.ai.anthropic.chat" }
+      }
+    },
+    {
+      "provider": "mistral",
+      "host": "api.mistral.ai",
+      "auth": "bearer",
+      "packages": ["org.springframework.ai:spring-ai-mistral-ai", "org.springframework.ai:spring-ai-starter-model-mistral-ai", "org.springframework.ai:spring-ai-mistral-ai-spring-boot-starter"],
+      "own": ["org.springframework.ai.mistralai"],
+      "baseUrl": "spring.ai.mistralai.base-url",
+      "kinds": {
+        "chat": { "classes": ["MistralAiChatModel"], "path": "/v1/chat/completions", "prefix": "spring.ai.mistralai.chat" },
+        "embedding": { "classes": ["MistralAiEmbeddingModel"], "path": "/v1/embeddings", "prefix": "spring.ai.mistralai.embedding" }
+      }
+    },
+    {
+      "provider": "ollama",
+      "host": "localhost:11434",
+      "auth": "none",
+      "packages": ["org.springframework.ai:spring-ai-ollama", "org.springframework.ai:spring-ai-starter-model-ollama", "org.springframework.ai:spring-ai-ollama-spring-boot-starter"],
+      "own": ["org.springframework.ai.ollama"],
+      "baseUrl": "spring.ai.ollama.base-url",
+      "kinds": {
+        "chat": { "classes": ["OllamaChatModel"], "path": "/api/chat", "prefix": "spring.ai.ollama.chat" },
+        "embedding": { "classes": ["OllamaEmbeddingModel"], "path": "/api/embed", "prefix": "spring.ai.ollama.embedding" }
+      }
+    }
+  ]
+}

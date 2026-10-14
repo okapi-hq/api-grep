@@ -30,6 +30,7 @@ import resendJava from "./resend-java.json" with { type: "json" };
 import sendgridJava from "./sendgrid-java.json" with { type: "json" };
 import sentry from "./sentry.json" with { type: "json" };
 import slackApiClient from "./slack-api-client.json" with { type: "json" };
+import { SPRING_AI_REGISTRY } from "./spring-ai.js";
 import stripeJava from "./stripe-java.json" with { type: "json" };
 import supabaseKt from "./supabase-kt.json" with { type: "json" };
 import twilio from "./twilio.json" with { type: "json" };
@@ -71,4 +72,5 @@ export const JVM_REGISTRY = [
   sentry,
   posthog,
   posthogJava,
+  ...(SPRING_AI_REGISTRY as unknown[]),
 ] as unknown as IrRegistryEntry[];

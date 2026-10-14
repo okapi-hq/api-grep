@@ -35,6 +35,11 @@ export interface IrMethodSpec extends MethodSpec {
   argFields?: { seg: string; fields: string[]; setters?: string };
   /** The call builds a model client whose settings are its requests' (LangChain4j `OpenAiChatModel.builder()...build()`): the built value is the body. */
   bodySelf?: boolean;
+  /**
+   * A `params` source holding the HTTP method the code sets (SendGrid's `request.setMethod(Method.GET)`: `arg:0.method`);
+   * the registry's method when it sets none, `DYNAMIC` when it is not known.
+   */
+  methodFrom?: string;
 }
 
 /**
@@ -69,6 +74,8 @@ export interface SetterRules {
   constructors?: boolean;
   /** Classes of those packages that stand for their one argument (`ModelId("gpt-4o")` -> `"gpt-4o"`). */
   wrappers?: string[];
+  /** Bare calls of a filling lambda that set a key from their two arguments (supabase-kt `update({ set("done", true) })`). */
+  putters?: string[];
 }
 
 /**
@@ -108,7 +115,27 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
    * constructor takes the host (`kw:host|1`). See `setup.ts`.
    */
   setupUrl?: { calls: string[]; arg: number; host: string };
+  /** A model client a framework configures from the build and its properties (Spring AI): see `ConfiguredClient`. */
+  configured?: ConfiguredClient;
   methods: Record<string, IrMethodSpec>;
+}
+
+/**
+ * A client a framework builds from the starter the build declares and from configuration properties (Spring AI): the
+ * entries of one `family` share interfaces (`ChatClient`, `ChatModel`) bound to the one provider the manifests declare,
+ * a chain through the provider's `own` packages (`OpenAiChatModel`) is that provider's, and the model and base URL are
+ * properties the code does not name. The language's `refineSdk` reads it.
+ */
+export interface ConfiguredClient {
+  family: string;
+  /** Entries of one provider and kind (its artifacts) share it: `chat`, `embedding`. */
+  kind: string;
+  own: string[];
+  /** The provider's model classes of this kind (`OpenAiChatModel`): built in the code, they ignore the properties. */
+  classes: string[];
+  /** Properties holding the model and the base URL, the first set wins. */
+  model: string[];
+  baseUrl: string[];
 }
 
 /** What an option of an HTTP client call carries (`json=` -> `body:json`, `params=` -> `query`). */
@@ -189,6 +216,12 @@ export interface FluentMapSpec {
   props?: Record<string, string>;
   /** Methods setting one entry from their argument (`request.setEndpoint("mail/send")` -> `endpoint`). */
   setters?: Record<string, string>;
+  /**
+   * Any other `setX(v)` sets the entry `x` in this case (Azure OpenAI options: `setMaxTokens(300)` -> `max_tokens`).
+   */
+  setterCase?: "snake";
+  /** The constructor's positional arguments are these entries (`ChatCompletionsOptions(messages)` -> `messages`). */
+  args?: string[];
   /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
   skip?: string[];
   /** Methods adding every entry of their argument (`map.putAll(other)`). */
@@ -265,6 +298,11 @@ export interface IrLanguage extends IrSource {
   resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
   /** Values a DI container gives (JVM: Dagger / Hilt, Spring, Koin), for parameters and fields nothing else sets. */
   injection?: IrInjection;
+  /**
+   * The last say on an SDK call a registry entry matched, with the whole chain (Spring AI: whether a shared interface
+   * is the entry's provider, the model and base URL its configuration gives); undefined when the entry does not apply.
+   */
+  refineSdk?: (raw: IrRaw, chain: Chain, ctx: IrCtx) => IrRaw | undefined;
   /**
    * A call that returns an instance of a project class it names (`retrofit.create(Api::class.java)`,
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.

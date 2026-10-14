@@ -28,12 +28,17 @@ function urlParts(s: Scoped, ctx: IrCtx): Part[] {
   return evaluate(s.expr, s.fn, ctx);
 }
 
-/** A client base URL given as a bare host (`withBaseUri('api.example.com/v1')`) is an https URL. */
-function baseUrlParts(s: Scoped, ctx: IrCtx): Part[] {
+/**
+ * A client base URL given as a bare host (`withBaseUri('api.example.com/v1')`) is an https URL. Registry paths start
+ * with `/`: a base URL's trailing slash (`config("https://api.eu.mailgun.net/", key)`) is not doubled.
+ */
+function baseUrlParts(s: Scoped, ctx: IrCtx, rooted: boolean): Part[] {
   const parts = urlParts(s, ctx);
   const first = parts[0];
   const bareHost = first?.kind === "static" && /^[a-z0-9-]+(?:\.[a-z0-9-]+)+(?::\d+)?(?:\/|$)/i.test(first.text);
-  return bareHost ? [{ kind: "static", text: "https://" }, ...parts] : parts;
+  const last = parts[parts.length - 1];
+  const trimmed = rooted && last?.kind === "static" && /[^/]\/$/.test(last.text) ? [...parts.slice(0, -1), { ...last, text: last.text.slice(0, -1) }] : parts;
+  return bareHost ? [{ kind: "static", text: "https://" }, ...trimmed] : trimmed;
 }
 
 function resolveUrl(url: Scoped | undefined, base: Scoped | undefined, ctx: IrCtx, join?: IrRaw["urlJoin"]): UrlShape {
@@ -55,10 +60,13 @@ function methodConstant(s: Scoped, ctx: IrCtx): string | undefined {
 
 function resolveMethod(raw: IrRaw, ctx: IrCtx, dynamic: DynamicPart[]): string {
   if (raw.impliedMethod) return raw.impliedMethod.toUpperCase();
-  if (!raw.method) return "GET";
-  const constant = methodConstant(raw.method, ctx);
+  return raw.method ? methodOf(raw.method, ctx, dynamic) : "GET";
+}
+
+function methodOf(method: Scoped, ctx: IrCtx, dynamic: DynamicPart[]): string {
+  const constant = methodConstant(method, ctx);
   if (constant) return constant;
-  const parts = urlParts(raw.method, ctx);
+  const parts = urlParts(method, ctx);
   const text = staticText(parts);
   if (text !== undefined) return text.toUpperCase() || "GET";
   const d = parts.find((p): p is Exclude<Part, { kind: "static" }> => p.kind !== "static");
@@ -90,6 +98,13 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   return { expr: (m.entry.setters && m2[1] === "arg" ? propOf(base, name, ctx) : undefined) ?? base };
 }
 
+/** The method an SDK request object was given (`methodFrom`), when the code sets one. */
+function sdkMethod(raw: IrRaw, ctx: IrCtx, dynamic: DynamicPart[]): string | undefined {
+  const m = raw.sdk!;
+  const from = m.spec.methodFrom ? sdkParam(m, m.spec.methodFrom, "method", ctx)?.expr : undefined;
+  return from ? methodOf(from, ctx, dynamic) : undefined;
+}
+
 function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
   const m = raw.sdk!;
   return {
@@ -100,7 +115,7 @@ function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
     baseUrl: raw.baseUrl?.expr.k === "null" ? undefined : raw.baseUrl,
     envHints: ctx.envHints,
     evaluate: (s) => urlParts(s, ctx),
-    urlParts: (s) => baseUrlParts(s, ctx),
+    urlParts: (s) => baseUrlParts(s, ctx, m.spec.path.startsWith("/")),
     param: (source, name) => sdkParam(m, source, name, ctx),
     arg: (i, name) => argOf(m.method, i, name),
     bodyProp: (name) => propOf(raw.body, name, ctx) ?? argAt(m.method, `kw:${name}`, ctx),
@@ -144,7 +159,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const ctx = withSelf(withSubst(base, raw.subst), raw.self);
   const dynamic: DynamicPart[] = [];
   const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
-  const method = target?.method ?? resolveMethod(raw, ctx, dynamic);
+  const method = target ? (sdkMethod(raw, ctx, dynamic) ?? target.method) : resolveMethod(raw, ctx, dynamic);
   // an SDK call to a URL the client was built with (`WebhookClient(url).send(...)`) goes there
   const url = target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
   dynamic.push(...url.dynamic);
