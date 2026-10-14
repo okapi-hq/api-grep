@@ -121,7 +121,10 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    JSX components that send a request (Relay `QueryRenderer`, their `props` as arguments) and `contextClients` the
    clients a framework hands to handlers by name (Hydrogen `context.storefront`). `bodyWrap` sends the body under a key,
    `argPath` switches the path when an argument is given, and `callersOnly` keeps a registry of common method names
-   (`order.list`) out of the manifest fallback for untyped parameters (#83). A JSON-RPC client library is the same
+   (`order.list`) out of the manifest fallback for untyped parameters (#83). #92 adds `paths` (other paths the
+   library picks by the ids it is given), `record` (a method of a record built with `new`, key `<Class>#<method>`:
+   `record:<name>` params, `body`, `withId`), `keyAliases`, a dotted `bodyWrap`, `document` (a document the library
+   writes itself), `refetchQuery` and `sendsThrough` (Relay's fragment hooks). A JSON-RPC client library is the same
    under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in

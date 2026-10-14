@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/92",
+  "calls": [
+    {"file": "sessions.js", "line": 5, "provider": "shopify"},
+    {"file": "sessions.js", "line": 10, "provider": "shopify"},
+    {"file": "sessions.js", "line": 15, "provider": "shopify"},
+    {"file": "sessions.js", "line": 25, "provider": "shopify"}
+  ]
+}

@@ -1,7 +1,7 @@
-import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression, type VariableDeclaration } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
-import { getProp } from "../ast/object.js";
+import { declarationsOf, getProp } from "../ast/object.js";
 import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint, type Endpoint } from "./endpoint.js";
 import { contractCall } from "./rpc-contract.js";
@@ -15,6 +15,8 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
   if (callee.instance) {
     const ctorNames = new Set(reg.instance?.names ?? ["default"]);
     const instChain = callee.instance.chain.filter((n) => !ctorNames.has(n));
+    // a method of a record built with `new` (`new shopify.rest.Product({ session }).save()`, #92)
+    if (callee.instance.kind === "new" && instChain.length > 0 && callee.chain.length === 1) keys.add(`${instChain.join(".")}#${callee.chain[0]}`);
     const flat = [...instChain, ...callee.chain].join(".");
     if (flat) keys.add(flat);
   } else if (!callee.viaType) {
@@ -22,7 +24,16 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
     if (exp) keys.add(exp);
   }
   for (const k of [...keys]) if (k.startsWith("rest.")) keys.add(k.slice(5));
+  for (const [from, to] of Object.entries(reg.keyAliases ?? {})) for (const k of [...keys]) if (k.startsWith(from)) keys.add(to + k.slice(from.length));
   return [...keys];
+}
+
+/** The variable a record method is called on (`product` of `product.save()`), declared with the record's `new`. */
+function recordOf(node: CallExpression): VariableDeclaration | undefined {
+  const callee = unwrap(node.getExpression());
+  const target = Node.isPropertyAccessExpression(callee) ? unwrap(callee.getExpression()) : undefined;
+  const decl = target && Node.isIdentifier(target) ? declarationsOf(target)[0] : undefined;
+  return decl && Node.isVariableDeclaration(decl) ? decl : undefined;
 }
 
 /** Base URL passed to the client's constructor (`createClient(url, key)`, `new OpenAI({ baseURL })`), also through builders. */
@@ -101,6 +112,8 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
+  const record = spec.record && Node.isCallExpression(node) ? recordOf(node) : undefined;
+  if (record) raw.record = { decl: record };
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
   if (base) raw.baseUrlExpr = base;
@@ -147,7 +160,26 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
     const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
+    if (spec?.sendsThrough && !keepsSender(node, spec.sendsThrough)) return null;
     if (spec) return buildRaw(node, reg, key, spec, callee);
   }
   return null;
+}
+
+/**
+ * Whether the code keeps the function a hook sends through: `const [ref, loadQuery] = useQueryLoader(Q)` does,
+ * `const { data } = usePaginationFragment(F, key)` and a result left unused do not.
+ */
+function keepsSender(node: CallExpression, through: NonNullable<MethodSpec["sendsThrough"]>): boolean {
+  let p = node.getParent();
+  while (p && (Node.isAwaitExpression(p) || Node.isParenthesizedExpression(p) || Node.isAsExpression(p) || Node.isNonNullExpression(p))) p = p.getParent();
+  if (!p || Node.isExpressionStatement(p)) return false;
+  if (!Node.isVariableDeclaration(p)) return true;
+  const name = p.getNameNode();
+  if (Node.isArrayBindingPattern(name)) {
+    const el = through.index !== undefined ? name.getElements()[through.index] : undefined;
+    return !!el && !Node.isOmittedExpression(el);
+  }
+  if (!Node.isObjectBindingPattern(name)) return true;
+  return name.getElements().some((el) => !!el.getDotDotDotToken() || (through.names ?? []).includes((el.getPropertyNameNode() ?? el.getNameNode()).getText()));
 }

@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/92",
+  "calls": [
+    {"file": "kites.py", "line": 8, "provider": "shopify"},
+    {"file": "kites.py", "line": 13, "provider": "shopify"},
+    {"file": "kites.py", "line": 15, "provider": "shopify"},
+    {"file": "kites.py", "line": 19, "provider": "shopify"},
+    {"file": "kites.py", "line": 23, "provider": "shopify"},
+    {"file": "kites.py", "line": 27, "provider": "shopify"},
+    {"file": "kites.py", "line": 28, "provider": "shopify"},
+    {"file": "kites.py", "line": 32, "provider": "shopify"},
+    {"file": "kites.py", "line": 37, "provider": "shopify"},
+    {"file": "kites.py", "line": 41, "provider": "shopify"},
+    {"file": "kites.py", "line": 45, "provider": "shopify"}
+  ]
+}

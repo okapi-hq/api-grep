@@ -842,7 +842,7 @@ operation?: {
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi, `useConnection()`, TypeChain factories, `connect` / `attach`, typed contracts and JSON ABIs (#85) |
-| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); bound diagnostic #55, literal arguments #56 |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); the Hydrogen cart, `useQueryLoader` and Relay fragment refetch and pagination hooks (TypeScript, JavaScript, #92); bound diagnostic #55, literal arguments #56 |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
 
 ### JSON-RPC (#34)
@@ -1056,8 +1056,15 @@ document with the `graphql` package's parser (no schema, no network):
     `components` list such components, their props in `props` read as the method's arguments
     (`src/detect/component.ts`). An artifact loaded with `require("./__generated__/Query.graphql")` is read from the
     scanned file it names (`export default` or `module.exports`).
-  - Not covered: the `loadQuery` function `useQueryLoader` returns, and the refetch and pagination of fragments
-    through hooks (`useRefetchableFragment`, `usePaginationFragment`), whose query the compiler generates (#92).
+  - **#92**: the `loadQuery` function `useQueryLoader(query)` returns, reported where the hook is called (its
+    variables are those `loadQuery` is later given: not read, #102); the refetch and pagination of fragments
+    (`useRefetchableFragment`, `usePaginationFragment`, `useBlockingPaginationFragment`,
+    `usePrefetchableForwardPaginationFragment`), whose query the compiler generates for the fragment's
+    `@refetchable(queryName: "...")` (`refetchQuery`, `src/resolve/relay-refetch.ts`): the artifact of that name
+    (`<queryName>.graphql.ts`) when the scan has it, else the query the compiler writes, the fragment at the root of a
+    `Query` fragment, under `viewer` for `Viewer`, under `node` otherwise. These hooks send only through the function
+    they return (`sendsThrough`): `const [ref, loadQuery] = useQueryLoader(Q)` and `const { data, loadNext } =
+    usePaginationFragment(...)` are calls, `const { data } = usePaginationFragment(...)` is none.
 - **Shopify's clients** (#67) are clients of one provider: registries of the `shopify` provider (whose host,
   `.myshopify.com`, also names raw calls to `{shop}.myshopify.com` since #83) with `documentArg`,
   as Octokit's `graphql`, at `{shop}.myshopify.com` (the shop is the session's or the code's) and the path
@@ -1087,7 +1094,13 @@ document with the `graphql` package's parser (no schema, no network):
     import: the registry lists them in `contextClients`, and in a file whose manifests declare `@shopify/hydrogen` a
     value of that name read from anywhere, with the method after it, is the key (`ReceiverResolver.contextCall`,
     `clientFrom: "manifest"`). The store is the one `createStorefrontClient` is given: the host stays
-    `{shop}.myshopify.com`.
+    `{shop}.myshopify.com`. #92 adds the cart handler (`createCartHandler`, `context.cart.addLines(lines)`,
+    `updateLines`, `removeLines`, `updateDiscountCodes`, `get()`...): Storefront API operations whose document the
+    library writes (`document` in the registry, with the operation names of Hydrogen 2025.1: `cartLinesAdd`,
+    `CartQuery`; the cart's own fields are the project's fragment, so `cart` stays a leaf), the method's argument
+    under its variable (`{ lines }`). `addLines` and the other updates send `cartCreate` instead when there is no cart
+    yet: the report names the method's own operation. A context client's name read from a variable the code fills
+    itself (`const cart = new Map()`) is not the framework's.
   - **REST** (#83): `shopify-api-node`'s resources (`shopify.product.list(params)`, `productImage.get(productId, id)`,
     `order.close(id)`: the methods its base and child mixins give each resource, and those built the same way, read
     from the library's sources by a one-off script; the body goes under the resource's key, `bodyWrap`:
@@ -1100,9 +1113,27 @@ document with the `graphql` package's parser (no schema, no network):
     `/admin/api/{version}/<resource>.json`; a path the code gives already carrying the slash or the `.json` is not
     doubled. Resource names are common words (`order.list`, `Order.find`): these registries are `callersOnly`, so an
     untyped parameter is theirs only when its callers pass one of their clients.
-  - Not covered: `admin.rest.resources` of the app packages, records saved through an instance (`product.save()`),
-    nested and owner-dependent Python resources (`Variant`, `Metafield`), `shopify-api-node` methods whose body
-    the library builds itself (`customerAddress.create`) (#92).
+  - **REST, #92**: `admin.rest.resources.Product.all({ session })` of the app packages (`keyAliases`: a key prefix
+    the code may write for the registry's); methods with several candidate paths (`Metafield.all({ session,
+    product_id })`, `Event.all`): `paths` lists the others and the one most placeholders of which the call gives a
+    value, all of those it maps given, is the request, as the library picks it (`src/resolve/sdk-template.ts`).
+    Records: `const product = new shopify.rest.Product({ session })`, then `product.save()`, `product.delete()` or
+    the resource's own methods (`order.close()`): keys `rest.<Class>#<method>` (a method of a value built with
+    `new`), ids read from the properties the code sets on the record before the call (`record:<id>` params,
+    `product.id = id`, through the edits of #38), `save()` sending those properties as the body (`record.body`) and
+    becoming a `PUT` to the record's path once its `id` is set (`record.withId`). A record read with `find` and saved
+    later is not followed (#102). `shopify-api-node` methods whose body the library builds itself:
+    `customerAddress.create(customerId, params)` sends `{ address: params }`, `fulfillmentOrder.close(id, message)`
+    `{ fulfillment_order: { message } }` (a dotted `bodyWrap`). Python `ShopifyAPI`: resources nested under an owner
+    (`Variant.find(product_id=p)`, `Transaction.find(order_id=o)`) or naming it (`Metafield.find(resource="products",
+    resource_id=p)`), through `paths` as above; records (`shopify.Product(attributes).save()` POSTs the attributes,
+    a `PUT` when they hold the `id`; `shopify.Product.find(id).save()` PUTs, `.destroy()` DELETEs,
+    `Order.find(id).close()` POSTs `/orders/{id}/close.json`). Attributes a Python record is given one by one
+    (`product.title = t`) are not read (#102).
+  - **Auth and proxy, #92**: `shopify.auth.tokenExchange(...)`, `refreshToken`, `callback`, `clientCredentials` and
+    `migrateToExpiringToken` request `POST /admin/oauth/access_token` (the body, the app's credentials, is the
+    library's); `shopify.clients.graphqlProxy({ session, rawBody })` forwards the document the browser sent: a GraphQL
+    operation the scan cannot name.
 - **sgqlc** (#67, `src/lang/python/registry/sgqlc.json`): the endpoint is called directly
   (`HTTPEndpoint(url, base_headers)(document, variables)`, also `RequestsEndpoint`): the registry's key is `()`, the
   call of the instance, and the endpoint is the one the instance is built with. The document is text, or an
@@ -1289,7 +1320,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), more AWS services and the AWS SDK for Kotlin (#49), Spring AI in #89 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); the Hydrogen cart and Relay fragment refetches (#92); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers (constructor parameters stored on `this` too, #83), manifests, `receiver-unknown`, `clientFrom` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 

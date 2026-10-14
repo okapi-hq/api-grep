@@ -1,0 +1,8 @@
+{
+  "name": "example-tea-cart",
+  "private": true,
+  "dependencies": {
+    "@shopify/hydrogen": "2025.1.1",
+    "@shopify/remix-oxygen": "2.0.10"
+  }
+}
