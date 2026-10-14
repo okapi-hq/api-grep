@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/94",
+  "calls": [
+    { "file": "Ledger.java", "line": 26, "provider": "api.ledger-example.com" },
+    { "file": "Ledger.java", "line": 30, "provider": "reports.ledger-example.com" },
+    { "file": "Ledger.java", "line": 34, "provider": "audit.ledger-example.com" },
+    { "file": "Ledger.java", "line": 38, "provider": "exports.ledger-example.com" }
+  ]
+}

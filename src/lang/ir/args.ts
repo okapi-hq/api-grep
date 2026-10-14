@@ -16,15 +16,17 @@ export function argOf(seg: Seg | undefined, index: number | undefined, name?: st
 
 /**
  * `"0"`, `"kw:base_url"`, `"0.base_uri"`, `"kw:options.base_url"`: an argument, or a key of a dict argument;
- * `"0|kw:supabase_url"` tries each in turn.
+ * `"0|kw:supabase_url"` tries each in turn; `"0/2"` is argument 0 of a call given two positional arguments only
+ * (Mailgun's `config(baseUrl, key)`, where `config(key)` takes no URL).
  */
 export function argAt(seg: Seg | undefined, where: string, ctx: IrCtx): Scoped | undefined {
   if (where.includes("|")) return where.split("|").reduce<Scoped | undefined>((hit, w) => hit ?? argAt(seg, w, ctx), undefined);
-  const m = /^(?:kw:(\w+)|(\d+))(?:\.(\w+))?$/.exec(where);
+  const m = /^(?:kw:(\w+)|(\d+)(?:\/(\d+))?)(?:\.(\w+))?$/.exec(where);
   if (!m) return undefined;
+  if (m[3] !== undefined && seg?.call?.args.filter((a) => !a.name && !a.spread).length !== Number(m[3])) return undefined;
   const arg = m[1] !== undefined ? argOf(seg, undefined, m[1]) : argOf(seg, Number(m[2]));
-  if (!arg || m[3] === undefined) return arg;
-  return lambdaProp(arg, m[3]) ?? propOf(arg, m[3], ctx);
+  if (!arg || m[4] === undefined) return arg;
+  return lambdaProp(arg, m[4]) ?? propOf(arg, m[4], ctx);
 }
 
 /** A Kotlin configuration lambda (`S3Client { endpointUrl = Url.parse(u) }`): the last value it gives the property. */

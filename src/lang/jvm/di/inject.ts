@@ -4,7 +4,8 @@ import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type
 import { namedCalls } from "../../ir/param-values.js";
 import { classField, lookup, receiverClass } from "../../ir/project.js";
 import type { IrCtx } from "../../ir/raw.js";
-import { candidates, collected, type Point } from "./collections.js";
+import { candidates, collected, everyBinding, type Point } from "./collections.js";
+import { configurationProperties } from "./config-props.js";
 import { diIndex, koinQualifiers, managedBy, names, PROVIDES, qualifiers, type Framework, type Provider } from "./providers.js";
 import { generic } from "./types.js";
 
@@ -34,8 +35,12 @@ export function provided(type: Expr | undefined, at: Point, fn: FunctionDef, ctx
   return cands ? pick(cands, at)?.value : undefined;
 }
 
-/** What an injection point of `type` gets: a collection of bindings (`List<T>`, `Set<T>`), else the one binding. */
-const valueFor = (type: Expr | undefined, at: Point, fn: FunctionDef, ctx: IrCtx): Scoped | undefined => collected(type, at, fn, ctx) ?? provided(type, at, fn, ctx);
+/**
+ * What an injection point of `type` gets: Spring configuration properties, a collection of bindings (`List<T>`,
+ * `Set<T>`), else the one binding.
+ */
+const valueFor = (type: Expr | undefined, at: Point, fn: FunctionDef, ctx: IrCtx): Scoped | undefined =>
+  (at.framework === "spring" ? configurationProperties(type, fn, ctx) : undefined) ?? collected(type, at, fn, ctx) ?? provided(type, at, fn, ctx);
 
 /** `get()`, `get(named("x"))`, `inject()`: a Koin lookup written as an argument. */
 const koinGet = (e: Expr): e is CallExpr => e.k === "call" && e.fn.k === "name" && (e.fn.name === "get" || e.fn.name === "inject");
@@ -138,21 +143,36 @@ function pointOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Injected | un
 /** `Lazy<T>`, `Provider<T>`, Spring's `ObjectProvider<T>`: a holder of the binding of `T`, read by `get()`. */
 const HOLDERS = new Set(["Lazy", "Provider", "ObjectProvider", "ObjectFactory"]);
 const READS = new Set(["get", "getObject", "getIfAvailable", "getIfUnique"]);
+/** Spring's `ObjectProvider<T>` also gives every bean of `T` (#94). */
+const STREAMS = new Set(["orderedStream", "stream"]);
 
-/** `client.get()` on an injected `Lazy<OkHttpClient>` (#75): the binding of `OkHttpClient` the qualifiers select. */
+/**
+ * `client.get()` on an injected `Lazy<OkHttpClient>` (#75): the binding of `OkHttpClient` the qualifiers select (a
+ * collection for `ObjectProvider<List<T>>`); `orderedStream()` on an `ObjectProvider<T>`: every bean of `T`.
+ */
 function heldValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
-  if (call.fn.k !== "attr" || !READS.has(call.fn.name) || call.args.length > 0) return undefined;
+  const name = call.fn.k === "attr" ? call.fn.name : "";
+  if (call.fn.k !== "attr" || !(READS.has(name) || STREAMS.has(name)) || call.args.length > 0) return undefined;
   const point = pointOf(call.fn.obj, fn, ctx);
   const g = generic(point?.type);
-  return point && g && HOLDERS.has(g.name) ? provided(g.arg, point.at, point.fn, ctx) : undefined;
+  if (!point || !g || !HOLDERS.has(g.name)) return undefined;
+  if (STREAMS.has(name)) return g.name === "ObjectProvider" ? everyBinding(g.arg, point.at, point.fn, ctx) : undefined;
+  return valueFor(g.arg, point.at, point.fn, ctx);
 }
 
 /** `get<HttpClient>()`, `inject<Api>(named("x"))`, `val client: HttpClient by inject()` (typed when lowered). */
 function injectedCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   if (injektLookup(call, fn, ctx)) return provided(call.typeArgs?.[0], { framework: "injekt", quals: [] }, fn, ctx);
+  if (koinGetAll(call, fn, ctx)) return everyBinding(call.typeArgs![0]!, { framework: "koin", quals: [] }, fn, ctx);
   if (!koinGet(call) || !call.typeArgs?.[0] || call.fn.k !== "name") return heldValue(call, fn, ctx);
   if (lookup(call.fn.name, fn, call.pos.offset, ctx.idx).kind === "function") return undefined;
   return provided(call.typeArgs[0], { framework: "koin", quals: koinQualifiers(call, fn, ctx) }, fn, ctx);
+}
+
+/** Koin's `getAll<Interceptor>()`: every definition bound to the type (#94). */
+function koinGetAll(call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
+  if (call.fn.k !== "name" || call.fn.name !== "getAll" || !call.typeArgs?.[0] || call.args.length > 0) return false;
+  return lookup("getAll", fn, call.pos.offset, ctx.idx).kind !== "function";
 }
 
 const INJEKT_LOOKUPS = new Set(["injectLazy", "injectValue", "get", "getInstance"]);

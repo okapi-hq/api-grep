@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/94",
+  "calls": [
+    { "file": "Repositories.kt", "line": 7, "provider": "track.parcels-example.com" },
+    { "file": "Repositories.kt", "line": 11, "provider": "labels.parcels-example.com" },
+    { "file": "Repositories.kt", "line": 15, "provider": "carriers.parcels-example.com" }
+  ]
+}

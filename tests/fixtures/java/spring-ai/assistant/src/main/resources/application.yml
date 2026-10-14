@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: assistant
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini   # the default model of every chat
+          temperature: 0.3
+      embedding:
+        options:
+          model: "text-embedding-3-small"
+    # unused here: the build declares the OpenAI starter only
+    anthropic:
+      chat:
+        options:
+          model: claude-haiku-4-5
+server:
+  port: 8081
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  ai:
+    openai:
+      chat:
+        options:
+          model: gpt-4.1

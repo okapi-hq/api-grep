@@ -17,6 +17,8 @@ export interface IrCtx {
   declared?: (file: string) => Set<string>;
   /** Reading a caller's argument for a parameter's values (`param-values.ts`): its own parameters are not followed up. */
   callerLevel?: boolean;
+  /** The scanned directory: configuration files the code does not name are read below it only. */
+  rootDir?: string;
 }
 
 /** The context for code running on an object of class `cls`. */

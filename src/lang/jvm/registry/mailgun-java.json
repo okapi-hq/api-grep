@@ -1,5 +1,5 @@
 {
-  "$comment": "mailgun-java (also used from Kotlin): `MailgunClient.config(key).createApi(MailgunMessagesApi::class.java)` (or an injected `MailgunMessagesApi`), then `sendMessage(domain, Message.builder().from(f).to(t).subject(s).text(x).build())`: the message's builder fields are the multipart form, the domain is in the path. The EU host is given as the first argument of the two-argument `config(baseUrl, key)`, which is not told apart from `config(key)`: the host is the US one.",
+  "$comment": "mailgun-java (also used from Kotlin): `MailgunClient.config(key).createApi(MailgunMessagesApi::class.java)` (or an injected `MailgunMessagesApi`), then `sendMessage(domain, Message.builder().from(f).to(t).subject(s).text(x).build())`: the message's builder fields are the multipart form, the domain is in the path. The EU host is the first argument of the two-argument `config(baseUrl, key)` (`instance.urlArg` `0/2`); `config(key)` keeps the US one.",
   "package": "com.mailgun:mailgun-java",
   "imports": ["com.mailgun.client.MailgunClient", "com.mailgun.api.v3.MailgunMessagesApi", "com.mailgun.api.v3.MailgunDomainsApi", "com.mailgun.api.v3.MailgunEventsApi"],
   "provider": "mailgun",
@@ -7,7 +7,7 @@
   "auth": "basic",
   "inlinePathLiterals": true,
   "generatedFrom": "manual (mailgun-java API interfaces, paths of the PHP mailgun registry)",
-  "instance": { "names": ["createApi", "createAsyncApi", "MailgunMessagesApi", "MailgunDomainsApi", "MailgunEventsApi"] },
+  "instance": { "names": ["createApi", "createAsyncApi", "MailgunMessagesApi", "MailgunDomainsApi", "MailgunEventsApi"], "urlArg": { "config": "0/2" } },
   "setters": {
     "packages": ["com.mailgun.model"],
     "case": "camel"

@@ -162,6 +162,12 @@ export interface FunctionDef {
    * implicit receiver when it fills a DSL builder (`PutObjectRequest { bucket = b }`), in order.
    */
   props?: { name: string; value: Expr; offset: number }[];
+  /**
+   * Loops over a collection (`for (Interceptor i : interceptors)`, `for (i in interceptors)`): the variable is each
+   * element of `over` between `from` and `to` (the loop's offsets). Read where one element stands for all
+   * (interceptors added in the loop), never as the variable's value.
+   */
+  loops?: { name: string; over: Expr; from: number; to: number }[];
 }
 
 export interface ClassDef {

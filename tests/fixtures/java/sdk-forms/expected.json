@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/89",
+  "skipped": [],
+  "calls": [
+    { "file": "Assistant.java", "line": 27, "provider": "azure-openai" },
+    { "file": "Assistant.java", "line": 31, "provider": "azure-openai" },
+    { "file": "Drafts.java", "line": 24, "provider": "anthropic" },
+    { "file": "Drafts.java", "line": 31, "provider": "anthropic" },
+    { "file": "Notices.java", "line": 19, "provider": "sendgrid" },
+    { "file": "Notices.java", "line": 26, "provider": "sendgrid" },
+    { "file": "Notices.java", "line": 34, "provider": "sendgrid" },
+    { "file": "Notices.java", "line": 41, "provider": "sendgrid" },
+    { "file": "Notices.java", "line": 45, "provider": "mailgun" },
+    { "file": "Notices.java", "line": 49, "provider": "mailgun" }
+  ]
+}

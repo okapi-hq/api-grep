@@ -3,6 +3,8 @@ import type { Scoped, SetterRules } from "./language.js";
 import { children, dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
 import { appliedSteps } from "./applied.js";
+import { evaluate } from "./evaluate.js";
+import { staticText } from "../../resolve/parts.js";
 import { mayNotRun } from "./edits.js";
 import { scopedIn } from "./fluent.js";
 import type { IrCtx } from "./raw.js";
@@ -47,7 +49,8 @@ function appliedSetters(call: CallExpr): Setter[] {
 function setterChain(e: Expr): { root: Expr; setters: Setter[] } {
   const setters: Setter[] = [];
   let cur = e;
-  while (cur.k === "call" && cur.fn.k === "attr" && !startOf(cur)) {
+  // a method of the class (`this.base()`) is where the chain starts, not a setter
+  while (cur.k === "call" && cur.fn.k === "attr" && cur.fn.obj.k !== "this" && !startOf(cur)) {
     setters.unshift({ name: cur.fn.name, args: cur.args }, ...appliedSetters(cur));
     cur = cur.fn.obj;
   }
@@ -136,11 +139,18 @@ function fieldOf(name: string, rules: SetterRules): Field | undefined {
 const str = (v: string): Expr => ({ k: "str", v });
 
 /** `applyMutation(b -> b.key(k))` (AWS SDK for Java 2.x): the lambda's setters are the builder's own. */
-function mutated(setters: Setter[], fn: FunctionDef): Setter[] {
+function mutated(setters: Setter[], fn: FunctionDef, rules: SetterRules): Setter[] {
   return setters.flatMap((s) => {
     const a = s.name === "applyMutation" && s.args.length === 1 ? s.args[0]!.value : undefined;
-    return a?.k === "fnref" && a.fn.params.length === 1 ? settersIn(lambdaSetters(a.fn), a.fn, fn) : [s];
+    return a?.k === "fnref" && a.fn.params.length === 1 ? settersIn(lambdaSetters(a.fn, rules), a.fn, fn) : [s];
   });
+}
+
+/** `set(Columns.DONE, true)`: a key named by a constant (also of a nested `object`) is its text. */
+function putKey(a: Expr, fn: FunctionDef, ctx: IrCtx): Expr {
+  if (a.k === "str") return a;
+  const text = staticText(evaluate(a, fn, ctx));
+  return text !== undefined ? { k: "str", v: text } : a;
 }
 
 /** The setters as a dict: one entry per field, list fields gathering their `add` items, map fields their `put` keys. */
@@ -148,9 +158,16 @@ function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRul
   const entries: Entry[] = [];
   const byField = new Map<string, Entry>();
   const always = new Set<string>();
-  for (const s of mutated(setters, fn)) {
-    const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
+  for (const s of mutated(setters, fn, rules)) {
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
+    // `set("name", v)` in supabase-kt's `update({ ... })`: a key of the value itself
+    if (rules.putters?.includes(s.name) && a && b) {
+      const key = putKey(a, fn, ctx);
+      entries.push({ key, value: b });
+      if (!s.optional && key.k === "str") always.add(key.v);
+      continue;
+    }
+    const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
     const f = named?.kind === "item" ? { ...named, kind: b ? ("put" as const) : ("add" as const) } : named;
     if (!f || !a) continue;
     if (!s.optional) always.add(f.field);
@@ -202,23 +219,39 @@ function innerCalls(lambda: FunctionDef): Set<Expr> {
  * What a lambda filling a builder sets, in order: calls on its parameter (`{ it.bucket(b) }`), and in Kotlin the
  * properties it assigns on its receiver (`{ bucket = b }`) and the nested builders it fills (`{ inferenceConfig { ... } }`).
  */
-function lambdaSetters(lambda: FunctionDef): Setter[] {
+function lambdaSetters(lambda: FunctionDef, rules: SetterRules): Setter[] {
   const param = lambda.params.length === 1 ? lambda.params[0]!.name : undefined;
   const out = param ? steps(lambda, param, -1, Number.POSITIVE_INFINITY) : [];
   const inner = lambda.calls.some((c) => c.fn.k === "name") ? innerCalls(lambda) : new Set<Expr>();
   for (const c of lambda.calls) {
     const name = c.fn.k === "name" ? c.fn.name : "";
     const nested = /^[a-z]/.test(name) && !SCOPE_FUNCTIONS.has(name) && c.args.length === 1 && c.args[0]!.value.k === "fnref";
-    if (nested && !inner.has(c)) out.push({ name, args: c.args, offset: c.pos.offset });
+    const put = !!rules.putters?.includes(name) && c.args.length === 2;
+    if ((nested || put) && !inner.has(c)) out.push({ name, args: c.args, offset: c.pos.offset, ...(put && mayNotRun(lambda, c.pos.offset, undefined) ? { optional: true } : {}) });
   }
+  if (rules.putters) out.push(...closurePuts(lambda, rules.putters));
   for (const p of lambda.props ?? []) out.push({ name: p.name, args: [{ value: p.value }], offset: p.offset });
   return out.sort((a, b) => (a.offset ?? 0) - (b.offset ?? 0));
+}
+
+/** Keys put in lambdas nested in a filling lambda (`text?.let { set("text", it) }`): they may not run. */
+function closurePuts(lambda: FunctionDef, putters: string[]): Setter[] {
+  const out: Setter[] = [];
+  const inner = lambda.module.allFunctions.filter((f) => f.parent === lambda);
+  for (const f of inner) {
+    for (const c of f.calls) {
+      const name = c.fn.k === "name" ? c.fn.name : "";
+      const value = c.args[1]?.value;
+      if (putters.includes(name) && c.args.length === 2 && value) out.push({ name, args: [c.args[0]!, { value: scopedIn(value, f, lambda) }], offset: c.pos.offset, optional: true });
+    }
+  }
+  return out;
 }
 
 /** A lambda given to a setter: the dict of the nested builder it fills, read in the lambda's scope. */
 function nestedLambda(e: Expr, ctx: IrCtx, rules: SetterRules): Expr | undefined {
   if (e.k !== "fnref" || e.fn.params.length > 1) return undefined;
-  const setters = lambdaSetters(e.fn);
+  const setters = lambdaSetters(e.fn, rules);
   return setters.length > 0 ? { k: "scoped", expr: dictOf(setters, e.fn, ctx, rules), fn: e.fn } : undefined;
 }
 
@@ -226,28 +259,87 @@ function nestedLambda(e: Expr, ctx: IrCtx, rules: SetterRules): Expr | undefined
 const settersIn = (setters: Setter[], from: FunctionDef, into: FunctionDef): Setter[] =>
   from === into ? setters : setters.map((s) => ({ ...s, args: s.args.map((a) => ({ ...a, value: scopedIn(a.value, from, into) })) }));
 
+interface Builder {
+  rules: SetterRules;
+  setters: Setter[];
+}
+
 /** The setter rules of a built value and its setters, in order (those of the value it was copied from first). */
-function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuilders | undefined, depth: number): { rules: SetterRules; setters: Setter[] } | undefined {
+function built(call: CallExpr, fn: FunctionDef, ctx: IrCtx, project: ProjectBuilders | undefined, depth: number): Builder | undefined {
   if (call.fn.k !== "attr" || call.fn.name !== "build" || call.args.length > 0 || depth > MAX_COPIES) return undefined;
   const { root, setters } = setterChain(call.fn.obj);
-  const cls = startOf(root);
-  if (cls) {
-    const rules = rulesFor(cls, fn, ctx, project);
-    return rules ? { rules, setters } : undefined;
-  }
-  if (root.k !== "name") return undefined;
-  const b = lookup(root.name, fn, root.pos.offset, ctx.idx);
-  if (b.kind !== "value") return undefined;
+  const b = root.k === "name" && setters[0]?.name === "toBuilder" ? lookup(root.name, fn, root.pos.offset, ctx.idx) : undefined;
   // `base.toBuilder().a(1).build()` (Lombok `toBuilder = true`): what `base` was built with, then the new setters
-  if (setters[0]?.name === "toBuilder") {
+  if (b?.kind === "value") {
     const base = b.assign.value.k === "call" ? built(b.assign.value, b.fn, ctx, project, depth + 1) : undefined;
     return base ? { rules: base.rules, setters: [...settersIn(base.setters, b.fn, fn), ...setters] } : undefined;
   }
-  if (b.fn !== fn) return undefined;
-  const start = setterChain(b.assign.value);
-  const varCls = startOf(start.root);
-  const rules = varCls ? rulesFor(varCls, fn, ctx, project) : undefined;
-  return rules ? { rules, setters: [...start.setters, ...steps(fn, root.name, b.assign.offset, call.pos.offset), ...setters] } : undefined;
+  return builderOf(call.fn.obj, fn, ctx, { project, depth, at: call.pos.offset });
+}
+
+interface Reading {
+  project: ProjectBuilders | undefined;
+  depth: number;
+  /** Where the builder is used: steps on a variable holding it count until there. */
+  at: number;
+}
+
+/**
+ * A builder before its `build()`: `X.builder().a(1)`, a variable of the function holding one with the steps made on
+ * it (also by project functions it is given to: `defaults(b)`), or a project function returning one (`base().a(1)`).
+ */
+function builderOf(e: Expr, fn: FunctionDef, ctx: IrCtx, r: Reading): Builder | undefined {
+  const { root, setters } = setterChain(e);
+  const cls = startOf(root);
+  if (cls) {
+    const rules = rulesFor(cls, fn, ctx, r.project);
+    return rules ? { rules, setters } : undefined;
+  }
+  if (r.depth > MAX_COPIES) return undefined;
+  const next = { ...r, depth: r.depth + 1 };
+  if (root.k === "call") {
+    const made = factoryBuilder(root, fn, ctx, next);
+    return made ? { rules: made.rules, setters: [...made.setters, ...setters] } : undefined;
+  }
+  if (root.k !== "name") return undefined;
+  const b = lookup(root.name, fn, root.pos.offset, ctx.idx);
+  if (b.kind !== "value" || b.fn !== fn) return undefined;
+  const start = builderOf(b.assign.value, fn, ctx, { ...next, at: b.assign.offset });
+  if (!start) return undefined;
+  const filled = [...steps(fn, root.name, b.assign.offset, r.at), ...helperSteps(fn, root.name, b.assign.offset, r.at, ctx)];
+  return { rules: start.rules, setters: [...start.setters, ...filled.sort((x, y) => (x.offset ?? 0) - (y.offset ?? 0)), ...setters] };
+}
+
+/** `base()` returning `X.builder().model(m)`: the builder its first return makes, read in the caller. */
+function factoryBuilder(call: CallExpr, fn: FunctionDef, ctx: IrCtx, r: Reading): Builder | undefined {
+  // a function of the class or the file (`base()`, `this.base()`); library calls (`Request.Builder()`) are not looked up
+  const own = call.fn.k === "name" || (call.fn.k === "attr" && call.fn.obj.k === "this");
+  if (!own || call.args.length > 0) return undefined;
+  const c = valueChain(call.fn, fn, ctx);
+  if (c.root.kind !== "function" || c.segs.length > 0) return undefined;
+  const target = c.root.fn;
+  for (const ret of target.returns) {
+    const made = builderOf(ret, target, ctx, { ...r, at: Number.POSITIVE_INFINITY });
+    if (made) return { rules: made.rules, setters: settersIn(made.setters, target, fn) };
+  }
+  return undefined;
+}
+
+/** `defaults(b)` between `from` and `to`: the steps the project function makes on the parameter it gets `b` as. */
+function helperSteps(fn: FunctionDef, name: string, from: number, to: number, ctx: IrCtx): Setter[] {
+  const out: Setter[] = [];
+  for (const c of fn.calls) {
+    const i = c.args.findIndex((a) => !a.name && !a.spread && a.value.k === "name" && a.value.name === name);
+    if (c.pos.offset <= from || c.pos.offset >= to || i < 0) continue;
+    const chain = valueChain(c.fn, fn, ctx);
+    const target = chain.root.kind === "function" && chain.segs.length === 0 ? chain.root.fn : undefined;
+    const param = target?.params[i];
+    if (!target || !param || target === fn) continue;
+    const optional = mayNotRun(fn, c.pos.offset, Number.isFinite(to) ? to : undefined);
+    const own = settersIn(steps(target, param.name, -1, Number.POSITIVE_INFINITY), target, fn);
+    out.push(...own.map((s) => ({ ...s, offset: c.pos.offset, ...(optional || s.optional ? { optional: true } : {}) })));
+  }
+  return out;
 }
 
 /**
@@ -288,5 +380,8 @@ export function lambdaValue(s: Scoped, rules: SetterRules, ctx: IrCtx): Scoped |
   if (s.expr.k !== "fnref") return undefined;
   const lambda = s.expr.fn;
   if (lambda.params.length !== 1) return undefined;
-  return { expr: dictOf(lambdaSetters(lambda), lambda, ctx, rules), fn: lambda };
+  const setters = lambdaSetters(lambda, rules);
+  // a lambda putting no key the scan reads (keys set in a loop, by a helper) is not an empty body
+  if (rules.putters && setters.length === 0) return undefined;
+  return { expr: dictOf(setters, lambda, ctx, rules), fn: lambda };
 }

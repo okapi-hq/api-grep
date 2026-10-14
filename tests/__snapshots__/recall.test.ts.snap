@@ -261,10 +261,26 @@ exports[`regression fixtures > java/const-names 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/di-config 1`] = `
+[
+  "Clients.java:29 api.payments-example.com POST /v1/charges",
+  "Clients.java:43 rates.shipping-example.com GET /v2/rates",
+]
+`;
+
 exports[`regression fixtures > java/di-dagger 1`] = `
 [
   "Net.java:38 tracking.parcels-example.com GET /api/parcels/{id}",
   "Net.java:51 labels.parcels-example.com GET /v1/labels/{id}",
+]
+`;
+
+exports[`regression fixtures > java/di-interceptors 1`] = `
+[
+  "Ledger.java:26 api.ledger-example.com GET /v1/entries",
+  "Ledger.java:30 reports.ledger-example.com GET /v1/reports",
+  "Ledger.java:34 audit.ledger-example.com GET /v1/events",
+  "Ledger.java:38 exports.ledger-example.com GET /v1/exports",
 ]
 `;
 
@@ -452,6 +468,21 @@ exports[`regression fixtures > java/sdk-ai 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/sdk-forms 1`] = `
+[
+  "Assistant.java:27 azure-openai POST /openai/deployments/{model}/chat/completions",
+  "Assistant.java:31 azure-openai POST /openai/deployments/{model}/images/generations",
+  "Drafts.java:24 anthropic POST /v1/messages",
+  "Drafts.java:31 anthropic POST /v1/messages",
+  "Notices.java:19 sendgrid GET /v3/suppression/bounces",
+  "Notices.java:26 sendgrid DELETE /v3/asm/suppressions/global/{email}",
+  "Notices.java:34 sendgrid POST /v3/mail/send",
+  "Notices.java:41 sendgrid DYNAMIC /v3/{endpoint}",
+  "Notices.java:45 mailgun POST /v3/notices.example.eu/messages",
+  "Notices.java:49 mailgun POST /v3/notices.example.com/messages",
+]
+`;
+
 exports[`regression fixtures > java/spring 1`] = `
 [
   "Builders.java:40 partners.example-shop.com GET /v1/partners/{id}",
@@ -542,6 +573,14 @@ exports[`regression fixtures > kotlin/di-ambiguous 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/di-config 1`] = `
+[
+  "Weather.kt:26 api.weather-example.com GET /v1/forecast",
+  "Weather.kt:33 api.weather-example.com GET /v1/alerts",
+  "Weather.kt:43 unknown GET /v1/stations",
+]
+`;
+
 exports[`regression fixtures > kotlin/di-hilt 1`] = `
 [
   "Apis.kt:11 catalog.shelf-example.com GET /v2/books/{id}",
@@ -556,6 +595,14 @@ exports[`regression fixtures > kotlin/di-injekt 1`] = `
 [
   "Sources.kt:14 cdn.comics-example.com GET /chapters/{id}",
   "Sources.kt:20 api.comics-example.com GET /v3/series/{id}",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-interceptors 1`] = `
+[
+  "Repositories.kt:7 track.parcels-example.com GET /v1/parcels/{id}",
+  "Repositories.kt:11 labels.parcels-example.com GET /v1/labels/{id}",
+  "Repositories.kt:15 carriers.parcels-example.com GET /v1/carriers",
 ]
 `;
 
@@ -870,6 +917,17 @@ exports[`regression fixtures > kotlin/sdk/payments 1`] = `
   "Billing.kt:35 stripe POST /v1/checkout/sessions",
   "Billing.kt:45 stripe POST /v1/payment_intents/{intent}/cancel",
   "Billing.kt:47 stripe GET /v1/customers",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/split 1`] = `
+[
+  "Lessons.kt:22 openai POST /v1/chat/completions",
+  "Lessons.kt:28 openai POST /v1/chat/completions",
+  "Lessons.kt:31 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:39 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:45 supabase POST /auth/v1/signup",
+  "Lessons.kt:50 firebase GET /v0/b/{bucket}/o/covers/{id}.png",
 ]
 `;
 

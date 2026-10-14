@@ -21,7 +21,13 @@ export function callsOn(fn: FunctionDef, name: string, after: number): ScopedCal
   const fns = [fn, ...fn.module.allFunctions.filter((f) => f.parent === fn)];
   const out: ScopedCall[] = [];
   for (const f of fns) {
-    for (const c of f.calls) if (c.fn.k === "attr" && c.fn.obj.k === "name" && c.fn.obj.name === name && c.pos.offset > after) out.push({ call: c, fn: f });
+    for (const c of f.calls) {
+      if (c.pos.offset <= after || c.fn.k !== "attr") continue;
+      if (c.fn.obj.k === "name" && c.fn.obj.name === name) out.push({ call: c, fn: f });
+      // `interceptors.forEach(builder::addInterceptor)`: the method called on the variable with each element
+      const ref = c.fn.name === "forEach" ? c.args[0]?.value : undefined;
+      if (ref?.k === "attr" && ref.obj.k === "name" && ref.obj.name === name) out.push({ call: { k: "call", fn: ref, args: [{ value: c.fn.obj, spread: "list" }], pos: c.pos }, fn: f });
+    }
   }
   return out.sort((a, b) => a.call.pos.offset - b.call.pos.offset);
 }
@@ -65,10 +71,16 @@ function unset(acc: Acc, key: Expr): void {
 }
 
 /** One call on the value: an entry, an item or an Authorization entry; false when the spec has no such method. */
+/** `setMaxTokens` -> `max_tokens` under `setterCase`. */
+function casedSetter(spec: FluentMapSpec, name: string): string | undefined {
+  if (!spec.setterCase || !/^set[A-Z]/.test(name)) return undefined;
+  return name.charAt(3).toLowerCase() + name.slice(4).replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
+}
+
 function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: FunctionDef): boolean {
   const [a, b] = positional(call).map((x) => scopedIn(x, fn, into));
   const auth = acc.spec.auth?.[name];
-  const setter = acc.spec.setters && Object.hasOwn(acc.spec.setters, name) ? acc.spec.setters[name] : undefined;
+  const setter = acc.spec.setters && Object.hasOwn(acc.spec.setters, name) ? acc.spec.setters[name] : casedSetter(acc.spec, name);
   if (setter && a) acc.entries.push({ key: { k: "str", v: setter }, value: a });
   else if (acc.spec.put?.includes(name) && a && b) acc.entries.push({ key: a, value: b });
   else if (acc.spec.items?.includes(name) && a) acc.items.push(a);
@@ -80,10 +92,23 @@ function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: Fu
   return true;
 }
 
+/** A call on a variable holding the value: an entry put in a branch or a loop (`if (x) o.setTemperature(t)`) may not be there. */
+function step(acc: Acc, c: ScopedCall, optional: boolean, into: FunctionDef): void {
+  const from = acc.entries.length;
+  apply(acc, methodName(c.call), c.call, c.fn, into);
+  applyLambdas(acc, c.call, into);
+  if (optional) for (let i = from; i < acc.entries.length; i++) if (!acc.entries[i]!.spread) acc.entries[i] = { ...acc.entries[i]!, optional: true };
+}
+
 /** The entries of a dict written in `fn`, read in `into`. */
 function entriesIn(dict: Expr, fn: FunctionDef, into: FunctionDef): Entry[] {
   if (dict.k !== "dict") return [];
   return dict.entries.map((en) => ({ ...en, value: scopedIn(en.value, fn, into), ...(en.key ? { key: scopedIn(en.key, fn, into) } : {}) }));
+}
+
+/** `ChatCompletionsOptions(messages)`: the constructor's positional arguments as the entries `args` names. */
+function constructorEntries(names: string[], call: CallExpr, fn: FunctionDef, into: FunctionDef): Entry[] {
+  return positional(call).flatMap((value, i) => (names[i] ? [{ key: { k: "str" as const, v: names[i] }, value: scopedIn(value, fn, into) }] : []));
 }
 
 /** The constructor call or variable a chain of calls starts from, and its value so far. */
@@ -91,6 +116,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   if (e.k === "call") {
     // an object filled by setters (SendGrid's `Request()`) is made empty: `Request(url)` is another library's
     const spec = ctx.idx.lang.fluentMaps!.find((s) => namesEnd(e.fn, s.objects) && (!s.setters || e.args.length === 0));
+    if (spec?.args) return { spec, entries: constructorEntries(spec.args, e, fn, into), items: [] };
     const arg = positional(e)[0];
     // `JSONObject(mapOf(...))`: the map's entries first; `HashMap(16)` is a capacity
     return spec ? { spec, entries: arg && !spec.items && arg.k !== "num" ? [{ value: scopedIn(arg, fn, into), spread: true }] : [], items: [] } : undefined;
@@ -106,7 +132,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   const before = (offset: number): boolean => offset < e.pos.offset || b.fn !== fn;
   const steps: { at: number; run: () => void }[] = callsOn(b.fn, e.name, b.assign.offset)
     .filter((c) => before(c.call.pos.offset))
-    .map((c) => ({ at: c.call.pos.offset, run: () => void (apply(acc, methodName(c.call), c.call, c.fn, into), applyLambdas(acc, c.call, into)) }));
+    .map((c) => ({ at: c.call.pos.offset, run: () => step(acc, c, mayNotRun(b.fn, c.call.pos.offset, b.fn === fn ? e.pos.offset : undefined), into) }));
   // `body["k"] = v` (Kotlin, lowered as an edit): an entry put on the map, in order with the calls
   const sets = acc.spec.put ? b.fn.assigns.filter((a) => a.edit === "merge" && a.target === e.name && a.offset > b.assign.offset && before(a.offset)) : [];
   for (const a of sets) {
