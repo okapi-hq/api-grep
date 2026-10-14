@@ -6,6 +6,7 @@ import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
 import { deref, staticKey } from "./values.js";
 import { lambdaValue } from "./builders.js";
 import { irEndpoint } from "./endpoint.js";
+import { recordBody } from "./record.js";
 import { setupBaseUrl } from "./setup.js";
 
 /** Keyword arguments that configure the SDK call itself rather than the request body. */
@@ -173,8 +174,8 @@ function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Sco
   const spec = m.spec;
   if (spec.argFields) return argFieldsBody(m, spec.argFields, fn);
   if (spec.bodySelf) return { expr: call, fn };
-  // a record sends the attributes it is built with (`shopify.Product({"title": t}).save()`, #92)
-  if (spec.record?.body) return argOf(m.segs[m.segs.length - 2], 0);
+  // a record sends the attributes it is built with and those set on it (`product.title = t; product.save()`, #92, #102)
+  if (spec.record?.body) return recordBody(m, ctx);
   if (spec.bodyKw) {
     const arg = argOf(m.method, spec.bodyArg, spec.bodyKw);
     return spec.bodyProp ? propOf(arg, spec.bodyProp, ctx) : arg;

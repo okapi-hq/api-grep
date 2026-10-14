@@ -163,6 +163,11 @@ export interface FunctionDef {
    */
   props?: { name: string; value: Expr; offset: number }[];
   /**
+   * Attributes set on a local variable (`product.title = t`, not `self.x`), in order: what a record it holds is given
+   * one by one before it is saved (#102).
+   */
+  attrSets?: { target: string; name: string; value: Expr; offset: number }[];
+  /**
    * Loops over a collection (`for (Interceptor i : interceptors)`, `for (i in interceptors)`): the variable is each
    * element of `over` between `from` and `to` (the loop's offsets). Read where one element stands for all
    * (interceptors added in the loop), never as the variable's value.
