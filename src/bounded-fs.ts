@@ -1,4 +1,5 @@
 import path from "node:path";
+import * as tsMorph from "ts-morph";
 import { Project, ts, type FileSystemHost, type RuntimeDirEntry } from "ts-morph";
 import { isInside, realPath } from "./files.js";
 
@@ -10,11 +11,13 @@ function diskHost(): FileSystemHost {
   return realHost;
 }
 
-function notFound(p: string): Error {
-  return Object.assign(new Error(`ENOENT: outside the scanned directory: ${p}`), { code: "ENOENT" });
-}
+/**
+ * What ts-morph expects of a host for a missing file: a program reads the files it asks for without checking first, and
+ * only this error means "no such file". Exported at runtime, not in ts-morph's types.
+ */
+const { FileNotFoundError } = tsMorph as unknown as { FileNotFoundError: new (path: string) => Error };
 
-function readOnly(): never {
+function readOnly(..._args: unknown[]): never {
   throw new Error("the scanned directory is read-only");
 }
 
@@ -54,11 +57,11 @@ export class BoundedFileSystem implements FileSystemHost {
   }
 
   readFile(filePath: string, encoding?: string): Promise<string> {
-    return this.contains(filePath) ? this.disk.readFile(filePath, encoding) : Promise.reject(notFound(filePath));
+    return this.contains(filePath) ? this.disk.readFile(filePath, encoding) : Promise.reject(new FileNotFoundError(filePath));
   }
 
   readFileSync(filePath: string, encoding?: string): string {
-    if (!this.contains(filePath)) throw notFound(filePath);
+    if (!this.contains(filePath)) throw new FileNotFoundError(filePath);
     return this.disk.readFileSync(filePath, encoding);
   }
 
