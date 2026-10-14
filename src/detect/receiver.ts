@@ -164,11 +164,12 @@ export class ReceiverResolver {
     const mc = memberChain(node.getExpression());
     const names = [...(Node.isIdentifier(mc.root) ? [mc.root.getText()] : []), ...mc.chain];
     const [client, method] = names.slice(-2);
-    const entries = client && method && !(names.length === 2 && builtHere(mc.root)) ? this.contextEntries().get(client) : undefined;
+    const entries = client && method ? this.contextEntries().get(client) : undefined;
     const key = `${client}.${method}`;
     const declared = entries ? this.declared(node.getSourceFile().getFilePath()) : undefined;
     const entry = entries?.find((e) => !!e.methods && Object.hasOwn(e.methods, key) && [e.package, ...(e.aliases ?? [])].some((p) => declared!.has(p)));
-    const raw = entry ? detectSdk(node, { package: entry.package, chain: [client!, method!], viaType: true }, this.registry) : null;
+    if (!entry || (names.length === 2 && builtHere(mc.root))) return undefined;
+    const raw = detectSdk(node, { package: entry.package, chain: [client!, method!], viaType: true }, this.registry);
     return raw ? { ...raw, clientFrom: "manifest" } : undefined;
   }
 
