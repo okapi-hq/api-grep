@@ -730,7 +730,8 @@ A scanned repository is treated as hostile input:
   "droppedCalls": [{ "file": "lib/a.ts", "line": 120, "reason": "schema-invalid", "detail": "body.properties.config: Invalid input" }],
   "unfollowed": [
     { "file": "executors/x.ts", "line": 90, "reason": "injected-fetch", "expr": "this.fetchFn" },
-    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "tlsFetch" }
+    { "file": "executors/y.ts", "line": 31, "reason": "wrapper-depth", "via": "tlsFetch" },
+    { "file": "src/catalog.ts", "line": 48, "reason": "graphql-limit", "detail": "fields" }
   ],
   "languages": { "typescript": { "filesSeen": 1840, "filesScanned": 1702 } },
   "complete": false
@@ -750,10 +751,17 @@ A scanned repository is treated as hostile input:
   (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
+  `graphql-limit` (schema 1.16) is a call whose GraphQL document was read past a bound: the call is reported with
+  the `name` and `type` the document's header gives, without `operation.fields` (past `operations`, without a name),
+  and `detail` names the bound: `document-size` (100,000 characters), `document-parts` (built from 1,000 parts),
+  `tokens` (50,000 parser tokens), `depth` (selection sets 32 deep), `fragment-expansion` (20,000 selection sets
+  visited inlining fragments), `fields` (2,000 field paths), `operations` (50 operations in one request), `ast-size`,
+  `ast-nodes`, `ast-nesting` (a document written as its AST: 4,000,000 characters, 200,000 values, 128 levels). One
+  entry per location and bound; a document the code does not hold (a persisted query) is not one.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
-  `--exclude` / `--include`), a dropped call or a call not followed.
+  `--exclude` / `--include`), a dropped call, a call not followed or a GraphQL document not fully read.
 
-The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed`.
+The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 GraphQL document not fully read`.
 Skipped files and dropped calls are also printed to stderr as `warning:` lines.
 
 ### SDK coverage

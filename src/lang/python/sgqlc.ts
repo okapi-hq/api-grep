@@ -134,8 +134,8 @@ function print(tree: Tree): string {
 }
 
 /**
- * The document an sgqlc `Operation` sends, as text, with `fields` when selections were left out past `MAX_PATHS`;
- * undefined when `arg` holds none or its type is not known.
+ * The document an sgqlc `Operation` sends, as text, and the bound `fields` when selections past `MAX_PATHS` were
+ * left out; undefined when `arg` holds none or its type is not known.
  */
 export function sgqlcDocument(arg: Scoped, ctx: IrCtx): { text: string; limit?: GraphqlLimit } | undefined {
   const op = operationOf(arg.expr, arg.fn, ctx);
