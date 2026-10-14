@@ -264,7 +264,9 @@ The report is a contract other tools read. Its source is [`src/report/schema.ts`
   examples, redaction, diagnostics, coverage) is shared. Keep it that way. The report states facts, never a score
   or a verdict: leave any judgement to its consumer.
 - Treat everything read from a scanned repository as hostile: print it through `printable()`,
-  read config files and manifests through `readConfigFile()`, and add a case to
+  read config files and manifests through `readConfigFile()`, let the TypeScript checker read the
+  disk through `src/bounded-fs.ts` (nothing above the repository root, or above the scanned
+  directory when it is in no git repository), and add a case to
   `tests/e2e/security.e2e.test.ts` when a new output can carry it.
 
 ## Pull requests

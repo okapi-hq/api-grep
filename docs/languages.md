@@ -67,7 +67,17 @@ types once it has made 400,000 types or 3 million instantiations, and a new chec
 trigger is a count, not the heap: a new checker can type a few expressions differently (TypeScript's inference depends
 on the order it meets types), and a report must be the same whatever the heap or the machine. Imports are resolved by
 `src/module-resolution.ts`, which keeps what it found and not every path it tried (the checker's own keeps them for
-watch mode: hundreds of megabytes in a repository scanned without `node_modules`). Union members of a type are
+watch mode: hundreds of megabytes in a repository scanned without `node_modules`). A batch's project and the file
+graph read the disk through `src/bounded-fs.ts` (#112): only `readRoot()` (`src/tsconfig.ts`) exists, the repository
+root (the nearest directory holding `.git`, a directory or a worktree's file) when the scanned directory is in a git
+repository, else the scanned directory itself (an archive the server unpacked). A subdirectory of a monorepo still
+reads the sibling packages and wrappers it imports; nothing above the root does, also once symlinks are resolved:
+neither `node_modules` nor `node_modules/@types` is looked for above it, a `/// <reference path>` or a `paths` alias
+out of it reads as a missing file, and TypeScript's current directory is the root, not the one the scan runs from. A
+report is then the same from any checkout location (a stray `~/node_modules` used to type a few bodies, and the eval
+read the scanning tool's own packages for repositories cloned under it). The tsconfig is looked for in the scanned
+directory and up to four directories above, never above that root (the eval used to read the tool's own tsconfig); it
+is parsed once (`scopeOf`) for its options, it and what it extends read inside the root. Union members of a type are
 ordered by their text, not by when the checker first met them, and the properties of a mapped type over a union of
 keys by name: a shape no longer depends on which other files a checker read. The receiver resolver (#37) counts its 50
 callers among the calls of the function's group.

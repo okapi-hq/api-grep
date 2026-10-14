@@ -157,8 +157,12 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - A per-file failure is a diagnostic (`diagnostics.skipped` / `droppedCalls`), never a crash.
 - `provider` never contains a template (`{...}`).
 - The scanned repository is hostile input: files are listed through `src/lang/files.ts` (symlinks must stay inside the
-  scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), keys from the
-  code go through `isSafeKey()`, and anything printed goes through `printable()`.
+  scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), the TypeScript
+  checker, the file graph and the tsconfig read through `src/bounded-fs.ts` inside `readRoot()` (`src/tsconfig.ts`):
+  the repository root (nearest `.git`, a directory or a worktree's file) when the scanned directory is in a git
+  repository, else the scanned directory; never above it (no parent `node_modules` or `@types`), symlinks resolved and
+  kept inside, so a report does not depend on the checkout location (#112). Keys from the code go through
+  `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
   `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
