@@ -336,6 +336,15 @@ sends the `cartLinesAdd` mutation), Relay's `useQueryLoader(query)` and the refe
 (`usePaginationFragment`, `useRefetchableFragment`: the query generated for the fragment's `@refetchable(queryName)`,
 read from its artifact when the scan has it), when the code keeps the function that sends.
 
+[#102](https://github.com/okapi-hq/api-grep/issues/102) completes them: a Shopify record read with `find`
+(`const product = await shopify.rest.Product.find({ session, id })`, then `product.title = t; await product.save()`)
+is a `PUT` of what the code sets to the id `find` was given; Python records get the attributes set one by one
+(`product.title = t`) in their body; `useQueryLoader` reports the variables its `loadQuery` is given in the component;
+`shopify-api-node`'s `article.tags(blogId?, params)` picks the blog's path or every article's from the arguments;
+ShopifyAPI's `Province` and `GiftCardAdjustment`; the delivery address and gift card methods of Hydrogen's cart
+handler (2025.4 to 2026.4); and Hydrogen 2026.10's storefront client (`client.graphql(query, { variables })`, also
+read from React Router's context), `getCart(...)` and `cartHandlers.get(...)`.
+
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
 by an XML library or sent with an XML content type is `xml` with its value unread. HTML and SVG markup (`<p>...</p>`,

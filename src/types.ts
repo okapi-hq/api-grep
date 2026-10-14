@@ -56,6 +56,8 @@ export interface RawCall {
   methodExpr?: Expression;
   impliedMethod?: string;
   bodyExpr?: Expression;
+  /** Several bodies the call may send, as alternatives (the variables of each `loadQuery(...)` call, #102). */
+  bodyAlternatives?: Expression[];
   bodyKey?: "body" | "json" | "form" | "data" | "input";
   queryExpr?: Expression;
   headersExpr?: Expression;
@@ -79,8 +81,11 @@ export interface RawCall {
   modelExpr?: Expression;
   /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
   clientFrom?: "caller" | "manifest";
-  /** The variable holding the record a `record` method is called on, with the properties set on it before the call. */
-  record?: { decl: VariableDeclaration };
+  /**
+   * The variable holding the record a `record` method is called on, with the properties set on it before the call;
+   * `found`: the options of the `find` that read it (`{ session, id }`, #102).
+   */
+  record?: { decl: VariableDeclaration; found?: Expression };
   /** A SOAP client library's call (#58): the WSDL and the address its client was built with, and the operation. */
   soap?: { wsdlExpr?: Expression; locationExpr?: Expression; operation: string };
 }
@@ -100,9 +105,10 @@ export interface MethodSpec {
   refetchQuery?: boolean;
   /**
    * A hook that sends through a function it returns (Relay's `useQueryLoader`, #92): element `index` of the array or
-   * one of `names` of the object; a destructuring that leaves it out sends nothing.
+   * one of `names` of the object; a destructuring that leaves it out sends nothing. `bodyArg`: the body is that
+   * argument of the function's calls in the same component (`loadQuery({ id })`, #102).
    */
-  sendsThrough?: { index?: number; names?: string[] };
+  sendsThrough?: { index?: number; names?: string[]; bodyArg?: number };
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];
@@ -123,6 +129,11 @@ export interface MethodSpec {
    * `Product.find()` lists them.
    */
   argPath?: { arg: number; path: string };
+  /**
+   * Argument N is an optional id the library tells from the options after it by their kind (shopify-api-node's
+   * `article.tags(blogId?, params)`, #102): an object given last in its place is the options, `null` no id.
+   */
+  optionalId?: number;
   /** Other paths the library picks by the ids it is given (#92): the one most placeholders of which have a value. */
   paths?: string[];
   /**
@@ -313,6 +324,11 @@ export interface RegistryEntry {
   contextClients?: string[];
   /** Key prefixes the code may write for the registry's (`admin.rest.resources.` for `rest.`, #92). */
   keyAliases?: Record<string, string>;
+  /**
+   * Class methods that read one record (`find`, #102): `const p = await shopify.rest.Product.find({ session, id })`
+   * then `p.save()` is the key `rest.Product#save`, the record holding the ids `find` was given.
+   */
+  recordFrom?: string[];
 }
 
 export interface FrameworkKeys {
