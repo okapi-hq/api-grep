@@ -6,7 +6,7 @@ import { classField, lookup, receiverClass } from "../../ir/project.js";
 import type { IrCtx } from "../../ir/raw.js";
 import { candidates, collected, everyBinding, type Point } from "./collections.js";
 import { configurationProperties } from "./config-props.js";
-import { diIndex, koinQualifiers, managedBy, names, PROVIDES, qualifiers, type Framework, type Provider } from "./providers.js";
+import { diIndex, koinQualifiers, managedBy, names, PROVIDES, qualifiers, stringArg, type Framework, type Provider } from "./providers.js";
 import { generic } from "./types.js";
 
 /**
@@ -83,22 +83,25 @@ function constructorArg(p: Param, init: FunctionDef, cls: ClassDef, ctx: IrCtx):
 }
 
 const params = new WeakMap<Param, Scoped | null>();
+/** Read without the scanned directory (a caller-level read): configuration files are not seen, so kept apart. */
+const paramsWithoutFiles = new WeakMap<Param, Scoped | null>();
 
 function injectedParam(p: Param, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   // `@Value("${billing.url:https://...}") String url` of a bean method: the configuration value, not a parameter
   if (p.default && names(p.annotations).has("Value") && injecting(fn)) return { expr: p.default, fn };
   // an extension function's receiver is the object it is called on, never injected
   if (p.kind !== "normal" || p.default || !p.type || p === fn.receiver) return undefined;
-  const hit = params.get(p);
+  const cache = ctx.rootDir ? params : paramsWithoutFiles;
+  const hit = cache.get(p);
   if (hit !== undefined) return hit ?? undefined;
   // set before reading: a provider reading its own type's parameter must not loop
-  params.set(p, null);
+  cache.set(p, null);
   let v: Scoped | undefined;
   const framework = injecting(fn);
   if (names(p.annotations).has("Assisted")) v = undefined;
   else if (framework) v = valueFor(p.type, { framework, quals: qualifiers(p.annotations, fn, ctx), name: p.name }, fn, ctx);
   else if (fn.name === "<init>" && fn.cls) v = constructorArg(p, fn, fn.cls, ctx);
-  params.set(p, v ?? null);
+  cache.set(p, v ?? null);
   return v;
 }
 
@@ -140,6 +143,11 @@ function pointOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Injected | un
   return values.length === 1 && depth < 2 ? pointOf(values[0]!.value, values[0]!.fn, ctx, depth + 1) : undefined;
 }
 
+/** The injection point (qualifiers, name, declared type) an expression reads, if a container fills it. */
+export function injectionPoint(e: Expr, fn: FunctionDef, ctx: IrCtx): { at: Point; type?: Expr; fn: FunctionDef } | undefined {
+  return pointOf(e, fn, ctx);
+}
+
 /** `Lazy<T>`, `Provider<T>`, Spring's `ObjectProvider<T>`: a holder of the binding of `T`, read by `get()`. */
 const HOLDERS = new Set(["Lazy", "Provider", "ObjectProvider", "ObjectFactory"]);
 const READS = new Set(["get", "getObject", "getIfAvailable", "getIfUnique"]);
@@ -160,8 +168,30 @@ function heldValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefi
   return valueFor(g.arg, point.at, point.fn, ctx);
 }
 
+/**
+ * Spring's Kotlin beans DSL (`beans { bean { ref<ChatClient>() } }`, #96): `ref<T>()` or `ref<T>("name")`, in a file
+ * importing the DSL; the point it stands for.
+ */
+export function springRef(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Point | undefined {
+  if (call.fn.k !== "name" || call.fn.name !== "ref" || call.typeArgs?.length !== 1 || call.args.length > 1) return undefined;
+  if (lookup("ref", fn, call.pos.offset, ctx.idx).kind === "function") return undefined;
+  const dsl = lookup("beans", fn, call.pos.offset, ctx.idx);
+  if (dsl.kind !== "external" || dsl.path.join(".") !== "org.springframework.context.support.beans") return undefined;
+  const name = call.args[0] ? stringArg(call.args, fn, ctx, ["name"]) : undefined;
+  if (call.args[0] && name === undefined) return undefined;
+  return { framework: "spring", quals: name !== undefined ? [`named:${name}`] : [] };
+}
+
+/** `ref<ChatClient>()` that no project bean answers: a bean of that type the framework or a starter makes. */
+function lookupType(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Expr | undefined {
+  const at = springRef(call, fn, ctx);
+  return at && !provided(call.typeArgs![0], at, fn, ctx) ? call.typeArgs![0] : undefined;
+}
+
 /** `get<HttpClient>()`, `inject<Api>(named("x"))`, `val client: HttpClient by inject()` (typed when lowered). */
 function injectedCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const ref = springRef(call, fn, ctx);
+  if (ref) return provided(call.typeArgs![0], ref, fn, ctx);
   if (injektLookup(call, fn, ctx)) return provided(call.typeArgs?.[0], { framework: "injekt", quals: [] }, fn, ctx);
   if (koinGetAll(call, fn, ctx)) return everyBinding(call.typeArgs![0]!, { framework: "koin", quals: [] }, fn, ctx);
   if (!koinGet(call) || !call.typeArgs?.[0] || call.fn.k !== "name") return heldValue(call, fn, ctx);
@@ -185,4 +215,4 @@ function injektLookup(call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
   return b?.kind === "external" && b.path.slice(0, 3).join(".") === "uy.kohesive.injekt";
 }
 
-export const JVM_INJECTION: IrInjection = { param: injectedParam, field: injectedField, call: injectedCall };
+export const JVM_INJECTION: IrInjection = { param: injectedParam, field: injectedField, call: injectedCall, lookupType };

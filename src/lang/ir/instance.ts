@@ -62,10 +62,17 @@ function replaced(call: CallExpr, caller: FunctionDef, name: string, ctx: IrCtx,
   return original ? instanceField(original, name, caller, ctx, depth + 1) : undefined;
 }
 
+/** `props.api` where `props` is an object a language gives as its fields: the nested object's fields (`props.api.baseUrl`, #100). */
+function nestedGroup(obj: Expr, fn: FunctionDef, ctx: IrCtx, depth: number): Scoped | undefined {
+  const outer = obj.k === "attr" && obj.obj.k !== "this" ? instanceField(obj.obj, obj.name, fn, ctx, depth + 1) : undefined;
+  const d = outer ? deref(outer.expr, outer.fn, outer.ctx) : undefined;
+  return d?.expr.k === "dict" ? d : undefined;
+}
+
 /** `call.base` where `call` holds an object built in the project: `Call(base="https://...")`, `new Call(base: '...')`. */
 export function instanceField(obj: Expr, name: string, fn: FunctionDef, ctx: IrCtx, depth = 0): FieldValue | undefined {
   if (depth > MAX_DEPTH) return undefined;
-  const made = deref(obj, fn, ctx);
+  const made = nestedGroup(obj, fn, ctx, depth) ?? deref(obj, fn, ctx);
   // an object a language gives as its fields (Spring `@ConfigurationProperties`, injected): the field's entry
   if (made.expr.k === "dict") {
     const hit = entryOf({ entries: made.expr.entries, fn: made.fn }, name, ctx);

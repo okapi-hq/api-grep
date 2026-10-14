@@ -1,0 +1,10 @@
+spring:
+  ai:
+    model:
+      chat: ollama
+    ollama:
+      base-url: http://inference.internal:11434
+      chat:
+        model: qwen3:14b
+    openai:
+      api-key: ${OPENAI_API_KEY}

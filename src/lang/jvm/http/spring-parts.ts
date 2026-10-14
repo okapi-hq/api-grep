@@ -8,7 +8,7 @@ import { applyStep, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, re
 import { deref } from "../../ir/values.js";
 import { elementsOf } from "../elements.js";
 import { substitutionFor } from "../../ir/wrappers.js";
-import { withClosures } from "./okhttp.js";
+import { withClosures } from "../elements.js";
 import { rawOf } from "./request.js";
 import { JVM } from "./tables.js";
 

@@ -589,7 +589,7 @@ definitions and lookups (`single { ... }`, `singleOf(::Repo)`, `get()`, `by inje
 
 | client | patterns |
 |---|---|
-| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class) on every call it makes |
+| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class, one wrapping another, lists of them built with `buildList` or `add`) on every call it makes |
 | `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body, also in a helper the connection is passed to) |
 | Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, `submitForm(url, formParameters = parameters { ... })`, `FormDataContent`, `MultiPartFormDataContent(formData { ... })`, kotlinx `buildJsonObject { ... }` bodies; the client's `defaultRequest { url(...); header(...) }` and `install(Auth) { bearer { ... } }` |
 | Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity` or a `RequestEntity`, `UriComponentsBuilder` URLs, the headers of its interceptors), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl`, `defaultHeader`, `defaultHeaders { }` and filters of their builder; `BodyInserters.fromFormData(...)` |
@@ -616,8 +616,10 @@ AWS (S3, the S3 Transfer Manager, DynamoDB and its enhanced client, SQS, SNS, SE
 AWS SDK for Java 2.x and the AWS SDK for Kotlin; S3 from the AWS SDK for Java 1.x), Google Gen AI, Firestore and
 Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin client, Azure OpenAI, LangChain4j model
 clients, Firebase for Android (Auth, Realtime Database, Storage, Functions), supabase-kt, SendGrid, Resend, Mailgun and
-Spring AI's OpenAI, Anthropic, Mistral AI and Ollama models, with the provider of the declared starter and the model and
-base URL of `application.yml` / `application.properties` ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+Spring AI's OpenAI, Anthropic, Mistral AI, Ollama, Azure OpenAI, Bedrock Converse, Google GenAI and DeepSeek models,
+with the provider of the declared starter (or the bean a qualifier, `spring.ai.model.chat` or a bean name selects) and
+the model and base URL of `application.yml` / `application.properties` (with its active profile and imported files),
+else the starter's default model for the declared release ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
 in steps or filled by a lambda, and the AWS SDK for Kotlin's `PutObjectRequest { bucket = b }`) are read as the
 request body, and enum constants as the model ids they stand for.
@@ -809,8 +811,9 @@ package. `--changed-since` scans have no coverage section.
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in `coverage.sdks` only;
-  Spring AI calls through a shared interface in a project with two model starters are not listed (#96); interceptors
-  that wrap another one and lists of them built in steps are not followed (#100). The
+  Spring AI calls through a shared interface in a project with two model starters and nothing selecting one are not
+  listed, rather than guessed ([docs/languages.md](docs/languages.md#kotlin)); a header an interceptor adds under a
+  condition is listed as always added. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
