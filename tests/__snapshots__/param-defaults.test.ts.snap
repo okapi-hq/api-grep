@@ -1053,7 +1053,7 @@ exports[`parameter values: php > reads defaults and callers' literals of methods
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.17.0",
+  "schemaVersion": "1.18.0",
   "stats": {
     "byClient": {
       "guzzle": 11,
@@ -2685,7 +2685,7 @@ exports[`parameter values: python > reads the default, the callers' literals, an
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.17.0",
+  "schemaVersion": "1.18.0",
   "stats": {
     "byClient": {
       "requests": 7,
@@ -4287,7 +4287,7 @@ exports[`parameter values: typescript > reads initializers through the checker a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.17.0",
+  "schemaVersion": "1.18.0",
   "stats": {
     "byClient": {
       "fetch": 7,

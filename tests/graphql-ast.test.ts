@@ -40,6 +40,7 @@ describe("GraphQL documents written as an AST (#56)", () => {
       name: "GetInvoice",
       type: "query",
       fields: ["invoice.customer.email", "invoice.customer.id", "invoice.number", "invoice.total.amount", "invoice.total.currency"],
+      arguments: { invoice: { id: "$id" } },
       dynamic: false,
       from: "document",
     });

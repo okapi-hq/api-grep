@@ -1,4 +1,5 @@
 import { Kind, parse, print, type DocumentNode, type FragmentDefinitionNode, type OperationDefinitionNode, type SelectionSetNode } from "graphql";
+import { ArgumentCollector, type FieldArguments } from "./graphql-arguments.js";
 
 /**
  * A GraphQL document read without a schema (#35): each operation's type, name and the field paths it selects from the
@@ -27,6 +28,8 @@ export interface DocumentOperation {
   named: boolean;
   /** Sorted leaf paths (`order.customer.email`); undefined when a bound was reached. */
   fields?: string[];
+  /** The arguments of selected fields (#56), by path; undefined when none has any or a bound was reached. */
+  arguments?: FieldArguments;
 }
 
 class Exhausted extends Error {}
@@ -34,6 +37,7 @@ class Exhausted extends Error {}
 interface Walk {
   fragments: Map<string, FragmentDefinitionNode>;
   paths: Set<string>;
+  args: ArgumentCollector;
   visits: number;
 }
 
@@ -43,6 +47,7 @@ function walk(set: SelectionSetNode, prefix: string, w: Walk, active: string[]):
     if (sel.kind === Kind.FIELD) {
       // an alias renames the result, not what is selected
       const path = prefix ? `${prefix}.${sel.name.value}` : sel.name.value;
+      w.args.add(path, sel.arguments);
       if (sel.selectionSet) walk(sel.selectionSet, path, w, [...active, ""]);
       else w.paths.add(path);
     } else if (sel.kind === Kind.INLINE_FRAGMENT) {
@@ -61,16 +66,17 @@ function walk(set: SelectionSetNode, prefix: string, w: Walk, active: string[]):
   }
 }
 
-/** The leaf paths an operation selects, sorted; undefined past a bound. */
-function fieldsOf(op: OperationDefinitionNode, fragments: Map<string, FragmentDefinitionNode>): string[] | undefined {
-  const w: Walk = { fragments, paths: new Set(), visits: 0 };
+/** The leaf paths an operation selects, sorted, and their arguments; neither past a bound. */
+function fieldsOf(op: OperationDefinitionNode, fragments: Map<string, FragmentDefinitionNode>): { fields?: string[]; arguments?: FieldArguments } {
+  const w: Walk = { fragments, paths: new Set(), args: new ArgumentCollector(), visits: 0 };
   try {
     walk(op.selectionSet, "", w, []);
   } catch (err) {
-    if (err instanceof Exhausted) return undefined;
+    if (err instanceof Exhausted) return {};
     throw err;
   }
-  return [...w.paths].sort();
+  const args = w.args.result();
+  return { fields: [...w.paths].sort(), ...(args ? { arguments: args } : {}) };
 }
 
 function rootFields(fields: string[] | undefined, op: OperationDefinitionNode): string {
@@ -96,9 +102,9 @@ export function documentOperations(text: string): DocumentOperation[] | undefine
   const ops = doc.definitions.filter((d): d is OperationDefinitionNode => d.kind === Kind.OPERATION_DEFINITION);
   if (ops.length === 0) return undefined;
   return ops.map((op) => {
-    const fields = fieldsOf(op, fragments);
+    const selected = fieldsOf(op, fragments);
     const name = op.name?.value;
-    return { type: op.operation, name: name ?? rootFields(fields, op), named: !!name, ...(fields ? { fields } : {}) };
+    return { type: op.operation, name: name ?? rootFields(selected.fields, op), named: !!name, ...selected };
   });
 }
 

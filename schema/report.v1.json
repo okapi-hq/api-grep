@@ -399,6 +399,34 @@
             "type": "string"
           }
         },
+        "arguments": {
+          "description": "GraphQL only: the arguments of selected fields, by field path as in `fields` (`{ \"orders\": { \"first\": 10, \"sortKey\": \"CREATED_AT\" } }`). A literal is its JSON value (an enum value its name), a variable `\"$name\"`; a path that aliases select with different arguments has a list of them. Absent when no selected field has arguments, or past the bounds.",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                }
+              }
+            ]
+          }
+        },
         "alternatives": {
           "description": "Every name the call can send when a branch picks one, `name` first.",
           "type": "array",

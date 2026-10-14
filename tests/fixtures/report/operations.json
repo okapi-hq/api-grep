@@ -320,6 +320,11 @@
           "order.id",
           "order.totalPriceSet.shopMoney.amount"
         ],
+        "arguments": {
+          "order": {
+            "id": "$id"
+          }
+        },
         "dynamic": false,
         "from": "document"
       },
