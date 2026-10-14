@@ -1676,6 +1676,7 @@ exports[`regression fixtures > robustness/odd-body 1`] = `
 
 exports[`regression fixtures > rpc-clients/app-context 1`] = `
 [
+  "archive.tsx:12 archive.example-node.io POST /rpc eth_getBlockByNumber",
   "ledger.tsx:8 ledger.example-node.io POST /rpc eth_blockNumber",
   "ledger.tsx:15 ledger.example-node.io POST /rpc eth_getBalance",
   "regions.tsx:17 unknown POST / eth_gasPrice",

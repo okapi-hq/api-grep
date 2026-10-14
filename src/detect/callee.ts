@@ -1,7 +1,7 @@
-import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
-import { isFunctionLike, returnsOf, type FunctionLike } from "../ast/function.js";
+import { isFunctionLike, nestedReturnsOf, returnsOf, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
 import { memoValue } from "../ast/react.js";
@@ -107,10 +107,8 @@ function calledFunction(inner: Callee): FunctionLike | undefined {
  */
 function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | undefined {
   const fn = depth <= MAX_DEPTH ? calledFunction(inner) : undefined;
-  const body = fn?.getBody?.();
-  if (!body) return undefined;
-  const returned = Node.isExpression(body) ? [body] : body.getDescendantsOfKind(SyntaxKind.ReturnStatement).flatMap((r) => r.getExpression() ?? []);
-  for (const expr of returned) {
+  if (!fn?.getBody?.()) return undefined;
+  for (const expr of nestedReturnsOf(fn)) {
     const u = constructed(expr);
     // `return useContext(RpcContext)` in the app's own hook (#98)
     const hook = u ? hookCallee(u, chain, depth + 1) : undefined;

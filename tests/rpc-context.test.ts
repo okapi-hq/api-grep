@@ -11,7 +11,9 @@ describe("clients handed down by the app's React contexts (#98)", () => {
     // two providers with different nodes: the host depends on where the app renders
     expect(at(r, "regions.tsx", 17)).toMatchObject({ provider: "unknown", operation: rpc("eth_gasPrice") });
     // the wallet's provider handed down a context sends nothing over HTTP
-    expect(r.calls.map((c) => `${c.location.file}:${c.location.line}`)).toEqual(["ledger.tsx:8", "ledger.tsx:15", "regions.tsx:17"]);
+    expect(r.calls.map((c) => `${c.location.file}:${c.location.line}`)).toEqual(["archive.tsx:12", "ledger.tsx:8", "ledger.tsx:15", "regions.tsx:17"]);
+    // React 19: `<ArchiveContext value>` and `use(ArchiveContext)`
+    expect(at(r, "archive.tsx", 12)).toMatchObject({ provider: "archive.example-node.io", sdk: { chain: "getBlock" } });
   });
 
   it("works for any SDK client, not only JSON-RPC ones", async () => {
