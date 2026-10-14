@@ -97,6 +97,13 @@ function constant(e: Expr, fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Exp
   return { k: "str", v };
 }
 
+/** An SDK enum constant read outside a builder (`ChatModel.GPT_4O_MINI`, Spring AI's `.model(...asString())`): its string. */
+export function sdkConstant(e: Expr, fn: FunctionDef, ctx: IrCtx): Expr | undefined {
+  const path = e.k === "attr" || e.k === "name" ? externalPath(e, fn, ctx) : undefined;
+  const rules = path ? ctx.idx.lang.registry.find((r) => r.setters?.constants && inPackages(path, r.setters))?.setters : undefined;
+  return rules ? constant(e, fn, ctx, rules) : undefined;
+}
+
 const lowerFirst = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
 
 function plural(s: string): string {

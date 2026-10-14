@@ -139,11 +139,28 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   return call;
 }
 
+/**
+ * `ref<ChatModel>("name")`, `get<Api>(named("x"))`: the grammar reads a call with type arguments and one argument as
+ * `(ref < ChatModel) > ("name")`, comparisons Kotlin would reject; it is the call.
+ */
+function typedCall(n: SyntaxNode, l: SyntaxNode, r: SyntaxNode, st: KtState): Expr | undefined {
+  if (field(n, "operator")?.text !== ">" || l.type !== "binary_expression" || field(l, "operator")?.text !== "<" || r.type !== "parenthesized_expression") return undefined;
+  const callee = field(l, "left");
+  const type = field(l, "right");
+  const arg = named(r)[0];
+  if (callee?.type !== "identifier" || !type || !/^[A-Z][\w.]*$/.test(type.text) || (type.type !== "identifier" && type.type !== "navigation_expression") || !arg) return undefined;
+  const call: CallExpr = { k: "call", fn: lowerExpr(callee, st), args: [{ value: lowerExpr(arg, st) }], pos: posOf(n), typeArgs: [lowerExpr(type, st)] };
+  st.fn.calls.push(call);
+  return call;
+}
+
 function lowerBinary(n: SyntaxNode, st: KtState): Expr {
   const op = field(n, "operator")?.text;
   const l = field(n, "left");
   const r = field(n, "right");
   if (!l || !r) return lowerOther(n, st);
+  const typed = typedCall(n, l, r, st);
+  if (typed) return typed;
   const left = lowerExpr(l, st);
   const right = lowerExpr(r, st);
   if (op === "+") return { k: "concat", parts: [...(left.k === "concat" ? left.parts : [left]), right] };

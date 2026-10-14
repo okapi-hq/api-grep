@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/100",
+  "calls": [
+    { "file": "Stations.kt", "line": 11, "provider": "catalog.radio-example.com" },
+    { "file": "Stations.kt", "line": 15, "provider": "uploads.radio-example.com" },
+    { "file": "Stations.kt", "line": 19, "provider": "account.radio-example.com" },
+    { "file": "MirrorModules.kt", "line": 35, "provider": "mirrors.radio-example.com" }
+  ]
+}

@@ -308,6 +308,13 @@ exports[`regression fixtures > java/di-spring-types 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/di-wrapped 1`] = `
+[
+  "Places.java:20 maps.atlas-example.com GET /v1/search",
+  "Places.java:24 tiles.atlas-example.com GET /v1/tiles/{z}",
+]
+`;
+
 exports[`regression fixtures > java/email 1`] = `
 [
   "Mailer.java:25 sendgrid POST /v3/mail/send",
@@ -639,6 +646,15 @@ exports[`regression fixtures > kotlin/di-multibind 1`] = `
   "Weather.kt:19 api.weather-example.com GET /v1/today",
   "Weather.kt:23 maps.weather-example.com GET /v1/tiles/{z}",
   "Weather.kt:27 legacy.weather-example.com GET /report",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-wrapped 1`] = `
+[
+  "MirrorModules.kt:35 mirrors.radio-example.com GET /v2/mirrors",
+  "Stations.kt:11 catalog.radio-example.com GET /v2/stations",
+  "Stations.kt:15 uploads.radio-example.com GET /v2/recordings",
+  "Stations.kt:19 account.radio-example.com GET /v2/favorites",
 ]
 `;
 

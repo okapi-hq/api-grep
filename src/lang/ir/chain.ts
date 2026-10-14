@@ -224,6 +224,9 @@ function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Cha
   // `get<HttpClient>()`, `by inject()`: the container's binding
   const injected = injectedCall(e, fn, ctx);
   if (injected) return valueChain(injected.expr, injected.fn, ctx, depth + 1);
+  // a bean the framework makes (`ref<ChatClient>()` of a starter): a value of the type it names
+  const looked = ctx.idx.lang.injection?.lookupType?.(e, fn, ctx);
+  if (looked) return typeChain(looked, fn, ctx, depth + 1);
   const c = valueChain(e.fn, fn, ctx, depth);
   if (c.segs.length === 0) {
     const target = c.root.kind === "function" ? overloadFor(c.root.fn, e, fn, ctx) : undefined;

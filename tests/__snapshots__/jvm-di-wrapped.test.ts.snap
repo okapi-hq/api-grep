@@ -1,0 +1,637 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JVM DI: nested configuration properties and configuration files (#100) > reads nested groups, a @Bean binding and application.yml values (Kotlin) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-region",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "envName": "catalog.api.base-url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-region": "<x-region>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://eu.catalog-example.com/v3/products",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-region": null,
+      },
+      "headers": [
+        "x-region",
+      ],
+      "host": "eu.catalog-example.com",
+      "hostKind": "env",
+      "id": "6c23519de3d8",
+      "location": {
+        "col": 18,
+        "file": "src/main/kotlin/com/example/catalog/Catalog.kt",
+        "language": "kotlin",
+        "line": 51,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/products",
+      "provider": "eu.catalog-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:catalog.api.base-url}/v3/products",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "sku",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "envName": "INVENTORY_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://inventory.example.com/v1/stock/raven",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "inventory.example.com",
+      "hostKind": "env",
+      "id": "f54b76401f39",
+      "location": {
+        "col": 30,
+        "file": "src/main/kotlin/com/example/catalog/Catalog.kt",
+        "language": "kotlin",
+        "line": 53,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/stock/{sku}",
+      "provider": "inventory.example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:INVENTORY_URL}/v1/stock/{sku}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "baseUrl",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{baseUrl}/v3/products",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "1c82f03fc60c",
+      "location": {
+        "col": 22,
+        "file": "src/main/kotlin/com/example/catalog/Catalog.kt",
+        "language": "kotlin",
+        "line": 55,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/products",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{baseUrl}/v3/products",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 2,
+      "spring-webclient": 1,
+    },
+    "byHostKind": {
+      "env": 2,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "kotlin": 3,
+    },
+    "byProvider": {
+      "eu.catalog-example.com": 1,
+      "inventory.example.com": 1,
+      "unknown": 1,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#100) > follows a Java static helper given the builder, a filled ArrayList and a delegating interceptor class 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-atlas-key",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept-language",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept-language": "fr-FR",
+            "x-atlas-key": "<x-atlas-key>",
+          },
+          "method": "GET",
+          "query": {
+            "q": "summit",
+          },
+          "url": "https://maps.atlas-example.com/v1/search?q=summit",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept-language": "fr-FR",
+        "x-atlas-key": null,
+      },
+      "headers": [
+        "x-atlas-key",
+        "accept-language",
+      ],
+      "host": "maps.atlas-example.com",
+      "hostKind": "literal",
+      "id": "2f50ac6c0865",
+      "location": {
+        "col": 16,
+        "file": "Places.java",
+        "language": "java",
+        "line": 20,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/search",
+      "provider": "maps.atlas-example.com",
+      "query": [
+        "q",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://maps.atlas-example.com/v1/search?q={q}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [
+        {
+          "name": "z",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://tiles.atlas-example.com/v1/tiles/41",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tiles.atlas-example.com",
+      "hostKind": "literal",
+      "id": "a49b315a6257",
+      "location": {
+        "col": 16,
+        "file": "Places.java",
+        "language": "java",
+        "line": 24,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/tiles/{z}",
+      "provider": "tiles.atlas-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://tiles.atlas-example.com/v1/tiles/{z}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "java": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 2,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 2,
+    },
+    "byProvider": {
+      "maps.atlas-example.com": 1,
+      "tiles.atlas-example.com": 1,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#100) > follows interceptors wrapped by a project extension, lists built with buildList and add (Kotlin) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://mirrors.radio-example.com/v2/mirrors",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "mirrors.radio-example.com",
+      "hostKind": "literal",
+      "id": "72cfd3c24b59",
+      "location": {
+        "col": 21,
+        "file": "MirrorModules.kt",
+        "language": "kotlin",
+        "line": 35,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/mirrors",
+      "provider": "mirrors.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://mirrors.radio-example.com/v2/mirrors",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-radio-region",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-radio-locale",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "country",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "user-agent": "RadioApp/2.1",
+            "x-radio-locale": "fr",
+            "x-radio-region": "eu-west",
+          },
+          "method": "GET",
+          "query": {
+            "country": "US",
+          },
+          "url": "https://catalog.radio-example.com/v2/stations?country=US",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "user-agent": "RadioApp/2.1",
+        "x-radio-locale": "fr",
+        "x-radio-region": "eu-west",
+      },
+      "headers": [
+        "user-agent",
+        "x-radio-region",
+        "x-radio-locale",
+      ],
+      "host": "catalog.radio-example.com",
+      "hostKind": "literal",
+      "id": "2d7959666ff2",
+      "location": {
+        "col": 37,
+        "file": "Stations.kt",
+        "language": "kotlin",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/stations",
+      "provider": "catalog.radio-example.com",
+      "query": [
+        "country",
+      ],
+      "queryShape": {
+        "properties": {
+          "country": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "country",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://catalog.radio-example.com/v2/stations?country={country}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "user-agent": "RadioApp/2.1",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://uploads.radio-example.com/v2/recordings",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "user-agent": "RadioApp/2.1",
+      },
+      "headers": [
+        "user-agent",
+      ],
+      "host": "uploads.radio-example.com",
+      "hostKind": "literal",
+      "id": "86f9282a70f5",
+      "location": {
+        "col": 24,
+        "file": "Stations.kt",
+        "language": "kotlin",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/recordings",
+      "provider": "uploads.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://uploads.radio-example.com/v2/recordings",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "user-agent": "RadioApp/2.1",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://account.radio-example.com/v2/favorites",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "user-agent": "RadioApp/2.1",
+      },
+      "headers": [
+        "user-agent",
+        "authorization",
+      ],
+      "host": "account.radio-example.com",
+      "hostKind": "literal",
+      "id": "ea0474f21693",
+      "location": {
+        "col": 23,
+        "file": "Stations.kt",
+        "language": "kotlin",
+        "line": 19,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/favorites",
+      "provider": "account.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://account.radio-example.com/v2/favorites",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 4,
+    "filesSeen": 4,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 4,
+        "filesSeen": 4,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 4,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "kotlin": 4,
+    },
+    "byProvider": {
+      "account.radio-example.com": 1,
+      "catalog.radio-example.com": 1,
+      "mirrors.radio-example.com": 1,
+      "uploads.radio-example.com": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 4,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
