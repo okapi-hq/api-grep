@@ -9,6 +9,7 @@ import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { isAstDocument } from "./resolve/graphql-ast.js";
 import { relayDocument } from "./resolve/relay-artifact.js";
+import { refetchDocument } from "./resolve/relay-refetch.js";
 import { stringShapeOf } from "./resolve/string-template.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
@@ -93,6 +94,7 @@ function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   const given = sdk.args[sdk.spec.documentArg];
   const arg = sdk.spec.documentProp ? getProp(given, sdk.spec.documentProp, ctx) : given;
   if (!arg) return { type: "unknown" };
+  if (sdk.spec.refetchQuery) return refetchDocument(shapeOf(arg, ctx).shape, arg);
   const artifact = relayDocument(arg);
   if (artifact) return stringShapeOf(artifact);
   const options = toObjectLiteral(arg, ctx);

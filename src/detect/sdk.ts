@@ -160,7 +160,26 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {
     const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
+    if (spec?.sendsThrough && !keepsSender(node, spec.sendsThrough)) return null;
     if (spec) return buildRaw(node, reg, key, spec, callee);
   }
   return null;
+}
+
+/**
+ * Whether the code keeps the function a hook sends through: `const [ref, loadQuery] = useQueryLoader(Q)` does,
+ * `const { data } = usePaginationFragment(F, key)` and a result left unused do not.
+ */
+function keepsSender(node: CallExpression, through: NonNullable<MethodSpec["sendsThrough"]>): boolean {
+  let p = node.getParent();
+  while (p && (Node.isAwaitExpression(p) || Node.isParenthesizedExpression(p) || Node.isAsExpression(p) || Node.isNonNullExpression(p))) p = p.getParent();
+  if (!p || Node.isExpressionStatement(p)) return false;
+  if (!Node.isVariableDeclaration(p)) return true;
+  const name = p.getNameNode();
+  if (Node.isArrayBindingPattern(name)) {
+    const el = through.index !== undefined ? name.getElements()[through.index] : undefined;
+    return !!el && !Node.isOmittedExpression(el);
+  }
+  if (!Node.isObjectBindingPattern(name)) return true;
+  return name.getElements().some((el) => !!el.getDotDotDotToken() || (through.names ?? []).includes((el.getPropertyNameNode() ?? el.getNameNode()).getText()));
 }

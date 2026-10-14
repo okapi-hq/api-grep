@@ -128,6 +128,17 @@ exports[`regression fixtures > graphql-clients/relay-containers 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/relay-fragments 1`] = `
+[
+  "environment.js:4 api.example-library.dev POST /graphql null",
+  "Shelf.js:5 api.example-library.dev POST /graphql BookListPaginationQuery",
+  "Shelf.js:21 api.example-library.dev POST /graphql ReaderBadgeRefetchQuery",
+  "Shelf.js:33 api.example-library.dev POST /graphql LoanListRefetchQuery",
+  "Shelf.js:59 api.example-library.dev POST /graphql ShelfQuery",
+  "Shelf.js:64 api.example-library.dev POST /graphql ShelfQuery",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/relay-unread 1`] = `
 [
   "environment.ts:6 internal POST /api/graphql null",
@@ -1349,6 +1360,23 @@ exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 [
   "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
   "orchard.py:35 unknown POST / harvest",
+]
+`;
+
+exports[`regression fixtures > python/shopify-records 1`] = `
+[
+  "kites.py:8 shopify POST /admin/api/{version}/products.json",
+  "kites.py:13 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:15 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:19 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:23 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:23 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.py:27 shopify GET /admin/api/{version}/orders/{id}.json",
+  "kites.py:28 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.py:32 shopify GET /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.py:37 shopify POST /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.py:41 shopify GET /admin/api/{version}/products/{resource_id}/metafields.json",
+  "kites.py:45 shopify GET /admin/api/{version}/orders/{order_id}/transactions.json",
 ]
 `;
 

@@ -94,6 +94,13 @@ export interface MethodSpec {
   documentProp?: string;
   /** The GraphQL document the library sends itself (Hydrogen's `cart.addLines(lines)`, #92). */
   document?: string;
+  /** The document argument is a fragment: the request is the query Relay generates for its `@refetchable` (#92). */
+  refetchQuery?: boolean;
+  /**
+   * A hook that sends through a function it returns (Relay's `useQueryLoader`, #92): element `index` of the array or
+   * one of `names` of the object; a destructuring that leaves it out sends nothing.
+   */
+  sendsThrough?: { index?: number; names?: string[] };
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];
