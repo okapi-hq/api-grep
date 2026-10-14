@@ -133,15 +133,18 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   const declared = new Set([...known.keys()].filter((p) => declaredNames.has(lang.normalizePackage(p))));
   const roots = [...known.keys()].map((pkg) => ({ pkg, roots: lang.importRoots(pkg, declared.has(pkg)).map((r) => r.split(".")) }));
   const sites = new Map<string, number>();
+  const near = declaredNear(lang, rootDir);
   for (const mod of scanned) {
     const hit = new Set<string>();
+    const own = near(mod.file);
     for (const p of mod.importPaths) {
       // `Sentry\Laravel\Integration` is sentry/sentry-laravel's, not sentry/sentry's: the longest root wins, a declared
-      // package's first (firebase-admin's `com.google.firebase.auth` is not the undeclared Android firebase-auth's)
+      // package's first (firebase-admin's `com.google.firebase.auth` is not the undeclared Android firebase-auth's), and
+      // of those the one the file's own module declares (Spring AI's `ChatClient` is the module's model starter's)
       let best: { pkg: string; rank: number } | undefined;
       for (const r of roots) {
         for (const root of r.roots) {
-          const rank = root.length + (declared.has(r.pkg) ? 1000 : 0);
+          const rank = root.length + (declared.has(r.pkg) ? 1000 : 0) + (own.has(lang.normalizePackage(r.pkg)) ? 1000 : 0);
           if (root.every((s, i) => p[i] === s) && rank > (best?.rank ?? 0)) best = { pkg: r.pkg, rank };
         }
       }

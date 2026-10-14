@@ -86,6 +86,14 @@ function apply(acc: Acc, name: string, call: CallExpr, fn: FunctionDef, into: Fu
   return true;
 }
 
+/** A call on a variable holding the value: an entry put in a branch or a loop (`if (x) o.setTemperature(t)`) may not be there. */
+function step(acc: Acc, c: ScopedCall, optional: boolean, into: FunctionDef): void {
+  const from = acc.entries.length;
+  apply(acc, methodName(c.call), c.call, c.fn, into);
+  applyLambdas(acc, c.call, into);
+  if (optional) for (let i = from; i < acc.entries.length; i++) if (!acc.entries[i]!.spread) acc.entries[i] = { ...acc.entries[i]!, optional: true };
+}
+
 /** The entries of a dict written in `fn`, read in `into`. */
 function entriesIn(dict: Expr, fn: FunctionDef, into: FunctionDef): Entry[] {
   if (dict.k !== "dict") return [];
@@ -118,7 +126,7 @@ function start(e: Expr, fn: FunctionDef, into: FunctionDef, ctx: IrCtx, depth: n
   const before = (offset: number): boolean => offset < e.pos.offset || b.fn !== fn;
   const steps: { at: number; run: () => void }[] = callsOn(b.fn, e.name, b.assign.offset)
     .filter((c) => before(c.call.pos.offset))
-    .map((c) => ({ at: c.call.pos.offset, run: () => void (apply(acc, methodName(c.call), c.call, c.fn, into), applyLambdas(acc, c.call, into)) }));
+    .map((c) => ({ at: c.call.pos.offset, run: () => step(acc, c, mayNotRun(b.fn, c.call.pos.offset, b.fn === fn ? e.pos.offset : undefined), into) }));
   // `body["k"] = v` (Kotlin, lowered as an edit): an entry put on the map, in order with the calls
   const sets = acc.spec.put ? b.fn.assigns.filter((a) => a.edit === "merge" && a.target === e.name && a.offset > b.assign.offset && before(a.offset)) : [];
   for (const a of sets) {

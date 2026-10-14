@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/89",
+  "skipped": [],
+  "calls": [
+    { "file": "Lessons.kt", "line": 22, "provider": "openai" },
+    { "file": "Lessons.kt", "line": 28, "provider": "openai" },
+    { "file": "Lessons.kt", "line": 31, "provider": "supabase" },
+    { "file": "Lessons.kt", "line": 38, "provider": "supabase" },
+    { "file": "Lessons.kt", "line": 43, "provider": "firebase" }
+  ]
+}

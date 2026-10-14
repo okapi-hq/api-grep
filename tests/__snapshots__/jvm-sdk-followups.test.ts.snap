@@ -1,0 +1,586 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions, supabase-kt lambda bodies and Firebase Storage properties 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              600,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "topic",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_completion_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_completion_tokens": 600,
+            "messages": [
+              {
+                "content": "Tundra dune estuary cedar glacier koala.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "b9089d95d16e",
+      "location": {
+        "col": 34,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "com.openai:openai-java",
+        "version": "4.6.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_completion_tokens": {
+            "enum": [
+              600,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "content": {
+                      "enum": [
+                        "You teach chemistry.",
+                      ],
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "system",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "user",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.3,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "max_completion_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_completion_tokens": 600,
+            "messages": [
+              {
+                "content": "You teach chemistry.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 600,
+            "messages": [
+              {
+                "content": "You teach chemistry.",
+                "role": "system",
+              },
+              {
+                "content": "You teach chemistry.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0.3,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "full",
+        },
+        {
+          "body": {
+            "max_completion_tokens": 600,
+            "messages": [
+              {
+                "content": "Haven timber amber timber jetty meadow.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0.3,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "fa03a81015c0",
+      "location": {
+        "col": 9,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 28,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "com.openai:openai-java",
+        "version": "4.6.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "done": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+          "score": {
+            "hint": "score",
+            "type": "integer",
+          },
+        },
+        "required": [
+          "done",
+          "score",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "score",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "done": true,
+            "score": 1,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "PATCH",
+          "query": {},
+          "url": "https://{project}.supabase.co/rest/v1/lessons",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "{project}.supabase.co",
+      "hostKind": "literal",
+      "id": "29bbe30b81d9",
+      "location": {
+        "col": 48,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 31,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/rest/v1/lessons",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "from.update",
+        "package": "io.github.jan-tennert.supabase:postgrest-kt",
+      },
+      "urlTemplate": "https://{project}.supabase.co/rest/v1/lessons",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "password": {
+            "hint": "code",
+            "type": "string",
+          },
+          "phone": {
+            "hint": "number",
+            "type": "string",
+          },
+        },
+        "required": [
+          "phone",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "phone",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "password",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "password": "UBLWG5",
+            "phone": "+14155555046",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{project}.supabase.co/auth/v1/signup",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "{project}.supabase.co",
+      "hostKind": "literal",
+      "id": "9a82ba46c5c4",
+      "location": {
+        "col": 54,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 38,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/auth/v1/signup",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "signUpWith",
+        "package": "io.github.jan-tennert.supabase:auth-kt",
+      },
+      "urlTemplate": "https://{project}.supabase.co/auth/v1/signup",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "bucket",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://firebasestorage.googleapis.com/v0/b/cedar/o/covers/2181.png",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "firebasestorage.googleapis.com",
+      "hostKind": "literal",
+      "id": "b46ac30698d8",
+      "location": {
+        "col": 86,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 43,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v0/b/{bucket}/o/covers/{id}.png",
+      "provider": "firebase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "downloadUrl",
+        "package": "com.google.firebase:firebase-storage",
+      },
+      "urlTemplate": "https://firebasestorage.googleapis.com/v0/b/{bucket}/o/covers/{id}.png",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "com.google.firebase:firebase-storage",
+        "provider": "firebase",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "com.openai:openai-java",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "io.github.jan-tennert.supabase:auth-kt",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "maven",
+        "importSites": 1,
+        "imported": true,
+        "package": "io.github.jan-tennert.supabase:postgrest-kt",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "sdk": 5,
+    },
+    "byHostKind": {
+      "literal": 5,
+    },
+    "byLanguage": {
+      "kotlin": 5,
+    },
+    "byProvider": {
+      "firebase": 1,
+      "openai": 2,
+      "supabase": 2,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

@@ -115,7 +115,27 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
    * constructor takes the host (`kw:host|1`). See `setup.ts`.
    */
   setupUrl?: { calls: string[]; arg: number; host: string };
+  /** A model client a framework configures from the build and its properties (Spring AI): see `ConfiguredClient`. */
+  configured?: ConfiguredClient;
   methods: Record<string, IrMethodSpec>;
+}
+
+/**
+ * A client a framework builds from the starter the build declares and from configuration properties (Spring AI): the
+ * entries of one `family` share interfaces (`ChatClient`, `ChatModel`) bound to the one provider the manifests declare,
+ * a chain through the provider's `own` packages (`OpenAiChatModel`) is that provider's, and the model and base URL are
+ * properties the code does not name. The language's `refineSdk` reads it.
+ */
+export interface ConfiguredClient {
+  family: string;
+  /** Entries of one provider and kind (its artifacts) share it: `chat`, `embedding`. */
+  kind: string;
+  own: string[];
+  /** The provider's model classes of this kind (`OpenAiChatModel`): built in the code, they ignore the properties. */
+  classes: string[];
+  /** Properties holding the model and the base URL, the first set wins. */
+  model: string[];
+  baseUrl: string[];
 }
 
 /** What an option of an HTTP client call carries (`json=` -> `body:json`, `params=` -> `query`). */
@@ -278,6 +298,11 @@ export interface IrLanguage extends IrSource {
   resolveCall?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
   /** Values a DI container gives (JVM: Dagger / Hilt, Spring, Koin), for parameters and fields nothing else sets. */
   injection?: IrInjection;
+  /**
+   * The last say on an SDK call a registry entry matched, with the whole chain (Spring AI: whether a shared interface
+   * is the entry's provider, the model and base URL its configuration gives); undefined when the entry does not apply.
+   */
+  refineSdk?: (raw: IrRaw, chain: Chain, ctx: IrCtx) => IrRaw | undefined;
   /**
    * A call that returns an instance of a project class it names (`retrofit.create(Api::class.java)`,
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.

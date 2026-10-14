@@ -409,6 +409,21 @@ exports[`regression fixtures > java/sdk-ai 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/sdk-forms 1`] = `
+[
+  "Assistant.java:27 azure-openai POST /openai/deployments/{model}/chat/completions",
+  "Assistant.java:31 azure-openai POST /openai/deployments/{model}/images/generations",
+  "Drafts.java:24 anthropic POST /v1/messages",
+  "Drafts.java:31 anthropic POST /v1/messages",
+  "Notices.java:19 sendgrid GET /v3/suppression/bounces",
+  "Notices.java:26 sendgrid DELETE /v3/asm/suppressions/global/{email}",
+  "Notices.java:34 sendgrid POST /v3/mail/send",
+  "Notices.java:41 sendgrid DYNAMIC /v3/{endpoint}",
+  "Notices.java:45 mailgun POST /v3/notices.example.eu/messages",
+  "Notices.java:49 mailgun POST /v3/notices.example.com/messages",
+]
+`;
+
 exports[`regression fixtures > java/spring 1`] = `
 [
   "Builders.java:40 partners.example-shop.com GET /v1/partners/{id}",
@@ -773,6 +788,16 @@ exports[`regression fixtures > kotlin/sdk/payments 1`] = `
   "Billing.kt:35 stripe POST /v1/checkout/sessions",
   "Billing.kt:45 stripe POST /v1/payment_intents/{intent}/cancel",
   "Billing.kt:47 stripe GET /v1/customers",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/split 1`] = `
+[
+  "Lessons.kt:22 openai POST /v1/chat/completions",
+  "Lessons.kt:28 openai POST /v1/chat/completions",
+  "Lessons.kt:31 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:38 supabase POST /auth/v1/signup",
+  "Lessons.kt:43 firebase GET /v0/b/{bucket}/o/covers/{id}.png",
 ]
 `;
 
