@@ -1,4 +1,7 @@
-import type { CallExpression, Expression, NewExpression, Node, ParameterDeclaration } from "ts-morph";
+import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration } from "ts-morph";
+
+/** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
+export type JsxOpeningLikeElement = JsxOpeningElement | JsxSelfClosingElement;
 
 export type DynamicOrigin = "param" | "call" | "env" | "unknown";
 
@@ -42,7 +45,7 @@ export interface Callee {
 }
 
 export interface RawCall {
-  node: CallExpression | NewExpression;
+  node: CallExpression | NewExpression | JsxOpeningLikeElement;
   client: ClientKind;
   urlExpr?: Expression;
   baseUrlExpr?: Expression;
@@ -95,6 +98,15 @@ export interface MethodSpec {
   auth?: AuthScheme;
   /** The body is a property of the body argument (`functions.invoke(name, { body })`). */
   bodyProp?: string;
+  /** The library sends the body under this key (`shopify.product.create(fields)` sends `{ product: fields }`). */
+  bodyWrap?: string;
+  /** A JSX component's (`components` of a registry): the props read as the method's arguments, in order. */
+  props?: string[];
+  /**
+   * The path when argument `arg` is given, `path` otherwise: pyactiveresource's `Product.find(id)` reads one record,
+   * `Product.find()` lists them.
+   */
+  argPath?: { arg: number; path: string };
   /**
    * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
    * method is called on, `from(table)`), `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`) or
@@ -220,12 +232,25 @@ export interface RegistryEntry {
   inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;
   commands?: Record<string, MethodSpec>;
+  /** JSX components that send a request as they render (Relay's `<QueryRenderer query={...} />`), by export name. */
+  components?: Record<string, MethodSpec>;
   /** The library picks the provider from the model name (LangChain's `initChatModel`): the call goes where it routes. */
   routeByModel?: boolean;
   /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */
   endpoint?: EndpointSpec;
   /** Members of a contract object (`connect`, `interface`): a `*` in a method key, a function of its ABI, is never one of them (#78). */
   notFunctions?: string[];
+  /**
+   * Method names too common to stand for this SDK by themselves (`order.list`): a call on an untyped parameter is this
+   * SDK's when its callers pass one of its clients, never because the manifests declare the package.
+   */
+  callersOnly?: boolean;
+  /**
+   * Clients a framework hands to request handlers in their context, by name (Hydrogen's `context.storefront`): in a
+   * project whose manifests declare the package, `<name>.<method>` on a value of that name read from a parameter or
+   * the context is the key `<name>.<method>` of this registry.
+   */
+  contextClients?: string[];
 }
 
 export interface FrameworkKeys {

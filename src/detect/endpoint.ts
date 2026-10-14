@@ -168,7 +168,7 @@ function projectEndpoint(project: Project, reg: RegistryEntry): Endpoint {
 }
 
 /** The URL and headers of a GraphQL client call; `args` are the method's arguments (after an endpoint given first). */
-export function clientEndpoint(node: Construction, reg: RegistryEntry, spec: MethodSpec, callee: Callee, args: Expression[]): Endpoint {
+export function clientEndpoint(node: Node, reg: RegistryEntry, spec: MethodSpec, callee: Callee, args: Expression[]): Endpoint {
   if (spec.subscription || !reg.endpoint) return {};
   if (spec.clientArg !== undefined) {
     const given = at(args, spec.clientArg);

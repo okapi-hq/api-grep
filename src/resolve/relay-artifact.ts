@@ -1,3 +1,4 @@
+import path from "node:path";
 import { Node, type Expression, type ObjectLiteralExpression } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp, importedVariable } from "../ast/object.js";
@@ -36,6 +37,26 @@ function returnedByIife(u: Expression): Expression | undefined {
   return ret && Node.isReturnStatement(ret) ? ret.getExpression() : undefined;
 }
 
+/**
+ * `require("./__generated__/AppQuery.graphql")` (#83, Relay's route configs): what the scanned file it names exports,
+ * `export default node` or `module.exports = node`. Only files already in the scan are looked up.
+ */
+function requiredExport(u: Expression): Expression | undefined {
+  if (!Node.isCallExpression(u) || u.getExpression().getText() !== "require") return undefined;
+  const spec = stringOf(u.getArguments()[0] as Expression | undefined);
+  if (!spec?.startsWith("./") && !spec?.startsWith("../")) return undefined;
+  const base = path.join(path.dirname(u.getSourceFile().getFilePath()), spec);
+  const project = u.getProject();
+  const sf = ["", ".js", ".ts"].map((ext) => project.getSourceFile(`${base}${ext}`)).find((f) => !!f);
+  const exported = sf?.getExportAssignments().find((a) => !a.isExportEquals())?.getExpression();
+  if (exported) return exported;
+  const assigned = sf?.getStatements().flatMap((s) => {
+    const e = Node.isExpressionStatement(s) ? s.getExpression() : undefined;
+    return e && Node.isBinaryExpression(e) && e.getLeft().getText() === "module.exports" ? [e.getRight()] : [];
+  });
+  return assigned?.at(-1);
+}
+
 /** The artifact literal an expression names: written here, or a constant (imported or not) holding one. */
 function requestLiteral(e: Expression, hops: number): ObjectLiteralExpression | undefined {
   if (hops > MAX_HOPS) return undefined;
@@ -46,7 +67,7 @@ function requestLiteral(e: Expression, hops: number): ObjectLiteralExpression | 
     const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
     return init ? requestLiteral(init, hops + 1) : undefined;
   }
-  const returned = returnedByIife(u);
+  const returned = returnedByIife(u) ?? requiredExport(u);
   return returned ? requestLiteral(returned, hops + 1) : undefined;
 }
 

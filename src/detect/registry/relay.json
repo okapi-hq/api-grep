@@ -1,5 +1,5 @@
 {
-  "$comment": "Relay (#67) talks to the endpoint of its network layer: `new Environment({ network: Network.create(fetchFn) })`, where `fetchFn` is the app's own function and the URL is that of the one `fetch` it sends. Hooks name no environment, and the one `commitMutation` / `fetchQuery` are given is the app's: the project's one network layer, else the endpoint is unknown.",
+  "$comment": "Relay (#67) talks to the endpoint of its network layer: `new Environment({ network: Network.create(fetchFn) })`, where `fetchFn` is the app's own function and the URL is that of the one `fetch` it sends. Hooks name no environment, and the one `commitMutation` / `fetchQuery` are given is the app's: the project's one network layer, else the endpoint is unknown. #83 adds `loadQuery(environment, query, variables)`, the refetch query of `createRefetchContainer` and the pagination query of `createPaginationContainer`, and `<QueryRenderer environment query variables />` (a JSX component: `components`, its props as arguments).",
   "package": "relay-runtime",
   "aliases": ["react-relay"],
   "provider": "graphql",
@@ -24,6 +24,12 @@
     "useSubscription": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 0, "bodyProp": "variables", "subscription": true },
     "commitMutation": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 1, "bodyProp": "variables", "clientArg": "0" },
     "fetchQuery": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 2, "clientArg": "0" },
-    "requestSubscription": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 1, "bodyProp": "variables", "clientArg": "0", "subscription": true }
+    "requestSubscription": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 1, "bodyProp": "variables", "clientArg": "0", "subscription": true },
+    "loadQuery": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 2, "clientArg": "0" },
+    "createRefetchContainer": { "method": "POST", "path": "", "documentArg": 2 },
+    "createPaginationContainer": { "method": "POST", "path": "", "documentArg": 2, "documentProp": "query" }
+  },
+  "components": {
+    "QueryRenderer": { "method": "POST", "path": "", "documentArg": 0, "bodyArg": 1, "clientArg": "2", "props": ["query", "variables", "environment"] }
   }
 }

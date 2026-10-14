@@ -1,15 +1,19 @@
 {
-  "$comment": "Shopify's Admin API client (#67): `createAdminApiClient({ storeDomain, apiVersion, accessToken }).request(document, { variables })`, also `fetch` and `requestStream`. Keys keep the factory's name, so only a client it built matches. The store is the code's: its host stays `{shop}.myshopify.com`.",
+  "$comment": "Shopify's Admin API clients (#67, #83): `createAdminApiClient({ storeDomain, apiVersion, accessToken }).request(document, { variables })`, also `fetch` and `requestStream`; `createAdminRestApiClient(...)` `.get(path)`, `.post(path, { data })`, `put`, `delete`, at `/admin/api/{version}/<path>.json`. Keys keep the factory's name, so only a client it built matches. The store is the code's: its host stays `{shop}.myshopify.com`.",
   "package": "@shopify/admin-api-client",
   "provider": "shopify",
   "host": "{shop}.myshopify.com",
   "auth": "apikey",
-  "generatedFrom": "manual (checked against @shopify/admin-api-client 1.0)",
+  "generatedFrom": "manual (checked against @shopify/admin-api-client 1.0 and 2.0)",
   "inlinePathLiterals": true,
-  "instance": { "names": [] },
+  "instance": {"names": []},
   "methods": {
-    "createAdminApiClient.request": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
-    "createAdminApiClient.fetch": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } },
-    "createAdminApiClient.requestStream": { "method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": { "version": "instance:0.apiVersion" } }
+    "createAdminApiClient.fetch": {"method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": {"version": "instance:0.apiVersion"}},
+    "createAdminApiClient.request": {"method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": {"version": "instance:0.apiVersion"}},
+    "createAdminApiClient.requestStream": {"method": "POST", "path": "/admin/api/{version}/graphql.json", "documentArg": 0, "bodyArg": 1, "bodyProp": "variables", "params": {"version": "instance:0.apiVersion"}},
+    "createAdminRestApiClient.delete": {"method": "DELETE", "path": "/admin/api/{version}/{path}.json", "params": {"version": "instance:0.apiVersion", "path": "arg:0"}},
+    "createAdminRestApiClient.get": {"method": "GET", "path": "/admin/api/{version}/{path}.json", "params": {"version": "instance:0.apiVersion", "path": "arg:0"}},
+    "createAdminRestApiClient.post": {"method": "POST", "path": "/admin/api/{version}/{path}.json", "bodyArg": 1, "bodyProp": "data", "params": {"version": "instance:0.apiVersion", "path": "arg:0"}},
+    "createAdminRestApiClient.put": {"method": "PUT", "path": "/admin/api/{version}/{path}.json", "bodyArg": 1, "bodyProp": "data", "params": {"version": "instance:0.apiVersion", "path": "arg:0"}}
   }
 }

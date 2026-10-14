@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/83",
+  "calls": [
+    {"file": "Orchard.js", "line": 7, "provider": "api.example-orchard.dev", "operation": "OrchardQuery"},
+    {"file": "Orchard.js", "line": 18, "provider": "api.example-orchard.dev", "operation": "HarvestQuery"},
+    {"file": "Orchard.js", "line": 20, "provider": "api.example-orchard.dev", "operation": "SeasonQuery"},
+    {"file": "Orchard.js", "line": 25, "provider": "api.example-orchard.dev", "operation": "TreeDetailsRefetchQuery"},
+    {"file": "Orchard.js", "line": 31, "provider": "api.example-orchard.dev", "operation": "TreeListPaginationQuery"}
+  ]
+}
