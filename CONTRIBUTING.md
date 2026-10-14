@@ -263,7 +263,7 @@ The report is a contract other tools read. Its source is [`src/report/schema.ts`
 3. Bump `SCHEMA_VERSION`: the minor for a new field or enum value, the major for anything that
    can break a reader (a removed, renamed or retyped field). A major also moves the schema to
    `report.v<major>.json` and updates `SCHEMA_URL`.
-4. Update the YAML example in the README's [Output format](README.md#output-format) section.
+4. Update the YAML example in [docs/report.md](docs/report.md#a-call-field-by-field).
 
 ## Code style
 
