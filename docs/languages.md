@@ -915,7 +915,7 @@ operation?: {
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi, `useConnection()`, TypeChain factories, `connect` / `attach`, typed contracts and JSON ABIs (#85); app React contexts, context objects as untyped parameters, injected factories, memoized and ConnectKit wagmi configs, Python dict caches (#98) |
-| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); the Hydrogen cart, `useQueryLoader` and Relay fragment refetch and pagination hooks (TypeScript, JavaScript, #92); `useQueryLoader` variables, Hydrogen 2026.4 cart methods and the 2026.10 storefront client and cart query (TypeScript, JavaScript, #102); bound diagnostic #55; literal arguments of selected fields (#56, every language) |
+| GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); the Hydrogen cart, `useQueryLoader` and Relay fragment refetch and pagination hooks (TypeScript, JavaScript, #92); `useQueryLoader` variables, Hydrogen 2026.4 cart methods and the 2026.10 storefront client and cart query (TypeScript, JavaScript, #102); bound diagnostics (#55, `diagnostics.unfollowed` `graphql-limit`); literal arguments of selected fields (#56, every language) |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (#58): PHP `SoapClient`, zeep (Python), node-soap (TypeScript, JavaScript); JAX-WS / Spring-WS not yet |
 
 ### JSON-RPC (#34)
@@ -1296,10 +1296,26 @@ document with the `graphql` package's parser (no schema, no network):
   selection sets, 20,000 selection sets visited while inlining fragments, 2,000 field paths. A document read in the
   code is kept to its first 1,000 characters past the size bound, and fragments interpolated into fragments are read
   once each. Past a bound `fields` is left out (not cut short) and `name` / `type` come from the document's header
-  when it has one; a diagnostic for this needs a schema change (#55). An AST document is read only while every
+  when it has one. An AST document is read only while every
   definition is a JSON-like literal (strings, numbers, booleans, `null`, arrays, objects; `__proto__` keys dropped),
   within 4,000,000 characters, 200,000 values and 128 levels of nesting; otherwise its first operation's type and
-  name are kept, and its fields left out. The text it prints to has the bounds above.
+  name are kept, and its fields left out. The text it prints to has the bounds above. sgqlc operations keep their
+  first 2,000 selections.
+- **Bounds reached are diagnostics** (#55, schema 1.19): each call whose document was read past a bound gets a
+  `diagnostics.unfollowed` entry with reason `graphql-limit` and `detail` naming the bound (`document-size`,
+  `document-parts`, `tokens`, `depth`, `fragment-expansion`, `fields`, `operations`, `ast-size`, `ast-nodes`,
+  `ast-nesting`), once per location and bound, so `complete` is false as for any call not followed: a missing
+  `fields` then tells a document the scan could not fully read from one that is not in the code. `unfollowed` rather
+  than a list of its own: the smallest additive change, and the entries carry what the others do (file, line, why).
+  The bound travels with the document: a front end that cuts a document short (`truncated()` in
+  `src/resolve/graphql-source.ts`, an AST document, a Relay artifact, sgqlc) marks the part it leaves out with the
+  bound, the parser names the bounds it reaches (`readDocument()`), and `src/operation/limits.ts` records the bound
+  on each `Operation` built from such a document; both front ends turn it into the diagnostic when they build calls.
+  A part left out because the scan cannot compute it (a value, a fragment from a package), a document that is not in
+  the code (a persisted query's hash, a Relay artifact without `text`) and an AST document holding a reference are
+  not bounds. Not reported: `#import` lines past four files, AST documents spread in past four documents, and sgqlc
+  selections more than 32 deep, which leave a fragment's or a selection's fields out rather than the document's, and arguments left out past
+  their own bounds (#56).
 - **Not covered**: the keyword arguments of `sgqlc` selections (`op.repository(owner=o)`: its document is built
   without them, so it has no `arguments`); AST documents built by code
   (`Object.assign`, a definition pushed after the literal) and Python documents written as `graphql-core` nodes.

@@ -5,6 +5,7 @@ import { identifierOrigin } from "../ast/origin.js";
 import { declarationsOf } from "../ast/object.js";
 import { readConfigFile } from "../files.js";
 import { MAX_DOCUMENT_CHARS, operationDocument } from "../operation/graphql-document.js";
+import type { GraphqlLimit } from "../operation/limits.js";
 import type { EvalCtx, Part } from "../types.js";
 import { staticText } from "./parts.js";
 
@@ -70,11 +71,14 @@ export function printedArgument(u: Expression): Expression | undefined {
 const memo = new WeakMap<Node, Map<EvalCtx["subst"], Part[]>>();
 const MAX_PARTS = 1_000;
 
-/** A document past the size bound keeps its start, so its header still names it; its fields are unknown. */
-export function truncated(start: string): Part[] {
+/**
+ * A document past a bound keeps its start, so its header still names it; its fields are unknown. `limit` names the
+ * bound (#55); a document that is not in the code (a persisted Relay query) has none.
+ */
+export function truncated(start: string, limit?: GraphqlLimit): Part[] {
   return [
     { kind: "static", text: start.slice(0, 1_000), viaConst: true },
-    { kind: "dynamic", name: "document", origin: "unknown" },
+    { kind: "dynamic", name: "document", origin: "unknown", ...(limit ? { limit } : {}) },
   ];
 }
 
@@ -84,7 +88,7 @@ function bounded(parts: Part[]): Part[] {
   for (const p of parts) size += p.kind === "static" ? p.text.length : 1;
   if (size <= MAX_DOCUMENT_CHARS && parts.length <= MAX_PARTS) return parts;
   const end = parts.findIndex((p) => p.kind !== "static");
-  return truncated(staticText(end < 0 ? parts : parts.slice(0, end)) ?? "");
+  return truncated(staticText(end < 0 ? parts : parts.slice(0, end)) ?? "", size > MAX_DOCUMENT_CHARS ? "document-size" : "document-parts");
 }
 
 function readDocumentParts(u: Expression, ctx: EvalCtx, depth: number, evaluate: Evaluate): Part[] | undefined {
@@ -119,7 +123,7 @@ function readDocument(file: string, root: string, seen: Set<string>, depth: numb
 }
 
 function documentText(text: string, name: string | undefined): Part[] {
-  if (text.length > MAX_DOCUMENT_CHARS) return truncated(text);
+  if (text.length > MAX_DOCUMENT_CHARS) return truncated(text, "document-size");
   // graphql-tag/loader exports each operation by name, with the fragments it needs
   const selected = name ? operationDocument(text, name) : undefined;
   return [{ kind: "static", text: selected ?? text, viaConst: true }];

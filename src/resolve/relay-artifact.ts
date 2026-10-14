@@ -82,7 +82,7 @@ export function relayDocument(e: Expression): Part[] | undefined {
   const params = artifact && getProp(artifact, "params");
   if (!params) return undefined;
   const text = stringOf(getProp(params, "text"));
-  if (text !== undefined) return text.length > MAX_DOCUMENT_CHARS ? truncated(text) : [{ kind: "static", text, viaConst: true }];
+  if (text !== undefined) return text.length > MAX_DOCUMENT_CHARS ? truncated(text, "document-size") : [{ kind: "static", text, viaConst: true }];
   const name = stringOf(getProp(params, "name"));
   const kind = stringOf(getProp(params, "operationKind"));
   return name && NAME.test(name) && kind && OPERATION_KINDS.has(kind) ? truncated(`${kind} ${name} `) : undefined;

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { assembleCalls, type ResolvedCall } from "../../src/assemble.js";
 import { graphqlOperations, MAX_OPERATIONS } from "../../src/operation/graphql.js";
+import { limitDiagnostics, limitOf } from "../../src/operation/limits.js";
+import { truncated } from "../../src/resolve/graphql-source.js";
 import { stringShapeOf } from "../../src/resolve/string-template.js";
 import type { Shape } from "../../src/types.js";
 
@@ -125,5 +127,35 @@ describe("graphqlOperations: URLs and SDK documents", () => {
     const calls = assembleCalls(request(obj({ query: str("query A { a } query B { b }") })));
     expect(calls.map((c) => c.operation?.name)).toEqual(["A", "B"]);
     expect(calls[0]!.id).not.toBe(calls[1]!.id);
+  });
+});
+
+describe("GraphQL bounds (#55)", () => {
+  const limitsOf = (r: ResolvedCall) => graphqlOperations(r).map((op) => limitOf(op));
+
+  it("names the bound an operation was read past, and none within the bounds", () => {
+    const many = str(Array.from({ length: MAX_OPERATIONS + 1 }, (_, i) => `query Q${i} { f${i} }`).join("\n"));
+    expect(limitsOf(request(obj({ query: many })))).toEqual(["operations"]);
+    expect(limitsOf(request(obj({ query: str(`query Deep ${"{ a ".repeat(40)}${"}".repeat(40)}`) })))).toEqual(["depth"]);
+    expect(limitsOf(request(obj({ query: str("query Me { me { id } }") })))).toEqual([undefined]);
+    // a batch keeps the bound of each of its operations
+    const deep = obj({ query: str(`query Deep ${"{ a ".repeat(40)}${"}".repeat(40)}`) });
+    expect(limitsOf(request({ type: "array", items: { type: "union", anyOf: [deep, obj({ query: str("query Me { me }") })] } }))).toEqual(["depth", undefined]);
+  });
+
+  it("reads the bound of a document a front end cut short, with or without a header", () => {
+    const named = stringShapeOf(truncated("query Big { shelf { bin ", "document-size"));
+    expect(graphqlOperations(request(obj({ query: named })))).toEqual([{ protocol: "graphql", name: "Big", type: "query", dynamic: false, from: "document" }]);
+    expect(limitsOf(request(obj({ query: named })))).toEqual(["document-size"]);
+    // no header: the envelope says GraphQL, and the call has no name
+    const headless = stringShapeOf(truncated("", "ast-nodes"));
+    expect(limitsOf(request(obj({ query: headless, variables: obj({}) })))).toEqual(["ast-nodes"]);
+    // a persisted Relay query is cut short with no bound: the document is not in the code
+    expect(limitsOf(request(obj({ query: stringShapeOf(truncated("query Saved ")) })))).toEqual([undefined]);
+  });
+
+  it("gives one diagnostic per location and bound of the calls built from a request", () => {
+    const calls = assembleCalls(request({ type: "array", items: obj({ query: str(`query Deep ${"{ a ".repeat(40)}${"}".repeat(40)}`) }) }));
+    expect(limitDiagnostics([...calls, ...calls])).toEqual([{ file: "api.ts", line: 3, reason: "graphql-limit", detail: "depth" }]);
   });
 });

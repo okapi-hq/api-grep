@@ -88,7 +88,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `src/resolve/graphql-ast.ts`, #56; the literal arguments of selected fields are `operation.arguments`,
   `graphql-arguments.ts`, #56; `soap.ts` reads the `SOAPAction` header and the XML
   envelope, `action.ts` the query or form parameter a provider's `operationParam` in `providers.json` names), unless
-  the front end set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. Schema,
+  the front end set `ResolvedCall.operation`; `callId` hashes its name; a batch is one `Call` per operation. A GraphQL document read past a bound (#55) marks its
+  `Operation` (`src/operation/limits.ts`); both front ends' `buildAll` turn it into a `diagnostics.unfollowed`
+  `graphql-limit` entry. Schema,
   batch decision and per-protocol status (#34 to #36) in `docs/languages.md`. XML bodies are `bodyEncoding: "xml"`
   with their element structure as the shape (`src/resolve/xml-shape.ts`: a capped tokenizer that never reads a DTD or
   expands an entity). GraphQL client libraries (#54: Apollo, urql, graphql-request, Python `gql`) are registries with

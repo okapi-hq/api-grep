@@ -6,6 +6,7 @@ import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
 import { wrapShape } from "../../resolve/shape-utils.js";
+import { stringShapeOf } from "../../resolve/string-template.js";
 import { resolveReference } from "../../resolve/url-reference.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Part, Shape, UrlShape } from "../../types.js";
@@ -147,7 +148,10 @@ function documentOf(raw: IrRaw, ctx: IrCtx): Shape | undefined {
   const arg = argOf(m.method, m.spec.documentArg, m.spec.documentKw ?? "document");
   if (!arg) return { type: "unknown" };
   const built = ctx.idx.lang.documentOf?.(arg, ctx);
-  return built !== undefined ? { type: "string", enum: [built] } : shapeOf(arg.expr, arg.fn, ctx).shape;
+  if (!built) return shapeOf(arg.expr, arg.fn, ctx).shape;
+  // selections past a bound are left out of the text: the part standing for them says which bound (#55)
+  const cut: Part[] = built.limit ? [{ kind: "dynamic", name: "document", origin: "unknown", limit: built.limit }] : [];
+  return stringShapeOf([{ kind: "static", text: built.text }, ...cut]);
 }
 
 /** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */

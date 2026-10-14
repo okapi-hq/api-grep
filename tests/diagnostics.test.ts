@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { diagnosticsLine } from "../src/report/diagnostics.js";
+import { DiagnosticsCollector, diagnosticsLine } from "../src/report/diagnostics.js";
 import { at, scanFixture } from "./fixture-helpers.js";
 
 describe("diagnostics", () => {
@@ -39,5 +39,16 @@ describe("diagnostics", () => {
     const unfollowed = Array.from({ length: 12 }, (_, i) => ({ file: "a.ts", line: i, reason: "injected-fetch" as const }));
     expect(diagnosticsLine({ ...base, unfollowed })).toBe("scanned 1702/1840 files, 138 skipped, 12 calls not followed");
     expect(diagnosticsLine({ ...base, skippedCounts: {}, filesScanned: 1840, complete: true })).toBe("scanned 1840/1840 files, complete");
+    const limit = { file: "a.ts", line: 3, reason: "graphql-limit" as const, detail: "fields" };
+    expect(diagnosticsLine({ ...base, unfollowed: [...unfollowed, limit] })).toBe("scanned 1702/1840 files, 138 skipped, 12 calls not followed, 1 GraphQL document not fully read");
+  });
+
+  it("lists a GraphQL bound once per location, and marks the scan incomplete (#55)", () => {
+    const diag = new DiagnosticsCollector();
+    for (const detail of ["fields", "fields", "depth"]) diag.unfollow({ file: "a.ts", line: 3, reason: "graphql-limit", detail });
+    diag.unfollow({ file: "a.ts", line: 9, reason: "graphql-limit", detail: "fields" });
+    const d = diag.finish(1, 1);
+    expect(d.unfollowed.map((u) => `${u.line} ${u.detail}`)).toEqual(["3 fields", "3 depth", "9 fields"]);
+    expect(d.complete).toBe(false);
   });
 });
