@@ -8,6 +8,7 @@ import { lowerPhp } from "./lower.js";
 import { normalizeComposer, phpManifests } from "./manifests.js";
 import namespaces from "./namespaces.json" with { type: "json" };
 import { detectPsrRequest } from "./psr.js";
+import { detectSoapClient } from "./soap.js";
 import { detectStream } from "./streams.js";
 import anthropicSdkPhp from "./registry/anthropic-sdk-php.json" with { type: "json" };
 import awsBedrockRuntime from "./registry/aws-bedrock-runtime.json" with { type: "json" };
@@ -77,7 +78,7 @@ export const phpLanguage: IrLanguage = {
   sharedGlobals: true,
   registry: PHP_REGISTRY,
   clients: clients.clients as unknown as ClientSpec[],
-  detectors: [detectCurl, detectStream, detectPsrRequest],
+  detectors: [detectCurl, detectStream, detectPsrRequest, detectSoapClient],
   resolveCall: laravelConfig,
   passthrough: {
     functions: new Set(["trim", "rtrim", "ltrim", "strtolower", "strtoupper", "urlencode", "rawurlencode", "strval", "url"]),

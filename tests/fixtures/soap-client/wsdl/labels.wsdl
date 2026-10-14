@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE definitions [<!ENTITY host "evil.example.org">]>
+<definitions name="LabelService"
+    targetNamespace="urn:example-carrier:labels"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="urn:example-carrier:labels"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- a comment with <service> markup that is not read -->
+  <message name="PrintLabelRequest"><part name="Id" type="xsd:string"/></message>
+  <message name="PrintLabelResponse"><part name="Label" type="xsd:string"/></message>
+  <portType name="LabelPort">
+    <operation name="PrintLabel">
+      <input message="tns:PrintLabelRequest"/>
+      <output message="tns:PrintLabelResponse"/>
+    </operation>
+    <operation name="VoidLabel">
+      <input message="tns:PrintLabelRequest"/>
+      <output message="tns:PrintLabelResponse"/>
+    </operation>
+  </portType>
+  <binding name="LabelBinding" type="tns:LabelPort">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="PrintLabel">
+      <soap:operation soapAction="urn:example-carrier:labels#PrintLabel"/>
+    </operation>
+    <operation name="VoidLabel">
+      <soap:operation soapAction="urn:example-carrier:labels#VoidLabel"/>
+    </operation>
+  </binding>
+  <service name="LabelService">
+    <port name="LabelPort" binding="tns:LabelBinding">
+      <soap:address location="https://labels.example-carrier.com/soap/v1"/>
+    </port>
+  </service>
+</definitions>

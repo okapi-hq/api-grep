@@ -78,5 +78,8 @@
   { "name": "spring-ai-examples", "url": "https://github.com/spring-projects/spring-ai-examples.git", "language": "java" },
   { "name": "llm-apps-java-spring-ai", "url": "https://github.com/ThomasVitale/llm-apps-java-spring-ai.git", "language": "java" },
   { "name": "scaffold-eth-2", "url": "https://github.com/scaffold-eth/scaffold-eth-2.git", "subdir": "packages/nextjs" },
-  { "name": "lido-staking-widget", "url": "https://github.com/lidofinance/ethereum-staking-widget.git" }
+  { "name": "lido-staking-widget", "url": "https://github.com/lidofinance/ethereum-staking-widget.git" },
+  { "name": "vies", "url": "https://github.com/DragonBe/vies.git", "language": "php" },
+  { "name": "axl-zeep-samples", "url": "https://github.com/CiscoDevNet/axl-python-zeep-samples.git", "language": "python" },
+  { "name": "sigep", "url": "https://github.com/tuliofaria/sigep.git", "language": "javascript" }
 ]

@@ -65,6 +65,16 @@ export interface IrSdkMatch {
   method: Seg;
 }
 
+/** What a SOAP client was built with and the operation called on it (`src/resolve/soap-endpoint.ts`). */
+export interface IrSoap {
+  /** The WSDL argument; undefined without one (PHP `new SoapClient(null, ['location' => ...])`). */
+  wsdl?: Scoped;
+  /** The address the code sets, which wins over the WSDL's. */
+  location?: Scoped;
+  /** The method called (`Track`), or the argument naming it (`__soapCall($op, ...)`). */
+  operation: string | Scoped;
+}
+
 /** A detected call, before resolution: where its URL, method, body, query and headers are. */
 export interface IrRaw {
   call: CallExpr;
@@ -97,6 +107,8 @@ export interface IrRaw {
   model?: Scoped;
   /** The client is an untyped parameter: known from the callers, or from the one SDK the manifests declare with that method. */
   clientFrom?: ClientFrom;
+  /** A SOAP client library's call (#58): its URL and operation come from here, not from `url`. */
+  soap?: IrSoap;
   /**
    * Other requests the same call may send (a request factory with several returns, a request started in several
    * branches): each is a call of its own at the same place.

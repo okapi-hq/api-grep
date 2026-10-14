@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/58",
+  "calls": [
+    {"file": "CarrierClient.php", "line": 14, "provider": "ws.example-carrier.com", "operation": "TrackStatus"},
+    {"file": "CarrierClient.php", "line": 20, "provider": "unknown", "operation": "GetRates"},
+    {"file": "CarrierClient.php", "line": 25, "provider": "unknown", "operation": "TrackStatus"},
+    {"file": "Tracker.php", "line": 21, "provider": "ws.example-carrier.com", "operation": "Track"},
+    {"file": "Tracker.php", "line": 27, "provider": "ws.example-carrier.com", "operation": "CancelShipment"},
+    {"file": "Tracker.php", "line": 32, "provider": "rates.example-carrier.com", "operation": "GetRates"},
+    {"file": "Tracker.php", "line": 38, "provider": "ws.example-weather.com", "operation": "Forecast"},
+    {"file": "Tracker.php", "line": 46, "provider": "labels.example-carrier.com", "operation": "PrintLabel"},
+    {"file": "Tracker.php", "line": 53, "provider": "labels.example-carrier.com", "operation": "VoidLabel"},
+    {"file": "Tracker.php", "line": 59, "provider": "env:CARRIER_WSDL"}
+  ]
+}

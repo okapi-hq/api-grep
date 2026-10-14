@@ -137,6 +137,23 @@ describe.skipIf(!posix)("files a hostile repository links to", () => {
   });
 });
 
+describe.skipIf(!posix)("WSDL files a hostile repository links to (#58)", () => {
+  it("reads no WSDL that links out of the repository or to a device", () => {
+    const outside = tempRepo({ "x.wsdl": `<definitions><soap:address location="https://internal.corp.example/soap"/></definitions>` });
+    const repo = tempRepo({
+      "app/a.php": `<?php\n$c = new SoapClient(__DIR__ . '/leak.wsdl');\n$c->Track([]);\n$d = new SoapClient(__DIR__ . '/zero.wsdl');\n$d->Track([]);\n`,
+    });
+    symlinkSync(path.join(outside, "x.wsdl"), path.join(repo, "app", "leak.wsdl"));
+    symlinkSync("/dev/zero", path.join(repo, "app", "zero.wsdl"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => [c.hostKind, c.operation?.name])).toEqual([
+      ["unknown", "Track"],
+      ["unknown", "Track"],
+    ]);
+  });
+});
+
 describe.skipIf(!posix)("git", () => {
   it("rejects a ref that is an option and never runs the repository's fsmonitor", () => {
     const repo = tempRepo({ "a.ts": `export const a = () => fetch("https://api.github.com/meta");` });

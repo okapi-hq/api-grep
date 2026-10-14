@@ -16,6 +16,7 @@ import { resolvePairs } from "./pairs.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
 import { shapeOf } from "./shape.js";
+import { irSoapTarget } from "./soap.js";
 import { deref } from "./values.js";
 
 export interface BuildIrCtx extends IrCtx {
@@ -161,8 +162,9 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   const dynamic: DynamicPart[] = [];
   const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
   const method = target ? (sdkMethod(raw, ctx, dynamic) ?? target.method) : resolveMethod(raw, ctx, dynamic);
+  const soap = raw.soap ? irSoapTarget(raw.soap, raw.fn.module.file, ctx, base.rootDir) : undefined;
   // an SDK call to a URL the client was built with (`WebhookClient(url).send(...)`) goes there
-  const url = target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
+  const url = soap ? soap.url : target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
   dynamic.push(...url.dynamic);
   // GraphQL variables: the callers of the function they are written in are not searched (as in TypeScript)
   const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), raw.sdk?.entry.endpoint ? { ...ctx, callerLevel: true } : ctx);
@@ -193,7 +195,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
     optionsOpaque: raw.optionsOpaque,
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     document: documentOf(raw, ctx),
-    operation: rpcOperation(raw, ctx),
+    operation: soap?.operation ?? rpcOperation(raw, ctx),
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,
