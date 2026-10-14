@@ -1,8 +1,9 @@
 import type { ResolvedCall } from "../assemble.js";
 import type { Operation } from "../report/schema.js";
-import { literalOf } from "../resolve/string-template.js";
+import { literalOf, partsOf } from "../resolve/string-template.js";
 import type { Shape } from "../types.js";
-import { documentHeader, documentOperations } from "./graphql-document.js";
+import { documentHeader, readDocument } from "./graphql-document.js";
+import { copyLimit, limitOf, withLimit, type GraphqlLimit } from "./limits.js";
 
 /**
  * GraphQL (#35): every operation goes to one endpoint and the document names it. A request is GraphQL when it sends a
@@ -22,9 +23,19 @@ interface Strings {
   templates: string[];
   /** Some branch has no text at all. */
   unknown: boolean;
+  /** Templates of documents a front end cut short past a bound (`truncated()`, #55), with the bound. */
+  cut: Map<string, GraphqlLimit>;
+  /** A bound past which some text was not read at all: the operation named without it reached it. */
+  limit?: GraphqlLimit;
 }
 
-function strings(s: Shape | undefined, acc: Strings = { values: [], templates: [], unknown: false }, depth = 0): Strings {
+/** The bound a front end cut a document's text short at (`truncated()`), if any. */
+function cutAt(s: Shape): GraphqlLimit | undefined {
+  for (const p of partsOf(s) ?? []) if (p.kind === "dynamic" && p.limit) return p.limit;
+  return undefined;
+}
+
+function strings(s: Shape | undefined, acc: Strings = { values: [], templates: [], unknown: false, cut: new Map() }, depth = 0): Strings {
   if (!s || depth > 6) {
     acc.unknown = true;
     return acc;
@@ -36,6 +47,9 @@ function strings(s: Shape | undefined, acc: Strings = { values: [], templates: [
   const values = s.type === "string" ? (s.enum ?? []).filter((v): v is string => typeof v === "string") : [];
   const template = s.type === "string" && values.length === 0 ? documentTemplate(s) : undefined;
   if (values.length === 0 && !template) acc.unknown = true;
+  const cut = cutAt(s);
+  if (cut && template) acc.cut.set(template, cut);
+  else acc.limit ??= cut;
   acc.values.push(...values.filter((v) => !acc.values.includes(v)));
   if (template && !acc.templates.includes(template)) acc.templates.push(template);
   return acc;
@@ -57,17 +71,24 @@ function documentTemplate(s: Shape): string | undefined {
 
 const graphql = (name: string | null, from: From, extra: Partial<Operation> = {}): Operation => ({ protocol: "graphql", name, ...extra, dynamic: name === null, from });
 
-/** The operations one document text sends; `operationName` picks one of several. */
-function fromText(text: string, operationName: string | undefined, nameFrom: From): Operation[] | undefined {
-  const ops = documentOperations(text);
+/**
+ * The operations one document text sends; `operationName` picks one of several. A bound reached parsing the text is
+ * recorded in `doc`, for the operation named without it.
+ */
+function fromText(text: string, operationName: string | undefined, nameFrom: From, doc: Strings): Operation[] | undefined {
+  const read = readDocument(text);
+  const cut = doc.cut.get(text);
+  const ops = read.operations;
   if (!ops) {
     // too large, or computed parts the parser cannot read: the header still names it
+    const limit = cut ?? read.limit;
     const header = documentHeader(text);
-    return header ? [graphql(header.name, "document", { type: header.type })] : undefined;
+    if (!header) doc.limit ??= limit;
+    return header ? [withLimit(graphql(header.name, "document", { type: header.type }), limit)] : undefined;
   }
   const picked = operationName !== undefined ? ops.filter((op) => op.named && op.name === operationName) : ops;
-  if (operationName !== undefined && picked.length === 0) return [graphql(operationName, nameFrom)];
-  return picked.map((op) => graphql(op.name, "document", { type: op.type, ...(op.fields ? { fields: op.fields } : {}) }));
+  if (operationName !== undefined && picked.length === 0) return [withLimit(graphql(operationName, nameFrom), cut)];
+  return picked.map((op) => withLimit(graphql(op.name, "document", { type: op.type, ...(op.fields ? { fields: op.fields } : {}) }), op.limit ?? cut));
 }
 
 interface Envelope {
@@ -88,16 +109,16 @@ function isTextual(s: Shape): boolean {
 function envelopeOperations(e: Envelope, nameFrom: From): Operation[] {
   const name = strings(e.operationName);
   const operationName = e.operationName && !name.unknown && name.values.length === 1 ? name.values[0] : undefined;
-  if (e.query && isTextual(e.query)) {
-    const doc = strings(e.query);
-    const ops = [...doc.values, ...doc.templates].flatMap((text) => fromText(text, operationName, nameFrom) ?? []);
+  const doc = e.query && isTextual(e.query) ? strings(e.query) : undefined;
+  if (doc) {
+    const ops = [...doc.values, ...doc.templates].flatMap((text) => fromText(text, operationName, nameFrom, doc) ?? []);
     if (ops.length > 0) return ops;
     if (!e.hinted) return [];
   } else if (e.query || !e.persisted) {
     return [];
   }
   // the document is not in the code (a persisted query's hash) or could not be read: only `operationName` can name it
-  return [graphql(operationName ?? null, nameFrom)];
+  return [withLimit(graphql(operationName ?? null, nameFrom), doc?.limit)];
 }
 
 function bodyEnvelope(s: ObjectShape, path: string): Envelope {
@@ -117,17 +138,17 @@ export const MAX_OPERATIONS = 50;
 
 /** One call per operation: the same operation twice (a batch, two branches) is one. */
 function distinct(ops: Operation[]): Operation[] {
-  const seen = new Set<string>();
-  const out: Operation[] = [];
+  const seen = new Map<string, Operation>();
   for (const op of ops) {
     const key = `${op.type ?? ""}:${op.name ?? ""}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(op);
+    const kept = seen.get(key);
+    if (kept) withLimit(kept, limitOf(op));
+    else seen.set(key, op);
   }
+  const out = [...seen.values()];
   if (out.length <= MAX_OPERATIONS) return out;
   const first = out[0]!;
-  return [graphql(null, first.from, first.batch ? { batch: true } : {})];
+  return [withLimit(graphql(null, first.from, first.batch ? { batch: true } : {}), "operations")];
 }
 
 function bodyOperations(r: ResolvedCall): Operation[] {
@@ -136,7 +157,7 @@ function bodyOperations(r: ResolvedCall): Operation[] {
   const path = r.url.pathTemplate;
   if (s.type === "object" && r.body.encoding === "json") return envelopeOperations(bodyEnvelope(s, path), "body");
   if (s.type === "array" && r.body.encoding === "json") {
-    return batchItems(s.items).flatMap((item) => envelopeOperations(bodyEnvelope(item, path), "body").map((op) => ({ ...op, batch: true })));
+    return batchItems(s.items).flatMap((item) => envelopeOperations(bodyEnvelope(item, path), "body").map((op) => copyLimit(op, { ...op, batch: true })));
   }
   // `Content-Type: application/graphql`: the body is the document
   const contentType = r.headers.values["content-type"] ?? "";

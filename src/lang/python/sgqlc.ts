@@ -3,6 +3,7 @@ import type { Scoped } from "../ir/language.js";
 import { argFor, dottedPath, type CallExpr, type Expr, type FunctionDef } from "../ir/model.js";
 import { lookup } from "../ir/project.js";
 import type { IrCtx } from "../ir/raw.js";
+import type { GraphqlLimit } from "../../operation/limits.js";
 import { isSafeKey } from "../../record-keys.js";
 
 /**
@@ -89,15 +90,26 @@ function helperScope(call: CallExpr, scope: Scope, ctx: IrCtx): Scope | undefine
   return roots.size > 0 ? { fn, roots } : undefined;
 }
 
+interface Selected {
+  paths: string[][];
+  /** A selection was left out past `MAX_PATHS`. */
+  cut: boolean;
+}
+
 /** Field paths the function selects on the operation, `__fields__("a", "b")` giving one per name, and its helpers'. */
-function selectedPaths(scope: Scope, ctx: IrCtx, out: string[][], seen: Set<FunctionDef>): void {
+function selectedPaths(scope: Scope, ctx: IrCtx, sel: Selected, seen: Set<FunctionDef>): void {
   seen.add(scope.fn);
+  const out = sel.paths;
   for (const call of scope.fn.calls) {
-    if (out.length >= MAX_PATHS) break;
     const fields = call.fn.k === "attr" && call.fn.name === "__fields__" ? call.fn.obj : undefined;
     const path = selection(fields ?? call.fn, scope, ctx, 0);
+    if (out.length >= MAX_PATHS) {
+      if (!path) continue;
+      sel.cut = true;
+      break;
+    }
     const helper = path || seen.size > MAX_HELPERS ? undefined : helperScope(call, scope, ctx);
-    if (helper && !seen.has(helper.fn)) selectedPaths(helper, ctx, out, seen);
+    if (helper && !seen.has(helper.fn)) selectedPaths(helper, ctx, sel, seen);
     if (!path) continue;
     const names = fields ? call.args.flatMap((a) => (!a.name && a.value.k === "str" ? [a.value.v] : [])) : [];
     if (names.length === 0) out.push(path);
@@ -105,10 +117,10 @@ function selectedPaths(scope: Scope, ctx: IrCtx, out: string[][], seen: Set<Func
   }
 }
 
-function selectedOn(op: Op, ctx: IrCtx): string[][] {
-  const out: string[][] = [];
-  selectedPaths({ fn: op.fn, roots: new Map([[op.name, []]]) }, ctx, out, new Set());
-  return out.filter((p) => p.length > 0 && p.every((n) => NAME.test(n) && isSafeKey(n)));
+function selectedOn(op: Op, ctx: IrCtx): Selected {
+  const sel: Selected = { paths: [], cut: false };
+  selectedPaths({ fn: op.fn, roots: new Map([[op.name, []]]) }, ctx, sel, new Set());
+  return { paths: sel.paths.filter((p) => p.length > 0 && p.every((n) => NAME.test(n) && isSafeKey(n))), cut: sel.cut };
 }
 
 interface Tree {
@@ -121,18 +133,23 @@ function print(tree: Tree): string {
     .join(" ");
 }
 
-/** The document an sgqlc `Operation` sends, as text; undefined when `arg` holds none or its type is not known. */
-export function sgqlcDocument(arg: Scoped, ctx: IrCtx): string | undefined {
+/**
+ * The document an sgqlc `Operation` sends, as text, with `fields` when selections were left out past `MAX_PATHS`;
+ * undefined when `arg` holds none or its type is not known.
+ */
+export function sgqlcDocument(arg: Scoped, ctx: IrCtx): { text: string; limit?: GraphqlLimit } | undefined {
   const op = operationOf(arg.expr, arg.fn, ctx);
   const type = op && operationType(op.call);
   if (!op || !type) return undefined;
   const nameArg = op.call.args.find((a) => a.name === "name")?.value;
   const name = nameArg?.k === "str" && NAME.test(nameArg.v) ? nameArg.v : undefined;
   const tree: Tree = Object.create(null) as Tree;
-  for (const path of selectedOn(op, ctx)) {
+  const selected = selectedOn(op, ctx);
+  for (const path of selected.paths) {
     let node = tree;
     for (const field of path.map(graphqlName)) node = node[field] ??= Object.create(null) as Tree;
   }
   const header = name ? `${type} ${name}` : type;
-  return Object.keys(tree).length > 0 ? `${header} { ${print(tree)} }` : name ? `${header} ` : undefined;
+  const text = Object.keys(tree).length > 0 ? `${header} { ${print(tree)} }` : name ? `${header} ` : undefined;
+  return text === undefined ? undefined : { text, ...(selected.cut ? { limit: "fields" as const } : {}) };
 }

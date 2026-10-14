@@ -1,4 +1,5 @@
 import type { ClientValues } from "./detect/client-cache.js";
+import type { GraphqlLimit } from "./operation/limits.js";
 import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration, VariableDeclaration } from "ts-morph";
 
 /** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
@@ -10,7 +11,14 @@ export type DynamicOrigin = "param" | "call" | "env" | "unknown";
 export type Part =
   | { kind: "static"; text: string; viaConst?: boolean }
   | { kind: "env"; name: string; /** Literal default (`process.env.X ?? "https://..."`), used when no .env.example value exists. */ fallback?: string }
-  | { kind: "dynamic"; name: string; origin: DynamicOrigin; shape?: Shape };
+  | {
+      kind: "dynamic";
+      name: string;
+      origin: DynamicOrigin;
+      shape?: Shape;
+      /** The rest of a GraphQL document cut short past this bound (#55). */
+      limit?: GraphqlLimit;
+    };
 
 /** Substitution map used for one-hop wrapper expansion. */
 export type Subst = Map<ParameterDeclaration, Expression>;

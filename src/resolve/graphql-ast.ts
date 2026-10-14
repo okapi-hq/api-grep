@@ -2,6 +2,7 @@ import { Node, ts, type Expression, type ObjectLiteralExpression } from "ts-morp
 import { unwrap } from "../ast/expr.js";
 import { declarationsOf, importedVariable } from "../ast/object.js";
 import { MAX_DOCUMENT_CHARS, printedDocument } from "../operation/graphql-document.js";
+import type { GraphqlLimit } from "../operation/limits.js";
 import { isSafeKey } from "../record-keys.js";
 import type { Part } from "../types.js";
 import { truncated } from "./graphql-source.js";
@@ -25,8 +26,12 @@ const MAX_SPREAD_DEPTH = 4;
 
 type Plain = string | number | boolean | null | Plain[] | { [key: string]: Plain };
 
-/** Past a bound, or something in a definition is not a literal. */
-class Unreadable extends Error {}
+/** Past a bound (named), or something in a definition is not a literal. */
+class Unreadable extends Error {
+  constructor(readonly limit?: GraphqlLimit) {
+    super(limit ?? "not a literal");
+  }
+}
 
 interface Read {
   nodes: number;
@@ -56,7 +61,8 @@ function stringOf(e: ts.Expression | undefined): string | undefined {
 
 /** The value of a JSON-like literal; undefined when anything in it is not a literal (a reference, a call, a spread). */
 function plain(e: ts.Expression, r: Read, nesting: number): Plain | undefined {
-  if (++r.nodes > MAX_NODES || nesting > MAX_NESTING) throw new Unreadable();
+  if (++r.nodes > MAX_NODES) throw new Unreadable("ast-nodes");
+  if (nesting > MAX_NESTING) throw new Unreadable("ast-nesting");
   const u = skipCasts(e);
   if (ts.isStringLiteral(u) || ts.isNoSubstitutionTemplateLiteral(u)) return u.text;
   if (ts.isNumericLiteral(u)) return Number(u.text);
@@ -132,7 +138,7 @@ function definitionsOf(doc: ObjectLiteralExpression, r: Read, depth: number): Pl
 }
 
 /** `query GetOrder`: the header of a document too large to read, so it is named like a text document past its bound. */
-function header(doc: ObjectLiteralExpression): Part[] {
+function header(doc: ObjectLiteralExpression, limit?: GraphqlLimit): Part[] {
   const list = property(doc.compilerNode, "definitions");
   const items = list && ts.isArrayLiteralExpression(skipCasts(list)) ? (skipCasts(list) as ts.ArrayLiteralExpression).elements : [];
   const first = items.map(skipCasts).find((d): d is ts.ObjectLiteralExpression => ts.isObjectLiteralExpression(d) && stringOf(property(d, "kind")) === "OperationDefinition");
@@ -140,21 +146,21 @@ function header(doc: ObjectLiteralExpression): Part[] {
   const nameNode = first && property(first, "name");
   const name = nameNode && ts.isObjectLiteralExpression(skipCasts(nameNode)) ? stringOf(property(skipCasts(nameNode) as ts.ObjectLiteralExpression, "value")) : undefined;
   const start = type && name ? `${type} ${name} ` : "";
-  return truncated(start);
+  return truncated(start, limit);
 }
 
 function readDocument(doc: ObjectLiteralExpression): Part[] {
-  if (doc.getEnd() - doc.getStart() > MAX_CHARS) return header(doc);
+  if (doc.getEnd() - doc.getStart() > MAX_CHARS) return header(doc, "ast-size");
   let definitions: Plain[] | undefined;
   try {
     definitions = definitionsOf(doc, { nodes: 0, seen: new Set() }, 0);
   } catch (err) {
-    if (err instanceof Unreadable) return header(doc);
+    if (err instanceof Unreadable) return header(doc, err.limit);
     throw err;
   }
   const text = definitions && printedDocument({ kind: "Document", definitions });
   if (text === undefined) return header(doc);
-  return text.length > MAX_DOCUMENT_CHARS ? truncated(text) : [{ kind: "static", text, viaConst: true }];
+  return text.length > MAX_DOCUMENT_CHARS ? truncated(text, "document-size") : [{ kind: "static", text, viaConst: true }];
 }
 
 /** Documents already read: codegen's documents are imported by many files. */

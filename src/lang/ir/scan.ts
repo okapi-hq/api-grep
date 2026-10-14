@@ -3,6 +3,7 @@ import path from "node:path";
 import { coverageRows, manifestDirs } from "../../coverage.js";
 import { relativePosix } from "../../files.js";
 import { sdkPackages } from "../../normalize/provider.js";
+import { limitDiagnostics } from "../../operation/limits.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
 import { errorText, languageFiles, leftOutFiles, readEnvHints, type LeftOut } from "../files.js";
@@ -107,7 +108,9 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
   const calls: Call[] = [];
   for (const raw of raws.flatMap(withAlternatives)) {
     try {
-      calls.push(...buildIrCall(raw, ctx));
+      const built = buildIrCall(raw, ctx);
+      calls.push(...built);
+      for (const u of limitDiagnostics(built)) diag.unfollow(u);
     } catch (err) {
       diag.drop({ file: relativePosix(ctx.rootDir, raw.fn.module.file), line: raw.call.pos.line, reason: "internal-error", detail: errorText(err) });
     }

@@ -101,5 +101,19 @@ describe("GraphQL AST documents from a hostile repository (#56)", () => {
     expect(({} as Record<string, unknown>).polluted).toBeUndefined();
     // a reference inside a definition: the header still names it
     expect(ops(11)).toEqual([{ protocol: "graphql", name: "Ref", type: "query", dynamic: false, from: "document" }]);
+    // each bound reached is a diagnostic (#55); a reference is not a bound
+    expect(r.diagnostics?.unfollowed).toEqual([
+      { file: "api.ts", line: 8, reason: "graphql-limit", detail: "ast-nodes" },
+      { file: "api.ts", line: 9, reason: "graphql-limit", detail: "operations" },
+      { file: "api.ts", line: 12, reason: "graphql-limit", detail: "ast-nesting" },
+    ]);
+    expect(r.diagnostics?.complete).toBe(false);
+  });
+
+  it("a literal past the size bound is named by its header and reported (#55)", async () => {
+    const padded = document(operation("Padded", [field("a")])).replace('{"kind":"Document",', `{"kind":"Document","padding":"${"x".repeat(4_000_001)}",`);
+    const r = await scanDocument(`const DOC = ${padded};`);
+    expect(r.calls[0]?.operation).toEqual({ protocol: "graphql", name: "Padded", type: "query", dynamic: false, from: "document" });
+    expect(r.diagnostics?.unfollowed).toEqual([{ file: "api.ts", line: 3, reason: "graphql-limit", detail: "ast-size" }]);
   });
 });
