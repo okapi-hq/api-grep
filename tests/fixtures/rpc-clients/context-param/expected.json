@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "jobs.js", "line": 7, "provider": "jobs.example-node.io", "operation": "eth_getBalance"}
+  ]
+}

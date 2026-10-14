@@ -1,10 +1,12 @@
+import { cachedEntries, sameExpr } from "./cache.js";
 import { extensionFor, libraryExtension } from "./extensions.js";
+import type { Scoped } from "./language.js";
 import { argFor, posOf, receiverArg, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
 import { overloadFor, overloadsFor } from "./overloads.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { injectedCall, injectedField, paramValue } from "./injected.js";
 import { withSubst, type IrCtx, type Seg, type Subst } from "./raw.js";
-import { dictValue } from "./values.js";
+import { dictValue, staticKey } from "./values.js";
 
 export type Root =
   | { kind: "external" }
@@ -198,7 +200,25 @@ function indexCall(e: Extract<Expr, { k: "index" }>, name: string, fn: FunctionD
   return attach(member(obj, name, ctx, depth), call, fn, ctx.subst);
 }
 
+/**
+ * A client read from a module's dict a helper fills (#98): the one every value written into it is, else the first with
+ * the others kept on its construction, for the endpoint to say whether they agree.
+ */
+function cacheChain(values: Scoped[], keyed: boolean, ctx: IrCtx, depth: number): Chain {
+  // the same construction written twice (in both branches) is one client
+  const distinct = values.filter((v, i) => values.findIndex((w) => w.fn === v.fn && sameExpr(w.expr, v.expr)) === i);
+  const chains = distinct.map((v) => valueChain(v.expr, v.fn, ctx, depth + 1));
+  const first = chains[0]!;
+  if (!chains.every(resolved)) return UNKNOWN;
+  const last = first.segs.at(-1);
+  const others = chains.slice(1).map((c) => c.segs.at(-1));
+  if (!last?.call || others.some((o) => !o?.call)) return chains.length === 1 && !keyed ? first : UNKNOWN;
+  return { ...first, segs: [...first.segs.slice(0, -1), { ...last, cache: { others: others as Seg[], keyed } }] };
+}
+
 function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
+  const cached = e.fn.k === "attr" && e.fn.name === "get" ? cachedEntries(e, fn, ctx) : undefined;
+  if (cached) return cacheChain(cached, staticKey(e.args[0]?.value, fn, ctx) === undefined, ctx, depth);
   const made = ctx.idx.lang.instanceOf?.(e, fn, ctx, depth);
   if (made) return { root: { kind: "instance", cls: made }, segs: [] };
   // `get<HttpClient>()`, `by inject()`: the container's binding
@@ -240,6 +260,8 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
     case "index": {
       const v = dictValue(e, fn, ctx);
       if (v) return valueChain(v.expr, v.fn, ctx, depth + 1);
+      const cached = cachedEntries(e, fn, ctx);
+      if (cached) return cacheChain(cached, staticKey(e.key, fn, ctx) === undefined, ctx, depth);
       return ctx.idx.lang.indexOperator ? indexCall(e, ctx.idx.lang.indexOperator, fn, ctx, depth) : UNKNOWN;
     }
     case "or":

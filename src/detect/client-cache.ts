@@ -1,7 +1,9 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression, type SourceFile, type VariableDeclaration } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
-import { isFunctionLike, type FunctionLike } from "../ast/function.js";
+import { isFunctionLike, returnsOf, type FunctionLike } from "../ast/function.js";
 import { declarationsOf } from "../ast/object.js";
+import { memoized } from "../ast/react.js";
+import { injectedFunctions } from "./injected-fn.js";
 
 /**
  * Clients kept in a cache and handed out by a helper (#85): `getProvider(chainId)` returns `providers[chainId]`, which
@@ -33,7 +35,7 @@ interface Walk {
 }
 
 /** The declaration an identifier names, through an import. */
-function declarationOf(id: Expression): Node | undefined {
+export function declarationOf(id: Expression): Node | undefined {
   const decl = declarationsOf(id)[0];
   if (decl && (Node.isImportSpecifier(decl) || Node.isImportClause(decl))) return id.getSymbol()?.getAliasedSymbol()?.getDeclarations()[0];
   return decl;
@@ -125,14 +127,6 @@ function localFunction(c: CallExpression): FunctionLike | undefined {
   return undefined;
 }
 
-export function returnsOf(fn: FunctionLike): Expression[] {
-  const body = fn.getBody?.();
-  if (!body) return [];
-  if (Node.isExpression(body)) return [body];
-  const own = (r: Node): boolean => r.getFirstAncestor((a) => isFunctionLike(a)) === fn;
-  return body.getDescendantsOfKind(SyntaxKind.ReturnStatement).flatMap((r) => (own(r) && r.getExpression() ? [r.getExpression()!] : []));
-}
-
 /** `cache.get(key)`: the cache variable, when the call reads one. */
 export function cacheRead(c: CallExpression): VariableDeclaration | undefined {
   const callee = unwrap(c.getExpression());
@@ -161,7 +155,9 @@ function walkCall(u: CallExpression, w: Walk, depth: number): Built[] | undefine
   if (cache) return fromCache(cache, u.getArguments()[0], w, depth);
   const fn = localFunction(u);
   if (fn) return all(returnsOf(fn), w, depth);
-  return [u];
+  // `useMemo(() => client, deps)`; `this.getProvider(id)`, the functions a constructor is handed (#98)
+  const values = memoized(u) ?? injectedFunctions(u)?.flatMap(returnsOf);
+  return values ? all(values, w, depth) : [u];
 }
 
 function walkVariable(u: Expression, w: Walk, depth: number): Built[] | undefined {
@@ -202,7 +198,7 @@ function walk(e: Expression, w: Walk, depth: number): Built[] | undefined {
  */
 export function cachedClients(e: Expression): ClientValues | undefined {
   const u = unwrap(e);
-  const local = Node.isCallExpression(u) && (cacheRead(u) || localFunction(u));
+  const local = Node.isCallExpression(u) && (cacheRead(u) || localFunction(u) || injectedFunctions(u));
   if (!local && !Node.isElementAccessExpression(u) && !Node.isIdentifier(u)) return undefined;
   const w: Walk = { left: MAX_VISITS, seen: new Set(), keyed: false, cache: false };
   const values = walk(u, w, 0);
@@ -227,6 +223,9 @@ export function innerValues(u: Node): Expression[] | undefined {
   }
   if (Node.isArrowFunction(u) || Node.isFunctionExpression(u)) return returnsOf(u);
   if (Node.isSpreadElement(u)) return [u.getExpression()];
+  // `transports: buildTransports(chains)`: what the app's helper returns, and what it is given
+  const fn = Node.isCallExpression(u) ? localFunction(u) : undefined;
+  if (fn && Node.isCallExpression(u)) return [...returnsOf(fn), ...(u.getArguments() as Expression[])];
   const decl = Node.isIdentifier(u) ? variableOf(u) : undefined;
   const assigned = decl ? assignedValues(decl) : [];
   const init = decl?.getInitializer();
