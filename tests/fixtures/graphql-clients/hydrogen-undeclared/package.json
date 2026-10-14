@@ -1,0 +1,7 @@
+{
+  "name": "example-tea-catalog",
+  "private": true,
+  "dependencies": {
+    "express": "4.21.2"
+  }
+}

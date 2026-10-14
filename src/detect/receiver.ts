@@ -136,6 +136,34 @@ export class ReceiverResolver {
     return out;
   }
 
+  /**
+   * A client a framework hands to request handlers in their context (`contextClients`, Hydrogen's
+   * `context.storefront.query(...)`, `storefront.query(...)` on a destructured or annotated value): the value's name and
+   * the method are the key, in a file whose manifests declare the package.
+   */
+  contextCall(node: CallExpression, callee: Callee): RawCall | undefined {
+    if (callee.global) return undefined;
+    const mc = memberChain(node.getExpression());
+    const names = [...(Node.isIdentifier(mc.root) ? [mc.root.getText()] : []), ...mc.chain];
+    const [client, method] = names.slice(-2);
+    const entries = client && method ? this.contextEntries().get(client) : undefined;
+    const key = `${client}.${method}`;
+    const declared = entries ? this.declared(node.getSourceFile().getFilePath()) : undefined;
+    const entry = entries?.find((e) => !!e.methods && Object.hasOwn(e.methods, key) && [e.package, ...(e.aliases ?? [])].some((p) => declared!.has(p)));
+    const raw = entry ? detectSdk(node, { package: entry.package, chain: [client!, method!], viaType: true }, this.registry) : null;
+    return raw ? { ...raw, clientFrom: "manifest" } : undefined;
+  }
+
+  private byContextName?: Map<string, RegistryEntry[]>;
+
+  private contextEntries(): Map<string, RegistryEntry[]> {
+    if (!this.byContextName) {
+      this.byContextName = new Map();
+      for (const e of this.registry.entries()) for (const name of e.contextClients ?? []) this.byContextName.set(name, [...(this.byContextName.get(name) ?? []), e]);
+    }
+    return this.byContextName;
+  }
+
   /** Calls by name across the scanned files, indexed once. */
   private callsNamed(name: string): (CallExpression | NewExpression)[] {
     if (!this.index) {

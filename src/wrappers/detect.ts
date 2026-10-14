@@ -163,7 +163,8 @@ export function expandWrappers(candidates: WrapperCandidate[], registry: Registr
     const outer = substitutionFor(fn, cand.node, callShift(cand.callee));
     for (const e of expansions) {
       const subst: Subst = new Map([...e.subst, ...outer]);
-      const redetected = detectNode(e.raw.node, registry, { subst }).raw ?? e.raw;
+      const inner = e.raw.node;
+      const redetected = (Node.isCallExpression(inner) || Node.isNewExpression(inner) ? detectNode(inner, registry, { subst }).raw : null) ?? e.raw;
       out.push({ ...redetected, node: cand.node, via: `wrapper:${[wrapperName(fn), ...e.via].join(">")}`, subst });
     }
   }

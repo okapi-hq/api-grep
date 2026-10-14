@@ -61,5 +61,8 @@
   { "name": "metasync", "url": "https://github.com/kalenjordan/metasync.git" },
   { "name": "tap-shopify", "url": "https://github.com/singer-io/tap-shopify.git", "language": "python" },
   { "name": "sgtm", "url": "https://github.com/Asana/SGTM.git", "language": "python" },
-  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" }
+  { "name": "zcash-developers", "url": "https://github.com/zcash/developers.git", "language": "python" },
+  { "name": "hydrogen-demo-store", "url": "https://github.com/Shopify/hydrogen-demo-store.git" },
+  { "name": "weam", "url": "https://github.com/weam-ai/weam.git", "subdir": "nodejs" },
+  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" }
 ]

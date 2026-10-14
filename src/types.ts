@@ -1,4 +1,7 @@
-import type { CallExpression, Expression, NewExpression, Node, ParameterDeclaration } from "ts-morph";
+import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration } from "ts-morph";
+
+/** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
+export type JsxOpeningLikeElement = JsxOpeningElement | JsxSelfClosingElement;
 
 export type DynamicOrigin = "param" | "call" | "env" | "unknown";
 
@@ -42,7 +45,7 @@ export interface Callee {
 }
 
 export interface RawCall {
-  node: CallExpression | NewExpression;
+  node: CallExpression | NewExpression | JsxOpeningLikeElement;
   client: ClientKind;
   urlExpr?: Expression;
   baseUrlExpr?: Expression;
@@ -97,6 +100,8 @@ export interface MethodSpec {
   bodyProp?: string;
   /** The library sends the body under this key (`shopify.product.create(fields)` sends `{ product: fields }`). */
   bodyWrap?: string;
+  /** A JSX component's (`components` of a registry): the props read as the method's arguments, in order. */
+  props?: string[];
   /**
    * The path when argument `arg` is given, `path` otherwise: pyactiveresource's `Product.find(id)` reads one record,
    * `Product.find()` lists them.
@@ -227,6 +232,8 @@ export interface RegistryEntry {
   inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;
   commands?: Record<string, MethodSpec>;
+  /** JSX components that send a request as they render (Relay's `<QueryRenderer query={...} />`), by export name. */
+  components?: Record<string, MethodSpec>;
   /** The library picks the provider from the model name (LangChain's `initChatModel`): the call goes where it routes. */
   routeByModel?: boolean;
   /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */

@@ -72,6 +72,20 @@ exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
+[
+  "routes.tsx:9 shopify POST /api/{version}/graphql.json TeaDetails",
+  "routes.tsx:10 shopify POST /api/{version}/graphql.json RelatedTeas (wrapper:relatedTeas)",
+  "routes.tsx:14 shopify POST /api/{version}/graphql.json TeaCollections",
+  "routes.tsx:19 shopify POST /api/{version}/graphql.json ShopInfo",
+  "routes.tsx:23 shopify POST /api/{version}/graphql.json RelatedTeas",
+  "routes.tsx:27 shopify POST /{shopId}/account/customer/api/{version}/graphql SaveTeaPreference",
+  "routes.tsx:28 shopify POST /{shopId}/account/customer/api/{version}/graphql CustomerName",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/hydrogen-undeclared 1`] = `[]`;
+
 exports[`regression fixtures > graphql-clients/relay 1`] = `
 [
   "fetchGraphQL.ts:2 api.example-garden.dev POST /graphql null",
@@ -83,6 +97,17 @@ exports[`regression fixtures > graphql-clients/relay 1`] = `
   "Garden.tsx:25 api.example-garden.dev POST /graphql ForecastQuery",
   "Garden.tsx:28 unknown POST / FrostAlertSubscription",
   "RelayEnvironment.ts:4 api.example-garden.dev POST /graphql null (wrapper:fetchGraphQL)",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-containers 1`] = `
+[
+  "environment.js:4 api.example-orchard.dev POST /graphql null",
+  "Orchard.js:7 api.example-orchard.dev POST /graphql OrchardQuery",
+  "Orchard.js:18 api.example-orchard.dev POST /graphql HarvestQuery",
+  "Orchard.js:20 api.example-orchard.dev POST /graphql SeasonQuery",
+  "Orchard.js:25 api.example-orchard.dev POST /graphql TreeDetailsRefetchQuery",
+  "Orchard.js:31 api.example-orchard.dev POST /graphql TreeListPaginationQuery",
 ]
 `;
 
