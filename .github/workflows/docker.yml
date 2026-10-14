@@ -3,7 +3,6 @@ name: Docker
 on:
   push:
     branches: [main]
-    tags: ["v*"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -13,7 +12,8 @@ permissions:
 
 concurrency:
   group: docker-${{ github.ref }}
-  cancel-in-progress: true
+  # A push to main releases: never stop one between its tag and its image.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -50,31 +50,51 @@ jobs:
           docker run --rm -v "$PWD/tests/fixtures/gotky:/repo:ro" api-grep:test scan /repo --json | jq -e '(.calls | length) > 0'
           docker logs api-grep
 
-  # Only main and v* tags publish: a pull request or another branch never writes an image.
-  publish:
-    name: publish to GHCR
+  # Only main publishes: a pull request or another branch never writes a release or an image.
+  # semantic-release reads the commits since the last release (fix: a patch, feat: a minor, a breaking
+  # change: a major), tags and releases on GitHub when one is due, and the image carries that version.
+  release:
+    name: release and publish to GHCR
     needs: test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
-      - id: commit
-        run: echo "short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
-      - id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+          node-version: 24
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx --yes semantic-release@25.0.9
+      # The latest release names the image; a commit with no release of its own (docs, chores) keeps the
+      # previous version, its own commit after the `+`. Tags of a release: X.Y.Z, X.Y, X and latest.
+      - id: version
+        name: Version and tags
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+        run: |
+          tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)
+          version=${tag#v}
+          version=${version:-0.0.0}
+          tags="$IMAGE:main"
+          if [ -n "$tag" ] && git tag --points-at HEAD | grep -qx "$tag"; then
+            IFS=. read -r major minor _ <<< "$version"
+            tags="$tags,$IMAGE:$version,$IMAGE:$major.$minor,$IMAGE:$major,$IMAGE:latest"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+      - name: Stamp the version
+        run: npm pkg set version="${{ steps.version.outputs.version }}"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
@@ -84,7 +104,10 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: API_GREP_COMMIT=${{ steps.commit.outputs.short }}
+          tags: ${{ steps.version.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+          build-args: API_GREP_COMMIT=${{ steps.version.outputs.short }}
           cache-from: type=gha

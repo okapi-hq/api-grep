@@ -32,6 +32,10 @@ docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) -t api
 
 Run lint, typecheck, test and test:e2e before declaring work done; CI runs the same.
 
+Releases are automatic: every push to main runs semantic-release (`.releaserc.json`, `.github/workflows/docker.yml`),
+which tags `vX.Y.Z`, writes the GitHub release and publishes the image with that version. Title commits and pull
+requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); never bump `package.json`'s version.
+
 ## Architecture in one screen
 
 - `src/scan.ts` runs each language in `src/lang/index.ts` and merges calls, diagnostics and coverage.
