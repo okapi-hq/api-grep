@@ -113,6 +113,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `pairs.ts` | headers and query parameters set one at a time (builder steps, interceptors, annotated parameters), and those the client adds (`clientParts`) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `receiver.ts` | SDK calls on untyped parameters: the clients callers pass, else the one declared SDK, else `receiver-unknown` (#37) |
+| `extensions.ts` | Kotlin extension functions: the extension a member call runs, by the receiver type of its value's chain (#86) |
 | `build.ts`, `scan.ts` | report `Call`s, the scan driver (per-file errors are diagnostics, never fatal) and SDK coverage |
 
 A tree-sitter language is then mostly data plus a lowering (`src/lang/python/`, `src/lang/php/`):
@@ -514,6 +515,20 @@ those of a class (`@FeignClient(...)`) on `ClassDef.classAnnotations`. A propert
 (`conn.requestMethod = "POST"`) is an assignment to `conn.requestMethod`, and an anonymous object with a single
 function (`object : Interceptor { override fun intercept(...) }`) stands for that function, like a lambda.
 
+**Extension functions** (#86, `src/lang/ir/extensions.ts`): `fun S3Client.delete(b: String, k: String) { ... }` has a
+receiver, `FunctionDef.receiver` (a parameter named `this` of the receiver type, kept out of `params`). In its body,
+`this` and `this@delete` are that parameter, and a bare name nothing in the project declares (`headBucket(...)`, also a
+function imported from the receiver's library: Ktor's `get(url)` on `HttpClient`) is a member of it (`implicit`
+names), so the calls are found like those on a typed parameter. A lambda keeps that receiver where it has none of its
+own (`let`, `use`, `withContext`, `runCatching`...), not in `apply`, `run`, `with` or a DSL builder lambda, nor in an
+anonymous object or a local class. An extension is a member of its type, not a name: `client.delete(b, k)` runs the
+extension of that name in scope (same package, imported, or a member extension in its class) whose receiver type is
+the type of `client`, read from its chain (a declared type, a constructor, `X.Builder()...build()`, a static factory
+such as `S3Client.fromEnvironment()`); it is then a wrapper like any other, its receiver the caller's object, so the
+caller's client gives its endpoint and its interceptors. A value of no known type, or extensions of several files that
+fit, run none. A wrapper whose parameter is only read in a builder lambda's properties (`DeleteObjectRequest { bucket =
+name }`) is a wrapper too.
+
 **Resolved:** string templates (`"$base/v1/${id}"`, raw strings), `+`, `buildString { append(...) }`,
 `StringBuilder(...).append(...).toString()`, `String.format` and `"...".format(...)`, `joinToString`, `mapOf("a" to
 b)` / `listOf`, `?:`, `if` / `when` / `try` as values, `const val`, parameter defaults and named arguments,
@@ -548,8 +563,10 @@ file. A file that does not parse is then read once more with a `;` in place of t
   a `List<T>`, Koin `bind` / `binds` and type qualifiers, and service locators other than Koin (Injekt) are not
   followed (#75).
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
-- An extension function of a client type (`suspend fun S3Client.delete(...) { deleteObject(...) }`) has no receiver
-  in the lowering: its calls on `this` are not found (#86).
+- Extension functions (#86): an extension called inside `with(client) { ... }` or `client.run { ... }`, one called
+  from Java (`StorageKt.delete(client, ...)`), and a builder extension used as a step (`Request.Builder().authed()`,
+  `fun HttpRequestBuilder.json()` in a Ktor lambda) are not followed; an HTTP call made in a lambda of a wrapper
+  (`withContext(io) { client.get(url) }`) is found where it is written, not at the wrapper's callers.
 - Methods of an anonymous `object : Callback { ... }` run as closures of the enclosing code (calls in them are found,
   `this` is the enclosing class's); the anonymous object's own properties are not fields.
 - A star import of an external package (`import retrofit2.http.*`) does not tell which names it provides: they stay

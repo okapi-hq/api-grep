@@ -76,7 +76,10 @@ function compatible(arg: string | undefined, param: Param | undefined): boolean 
 }
 
 /** Whether an overload hands its call to another of its name (`GET(url: String) = GET(url.toHttpUrl(), ...)`). */
-const delegates = (f: FunctionDef): boolean => f.calls.some((c) => (c.fn.k === "name" || (c.fn.k === "attr" && c.fn.obj.k === "this")) && c.fn.name === f.name);
+const delegates = (f: FunctionDef): boolean => f.calls.some((c) => (c.fn.k === "name" || (c.fn.k === "attr" && onSelf(c.fn.obj))) && c.fn.name === f.name);
+
+/** `this`, also an extension function's receiver (`this.store(...)` in `fun S3Client.store(...)`). */
+const onSelf = (e: Expr): boolean => e.k === "this" || (e.k === "name" && e.name === "this");
 
 function fitsTypes(f: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
   const positional = f.params.filter((p) => p.kind === "normal");
