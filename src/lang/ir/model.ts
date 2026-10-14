@@ -174,6 +174,8 @@ export interface FunctionDef {
    * wherever it is (`x ?: return ...`).
    */
   exits?: { offset: number; maybe?: boolean }[];
+  /** A lambda run on some paths only (`token?.let { ... }`), for what its parent sets in it each time (`conditional.ts`). */
+  sometimes?: boolean;
 }
 
 export interface ClassDef {

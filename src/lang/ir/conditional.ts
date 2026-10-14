@@ -26,8 +26,9 @@ const returnsBefore = (fn: FunctionDef, offset: number): boolean =>
 /** Methods that run the lambda they are given on some paths only, or once per element (a loop body). */
 const SOMETIMES = new Set(["ifPresent", "forEach"]);
 
-/** `token.ifPresent(t -> builder.header(...))`, `extra.forEach { ... }`: the lambda `fn` may not run. */
+/** `token?.let { ... }`, `token.ifPresent(t -> builder.header(...))`, `extra.forEach { ... }`: the lambda `fn` may not run. */
 const runsSometimes = (fn: FunctionDef, parent: FunctionDef): boolean =>
+  !!fn.sometimes ||
   parent.calls.some((c) => c.fn.k === "attr" && SOMETIMES.has(c.fn.name) && c.args.some((a) => a.value.k === "fnref" && a.value.fn === fn));
 
 /**

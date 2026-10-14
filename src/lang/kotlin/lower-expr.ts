@@ -133,8 +133,8 @@ function lowerCall(n: SyntaxNode, st: KtState): Expr {
   if (lambda) args.push({ value: { k: "fnref", fn: lambda.fn } });
   const pos = posOf(n);
   if (lambda) applied(fn, args, pos, lambda.fn, st);
-  // `token?.let { ... }`: the lambda runs when the value is not null, a block that may not run (`ir/edits.ts`)
-  if (lambdaNode && safeCall(kids[0]!)) addBranch(st.fn, lambdaNode.startIndex, lambdaNode.endIndex);
+  // `token?.let { ... }`: the lambda runs when the value is not null
+  if (lambda && safeCall(kids[0]!)) lambda.fn.sometimes = true;
   const value = special(fn, args, lambda, pos);
   if (value) return value;
   const targs = kids.find((c) => c.type === "type_arguments");
