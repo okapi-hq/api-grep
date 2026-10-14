@@ -170,7 +170,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   in `src/lang/jvm/spring-ai.ts`, Spring Boot `application.yml` / `.properties` read by `src/lang/jvm/spring-config.ts`),
   `methodFrom` (SendGrid), fluent maps with constructor `args` and `setterCase` (Azure options), `setters.putters`
   (supabase-kt lambdas), Kotlin property reads (`src/lang/kotlin/property-reads.ts`) and builders filled across
-  functions; what it leaves is #96. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  functions. #96 adds the Azure OpenAI, Bedrock Converse, Google GenAI and DeepSeek starters, the provider of two
+  starters by `@Qualifier`, `spring.ai.model.<kind>` or bean name (`src/lang/jvm/spring-ai-beans.ts`), Spring AI's model
+  enums and starters' default models per release (`src/lang/jvm/spring-ai-models.ts` over
+  `registry/spring-ai-models.json`, the release from the starter or `spring-ai-bom`: `Manifests.bom`), profiles and
+  `classpath:` imports of the configuration (`spring-config.ts`, parsing in `spring-config-parse.ts`), the beans DSL's
+  `ref<T>()` (the injection hook `lookupType`) and the registry param source `model`. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; so is #75 (`Lazy<T>` / `Provider<T>` holders, multibinding sets and Spring `List<T>` in
   `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of

@@ -1,0 +1,30 @@
+spring:
+  profiles:
+    active: ${APP_PROFILE:staging}
+  config:
+    import: optional:configserver:${CONFIG_URL:http://config.internal:8888},optional:classpath:llm.properties
+  ai:
+    openai:
+      chat:
+        options:
+          model: gpt-4o-mini
+---
+spring:
+  config:
+    activate:
+      on-profile: staging
+  ai:
+    openai:
+      chat:
+        options:
+          model: gpt-4.1-nano
+---
+spring:
+  config:
+    activate:
+      on-profile: "!staging"
+  ai:
+    openai:
+      chat:
+        options:
+          model: not-this-one

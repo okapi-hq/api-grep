@@ -63,7 +63,7 @@ export const names = (anns: Annotation[] | undefined): Set<string> => new Set((a
 const has = (anns: Annotation[] | undefined, set: Set<string>): boolean => [...names(anns)].some((n) => set.has(n));
 
 /** A string argument of an annotation or call (`@Named("x")`, `@Bean(name = "x")`, `named("x")`), by name or first. */
-function stringArg(args: { name?: string; value: Expr }[], fn: FunctionDef, ctx: IrCtx, keys: string[]): string | undefined {
+export function stringArg(args: { name?: string; value: Expr }[], fn: FunctionDef, ctx: IrCtx, keys: string[]): string | undefined {
   const a = args.find((x) => x.name && keys.includes(x.name)) ?? args.find((x) => !x.name);
   const v = a?.value.k === "list" ? a.value.items[0] : a?.value;
   return v ? staticKey(v, fn, ctx) : undefined;
