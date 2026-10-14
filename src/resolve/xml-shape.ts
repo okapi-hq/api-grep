@@ -84,6 +84,32 @@ function parse(text: string): Element | "capped" | undefined {
   return r.stack.length === 1 && doc.children.length === 1 ? doc.children[0] : undefined;
 }
 
+/** An opening tag: its qualified name and its attributes, entities decoded as in text. */
+export interface XmlTag {
+  name: string;
+  attrs: Map<string, string>;
+}
+
+const ATTR_RE = /([^\s=]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+
+/**
+ * The opening tags of a document in order (a WSDL's `operation` and `address` elements, #58), with the same
+ * tokenizer: no DTD, no entity expansion. Stops at `maxTags`, and at the first token it cannot read.
+ */
+export function xmlTags(text: string, maxTags: number): XmlTag[] {
+  const out: XmlTag[] = [];
+  TOKEN_RE.lastIndex = 0;
+  while (TOKEN_RE.lastIndex < text.length && out.length < maxTags) {
+    const m = TOKEN_RE.exec(text);
+    if (!m) break;
+    if (m[3] === undefined) continue;
+    const attrs = new Map<string, string>();
+    for (const a of (m[4] ?? "").matchAll(ATTR_RE)) attrs.set(a[1]!, decode(a[2] ?? a[3] ?? ""));
+    out.push({ name: m[3], attrs });
+  }
+  return out;
+}
+
 /**
  * HTML and SVG roots: a page, a fragment or an image the code sends is markup, not a document an XML API reads
  * (`<p>Hello</p>`, `<html>...`, `<svg>...`). Lowercase or uppercase only: `<Table>` or `<Body>` is an API's element.

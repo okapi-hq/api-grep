@@ -1001,7 +1001,7 @@ exports[`Kotlin: calls made in extension functions of a client type (#86) > read
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.17.0",
+  "schemaVersion": "1.18.0",
   "stats": {
     "byClient": {
       "ktor": 4,

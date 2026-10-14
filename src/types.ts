@@ -30,7 +30,7 @@ export interface EvalCtx {
   callerLevel?: boolean;
 }
 
-export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "sdk" | "framework";
+export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "node-soap" | "sdk" | "framework";
 
 export interface InstanceInfo {
   /** "call" for axios.create(cfg) / got.extend(cfg), "new" for new Stripe(key). */
@@ -94,6 +94,8 @@ export interface RawCall {
    * `found`: the options of the `find` that read it (`{ session, id }`, #102).
    */
   record?: { decl: VariableDeclaration; found?: Expression };
+  /** A SOAP client library's call (#58): the WSDL and the address its client was built with, and the operation. */
+  soap?: { wsdlExpr?: Expression; locationExpr?: Expression; operation: string };
 }
 
 export interface MethodSpec {

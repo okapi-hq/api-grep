@@ -906,7 +906,7 @@ operation?: {
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi, `useConnection()`, TypeChain factories, `connect` / `attach`, typed contracts and JSON ABIs (#85); app React contexts, context objects as untyped parameters, injected factories, memoized and ConnectKit wagmi configs, Python dict caches (#98) |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); the Hydrogen cart, `useQueryLoader` and Relay fragment refetch and pagination hooks (TypeScript, JavaScript, #92); `useQueryLoader` variables, Hydrogen 2026.4 cart methods and the 2026.10 storefront client and cart query (TypeScript, JavaScript, #102); bound diagnostics (#55, `diagnostics.unfollowed` `graphql-limit`), literal arguments #56 |
-| SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (`SoapClient`, zeep, node-soap) are #58 |
+| SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (#58): PHP `SoapClient`, zeep (Python), node-soap (TypeScript, JavaScript); JAX-WS / Spring-WS not yet |
 
 ### JSON-RPC (#34)
 
@@ -1274,7 +1274,7 @@ document with the `graphql` package's parser (no schema, no network):
   within 4,000,000 characters, 200,000 values and 128 levels of nesting; otherwise its first operation's type and
   name are kept, and its fields left out. The text it prints to has the bounds above. sgqlc operations keep their
   first 2,000 selections.
-- **Bounds reached are diagnostics** (#55, schema 1.17): each call whose document was read past a bound gets a
+- **Bounds reached are diagnostics** (#55, schema 1.18): each call whose document was read past a bound gets a
   `diagnostics.unfollowed` entry with reason `graphql-limit` and `detail` naming the bound (`document-size`,
   `document-parts`, `tokens`, `depth`, `fragment-expansion`, `fields`, `operations`, `ast-size`, `ast-nodes`,
   `ast-nesting`), once per location and bound, so `complete` is false as for any call not followed: a missing
@@ -1333,9 +1333,37 @@ with that parameter in its query (URL or a `params` object) gets `operation: { p
 without `operationParam`, or a call without the parameter (an S3 REST call), has no operation. Adding a provider is
 one line in `providers.json`.
 
-**Not covered:** SOAP client libraries that build the envelope from a WSDL (PHP `SoapClient`, Python zeep, node-soap,
-JAX-WS / Spring-WS) send no request the scan sees; they are #58, which needs a decision on their `client` value. The
-endpoint a WSDL declares is never read.
+**SOAP client libraries** (#58) build the envelope from a WSDL: the call is the operation the code calls on the
+client, with its own `client` value (`php-soap`, `zeep`, `node-soap`), `POST`, `operation: { protocol: "soap", name,
+from: "body" }` and the arguments as an `xml` body (their shape, not an envelope).
+
+| library | client | operation |
+|---|---|---|
+| PHP ext-soap (`php-soap`) | `new \SoapClient($wsdl, $options)`, a subclass (`parent::__construct($wsdl)` for `$this->Op()`), a typed `SoapClient` parameter | `$client->Track($args)`; `__soapCall('Track', [$args], $options)` / `__call`, whose name may be computed; `__getFunctions()` and the other `__` methods are the client's own |
+| zeep (`zeep`) | `Client`, `AsyncClient`, `CachingClient` of `zeep` / `zeep.client` | `client.service.Track(Id=x)`, `client.bind(service, port).Track(...)`, `client.create_service(binding, address).Track(...)`; keyword arguments are the message (`_soapheaders` and other `_` ones left out), else the first argument |
+| node-soap (`node-soap`) | `createClientAsync(wsdl, options, endpoint)`, `createClient(wsdl, options, callback, endpoint)` (its callback's `client` parameter), a value typed `soap.Client` | `client.TrackAsync(args)`, `client.Track(args, cb)`, `client.Service.Port.Track(...)`; the client's own methods (`addSoapHeader`, `describe`, `setSecurity`, ...) are not operations |
+
+The URL (`src/resolve/soap-endpoint.ts`), the first that applies:
+
+1. the address the code gives the client: PHP's `location` option (of the constructor, or of `__soapCall`), node-soap's
+   `endpoint` argument or option, zeep's `create_service` address;
+2. the address a WSDL file of the repository declares: the WSDL argument is a path (relative to the source file, then
+   to the scanned directory, `file://`, or a computed directory and a file name: `__DIR__ . '/x.wsdl'`,
+   `os.path.join(os.path.dirname(__file__), "x.wsdl")`, `path.join(__dirname, "x.wsdl")`), read through
+   `readConfigFile` (inside the scanned directory, a regular file, 2 MiB and 20,000 tags at most) with the tokenizer of
+   `xml-shape.ts` (no DTD, no entity expansion). Its one http(s) `soap:address` / `soap12:address` / WSDL 2.0
+   `endpoint` address is the URL; ports that disagree give none;
+3. the WSDL URL without the query asking for it (`?wsdl`, `?WSDL`, `?singleWsdl`): a service answers both on one URL.
+   A WSDL in an environment variable is that variable's host (`hostKind: "env"`);
+4. else an unknown host (`hostKind: "unknown"`): a WSDL file the scan cannot read, a client built where it cannot see,
+   no WSDL and no `location`. A WSDL given by URL is never fetched.
+
+A WSDL file the scan reads also names the operations: a method it does not declare is not one (a typo, a method of
+the code's own), and a declared one is reported as the WSDL spells it (PHP finds `$client->track()` as `Track`).
+
+**Not covered:** JAX-WS and Spring-WS (`WebServiceTemplate.marshalSendAndReceive`), with Java (#43); a subclass of
+`SoapClient` built outside its own methods (`(new CarrierClient())->Op()`) has an unknown host; WSDL imports
+(`<wsdl:import>`) are not followed; the `SOAPAction` a WSDL declares is not reported.
 
 ## SDK clients passed as untyped parameters (#37)
 
@@ -1456,7 +1484,7 @@ call site keeps its own single value.
 | #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), more AWS services and the AWS SDK for Kotlin (#49), Spring AI in #89 and #96 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
-| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); the Hydrogen cart and Relay fragment refetches (#92); Hydrogen 2026.10 and `useQueryLoader` variables (#102); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
+| #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); the Hydrogen cart and Relay fragment refetches (#92); Hydrogen 2026.10 and `useQueryLoader` variables (#102); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query; node-soap clients (#58) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52); zeep (#58) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; `SoapClient` (#58) | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |
 | #37 SDK client as an untyped parameter | callers (constructor parameters stored on `this` too, #83), manifests, `receiver-unknown`, `clientFrom` | callers (constructors too), manifests, `receiver-unknown`, `clientFrom` | same as Python | does not apply (parameters are typed) |
 | #39 a parameter's values | initializers and callers through checker references | defaults and callers through the IR | same | same engine (Kotlin parameter defaults are lowered); Retrofit interface methods get their callers' arguments and defaults (`tests/fixtures/kotlin/retrofit/`, the Android fixture); SDK wrappers read their callers' values like Python |
 

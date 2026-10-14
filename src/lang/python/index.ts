@@ -6,6 +6,7 @@ import { lowerPython } from "./lower.js";
 import { normalizePypi, pythonManifests } from "./manifests.js";
 import modules from "./modules.json" with { type: "json" };
 import { detectUrllib } from "./urllib.js";
+import { detectZeep } from "./zeep.js";
 import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "json" };
 import anthropicVertex from "./registry/anthropic-vertex.json" with { type: "json" };
 import anthropic from "./registry/anthropic.json" with { type: "json" };
@@ -145,7 +146,7 @@ export const pythonLanguage: IrLanguage = {
   sharedGlobals: false,
   registry: PYTHON_REGISTRY,
   clients: clients.clients as unknown as ClientSpec[],
-  detectors: [detectUrllib],
+  detectors: [detectUrllib, detectZeep],
   documentOf: sgqlcDocument,
   passthrough: {
     // `gql("query ...")` (the gql package) parses a document: its value is the text

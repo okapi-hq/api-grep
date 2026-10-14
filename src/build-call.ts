@@ -21,6 +21,7 @@ import { withEdits } from "./resolve/edited-shape.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
+import { soapClientCall } from "./resolve/soap-client.js";
 import { withoutClientSettings } from "./model/client-settings.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
@@ -130,7 +131,9 @@ function alternativeBodies(exprs: Expression[], ctx: EvalCtx): BodyResult {
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
   const dynamic: DynamicPart[] = [];
-  const { url, method } = resolveTarget(raw, ctx, dynamic);
+  const soap = raw.soap ? soapClientCall(raw.soap, raw.node.getSourceFile().getFilePath(), base.rootDir, ctx) : undefined;
+  if (raw.soap && !soap) return [];
+  const { url, method } = soap ? { url: soap.url, method: "POST" } : resolveTarget(raw, ctx, dynamic);
   dynamic.push(...url.dynamic);
   // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
@@ -166,7 +169,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
     optionsOpaque: raw.optionsOpaque,
     model: raw.modelExpr ? shapeOf(raw.modelExpr, ctx).shape : undefined,
     document: documentOf(sdk, ctx),
-    operation: rpcOperation(sdk, ctx),
+    operation: soap?.operation ?? rpcOperation(sdk, ctx),
     routeByModel: sdk?.routeByModel,
     clientFrom: raw.clientFrom,
   });
