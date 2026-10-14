@@ -3,7 +3,7 @@ import { memberChain, unwrap } from "../ast/expr.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
 import { cachedEndpoint } from "./rpc-cache.js";
-import { componentEndpoint, configEndpoint, optionValues, ownConstruction, providedEndpoint } from "./rpc-config.js";
+import { componentEndpoint, configEndpoint, innerConfig, optionValues, ownConstruction, providedEndpoint } from "./rpc-config.js";
 import { urlOrNetwork, vendorEndpoint } from "./rpc-vendor.js";
 import {
   argsOf,
@@ -47,7 +47,7 @@ function isUrlString(e: Expression, depth = 0): boolean {
 }
 
 /** A client's construction: its URL, the one HTTP transport it is handed, or null when it does not read as HTTP. */
-export function fromRpcClient(name: string, args: Expression[], reg: RegistryEntry): Endpoint | null {
+export function fromRpcClient(name: string, args: Expression[], reg: RegistryEntry, depth = 0): Endpoint | null {
   const spec = reg.endpoint!;
   const source = Object.hasOwn(spec.clients, name) ? spec.clients[name]! : undefined;
   if (!source) return null;
@@ -55,6 +55,9 @@ export function fromRpcClient(name: string, args: Expression[], reg: RegistryEnt
   if (source.urlOrNetwork) return urlOrNetwork(at(args, source.url));
   if (!source.transport) return { url: at(args, source.url), headers: at(args, source.headers) };
   const given = optionValues(args, source.transport, !!source.deep);
+  // `createConfig(getDefaultConfig({ transports }))`: the transports of the config it is built from (#98)
+  const inner = given.length === 0 && depth < MAX_DEPTH ? innerConfig(args[0], reg) : undefined;
+  if (inner) return fromRpcClient(calledName(inner) ?? "", argsOf(inner), reg, depth + 1);
   if (given.length === 0) return source.defaultHttp ? {} : null;
   const transports = spec.transports ?? {};
   const nonHttp = new Set(spec.nonHttp);

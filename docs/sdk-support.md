@@ -8,7 +8,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 101 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| TypeScript / JavaScript (npm) | 102 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
 | Python (PyPI) | 46 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream`, `php-soap` |
 | Kotlin and Java (Maven) | 77 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
@@ -79,7 +79,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Supabase | **`@supabase/supabase-js`**, **`@supabase/ssr`** | **`supabase`**, `postgrest`, `supabase-auth`, `gotrue`, `storage3`, `supabase-functions`, `realtime` |  | **`io.github.jan-tennert.supabase:postgrest-kt`**, **`io.github.jan-tennert.supabase:auth-kt`**, **`io.github.jan-tennert.supabase:gotrue-kt`**, **`io.github.jan-tennert.supabase:storage-kt`**, **`io.github.jan-tennert.supabase:functions-kt`**, `io.github.jan-tennert.supabase:realtime-kt` |
 | Convex | **`convex`** | **`convex`** |  | `dev.convex:android-convexmobile` |
 | MCP server | **`@modelcontextprotocol/sdk`** | `mcp`, `fastmcp` |  | `io.modelcontextprotocol.sdk:mcp`, `io.modelcontextprotocol:kotlin-sdk` |
-| JSON-RPC client | **`@solana/web3.js`**, **`@solana/kit`**, **`@solana/rpc`**, **`@solana/spl-token`**, **`viem`**, **`ethers`**, **`@ethersproject/providers`**, **`@ethersproject/contracts`**, **`web3`**, **`wagmi`**, **`@wagmi/core`**, **`@rainbow-me/rainbowkit`**, **`@solana/wallet-adapter-react`** | **`web3`**, **`solana`** |  |  |
+| JSON-RPC client | **`@solana/web3.js`**, **`@solana/kit`**, **`@solana/rpc`**, **`@solana/spl-token`**, **`viem`**, **`ethers`**, **`@ethersproject/providers`**, **`@ethersproject/contracts`**, **`web3`**, **`wagmi`**, **`@wagmi/core`**, **`@rainbow-me/rainbowkit`**, **`connectkit`**, **`@solana/wallet-adapter-react`** | **`web3`**, **`solana`** |  |  |
 | GraphQL client | **`@apollo/client`**, **`apollo-client`**, **`apollo-boost`**, **`@apollo/react-hooks`**, **`react-apollo`**, **`urql`**, **`@urql/core`**, **`@urql/preact`**, **`@urql/svelte`**, **`@urql/vue`**, **`graphql-request`**, **`relay-runtime`**, **`react-relay`** | **`gql`**, **`sgqlc`** |  |  |
 | Shopify | **`@shopify/shopify-api`**, **`@shopify/shopify-app-express`**, **`@shopify/shopify-app-remix`**, **`@shopify/shopify-app-react-router`**, **`@shopify/admin-api-client`**, **`@shopify/storefront-api-client`**, **`shopify-api-node`**, **`@shopify/hydrogen`** | **`ShopifyAPI`** |  |  |
 | Clerk | `@clerk/backend`, `@clerk/clerk-sdk-node` | `clerk-backend-api` |  | `com.clerk:backend-api` |

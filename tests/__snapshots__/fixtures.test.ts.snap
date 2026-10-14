@@ -9515,7 +9515,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 57,
+    "filesSeen": 58,
     "languages": {
       "javascript": {
         "filesScanned": 0,
@@ -9523,7 +9523,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 53,
+        "filesSeen": 54,
       },
     },
     "skipped": [
@@ -9601,6 +9601,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "posthog/web.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "react-context/assistant.tsx",
         "reason": "excluded",
       },
       {
@@ -9725,7 +9729,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 49,
+      "excluded": 50,
     },
     "unfollowed": [],
   },

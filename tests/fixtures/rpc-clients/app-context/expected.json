@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "archive.tsx", "line": 12, "provider": "archive.example-node.io", "operation": "eth_getBlockByNumber"},
+    {"file": "ledger.tsx", "line": 8, "provider": "ledger.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "ledger.tsx", "line": 15, "provider": "ledger.example-node.io", "operation": "eth_getBalance"},
+    {"file": "regions.tsx", "line": 17, "provider": "unknown", "operation": "eth_gasPrice"}
+  ]
+}

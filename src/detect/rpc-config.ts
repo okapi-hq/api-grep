@@ -1,11 +1,12 @@
 import { Node, SyntaxKind, type Expression, type JsxOpeningElement, type JsxSelfClosingElement, type Project } from "ts-morph";
+import { unwrap } from "../ast/expr.js";
 import { getProp, toObjectLiteral } from "../ast/object.js";
 import { identifierOrigin } from "../ast/origin.js";
 import type { ClientSource, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
-import { returnsOf } from "./client-cache.js";
+import { returnsOf } from "../ast/function.js";
 import { agreedEndpoint } from "./rpc-cache.js";
-import { argsOf, at, calledName, constructionOf, ofEntry, type Construction, type Endpoint } from "./endpoint.js";
+import { argsOf, at, calledName, constructionOf, MAX_DEPTH, ofEntry, valueOf, type Construction, type Endpoint } from "./endpoint.js";
 import { cachedProjectEndpoint, fromRpcClient } from "./rpc-endpoint.js";
 
 /**
@@ -83,14 +84,40 @@ export function providedEndpoint(project: Project, reg: RegistryEntry): Endpoint
   const endpoints: Endpoint[] = [];
   for (const el of elements) {
     const value = propValue(el, given.prop);
-    const c = value ? ownConstruction(value, reg) : undefined;
-    const name = c ? (calledName(c) ?? "") : "";
-    const source = reg.endpoint!.clients[name];
-    const endpoint = c && source && source.config === undefined && !source.component ? fromRpcClient(name, argsOf(c), reg) : null;
-    if (!endpoint) return null;
-    endpoints.push(endpoint);
+    for (const choice of value ? choices(value) : [undefined]) {
+      const c = choice ? ownConstruction(choice, reg) : undefined;
+      const name = c ? (calledName(c) ?? "") : "";
+      const source = reg.endpoint!.clients[name];
+      const endpoint = c && source && source.config === undefined && !source.component ? fromRpcClient(name, argsOf(c), reg) : null;
+      if (!endpoint) return null;
+      endpoints.push(endpoint);
+    }
   }
   return agreedEndpoint(endpoints, false);
+}
+
+/** `isTest ? testConfig : appConfig`, also through a variable: each config the app may hand its provider (#98). */
+function choices(e: Expression, depth = 0): Expression[] {
+  const u = unwrap(e);
+  const value = Node.isIdentifier(u) && depth < MAX_DEPTH ? valueOf(u) : undefined;
+  const inner = value ? unwrap(value) : u;
+  if (!Node.isConditionalExpression(inner) || depth >= MAX_DEPTH) return [e];
+  return [...choices(inner.getWhenTrue(), depth + 1), ...choices(inner.getWhenFalse(), depth + 1)];
+}
+
+/**
+ * The config a config is built from (#98): ConnectKit's `createConfig(getDefaultConfig({ transports }))`, also spread
+ * into the options (`createConfig({ ...kitConfig, ssr: true })`), when its package's own.
+ */
+export function innerConfig(arg: Expression | undefined, reg: RegistryEntry): Construction | undefined {
+  const direct = arg ? ownConstruction(arg, reg) : undefined;
+  if (direct || !arg) return direct ?? undefined;
+  const spreads = toObjectLiteral(arg)?.getProperties().filter((p) => Node.isSpreadAssignment(p)) ?? [];
+  for (const s of spreads.reverse()) {
+    const c = Node.isSpreadAssignment(s) ? ownConstruction(s.getExpression(), reg) : undefined;
+    if (c) return c;
+  }
+  return undefined;
 }
 
 /**

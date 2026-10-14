@@ -1441,6 +1441,15 @@ exports[`regression fixtures > python/resolve/string-replace 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/rpc-cache 1`] = `
+[
+  "nodes.py:18 unknown POST / eth_getBlockByNumber",
+  "nodes.py:33 env:ARCHIVE_NODE_URL POST / eth_getBalance",
+  "nodes.py:49 unknown POST / getBalance",
+  "streams.py:23 local.example-node.io POST / eth_getCode",
+]
+`;
+
 exports[`regression fixtures > python/rpc-clients 1`] = `
 [
   "node.py:14 eth.example-node.io POST / eth_getBalance",
@@ -1780,6 +1789,15 @@ exports[`regression fixtures > robustness/odd-body 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rpc-clients/app-context 1`] = `
+[
+  "archive.tsx:12 archive.example-node.io POST /rpc eth_getBlockByNumber",
+  "ledger.tsx:8 ledger.example-node.io POST /rpc eth_blockNumber",
+  "ledger.tsx:15 ledger.example-node.io POST /rpc eth_getBalance",
+  "regions.tsx:17 unknown POST / eth_gasPrice",
+]
+`;
+
 exports[`regression fixtures > rpc-clients/cached 1`] = `
 [
   "archive.ts:17 archive.example-node.io POST /rpc eth_getBalance",
@@ -1788,6 +1806,12 @@ exports[`regression fixtures > rpc-clients/cached 1`] = `
   "context.ts:7 jobs.example-node.io POST /rpc eth_gasPrice",
   "context.ts:11 jobs.example-node.io POST /rpc eth_getBlockByNumber",
   "proxied.ts:21 unknown POST / eth_call",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/context-param 1`] = `
+[
+  "jobs.js:7 jobs.example-node.io POST /rpc eth_getBalance",
 ]
 `;
 
@@ -1806,6 +1830,14 @@ exports[`regression fixtures > rpc-clients/ethers-helpers 1`] = `
   "node.ts:9 eth.example-node.io POST /rpc eth_blockNumber (wrapper:rpc)",
   "node.ts:11 eth.example-node.io POST /rpc net_peerCount (wrapper:rpc)",
   "node.ts:14 eth.example-node.io POST /rpc eth_getCode",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/injected-factory 1`] = `
+[
+  "services.ts:11 reader.example-node.io POST /rpc eth_call",
+  "services.ts:16 reader.example-node.io POST /rpc eth_blockNumber",
+  "services.ts:31 unknown POST / eth_getBlockByNumber",
 ]
 `;
 
@@ -1860,6 +1892,27 @@ exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
   "prices.ts:6 unknown POST / eth_blockNumber",
   "prices.ts:7 unknown POST / eth_gasPrice",
   "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-connectkit 1`] = `
+[
+  "reads.ts:5 eth.example-node.io POST /v1 eth_blockNumber",
+  "reads.ts:9 unknown POST / eth_gasPrice",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-context 1`] = `
+[
+  "rates.tsx:8 unknown POST / eth_call",
+  "rates.tsx:13 unknown POST / eth_getBalance",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-memo 1`] = `
+[
+  "pool.tsx:6 eth.example-node.io POST /v1 eth_call",
+  "pool.tsx:7 eth.example-node.io POST /v1 eth_blockNumber",
 ]
 `;
 
@@ -2069,6 +2122,12 @@ exports[`regression fixtures > sdk/posthog 1`] = `
   "server.ts:7 posthog POST /flags",
   "web.ts:5 posthog POST /e",
   "web.ts:7 posthog POST /e",
+]
+`;
+
+exports[`regression fixtures > sdk/react-context 1`] = `
+[
+  "assistant.tsx:15 anthropic POST /v1/messages",
 ]
 `;
 

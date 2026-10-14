@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "pool.tsx", "line": 6, "provider": "eth.example-node.io", "operation": "eth_call"},
+    {"file": "pool.tsx", "line": 7, "provider": "eth.example-node.io", "operation": "eth_blockNumber"}
+  ]
+}

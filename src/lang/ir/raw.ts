@@ -37,6 +37,11 @@ export interface Seg {
   subst?: Subst;
   /** An instance known from a declared type (`client: OpenAI`), not from a constructor call. */
   typed?: boolean;
+  /**
+   * A client read from a cache (#98): the constructions of the other values it may hold, and whether the entry was
+   * read with a key known at run time only (a URL picked with that key is not the table's first).
+   */
+  cache?: { others: Seg[]; keyed: boolean };
 }
 
 /** Where a query parameter or header comes from when the client adds it to every request rather than the call. */

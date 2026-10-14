@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "reads.ts", "line": 5, "provider": "eth.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "reads.ts", "line": 9, "provider": "unknown", "operation": "eth_gasPrice"}
+  ]
+}
