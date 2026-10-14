@@ -316,6 +316,17 @@ Relay's `loadQuery(environment, query, variables)` (with a `require("./__generat
 callers' endpoint, else an `unknown` host in a project that declares `sgqlc`) and selections made by a helper given the
 `Operation`.
 
+[#92](https://github.com/okapi-hq/api-grep/issues/92) goes on: Shopify REST records saved or changed through an
+instance (`new shopify.rest.Product({ session })` then `product.save()`, a `POST`, or a `PUT` once the code sets its
+`id`; `order.close()`; Python `shopify.Product(attributes).save()`, `shopify.Product.find(id).destroy()`),
+`admin.rest.resources` of the app packages, resources whose path depends on an owner (`Metafield.all({ session,
+product_id })`, Python `Variant.find(product_id=p)`), `shopify-api-node` methods whose body the library builds
+(`customerAddress.create`), `shopify.auth.tokenExchange(...)` / `refreshToken` / `callback`
+(`POST /admin/oauth/access_token`), `shopify.clients.graphqlProxy(...)`, Hydrogen's cart (`context.cart.addLines(lines)`
+sends the `cartLinesAdd` mutation), Relay's `useQueryLoader(query)` and the refetch and pagination of fragments
+(`usePaginationFragment`, `useRefetchableFragment`: the query generated for the fragment's `@refetchable(queryName)`,
+read from its artifact when the scan has it), when the code keeps the function that sends.
+
 An XML document sent as the body (a SOAP envelope, a template, a `format()` string, a heredoc) is
 `bodyEncoding: xml`, its shape the element structure (root, then child elements, then the leaves' text); a body built
 by an XML library or sent with an XML content type is `xml` with its value unread. HTML and SVG markup (`<p>...</p>`,

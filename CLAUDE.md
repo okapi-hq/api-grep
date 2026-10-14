@@ -99,7 +99,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   Hydrogen's context clients (`contextClients` in `hydrogen.json`, `ReceiverResolver.contextCall`); Shopify REST
   resources (`bodyWrap`, `argPath`; `callersOnly` keeps common resource names from the manifest fallback); Relay
   `loadQuery`, containers and `<QueryRenderer>` (a registry's JSX `components`, `src/detect/component.ts`); sgqlc
-  endpoints given as parameters (key `()` when called with an `Operation`) and selections made by helpers. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  endpoints given as parameters (key `()` when called with an `Operation`) and selections made by helpers. #92:
+  Shopify REST records (keys `rest.<Class>#<method>` for a method of a value built with `new`, `record` in
+  `MethodSpec`: `record:<id>` params and the body read from the properties set on it, `withId` for `save()` as a
+  `PUT`), candidate `paths` picked by the ids given (`src/resolve/sdk-template.ts`), `keyAliases`
+  (`admin.rest.resources.`), dotted `bodyWrap`; Hydrogen's cart (`document`: a document the library writes); Relay
+  `useQueryLoader` and fragment hooks (`sendsThrough`, `refetchQuery`, `src/resolve/relay-refetch.ts`). JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
