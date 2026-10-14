@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/102",
+  "calls": [
+    {"file": "tags.ts", "line": 11, "provider": "shopify"},
+    {"file": "tags.ts", "line": 15, "provider": "shopify"},
+    {"file": "tags.ts", "line": 19, "provider": "shopify"},
+    {"file": "tags.ts", "line": 23, "provider": "shopify"},
+    {"file": "tags.ts", "line": 27, "provider": "shopify"}
+  ]
+}
