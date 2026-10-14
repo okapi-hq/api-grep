@@ -776,6 +776,10 @@
             "default"
           ],
           "description": "interceptor: an interceptor of the client (OkHttp `addInterceptor`). default: a default the client is built with (Ktor `defaultRequest`, Spring `defaultHeader`)."
+        },
+        "optional": {
+          "description": "true: added on some requests only (set in a branch or a loop of the interceptor, or after an early return: `if (url.contains(...)) builder.header(...)`). Absent when added to every request.",
+          "type": "boolean"
         }
       },
       "required": [
