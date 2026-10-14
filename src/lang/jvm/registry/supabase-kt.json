@@ -1,0 +1,93 @@
+{
+  "$comment": "supabase-kt (Kotlin): `createSupabaseClient(supabaseUrl, supabaseKey) { install(Postgrest) ... }` (or an injected `SupabaseClient`), then the plugin of each module: Postgrest (`supabase.from(\"table\").select()`, `.insert(row)`, `.update(...)`, `.delete { ... }`, `supabase.postgrest.rpc(\"fn\", params)`), Auth (`supabase.auth.signInWith(Email) { ... }`, `gotrue` before 3.0), Storage (`supabase.storage.from(\"bucket\").upload(path, bytes)`) and Functions (`supabase.functions.invoke(\"fn\", body)`), one entry per artifact (`variants`). Paths as in the Python supabase registry. `signInWith` gets a session from `/auth/v1/token` whatever the provider (an OAuth provider's browser flow ends there too); `publicUrl(path)` builds a URL locally. A plugin injected on its own (`postgrest: Postgrest`, `auth: Auth`, `storage: Storage`) is a client too; `postgrest[\"table\"]` is `from(\"table\")` (`get.select`). Request bodies built in Kotlin lambdas (`signInWith(Email) { email = e }`, `update({ set(\"a\", 1) })`) are not read.",
+  "provider": "supabase",
+  "host": "{project}.supabase.co",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (supabase-kt 3.x plugin methods, paths of the Python supabase registry)",
+  "variants": [
+    {
+      "package": "io.github.jan-tennert.supabase:postgrest-kt",
+      "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.postgrest.Postgrest"],
+      "builders": ["postgrest"],
+      "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Postgrest"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "methods": {
+        "from.select": {"method":"GET","path":"/rest/v1/{table}","params":{"table":"instance:0"}},
+        "from.insert": {"method":"POST","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "from.upsert": {"method":"POST","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "from.update": {"method":"PATCH","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "from.delete": {"method":"DELETE","path":"/rest/v1/{table}","params":{"table":"instance:0"}},
+        "get.select": {"method":"GET","path":"/rest/v1/{table}","params":{"table":"instance:0"}},
+        "get.insert": {"method":"POST","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "get.upsert": {"method":"POST","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "get.update": {"method":"PATCH","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
+        "get.delete": {"method":"DELETE","path":"/rest/v1/{table}","params":{"table":"instance:0"}},
+        "rpc": {"method":"POST","path":"/rest/v1/rpc/{fn}","params":{"fn":"arg:0"},"bodyArg":1}
+      }
+    },
+    {
+      "package": "io.github.jan-tennert.supabase:auth-kt",
+      "aliases": ["io.github.jan-tennert.supabase:gotrue-kt"],
+      "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.auth.Auth", "io.github.jan.supabase.gotrue.Auth", "io.github.jan.supabase.gotrue.GoTrue"],
+      "builders": ["auth", "gotrue"],
+      "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Auth", "GoTrue"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "methods": {
+        "signUpWith": {"method":"POST","path":"/auth/v1/signup"},
+        "signInWith": {"method":"POST","path":"/auth/v1/token"},
+        "loginWith": {"method":"POST","path":"/auth/v1/token"},
+        "signInAnonymously": {"method":"POST","path":"/auth/v1/signup"},
+        "signOut": {"method":"POST","path":"/auth/v1/logout"},
+        "logout": {"method":"POST","path":"/auth/v1/logout"},
+        "retrieveUser": {"method":"GET","path":"/auth/v1/user"},
+        "retrieveUserForCurrentSession": {"method":"GET","path":"/auth/v1/user"},
+        "updateUser": {"method":"PUT","path":"/auth/v1/user"},
+        "modifyUser": {"method":"PUT","path":"/auth/v1/user"},
+        "resetPasswordForEmail": {"method":"POST","path":"/auth/v1/recover"},
+        "sendRecoveryEmail": {"method":"POST","path":"/auth/v1/recover"},
+        "refreshCurrentSession": {"method":"POST","path":"/auth/v1/token?grant_type=refresh_token"},
+        "refreshSession": {"method":"POST","path":"/auth/v1/token?grant_type=refresh_token"},
+        "exchangeCodeForSession": {"method":"POST","path":"/auth/v1/token?grant_type=pkce"},
+        "verifyEmailOtp": {"method":"POST","path":"/auth/v1/verify"},
+        "verifyPhoneOtp": {"method":"POST","path":"/auth/v1/verify"},
+        "resendEmail": {"method":"POST","path":"/auth/v1/resend"},
+        "resendPhone": {"method":"POST","path":"/auth/v1/resend"},
+        "reauthenticate": {"method":"GET","path":"/auth/v1/reauthenticate"}
+      }
+    },
+    {
+      "package": "io.github.jan-tennert.supabase:storage-kt",
+      "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.storage.Storage"],
+      "builders": ["storage"],
+      "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Storage"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "methods": {
+        "from.upload": {"method":"POST","path":"/storage/v1/object/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"},"bodyArg":1,"encoding":"raw"},
+        "from.update": {"method":"PUT","path":"/storage/v1/object/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"},"bodyArg":1,"encoding":"raw"},
+        "from.downloadAuthenticated": {"method":"GET","path":"/storage/v1/object/authenticated/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "from.downloadPublic": {"method":"GET","path":"/storage/v1/object/public/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "from.delete": {"method":"DELETE","path":"/storage/v1/object/{bucket}","params":{"bucket":"instance:0"}},
+        "from.list": {"method":"POST","path":"/storage/v1/object/list/{bucket}","params":{"bucket":"instance:0"}},
+        "from.exists": {"method":"HEAD","path":"/storage/v1/object/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "from.info": {"method":"GET","path":"/storage/v1/object/info/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "from.move": {"method":"POST","path":"/storage/v1/object/move"},
+        "from.copy": {"method":"POST","path":"/storage/v1/object/copy"},
+        "from.createSignedUrl": {"method":"POST","path":"/storage/v1/object/sign/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "from.createSignedUploadUrl": {"method":"POST","path":"/storage/v1/object/upload/sign/{bucket}/{path}","params":{"bucket":"instance:0","path":"arg:0"}},
+        "retrieveBuckets": {"method":"GET","path":"/storage/v1/bucket"},
+        "retrieveBucketById": {"method":"GET","path":"/storage/v1/bucket/{id}","params":{"id":"arg:0"}},
+        "createBucket": {"method":"POST","path":"/storage/v1/bucket"},
+        "updateBucket": {"method":"PUT","path":"/storage/v1/bucket/{id}","params":{"id":"arg:0"}},
+        "deleteBucket": {"method":"DELETE","path":"/storage/v1/bucket/{id}","params":{"id":"arg:0"}},
+        "emptyBucket": {"method":"POST","path":"/storage/v1/bucket/{id}/empty","params":{"id":"arg:0"}}
+      }
+    },
+    {
+      "package": "io.github.jan-tennert.supabase:functions-kt",
+      "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.functions.Functions"],
+      "builders": ["functions"],
+      "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Functions"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "methods": {
+        "invoke": {"method":"POST","path":"/functions/v1/{function_name}","params":{"function_name":"arg:0"},"bodyArg":1}
+      }
+    }
+  ]
+}

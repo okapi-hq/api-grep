@@ -1,11 +1,12 @@
 import type { Chain } from "./chain.js";
 import { argAt, argOf, kwargsDict, propOf } from "./args.js";
 import type { IrMethodSpec, IrRegistryEntry, Scoped } from "./language.js";
-import type { CallExpr, FunctionDef } from "./model.js";
+import type { CallExpr, Entry, Expr, FunctionDef } from "./model.js";
 import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
 import { deref, staticKey } from "./values.js";
 import { lambdaValue } from "./builders.js";
 import { irEndpoint } from "./endpoint.js";
+import { setupBaseUrl } from "./setup.js";
 
 /** Keyword arguments that configure the SDK call itself rather than the request body. */
 const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", "timeout", "max_retries", "request_options", "idempotency_key", "api_key", "stripe_account", "stripe_version", "options"]);
@@ -25,6 +26,15 @@ const CLIENT_KWARGS = new Set([
 
 const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 
+/** Import roots split once per registry entry: every call of every scanned file is matched against them. */
+const SPLIT_ROOTS = new WeakMap<string[], string[][]>();
+
+function splitRoots(roots: string[]): string[][] {
+  let out = SPLIT_ROOTS.get(roots);
+  if (!out) SPLIT_ROOTS.set(roots, (out = roots.map((r) => r.split("."))));
+  return out;
+}
+
 /**
  * Segments an import root covers (`google.genai` covers `[google, genai]`), the longest root first; -1 when none
  * does. A root that is a class constructed on the spot (`new \SendGrid($key)`) covers nothing: the class is the first
@@ -33,8 +43,7 @@ const invoked = (s: Seg): boolean => !!s.call || !!s.typed;
 export function rootLength(segs: Seg[], roots: string[]): number {
   let best = -1;
   let bestParts = 0;
-  for (const root of roots) {
-    const parts = root.split(".");
+  for (const parts of splitRoots(roots)) {
     if (parts.length <= bestParts || parts.length > segs.length || !parts.every((p, i) => segs[i]!.name === p)) continue;
     const open = parts.findIndex((_, i) => invoked(segs[i]!));
     if (open >= 0 && open < parts.length - 1) continue;
@@ -143,8 +152,27 @@ function pathKwargs(m: IrSdkMatch): Set<string> {
   return out;
 }
 
+/** Fields from positional arguments of a chain call and from its setters (`Message.creator(to, from, body).setMediaUrl(u)`). */
+function argFieldsBody(m: IrSdkMatch, spec: NonNullable<IrMethodSpec["argFields"]>, fn: FunctionDef): Scoped | undefined {
+  const entries: Entry[] = [];
+  const at = (seg: Seg, value: Expr): Expr => (seg.fn && seg.fn !== fn ? { k: "scoped", expr: value, fn: seg.fn } : value);
+  const seg = [...m.segs].reverse().find((s) => s.call && s.name === spec.seg);
+  const args = seg?.call?.args.filter((a) => !a.name && !a.spread) ?? [];
+  spec.fields.forEach((field, i) => {
+    if (field && args[i]) entries.push({ key: { k: "str", v: field }, value: at(seg!, args[i].value) });
+  });
+  const prefix = spec.setters;
+  for (const s of prefix ? m.segs : []) {
+    const value = s.call?.args.find((a) => !a.name && !a.spread)?.value;
+    if (value && s.name.length > prefix!.length && s.name.startsWith(prefix!)) entries.push({ key: { k: "str", v: s.name.slice(prefix!.length) }, value: at(s, value) });
+  }
+  return entries.length > 0 ? { expr: { k: "dict", entries }, fn } : undefined;
+}
+
 function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   const spec = m.spec;
+  if (spec.argFields) return argFieldsBody(m, spec.argFields, fn);
+  if (spec.bodySelf) return { expr: call, fn };
   if (spec.bodyKw) {
     const arg = argOf(m.method, spec.bodyArg, spec.bodyKw);
     return spec.bodyProp ? propOf(arg, spec.bodyProp, ctx) : arg;
@@ -169,8 +197,9 @@ function builtBody(m: IrSdkMatch, body: Scoped | undefined, ctx: IrCtx): Scoped[
   return d.expr.k === "dict" ? [d] : [];
 }
 
-/** A URL the client was built with (`WebhookClient(url).send(...)`): argument N of the instance. */
+/** A URL the client was built with (`WebhookClient(url).send(...)`): argument N of the instance; or one the method takes. */
 function instanceUrl(m: IrSdkMatch): Scoped | undefined {
+  if (m.spec.urlArg !== undefined) return argOf(m.method, m.spec.urlArg);
   if (m.spec.urlFromInstanceArg === undefined) return undefined;
   const i = instanceIndex(m.entry, m.segs);
   return i >= 0 ? argOf(m.segs[i], m.spec.urlFromInstanceArg) : undefined;
@@ -181,8 +210,8 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
  * whatever `err` is, so a `report(err)` wrapper around it is not a client of its own.
  */
 function readsArgs(spec: IrMethodSpec): boolean {
-  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.modelArg, spec.documentArg, ...(spec.pathArgs ?? [])];
-  return positions.some((i) => i !== undefined) || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
+  const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.urlArg, spec.modelArg, spec.documentArg, ...(spec.pathArgs ?? [])];
+  return positions.some((i) => i !== undefined) || !!spec.argFields || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
 }
 
 /** The file's manifests declare another package with the entry's class names (`sameClassesAs`) and not the entry's. */
@@ -215,7 +244,8 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       url: instanceUrl(m),
       body,
       query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
-      baseUrl,
+      // a host set once at startup (`PostHog.setup(...)`) is not an input of the call: it is not a wrapper parameter
+      baseUrl: baseUrl ?? setupBaseUrl(entry, ctx),
       headers,
       inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
       model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,

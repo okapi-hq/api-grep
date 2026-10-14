@@ -25,6 +25,16 @@ export interface IrMethodSpec extends MethodSpec {
   documentKw?: string;
   /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */
   baseUrlKw?: string[];
+  /** The method sends to the URL given as this argument (Slack's `send(webhookUrl, payload)`). */
+  urlArg?: number;
+  /**
+   * Body fields the SDK names itself: the positional arguments of a call of the chain (Twilio `Message.creator(to,
+   * from, body)` -> `To`, `From`, `Body`; `""` skips a path argument) and the chain's setters with this prefix
+   * (`setMediaUrl(u)` -> `MediaUrl`).
+   */
+  argFields?: { seg: string; fields: string[]; setters?: string };
+  /** The call builds a model client whose settings are its requests' (LangChain4j `OpenAiChatModel.builder()...build()`): the built value is the body. */
+  bodySelf?: boolean;
 }
 
 /**
@@ -45,10 +55,20 @@ export interface SetterRules {
   fields?: Record<string, string>;
   /** Setters adding one item to a list field, or one key to a map field when given two arguments (Lombok `@Singular`: `tag(t)` -> `tags`). */
   items?: Record<string, string>;
-  /** Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`. */
-  constants?: Record<string, "kebab" | "snake">;
+  /**
+   * Enum classes of those packages whose constants are strings (`Model.CLAUDE_SONNET_4_5`), by class name or `*`;
+   * `lower`: constants named in Pascal case (`ChatRole.User` -> `user`).
+   */
+  constants?: Record<string, "kebab" | "snake" | "lower">;
   /** Rewrites of a constant's string after its case (`gpt-4-1` -> `gpt-4.1`): pattern and replacement. */
   constantRewrites?: [string, string][];
+  /**
+   * Kotlin data classes of those packages are built by their constructor's named arguments, read as the fields they
+   * set (`ChatCompletionRequest(model = m, maxTokens = 100)` -> `model`, `max_tokens`).
+   */
+  constructors?: boolean;
+  /** Classes of those packages that stand for their one argument (`ModelId("gpt-4o")` -> `"gpt-4o"`). */
+  wrappers?: string[];
 }
 
 /**
@@ -82,6 +102,12 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   sameClassesAs?: string[];
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): the call goes where it routes. */
   routeByModel?: boolean;
+  /**
+   * The host comes from a configuration call made once elsewhere (`PostHog.setup(PostHogConfig(key, host = h))`):
+   * the calls by the end of their name, the position of the config argument (`-1`: the last), and where the config's
+   * constructor takes the host (`kw:host|1`). See `setup.ts`.
+   */
+  setupUrl?: { calls: string[]; arg: number; host: string };
   methods: Record<string, IrMethodSpec>;
 }
 
@@ -161,6 +187,8 @@ export interface FluentMapSpec {
   auth?: Record<string, "bearer" | "basic">;
   /** Properties set on a variable holding the object (`headers.contentType = ...`): the entry each sets. */
   props?: Record<string, string>;
+  /** Methods setting one entry from their argument (`request.setEndpoint("mail/send")` -> `endpoint`). */
+  setters?: Record<string, string>;
   /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
   skip?: string[];
   /** Methods adding every entry of their argument (`map.putAll(other)`). */
@@ -217,6 +245,8 @@ export interface IrLanguage extends IrSource {
   packageScope?: boolean;
   /** Parameters declare their type (Kotlin): one whose type names no client is never listed as `injected-client`. */
   typedParams?: boolean;
+  /** `a[k]` on a library object calls this method (Kotlin `operator fun get`: `postgrest["table"]` is `postgrest.get("table")`). */
+  indexOperator?: string;
   /** Methods are overloaded (Java, Kotlin): a call runs the one of its name its arguments fit (`overloads.ts`). */
   overloads?: boolean;
   registry: IrRegistryEntry[];

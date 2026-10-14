@@ -43,6 +43,7 @@ export const kotlinLanguage: IrLanguage = {
   packageScope: true,
   typedParams: true,
   overloads: true,
+  indexOperator: "get",
   registry: JVM_REGISTRY,
   ...JVM_HTTP,
   // `X.builder().a(1).build()` of an SDK's parameter class or a Lombok `@Builder` class: the dict of the fields it
@@ -53,8 +54,12 @@ export const kotlinLanguage: IrLanguage = {
   passthrough: {
     functions: new Set([
       ...["URL", "URI", "Url", "encode", "requireNotNull", "checkNotNull", "URI.create", "Uri.parse", "HttpUrl.get", "HttpUrl.parse", "MediaType.get", "MediaType.parse"],
+      // AWS SDK for Kotlin endpoints (`endpointUrl = Url.parse(u)`)
+      "Url.parse",
       // Java
       ...["String.valueOf", "Objects.requireNonNull"],
+      // SDK value wrappers: Twilio `PhoneNumber(to)`, openai-kotlin `ModelId("gpt-4o")`
+      "PhoneNumber", "ModelId", "FileId",
     ]),
     methods: new Set([
       ...["trim", "trimEnd", "trimStart", "trimIndent", "trimMargin", "removeSuffix", "lowercase", "uppercase", "toString", "orEmpty"],

@@ -318,7 +318,8 @@
     { "objects": ["MultiMap.caseInsensitiveMultiMap"], "put": ["add", "set"], "encoding": "form" },
     { "objects": ["MultipartEntityBuilder.create"], "put": ["addTextBody", "addBinaryBody", "addPart"], "skip": ["setMode", "setCharset", "setBoundary", "setLaxMode", "setStrictMode"], "encoding": "multipart" },
     { "objects": ["HashMap", "LinkedHashMap", "TreeMap"], "put": ["put", "putIfAbsent"], "spread": ["putAll"], "remove": ["remove"], "filledOnly": true },
-    { "objects": ["HttpHeaders"], "put": ["set", "add"], "auth": { "setBearerAuth": "bearer", "setBasicAuth": "basic" }, "props": { "contentType": "Content-Type", "accept": "Accept" } }
+    { "objects": ["HttpHeaders"], "put": ["set", "add"], "auth": { "setBearerAuth": "bearer", "setBasicAuth": "basic" }, "props": { "contentType": "Content-Type", "accept": "Accept" } },
+    { "objects": ["Request"], "setters": { "setMethod": "method", "setEndpoint": "endpoint", "setBody": "body", "setBaseUri": "baseUri" }, "props": { "method": "method", "endpoint": "endpoint", "body": "body", "baseUri": "baseUri" }, "filledOnly": true }
   ],
   "wildcardTypes": [
     "okhttp3.OkHttpClient",

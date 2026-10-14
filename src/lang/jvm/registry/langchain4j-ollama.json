@@ -1,0 +1,23 @@
+{
+  "$comment": "LangChain4j Ollama models (`dev.langchain4j:langchain4j-ollama`): `OllamaChatModel.builder().baseUrl(\"http://localhost:11434\").modelName(\"llama3.1\").build()` is the call, its request settings the body (as in `langchain4j-open-ai.json`); without `baseUrl` the host is Ollama's default.",
+  "package": "dev.langchain4j:langchain4j-ollama",
+  "provider": "ollama",
+  "host": "localhost:11434",
+  "auth": "none",
+  "generatedFrom": "manual (LangChain4j Ollama model builders, paths of the Python langchain-ollama registry)",
+  "instance": { "names": [], "urlArg": { "baseUrl": "0" } },
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.ollama"],
+    "case": "snake",
+    "fields": {
+      "modelName": "model", "baseUrl": "", "timeout": "", "maxRetries": "", "logRequests": "", "logResponses": "", "logger": "", "customHeaders": "", "httpClientBuilder": "",
+      "listeners": "", "defaultRequestParameters": "", "supportedCapabilities": "", "returnThinking": ""
+    }
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.ollama.OllamaChatModel", "dev.langchain4j.model.ollama.OllamaStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/api/chat","bodySelf":true} } },
+    { "imports": ["dev.langchain4j.model.ollama.OllamaLanguageModel", "dev.langchain4j.model.ollama.OllamaStreamingLanguageModel"], "methods": { "build": {"method":"POST","path":"/api/generate","bodySelf":true} } },
+    { "imports": ["dev.langchain4j.model.ollama.OllamaEmbeddingModel"], "methods": { "build": {"method":"POST","path":"/api/embed","bodySelf":true} } }
+  ]
+}

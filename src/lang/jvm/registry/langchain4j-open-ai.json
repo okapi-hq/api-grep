@@ -1,0 +1,29 @@
+{
+  "$comment": "LangChain4j OpenAI models (`dev.langchain4j:langchain4j-open-ai`): a model built here (`OpenAiChatModel.builder().apiKey(k).modelName(OpenAiChatModelName.GPT_4_O_MINI).temperature(0.2).build()`) sends each of its requests to the API, like the Python LangChain model clients: the call is the `build()`, its request settings (model, temperature, max tokens) are the body, its client settings (key, base URL, timeouts, logging) are not. One entry per model class (`variants`).",
+  "package": "dev.langchain4j:langchain4j-open-ai",
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (LangChain4j OpenAI model builders, paths of the openai-java registry)",
+  "basePath": "/v1",
+  "instance": { "names": [], "urlArg": { "baseUrl": "0" } },
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.openai"],
+    "case": "snake",
+    "fields": {
+      "modelName": "model", "apiKey": "", "baseUrl": "", "organizationId": "", "projectId": "", "timeout": "", "maxRetries": "", "logRequests": "", "logResponses": "",
+      "logger": "", "proxy": "", "customHeaders": "", "httpClientBuilder": "", "listeners": "", "defaultRequestParameters": "", "tokenizer": "", "strictJsonSchema": "", "strictTools": "",
+      "returnThinking": "", "sendThinking": "", "supportedCapabilities": "", "customQueryParams": ""
+    },
+    "constants": { "OpenAiChatModelName": "kebab", "OpenAiEmbeddingModelName": "kebab", "OpenAiImageModelName": "kebab", "OpenAiModerationModelName": "kebab", "OpenAiLanguageModelName": "kebab" },
+    "constantRewrites": [["^(gpt|chatgpt)-4-o", "$1-4o"], ["^(gpt|chatgpt)-(\\d+)-(\\d)(?=-|$)", "$1-$2.$3"]]
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.openai.OpenAiChatModel", "dev.langchain4j.model.openai.OpenAiStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/v1/chat/completions","bodySelf":true,"operationId":"createChatCompletion"} } },
+    { "imports": ["dev.langchain4j.model.openai.OpenAiLanguageModel", "dev.langchain4j.model.openai.OpenAiStreamingLanguageModel"], "methods": { "build": {"method":"POST","path":"/v1/completions","bodySelf":true,"operationId":"createCompletion"} } },
+    { "imports": ["dev.langchain4j.model.openai.OpenAiEmbeddingModel"], "methods": { "build": {"method":"POST","path":"/v1/embeddings","bodySelf":true,"operationId":"createEmbedding"} } },
+    { "imports": ["dev.langchain4j.model.openai.OpenAiImageModel"], "methods": { "build": {"method":"POST","path":"/v1/images/generations","bodySelf":true,"operationId":"createImage"} } },
+    { "imports": ["dev.langchain4j.model.openai.OpenAiModerationModel"], "methods": { "build": {"method":"POST","path":"/v1/moderations","bodySelf":true,"operationId":"createModeration"} } }
+  ]
+}

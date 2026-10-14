@@ -1,4 +1,4 @@
-import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
+import { argFor, posOf, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
 import { overloadFor, overloadsFor } from "./overloads.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { injectedCall, injectedField, paramValue } from "./injected.js";
@@ -170,6 +170,18 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
   return UNKNOWN;
 }
 
+/** Kotlin `postgrest["table"]` on a library object: its `get` operator, `postgrest.get("table")`. */
+function indexCall(e: Extract<Expr, { k: "index" }>, name: string, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
+  const obj = valueChain(e.obj, fn, ctx, depth);
+  // an SDK object only: a list or an array element keeps the declared type of the variable it is read into
+  const path = obj.segs.map((s) => s.name).join(".");
+  const sdk = ctx.idx.lang.registry.some((r) => r.imports.some((i) => path === i || path.startsWith(`${i}.`)));
+  if (obj.root.kind !== "external" || !sdk || fn.module.language === "java") return UNKNOWN;
+  const pos = posOf(e.obj) ?? fn.pos;
+  const call: CallExpr = { k: "call", fn: { k: "attr", obj: e.obj, name, pos }, args: [{ value: e.key }], pos };
+  return attach(member(obj, name, ctx, depth), call, fn, ctx.subst);
+}
+
 function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
   const made = ctx.idx.lang.instanceOf?.(e, fn, ctx, depth);
   if (made) return { root: { kind: "instance", cls: made }, segs: [] };
@@ -209,7 +221,8 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
       return callChain(e, fn, ctx, depth);
     case "index": {
       const v = dictValue(e, fn, ctx);
-      return v ? valueChain(v.expr, v.fn, ctx, depth + 1) : UNKNOWN;
+      if (v) return valueChain(v.expr, v.fn, ctx, depth + 1);
+      return ctx.idx.lang.indexOperator ? indexCall(e, ctx.idx.lang.indexOperator, fn, ctx, depth) : UNKNOWN;
     }
     case "or":
     case "cond": {

@@ -1,0 +1,21 @@
+{
+  "$comment": "LangChain4j Bedrock models (`dev.langchain4j:langchain4j-bedrock`): `BedrockChatModel.builder().modelId(\"anthropic.claude-3-5-haiku-20241022-v1:0\").region(Region.US_EAST_1).build()` is the call (Bedrock's Converse API), its request settings the body and its model the path (as in `langchain4j-open-ai.json`).",
+  "package": "dev.langchain4j:langchain4j-bedrock",
+  "provider": "aws-bedrock",
+  "host": "bedrock-runtime.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (LangChain4j Bedrock model builders, paths of the AWS Bedrock Runtime registry)",
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.bedrock"],
+    "case": "camel",
+    "fields": {
+      "region": "", "client": "", "timeout": "", "maxRetries": "", "logRequests": "", "logResponses": "", "logger": "", "listeners": "", "defaultRequestParameters": "",
+      "supportedCapabilities": "", "credentialsProvider": ""
+    }
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.bedrock.BedrockChatModel"], "methods": { "build": {"method":"POST","path":"/model/{modelId}/converse","bodySelf":true,"pathFromBody":["modelId"],"operationId":"Converse"} } },
+    { "imports": ["dev.langchain4j.model.bedrock.BedrockStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/model/{modelId}/converse-stream","bodySelf":true,"pathFromBody":["modelId"],"operationId":"ConverseStream"} } }
+  ]
+}

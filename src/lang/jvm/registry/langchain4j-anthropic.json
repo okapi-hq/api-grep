@@ -1,0 +1,24 @@
+{
+  "$comment": "LangChain4j Anthropic models (`dev.langchain4j:langchain4j-anthropic`): `AnthropicChatModel.builder().apiKey(k).modelName(AnthropicChatModelName.CLAUDE_3_5_HAIKU_20241022).maxTokens(1024).build()` is the call, its request settings the body (as in `langchain4j-open-ai.json`).",
+  "package": "dev.langchain4j:langchain4j-anthropic",
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (LangChain4j Anthropic model builders, paths of the anthropic-java registry)",
+  "basePath": "/v1",
+  "instance": { "names": [], "urlArg": { "baseUrl": "0" } },
+  "builders": ["*"],
+  "setters": {
+    "packages": ["dev.langchain4j.model.anthropic"],
+    "case": "snake",
+    "fields": {
+      "modelName": "model", "apiKey": "", "baseUrl": "", "version": "", "beta": "", "timeout": "", "maxRetries": "", "logRequests": "", "logResponses": "", "logger": "",
+      "httpClientBuilder": "", "listeners": "", "defaultRequestParameters": "", "cacheSystemMessages": "", "cacheTools": "", "returnThinking": "", "sendThinking": "",
+      "supportedCapabilities": "", "userId": ""
+    },
+    "constants": { "AnthropicChatModelName": "kebab" }
+  },
+  "variants": [
+    { "imports": ["dev.langchain4j.model.anthropic.AnthropicChatModel", "dev.langchain4j.model.anthropic.AnthropicStreamingChatModel"], "methods": { "build": {"method":"POST","path":"/v1/messages","bodySelf":true,"operationId":"messages_post"} } }
+  ]
+}

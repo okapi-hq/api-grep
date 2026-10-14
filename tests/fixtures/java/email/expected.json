@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/50",
+  "skipped": [],
+  "calls": [
+    { "file": "Mailer.java", "line": 25, "provider": "sendgrid" },
+    { "file": "Mailer.java", "line": 29, "provider": "resend" },
+    { "file": "Mailer.java", "line": 33, "provider": "mailgun" }
+  ]
+}

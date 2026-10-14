@@ -149,6 +149,11 @@ export interface FunctionDef {
   annotations?: Annotation[];
   /** The declared return type (`fun client(): OkHttpClient`), what a DI provider provides. */
   returnType?: Expr;
+  /**
+   * A Kotlin lambda's assignments to names it does not declare (`bucket = b`, `this.key = k`): properties of its
+   * implicit receiver when it fills a DSL builder (`PutObjectRequest { bucket = b }`), in order.
+   */
+  props?: { name: string; value: Expr; offset: number }[];
 }
 
 export interface ClassDef {
