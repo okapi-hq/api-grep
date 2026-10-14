@@ -5,6 +5,7 @@ import type { Call, Language, Operation } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
+import { wrapShape } from "../../resolve/shape-utils.js";
 import { resolveReference } from "../../resolve/url-reference.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
 import type { AuthScheme, BodyEncoding, DynamicPart, Part, Shape, UrlShape } from "../../types.js";
@@ -150,6 +151,7 @@ export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
   // GraphQL variables: the callers of the function they are written in are not searched (as in TypeScript)
   const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), raw.sdk?.entry.endpoint ? { ...ctx, callerLevel: true } : ctx);
   if (raw.encoding && body.shape) body.encoding = raw.encoding;
+  body.shape = wrapShape(body.shape, raw.sdk?.spec.bodyWrap);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveIrQuery(raw.query, ctx);

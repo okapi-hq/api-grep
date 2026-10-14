@@ -93,13 +93,28 @@ function paramParts<E>(src: SdkSource<E>, name: string, index: number, names: Pa
   return parts;
 }
 
+/**
+ * A value written in the code that already carries the slash before the placeholder or the extension after it
+ * (Shopify's REST client takes `"products"`, `"/products"` or `"products.json"` for `{path}.json`): not doubled.
+ */
+function fitted(parts: Part[], before: string, after: string): Part[] {
+  const out = [...parts];
+  const first = out[0];
+  if (first?.kind === "static" && before.endsWith("/") && first.text.startsWith("/")) out[0] = { ...first, text: first.text.replace(/^\/+/, "") };
+  const ext = /^\.[a-z]+/i.exec(after)?.[0];
+  const lastPart = out[out.length - 1];
+  if (ext && lastPart?.kind === "static" && lastPart.text.endsWith(ext)) out[out.length - 1] = { ...lastPart, text: lastPart.text.slice(0, -ext.length) };
+  return out;
+}
+
 function pathParts<E>(src: SdkSource<E>, pathT: string, names: PathNames): Part[] {
   const path: Part[] = [];
   let last = 0;
   let index = 0;
   for (const m of pathT.matchAll(PLACEHOLDER_RE)) {
-    path.push({ kind: "static", text: pathT.slice(last, m.index) }, ...paramParts(src, m[1]!, index++, names));
+    const before = pathT.slice(last, m.index);
     last = m.index + m[0].length;
+    path.push({ kind: "static", text: before }, ...fitted(paramParts(src, m[1]!, index++, names), before, pathT.slice(last)));
   }
   path.push({ kind: "static", text: pathT.slice(last) });
   return path;
@@ -147,7 +162,8 @@ export function templatedUrl<E>(src: SdkSource<E>, pathT: string): UrlShape {
 /** URL and method of an SDK call from its registry entry. */
 export function sdkTarget<E>(src: SdkSource<E>): { url: UrlShape; method: string } {
   let method = src.spec.method;
-  let pathT = src.spec.path;
+  const byArg = src.spec.argPath;
+  let pathT = byArg && src.arg(byArg.arg) !== undefined ? byArg.path : src.spec.path;
   if (src.spec.routeArg !== undefined) {
     const arg = src.arg(src.spec.routeArg);
     const route = (arg !== undefined ? staticText(src.evaluate(arg)) : undefined) ?? "";

@@ -8,7 +8,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 96 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| TypeScript / JavaScript (npm) | 97 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
 | Python (PyPI) | 46 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
 | PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
 | Kotlin and Java (Maven) | 53 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
@@ -81,7 +81,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | MCP server | **`@modelcontextprotocol/sdk`** | `mcp`, `fastmcp` |  | `io.modelcontextprotocol.sdk:mcp`, `io.modelcontextprotocol:kotlin-sdk` |
 | JSON-RPC client | **`@solana/web3.js`**, **`@solana/kit`**, **`@solana/rpc`**, **`@solana/spl-token`**, **`viem`**, **`ethers`**, **`@ethersproject/providers`**, **`@ethersproject/contracts`**, **`web3`** | **`web3`**, **`solana`** |  |  |
 | GraphQL client | **`@apollo/client`**, **`apollo-client`**, **`apollo-boost`**, **`@apollo/react-hooks`**, **`react-apollo`**, **`urql`**, **`@urql/core`**, **`@urql/preact`**, **`@urql/svelte`**, **`@urql/vue`**, **`graphql-request`**, **`relay-runtime`**, **`react-relay`** | **`gql`**, **`sgqlc`** |  |  |
-| Shopify | **`@shopify/shopify-api`**, **`@shopify/shopify-app-express`**, **`@shopify/shopify-app-remix`**, **`@shopify/shopify-app-react-router`**, **`@shopify/admin-api-client`**, **`@shopify/storefront-api-client`**, **`shopify-api-node`** | **`ShopifyAPI`** |  |  |
+| Shopify | **`@shopify/shopify-api`**, **`@shopify/shopify-app-express`**, **`@shopify/shopify-app-remix`**, **`@shopify/shopify-app-react-router`**, **`@shopify/admin-api-client`**, **`@shopify/storefront-api-client`**, **`shopify-api-node`**, **`@shopify/hydrogen`** | **`ShopifyAPI`** |  |  |
 | Clerk | `@clerk/backend`, `@clerk/clerk-sdk-node` | `clerk-backend-api` |  | `com.clerk:backend-api` |
 | Algolia | `algoliasearch` | `algoliasearch` | `algolia/algoliasearch-client-php`, `algolia/scout-extended` | `com.algolia:algoliasearch`, `com.algolia:algoliasearch-client-kotlin` |
 | Unsplash | `unsplash-js` |  | `unsplash/unsplash` |  |

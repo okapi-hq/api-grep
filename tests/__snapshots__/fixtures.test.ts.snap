@@ -9515,11 +9515,15 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 43,
+    "filesSeen": 45,
     "languages": {
+      "javascript": {
+        "filesScanned": 0,
+        "filesSeen": 1,
+      },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 43,
+        "filesSeen": 44,
       },
     },
     "skipped": [
@@ -9616,6 +9620,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "shopify-rest/admin.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-rest/legacy.js",
+        "reason": "excluded",
+      },
+      {
         "file": "supabase/client.ts",
         "reason": "excluded",
       },
@@ -9665,7 +9677,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 35,
+      "excluded": 37,
     },
     "unfollowed": [],
   },

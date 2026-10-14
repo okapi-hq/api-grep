@@ -22,12 +22,12 @@ exports[`regression fixtures > graphql 1`] = `
   "github-standalone.ts:4 github POST /graphql LatestRelease",
   "github.ts:6 github POST /graphql OpenIssues",
   "github.ts:14 github POST /graphql viewer",
-  "orders.ts:6 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetOrder",
-  "orders.ts:14 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json locations,shop",
-  "orders.ts:22 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json CancelOrder",
-  "orders.ts:35 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json OrderTotals",
-  "orders.ts:46 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct",
-  "orders.ts:54 example-shop.myshopify.com POST /admin/api/2024-01/graphql.json GetProduct (wrapper:shopify)",
+  "orders.ts:6 shopify POST /admin/api/2024-01/graphql.json GetOrder",
+  "orders.ts:14 shopify POST /admin/api/2024-01/graphql.json locations,shop",
+  "orders.ts:22 shopify POST /admin/api/2024-01/graphql.json CancelOrder",
+  "orders.ts:35 shopify POST /admin/api/2024-01/graphql.json OrderTotals",
+  "orders.ts:46 shopify POST /admin/api/2024-01/graphql.json GetProduct",
+  "orders.ts:54 shopify POST /admin/api/2024-01/graphql.json GetProduct (wrapper:shopify)",
   "profile.ts:11 api.example-store.com POST /graphql GetProfile",
   "profile.ts:13 api.example-store.com POST /search",
   "transport.ts:4 api.example-store.com POST /graphql GetCart",
@@ -72,6 +72,20 @@ exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
+[
+  "routes.tsx:9 shopify POST /api/{version}/graphql.json TeaDetails",
+  "routes.tsx:10 shopify POST /api/{version}/graphql.json RelatedTeas (wrapper:relatedTeas)",
+  "routes.tsx:14 shopify POST /api/{version}/graphql.json TeaCollections",
+  "routes.tsx:19 shopify POST /api/{version}/graphql.json ShopInfo",
+  "routes.tsx:23 shopify POST /api/{version}/graphql.json RelatedTeas",
+  "routes.tsx:27 shopify POST /{shopId}/account/customer/api/{version}/graphql SaveTeaPreference",
+  "routes.tsx:28 shopify POST /{shopId}/account/customer/api/{version}/graphql CustomerName",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/hydrogen-undeclared 1`] = `[]`;
+
 exports[`regression fixtures > graphql-clients/relay 1`] = `
 [
   "fetchGraphQL.ts:2 api.example-garden.dev POST /graphql null",
@@ -83,6 +97,17 @@ exports[`regression fixtures > graphql-clients/relay 1`] = `
   "Garden.tsx:25 api.example-garden.dev POST /graphql ForecastQuery",
   "Garden.tsx:28 unknown POST / FrostAlertSubscription",
   "RelayEnvironment.ts:4 api.example-garden.dev POST /graphql null (wrapper:fetchGraphQL)",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-containers 1`] = `
+[
+  "environment.js:4 api.example-orchard.dev POST /graphql null",
+  "Orchard.js:7 api.example-orchard.dev POST /graphql OrchardQuery",
+  "Orchard.js:18 api.example-orchard.dev POST /graphql HarvestQuery",
+  "Orchard.js:20 api.example-orchard.dev POST /graphql SeasonQuery",
+  "Orchard.js:25 api.example-orchard.dev POST /graphql TreeDetailsRefetchQuery",
+  "Orchard.js:31 api.example-orchard.dev POST /graphql TreeListPaginationQuery",
 ]
 `;
 
@@ -103,6 +128,16 @@ exports[`regression fixtures > graphql-clients/shopify 1`] = `
   "sync.ts:7 shopify POST /admin/api/2024-07/graphql.json RecentOrders",
   "sync.ts:12 shopify POST /admin/api/{version}/graphql.json TagOrder",
   "sync.ts:17 shopify POST /api/2024-07/graphql.json Menu",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/shopify-factories 1`] = `
+[
+  "handlers.js:6 shopify POST /admin/api/{version}/graphql.json ShopName",
+  "handlers.js:12 shopify POST /admin/api/{version}/graphql.json KiteList",
+  "handlers.js:17 shopify POST /api/{version}/graphql.json NewCart",
+  "store-client.js:12 shopify POST /admin/api/2024-10/graphql.json ThemeList",
+  "store-client.js:27 shopify POST /admin/api/2024-10/graphql.json ThemeList (wrapper:StoreClient.graphql)",
 ]
 `;
 
@@ -1244,6 +1279,24 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sgqlc-helpers 1`] = `
+[
+  "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
+  "orchard.py:35 unknown POST / harvest",
+]
+`;
+
+exports[`regression fixtures > python/shopify-rest 1`] = `
+[
+  "store.py:11 shopify GET /admin/api/{version}/shop.json",
+  "store.py:15 shopify GET /admin/api/{version}/orders.json",
+  "store.py:19 shopify GET /admin/api/{version}/orders/{id}.json",
+  "store.py:23 shopify GET /admin/api/{version}/products/count.json",
+  "store.py:27 shopify POST /admin/api/{version}/pages.json",
+  "store.py:31 shopify DELETE /admin/api/{version}/webhooks/{id}.json",
+]
+`;
+
 exports[`regression fixtures > python/soap 1`] = `
 [
   "carrier.py:18 ws.example-carrier.com POST /track/v2 CancelShipment",
@@ -1742,6 +1795,24 @@ exports[`regression fixtures > sdk/sentry 1`] = `
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-rest 1`] = `
+[
+  "admin.ts:9 shopify GET /admin/api/2024-07/orders.json",
+  "admin.ts:14 shopify PUT /admin/api/{version}/products/{id}.json",
+  "admin.ts:18 shopify GET /admin/api/{version}/products/count.json",
+  "admin.ts:22 shopify GET /admin/api/{version}/variants/{id}.json",
+  "admin.ts:27 shopify GET /admin/api/2024-10/locations.json",
+  "admin.ts:29 shopify POST /admin/api/2024-10/redirects.json",
+  "legacy.js:6 shopify GET /admin/api/2024-07/products.json",
+  "legacy.js:7 shopify GET /admin/api/2024-07/products/count.json",
+  "legacy.js:12 shopify PUT /admin/api/2024-07/products/{id}.json",
+  "legacy.js:16 shopify GET /admin/api/2024-07/products/{product_id}/images.json",
+  "legacy.js:20 shopify POST /admin/api/2024-07/orders/{id}/close.json",
+  "legacy.js:25 shopify POST /admin/api/2024-07/customers.json",
+  "legacy.js:33 shopify POST /admin/api/2024-07/customers.json (wrapper:newCustomer)",
 ]
 `;
 
