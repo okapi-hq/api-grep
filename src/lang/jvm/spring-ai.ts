@@ -135,14 +135,6 @@ function configured(keys: string[], fn: FunctionDef, ctx: IrCtx, edit?: (t: stri
   return undefined;
 }
 
-/** `bedrock-runtime.{region}.amazonaws.com` with the region the configuration sets. */
-function regional(entry: IrRegistryEntry, conf: ConfiguredClient, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
-  const region = conf.region ? configured([conf.region], fn, ctx) : undefined;
-  const [before, after] = entry.host.split("{region}");
-  if (!region || after === undefined) return undefined;
-  return { expr: { k: "tmpl", parts: [{ k: "str", v: `https://${before}` }, region.expr, { k: "str", v: after }] }, fn };
-}
-
 /** The model the code or the configuration sets, else the starter's default for the release the build declares. */
 function modelOf(raw: IrRaw, chain: Chain, model: Chain, here: boolean, ctx: IrCtx): Scoped | undefined {
   const entry = raw.sdk!.entry;
@@ -165,6 +157,6 @@ export function refineConfigured(raw: IrRaw, chain: Chain, ctx: IrCtx): IrRaw | 
   if (conf.elsewhereIf && configured([conf.elsewhereIf], raw.fn, ctx)) return undefined;
   const here = builtHere(model, conf);
   const edit = raw.sdk!.spec.path.startsWith("/v1/") ? withoutV1 : undefined;
-  const baseUrl = here ? builtBaseUrl(model, ctx) : (configured(conf.baseUrl, raw.fn, ctx, edit) ?? regional(entry, conf, raw.fn, ctx));
+  const baseUrl = here ? builtBaseUrl(model, ctx) : configured(conf.baseUrl, raw.fn, ctx, edit);
   return { ...raw, model: raw.model ?? modelOf(raw, chain, model, here, ctx), baseUrl: raw.baseUrl ?? baseUrl };
 }

@@ -3,7 +3,7 @@ import type { Expr, FunctionDef } from "../ir/model.js";
 import { classField, lookup } from "../ir/project.js";
 import type { IrCtx } from "../ir/raw.js";
 import type { Point } from "./di/collections.js";
-import { injectionPoint } from "./di/inject.js";
+import { injectionPoint, springRef } from "./di/inject.js";
 import { springPropertyText } from "./spring-config.js";
 
 /**
@@ -37,8 +37,8 @@ export function sourcePoint(start: Expr, fn: FunctionDef, ctx: IrCtx): Point | u
       e = next;
       continue;
     }
-    const hit = injectionPoint(e, scope, ctx);
-    if (hit) return hit.at;
+    const hit = e.k === "call" ? springRef(e, scope, ctx) : injectionPoint(e, scope, ctx)?.at;
+    if (hit) return hit;
     const value = valueOf(e, scope, ctx);
     if (!value) return undefined;
     ({ expr: e, fn: scope } = value);

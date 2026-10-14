@@ -106,7 +106,6 @@
       "auth": "unknown",
       "packages": ["org.springframework.ai:spring-ai-bedrock-converse", "org.springframework.ai:spring-ai-starter-model-bedrock-converse", "org.springframework.ai:spring-ai-bedrock-converse-spring-boot-starter"],
       "own": ["org.springframework.ai.bedrock.converse"],
-      "region": "spring.ai.bedrock.aws.region",
       "kinds": {
         "chat": { "classes": ["BedrockProxyChatModel"], "path": "/model/{modelId}/converse", "streamPath": "/model/{modelId}/converse-stream", "operationId": "Converse", "prefix": "spring.ai.bedrock.converse.chat" }
       }

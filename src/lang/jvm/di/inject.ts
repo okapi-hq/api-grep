@@ -6,7 +6,7 @@ import { classField, lookup, receiverClass } from "../../ir/project.js";
 import type { IrCtx } from "../../ir/raw.js";
 import { candidates, collected, everyBinding, type Point } from "./collections.js";
 import { configurationProperties } from "./config-props.js";
-import { diIndex, koinQualifiers, managedBy, names, PROVIDES, qualifiers, type Framework, type Provider } from "./providers.js";
+import { diIndex, koinQualifiers, managedBy, names, PROVIDES, qualifiers, stringArg, type Framework, type Provider } from "./providers.js";
 import { generic } from "./types.js";
 
 /**
@@ -165,8 +165,30 @@ function heldValue(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefi
   return valueFor(g.arg, point.at, point.fn, ctx);
 }
 
+/**
+ * Spring's Kotlin beans DSL (`beans { bean { ref<ChatClient>() } }`, #96): `ref<T>()` or `ref<T>("name")`, in a file
+ * importing the DSL; the point it stands for.
+ */
+export function springRef(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Point | undefined {
+  if (call.fn.k !== "name" || call.fn.name !== "ref" || call.typeArgs?.length !== 1 || call.args.length > 1) return undefined;
+  if (lookup("ref", fn, call.pos.offset, ctx.idx).kind === "function") return undefined;
+  const dsl = lookup("beans", fn, call.pos.offset, ctx.idx);
+  if (dsl.kind !== "external" || dsl.path.join(".") !== "org.springframework.context.support.beans") return undefined;
+  const name = call.args[0] ? stringArg(call.args, fn, ctx, ["name"]) : undefined;
+  if (call.args[0] && name === undefined) return undefined;
+  return { framework: "spring", quals: name !== undefined ? [`named:${name}`] : [] };
+}
+
+/** `ref<ChatClient>()` that no project bean answers: a bean of that type the framework or a starter makes. */
+function lookupType(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Expr | undefined {
+  const at = springRef(call, fn, ctx);
+  return at && !provided(call.typeArgs![0], at, fn, ctx) ? call.typeArgs![0] : undefined;
+}
+
 /** `get<HttpClient>()`, `inject<Api>(named("x"))`, `val client: HttpClient by inject()` (typed when lowered). */
 function injectedCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const ref = springRef(call, fn, ctx);
+  if (ref) return provided(call.typeArgs![0], ref, fn, ctx);
   if (injektLookup(call, fn, ctx)) return provided(call.typeArgs?.[0], { framework: "injekt", quals: [] }, fn, ctx);
   if (koinGetAll(call, fn, ctx)) return everyBinding(call.typeArgs![0]!, { framework: "koin", quals: [] }, fn, ctx);
   if (!koinGet(call) || !call.typeArgs?.[0] || call.fn.k !== "name") return heldValue(call, fn, ctx);
@@ -190,4 +212,4 @@ function injektLookup(call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
   return b?.kind === "external" && b.path.slice(0, 3).join(".") === "uy.kohesive.injekt";
 }
 
-export const JVM_INJECTION: IrInjection = { param: injectedParam, field: injectedField, call: injectedCall };
+export const JVM_INJECTION: IrInjection = { param: injectedParam, field: injectedField, call: injectedCall, lookupType };

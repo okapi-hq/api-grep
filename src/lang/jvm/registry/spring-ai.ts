@@ -35,7 +35,6 @@ interface Provider {
   packages: string[];
   own: string[];
   baseUrl?: string;
-  region?: string;
   vertexIf?: string;
   kinds: Record<string, ProviderKind>;
 }
@@ -78,7 +77,6 @@ function entry(p: Provider, pkg: string, kindName: string, k: ProviderKind): IrR
       baseUrl: [`${k.prefix}.base-url`, ...(p.baseUrl ? [p.baseUrl] : [])],
       id: p.id,
       bean: k.bean ?? lowerFirst(classes[0]!),
-      ...(p.region ? { region: p.region } : {}),
       ...(p.vertexIf ? { elsewhereIf: p.vertexIf } : {}),
     },
   } as IrRegistryEntry;
