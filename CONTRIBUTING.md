@@ -117,7 +117,11 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
    `clientArg`, `headersArg` and `endpointFirst` are method flags for them. A transport listed by its dotted name
    with `fetchIn` is a function the app writes, whose one `fetch` gives the URL, and `contextClient` makes a client
    argument the scan cannot read the project's one client, as in [`relay.json`](src/detect/registry/relay.json);
-   `documentProp` names the property of the argument holding the document (Shopify `query({ data })`). A JSON-RPC client library is the same
+   `documentProp` names the property of the argument holding the document (Shopify `query({ data })`); `components` lists
+   JSX components that send a request (Relay `QueryRenderer`, their `props` as arguments) and `contextClients` the
+   clients a framework hands to handlers by name (Hydrogen `context.storefront`). `bodyWrap` sends the body under a key,
+   `argPath` switches the path when an argument is given, and `callersOnly` keeps a registry of common method names
+   (`order.list`) out of the manifest fallback for untyped parameters (#83). A JSON-RPC client library is the same
    under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in

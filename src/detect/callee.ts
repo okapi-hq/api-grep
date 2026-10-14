@@ -2,6 +2,7 @@ import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expres
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, type FunctionLike } from "../ast/function.js";
+import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
 import type { Callee } from "../types.js";
 import { annotatedPackage } from "./type-annotation.js";
@@ -71,32 +72,54 @@ function calleeFromChain(mc: Chain, depth: number): Callee {
   return typeFallback(mc, 0);
 }
 
-/** `const api = createClient()` where the local factory returns `axios.create(...)` / `new Stripe(...)`. */
-function factoryReturn(inner: Callee, depth: number): Callee | undefined {
-  const fn = inner.localDecl;
-  if (!fn || inner.chain.length > 0 || depth > MAX_DEPTH) return undefined;
-  if (!Node.isFunctionDeclaration(fn) && !Node.isArrowFunction(fn) && !Node.isFunctionExpression(fn) && !Node.isMethodDeclaration(fn)) return undefined;
-  const body = fn.getBody();
-  const returned = body && Node.isExpression(body) ? [body] : body?.getDescendantsOfKind(SyntaxKind.ReturnStatement).map((r) => r.getExpression()) ?? [];
+/** The call or construction an expression is, or the one a local variable it names was initialized with. */
+function constructed(expr: Expression | undefined): CallExpression | NewExpression | undefined {
+  let u = expr ? unwrap(expr) : undefined;
+  if (u && Node.isIdentifier(u)) {
+    const decl = declarationsOf(u)[0];
+    const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
+    u = init ? unwrap(init) : undefined;
+  }
+  return u && (Node.isCallExpression(u) || Node.isNewExpression(u)) ? u : undefined;
+}
+
+/** The local function a call runs: `make()`, a method of a local class, a member of a local object (`providers.online.make()`). */
+function calledFunction(inner: Callee): FunctionLike | undefined {
+  const own = wrapperFunction(inner);
+  if (own) return own;
+  const decl = inner.localDecl;
+  const member = decl && Node.isVariableDeclaration(decl) && inner.chain.length > 0 ? memberFunction(decl.getInitializer(), inner.chain) : undefined;
+  return isFunctionLike(member) ? member : undefined;
+}
+
+/**
+ * `const api = createClient()` where the local factory returns `axios.create(...)` / `new Stripe(...)`; or an object
+ * holding the client, whose property the caller reads (`const { client } = await providers.online.make()`, where
+ * `make` returns `{ client, session }`).
+ */
+function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | undefined {
+  const fn = depth <= MAX_DEPTH ? calledFunction(inner) : undefined;
+  const body = fn?.getBody?.();
+  if (!body) return undefined;
+  const returned = Node.isExpression(body) ? [body] : body.getDescendantsOfKind(SyntaxKind.ReturnStatement).flatMap((r) => r.getExpression() ?? []);
   for (const expr of returned) {
-    let u = expr ? unwrap(expr) : undefined;
-    if (u && Node.isIdentifier(u)) {
-      const decl = u.getSymbol()?.getDeclarations()[0];
-      const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
-      u = init ? unwrap(init) : undefined;
-    }
-    if (u && (Node.isCallExpression(u) || Node.isNewExpression(u))) {
+    const u = constructed(expr);
+    if (u) {
       const c = describeCallee(u, depth + 1);
-      if (c.package || c.global) return { ...c, instance: { kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] } };
+      if (c.package || c.global) return { ...c, instance: { kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] }, chain };
+      continue;
     }
+    const held = chain.length > 1 ? constructed(getProp(expr, chain[0]!)) : undefined;
+    const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
+    if (c?.package) return c;
   }
   return undefined;
 }
 
 function instanceCallee(init: CallExpression | NewExpression, chain: string[], depth: number): Callee {
   const inner = describeCallee(init, depth + 1);
-  const viaFactory = factoryReturn(inner, depth);
-  if (viaFactory) return { ...viaFactory, chain };
+  const viaFactory = factoryReturn(inner, chain, depth);
+  if (viaFactory) return viaFactory;
   return {
     package: inner.package,
     importedName: inner.importedName,

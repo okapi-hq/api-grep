@@ -33,11 +33,28 @@ const isConstructor = (fn: FunctionDef): boolean => !!fn.cls && (fn.name === "__
  * The method key after an untyped parameter (`client.messages.create(...)`: `messages.create`), when a registry has it.
  * One member (`session.post(url)`) is an HTTP client's verb, listed as `injected-client` instead.
  */
-function receiverKey(chain: Chain, call: CallExpr, ctx: IrCtx): string | undefined {
-  if (chain.root.kind !== "param" || !chain.root.param || chain.segs.length < 2) return undefined;
+function receiverKey(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): string | undefined {
+  if (chain.root.kind !== "param" || !chain.root.param) return undefined;
+  if (chain.segs.length === 0) return sendsBuiltDocument(call, fn, ctx) ? "()" : undefined;
+  if (chain.segs.length < 2) return undefined;
   if (chain.segs[chain.segs.length - 1]!.call !== call) return undefined;
   const key = chain.segs.map((s) => s.name).join(".");
   return ctx.idx.lang.registry.some((e) => Object.hasOwn(e.methods, key)) ? key : undefined;
+}
+
+/**
+ * `endpoint(op)` (#83): a parameter called with a document the library builds as an object (sgqlc's `Operation`) is
+ * an endpoint called directly (the `()` key); called with anything else it is just a callback.
+ */
+function sendsBuiltDocument(call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
+  const lang = ctx.idx.lang;
+  if (!lang.documentOf) return false;
+  return lang.registry.some((e) => {
+    const spec = Object.hasOwn(e.methods, "()") ? e.methods["()"] : undefined;
+    if (spec?.documentArg === undefined) return false;
+    const arg = call.args.find((a) => a.name === (spec.documentKw ?? "document")) ?? call.args.filter((a) => !a.name && !a.spread)[spec.documentArg];
+    return !!arg && lang.documentOf!({ expr: arg.value, fn }, ctx) !== undefined;
+  });
 }
 
 function lastName(e: Expr): string | undefined {
@@ -112,10 +129,12 @@ function fromManifest(key: string, chain: Chain, call: CallExpr, fn: FunctionDef
   if (!declared || declared.size === 0) return undefined;
   const lang = ctx.idx.lang;
   const isDeclared = (e: IrRegistryEntry): boolean => [e.package, ...(e.aliases ?? [])].some((p) => declared.has(lang.normalizePackage(p)));
-  const matches = lang.registry.filter((e) => Object.hasOwn(e.methods, key) && isDeclared(e));
+  const matches = lang.registry.filter((e) => Object.hasOwn(e.methods, key) && !e.callersOnly && isDeclared(e));
   if (new Set(matches.map((e) => e.package)).size !== 1) return undefined;
   const entry = matches[0]!;
-  const raw = detectSdk({ root: { kind: "external" }, segs: [...clientSegs(entry), ...chain.segs] }, call, fn, ctx);
+  // `endpoint(op)`: the client itself is called
+  const called: Seg[] = chain.segs.length > 0 ? chain.segs : [{ name: "()", call, fn }];
+  const raw = detectSdk({ root: { kind: "external" }, segs: [...clientSegs(entry), ...called] }, call, fn, ctx);
   return raw?.sdk?.entry.package === entry.package ? { ...raw, clientFrom: "manifest" } : undefined;
 }
 
@@ -124,7 +143,7 @@ function fromManifest(key: string, chain: Chain, call: CallExpr, fn: FunctionDef
  * the function's callers pass, one level up; else the one SDK the manifests declare with that method; else unknown.
  */
 export function receiverCalls(call: CallExpr, fn: FunctionDef, chain: Chain, ctx: IrCtx, detect: Detect): ReceiverResult | undefined {
-  const key = receiverKey(chain, call, ctx);
+  const key = receiverKey(chain, call, fn, ctx);
   if (!key || chain.root.kind !== "param") return undefined;
   const cacheable = !ctx.subst || ctx.subst.size === 0;
   const cached = cacheable ? RESULTS.get(call) : undefined;
@@ -132,7 +151,9 @@ export function receiverCalls(call: CallExpr, fn: FunctionDef, chain: Chain, ctx
   const { param, fn: owner } = chain.root;
   const raws = param && owner ? fromCallers(call, fn, param, owner, ctx, detect) : [];
   const manifest = raws.length === 0 ? fromManifest(key, chain, call, fn, ctx) : undefined;
-  const result: ReceiverResult = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest };
+  // a key only `callersOnly` registries have (`order.find`) is too common a name to be reported as an unfollowed client
+  const guess = ctx.idx.lang.registry.some((e) => !e.callersOnly && Object.hasOwn(e.methods, key));
+  const result: ReceiverResult = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest && guess };
   if (cacheable) RESULTS.set(call, result);
   return result;
 }

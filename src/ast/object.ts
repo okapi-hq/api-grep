@@ -106,6 +106,24 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
   return undefined;
 }
 
+/**
+ * `providers.online.make` on a local object literal: the function at the end of the member chain, written as a method,
+ * an arrow or function expression, or a function declared elsewhere and listed by name (`{ make }`).
+ */
+export function memberFunction(obj: Expression | undefined, chain: string[]): Node | undefined {
+  const last = chain.at(-1);
+  const owner = chain.slice(0, -1).reduce<Expression | undefined>((e, key) => getProp(e, key), obj);
+  const lit = last !== undefined ? toObjectLiteral(owner) : undefined;
+  const member = lit ? [...lit.getProperties()].reverse().find((m) => propertyKey(m) === last) : undefined;
+  if (!member || Node.isMethodDeclaration(member)) return member;
+  const value = propertyValue(member);
+  const u = value ? unwrap(value) : undefined;
+  if (!u || Node.isArrowFunction(u) || Node.isFunctionExpression(u)) return u;
+  const decl = declarationsOf(u)[0];
+  const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
+  return init ? unwrap(init) : decl;
+}
+
 /** Looks a property up in an (object-literal-resolvable) expression, following spreads; the last definition wins, as at runtime. */
 export function getProp(obj: Expression | undefined, name: string, ctx: EvalCtx = {}, depth = 0): Expression | undefined {
   const lit = toObjectLiteral(obj, ctx, depth);

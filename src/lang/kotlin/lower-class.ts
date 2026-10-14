@@ -28,7 +28,9 @@ function memberNames(n: SyntaxNode): Set<string> {
   const members = bodyOf(n);
   for (const m of [...members, ...members.filter((c) => c.type === "companion_object").flatMap(bodyOf)]) {
     const name = declName(m);
-    if (name) names.add(name);
+    // a member extension (`fun HttpClient.items()`) is a member of its receiver type
+    const extension = m.type === "function_declaration" && named(m).some((c) => c.type.endsWith("_type") && c.startIndex < (field(m, "name")?.startIndex ?? 0));
+    if (name && !extension) names.add(name);
   }
   return names;
 }
@@ -87,7 +89,7 @@ function lowerMember(m: SyntaxNode, ctx: Members): void {
       return lowerMemberProperty(m, ctx.init, ctx.cls, ctx.body);
     case "function_declaration": {
       const fn = lowerFunction(m, ctx.methods, false);
-      if (!ctx.cls.methods.has(fn.name)) ctx.cls.methods.set(fn.name, fn);
+      if (!fn.receiver && !ctx.cls.methods.has(fn.name)) ctx.cls.methods.set(fn.name, fn);
       return;
     }
     case "anonymous_initializer":
@@ -136,7 +138,9 @@ function newClass(n: SyntaxNode, st: KtState, register: boolean): ClassDef {
 }
 
 /** A class, interface, `enum class` or `object`: `<init>` holds the primary constructor and the initializers. */
-function lowerClass(n: SyntaxNode, st: KtState, register: boolean): void {
+function lowerClass(n: SyntaxNode, outer: KtState, register: boolean): void {
+  // a class declared in an extension function: its members' `this` is its own
+  const st: KtState = outer.receiver ? { ...outer, receiver: undefined } : outer;
   const kind = kindOf(n);
   const cls = newClass(n, st, register);
   const init: FunctionDef = newFunction("<init>", st.mod, n, { cls });

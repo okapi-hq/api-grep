@@ -42,3 +42,9 @@ export function jsonToShape(v: unknown): Shape {
   const entries = Object.entries(o).filter(([k]) => isSafeKey(k));
   return { type: "object", properties: Object.fromEntries(entries.map(([k, x]) => [k, jsonToShape(x)])), required: entries.map(([k]) => k) };
 }
+
+/** A body an SDK sends under a key of its own (`bodyWrap`): `{ product: fields }` for `product.create(fields)`. */
+export function wrapShape(shape: Shape | undefined, key: string | undefined): Shape | undefined {
+  if (!shape || !key || !isSafeKey(key)) return shape;
+  return { type: "object", properties: { [key]: shape }, required: [key] };
+}

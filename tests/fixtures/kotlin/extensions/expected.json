@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/86",
+  "calls": [
+    {"file": "Catalog.kt", "line": 16, "provider": "api.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 19, "provider": "api.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 21, "provider": "status.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 23, "provider": "search.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 28, "provider": "status.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 46, "provider": "api.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 48, "provider": "api.catalog-example.com"},
+    {"file": "Catalog.kt", "line": 50, "provider": "status.catalog-example.com"},
+    {"file": "Gallery.kt", "line": 14, "provider": "aws"},
+    {"file": "Gallery.kt", "line": 16, "provider": "aws"},
+    {"file": "Storage.kt", "line": 10, "provider": "aws"},
+    {"file": "Storage.kt", "line": 14, "provider": "aws"},
+    {"file": "Storage.kt", "line": 22, "provider": "aws"},
+    {"file": "Storage.kt", "line": 23, "provider": "aws"}
+  ]
+}

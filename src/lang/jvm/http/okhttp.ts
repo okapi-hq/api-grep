@@ -1,7 +1,7 @@
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { ScopedCall } from "../../ir/fluent.js";
-import { dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
+import { callObject, dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
@@ -140,7 +140,8 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   if (!own && !chainFrom(chain, spec.imports)) return undefined;
   // the client is the library's here when no start was found (`Builder()` imported as `okhttp3.Request.Builder`)
   const parts = readSteps(fc.start ? [fc.start, ...fc.steps] : fc.steps, spec.request);
-  if (spec.interceptors && call.fn.k === "attr") parts.pairs.push(...okHttpClientFacts({ expr: call.fn.obj, fn }, ctx));
+  const client = spec.interceptors ? callObject(call) : undefined;
+  if (client) parts.pairs.push(...okHttpClientFacts({ expr: client, fn }, ctx));
   // `newCall(get("https://..."))`: the factory's parameters read as the arguments of this call
   const inner = withSubst(ctx, fc.subst);
   const raw = ownBodyClass(rawOf(call, fn, spec.client, parts, inner, [request]), inner);

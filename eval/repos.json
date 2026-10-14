@@ -71,5 +71,8 @@
   { "name": "spring-cloud-aws", "url": "https://github.com/awspring/spring-cloud-aws.git", "language": "java" },
   { "name": "aws-sdk-kotlin-spring-example", "url": "https://github.com/hantsy/aws-sdk-kotlin-spring-example.git", "language": "kotlin" },
   { "name": "aws-doc-sdk-examples-kotlin", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "kotlin/services", "language": "kotlin" },
-  { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" }
+  { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" },
+  { "name": "hydrogen-demo-store", "url": "https://github.com/Shopify/hydrogen-demo-store.git" },
+  { "name": "weam", "url": "https://github.com/weam-ai/weam.git", "subdir": "nodejs" },
+  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" }
 ]

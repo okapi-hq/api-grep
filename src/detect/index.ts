@@ -2,6 +2,7 @@ import { Node, SyntaxKind, type CallExpression, type NewExpression, type SourceF
 import type { Callee, EvalCtx, RawCall } from "../types.js";
 import { detectAiSdk } from "./ai-sdk.js";
 import { detectAxios } from "./axios.js";
+import { detectComponents } from "./component.js";
 import { describeCallee, wrapperFunction } from "./callee.js";
 import { detectFetch } from "./fetch.js";
 import { detectFramework } from "./framework.js";
@@ -73,6 +74,11 @@ export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf, 
       candidates.push({ node, callee });
       continue;
     }
+    const fromContext = receivers?.contextCall(node, callee);
+    if (fromContext) {
+      calls.push(fromContext);
+      continue;
+    }
     const receiver = receivers ? receiverOf(node, callee, registry) : undefined;
     if (receiver) {
       const r = receivers!.resolve(node, receiver);
@@ -83,5 +89,6 @@ export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf, 
     const u = unfollowedFetch(node, callee);
     if (u) unfollowed.push(u);
   }
+  calls.push(...detectComponents(root, registry));
   return { calls, candidates, unfollowed };
 }

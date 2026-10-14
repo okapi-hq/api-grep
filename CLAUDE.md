@@ -94,7 +94,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `src/detect/fetch-endpoint.ts`; compiled artifacts in `src/resolve/relay-artifact.ts`), Python `sgqlc` (the endpoint
   object called directly, key `()`; `Operation` documents read by the Python front end's `documentOf`,
   `src/lang/python/sgqlc.ts`) and Shopify's clients, registries of the `shopify` provider with `documentArg`, as
-  Octokit's `graphql`. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
+  Octokit's `graphql`. #83: `.myshopify.com` names the `shopify` provider; clients a factory returns in an object
+  (`factoryReturn` in `src/detect/callee.ts`) or a constructor keeps in a field (`fieldReceiver`, `src/detect/receiver.ts`);
+  Hydrogen's context clients (`contextClients` in `hydrogen.json`, `ReceiverResolver.contextCall`); Shopify REST
+  resources (`bodyWrap`, `argPath`; `callersOnly` keeps common resource names from the manifest fallback); Relay
+  `loadQuery`, containers and `<QueryRenderer>` (a registry's JSX `components`, `src/detect/component.ts`); sgqlc
+  endpoints given as parameters (key `()` when called with an `Operation`) and selections made by helpers. JSON-RPC client libraries (#52: `@solana/web3.js` and `@solana/kit`, viem, ethers,
   web3.js, web3.py, solana-py) work the same way under the `anyHost` provider `json-rpc`, each method naming the RPC
   method it sends (`rpc`, or `rpcArg` for `send(method, params)`; `rpcClientOperation` in `json-rpc.ts`); their
   `endpoint.nonHttp` lists wallet and socket constructions, and a call is reported only when its client reads as HTTP
@@ -157,6 +162,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   done; so is #75 (`Lazy<T>` / `Provider<T>` holders, multibinding sets and Spring `List<T>` in
   `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of
   injected collections in `src/lang/jvm/elements.ts`); `@ConfigurationProperties` and the remaining forms are #94.
+  Calls in extension functions of a client type (#86: `FunctionDef.receiver`, `implicit` names, the extension a call
+  runs in `src/lang/ir/extensions.ts`) are done.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,
   JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`, Lombok builders and getters, Kotlin `map["k"] = v`) are
   done; so is #73 (requests started in branches: one call per start, `fluentChains` in `src/lang/ir/fluent-chain.ts`,

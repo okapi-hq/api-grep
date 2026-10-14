@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/83",
+  "calls": [
+    {"file": "store.py", "line": 11, "provider": "shopify"},
+    {"file": "store.py", "line": 15, "provider": "shopify"},
+    {"file": "store.py", "line": 19, "provider": "shopify"},
+    {"file": "store.py", "line": 23, "provider": "shopify"},
+    {"file": "store.py", "line": 27, "provider": "shopify"},
+    {"file": "store.py", "line": 31, "provider": "shopify"}
+  ]
+}

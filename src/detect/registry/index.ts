@@ -41,6 +41,7 @@ import shopifyApi from "./shopify-api.json" with { type: "json" };
 import shopifyAdminApiClient from "./shopify-admin-api-client.json" with { type: "json" };
 import shopifyStorefrontApiClient from "./shopify-storefront-api-client.json" with { type: "json" };
 import shopifyApiNode from "./shopify-api-node.json" with { type: "json" };
+import hydrogen from "./hydrogen.json" with { type: "json" };
 import solanaWeb3 from "./solana-web3.json" with { type: "json" };
 import viem from "./viem.json" with { type: "json" };
 import ethers from "./ethers.json" with { type: "json" };
@@ -80,8 +81,8 @@ export function defaultRegistry(): Registry {
   entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);
   // GraphQL clients of any API (#54)
   entries.push(apolloClient, urql, graphqlRequest, relay);
-  // Shopify's GraphQL clients (#67)
-  entries.push(shopifyApi, shopifyAdminApiClient, shopifyStorefrontApiClient, shopifyApiNode);
+  // Shopify's GraphQL and REST clients (#67, #83)
+  entries.push(shopifyApi, shopifyAdminApiClient, shopifyStorefrontApiClient, shopifyApiNode, hydrogen);
   // JSON-RPC clients of any node (#52)
   entries.push(solanaWeb3, splToken, viem, ethers, web3);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
