@@ -5,6 +5,7 @@ import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types
 import { describeCallee } from "./callee.js";
 import { innerValues } from "./client-cache.js";
 import { fetchEndpoint } from "./fetch-endpoint.js";
+import { agreedEndpoint } from "./rpc-cache.js";
 
 /**
  * The endpoint of a GraphQL client call (#54): the URL and headers given to the client's constructor
@@ -186,6 +187,8 @@ export function clientEndpoint(node: Node, reg: RegistryEntry, spec: MethodSpec,
     // an Apollo hook's `client` option names another client than the project's; Relay's environment is the app's
     if (given && !reg.endpoint.contextClient) return {};
   }
+  // a client from a cache (#85): the endpoint every cached client agrees on
+  if (callee.cached) return agreedEndpoint(callee.cached.values.map((c) => fromClient(calledName(c) ?? "", argsOf(c), reg)), callee.cached.keyed);
   for (const inst of [callee.instance, callee.rootInstance]) {
     // a default import (`import ApolloClient from "apollo-boost"`) has an empty chain
     const ctor = inst ? (inst.chain.at(-1) ?? "default") : undefined;

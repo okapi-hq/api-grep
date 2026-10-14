@@ -1,5 +1,5 @@
 import path from "node:path";
-import { Node, SyntaxKind, type BindingElement, type Expression, type Project } from "ts-morph";
+import { Node, SyntaxKind, type Expression, type Project } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import { declarationsOf } from "../ast/object.js";
 import { readConfigFile } from "../files.js";
@@ -52,11 +52,12 @@ function importedJson(u: Expression): { file: string; key?: string } | undefined
     return init && Node.isCallExpression(unwrap(init)) ? importedJson(unwrap(init)) : undefined;
   }
   // `const { abi } = require("./Token.json")`
-  const owner = decl && Node.isBindingElement(decl) && !decl.getDotDotDotToken() ? decl.getParent().getParent() : undefined;
-  if (owner && Node.isVariableDeclaration(owner)) {
+  const binding = decl && Node.isBindingElement(decl) && !decl.getDotDotDotToken() ? decl : undefined;
+  const owner = binding?.getParent().getParent();
+  if (binding && owner && Node.isVariableDeclaration(owner)) {
     const init = owner.getInitializer();
     const file = init && Node.isCallExpression(unwrap(init)) ? importedJson(unwrap(init)) : undefined;
-    const key = (decl as BindingElement).getPropertyNameNode()?.getText() ?? (decl as BindingElement).getName();
+    const key = binding.getPropertyNameNode()?.getText() ?? binding.getName();
     return file && !file.key ? { file: file.file, key } : undefined;
   }
   if (!decl || (!Node.isImportClause(decl) && !Node.isImportSpecifier(decl))) return undefined;

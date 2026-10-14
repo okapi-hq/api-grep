@@ -5,7 +5,7 @@ import { isFunctionLike, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
 import type { Callee, InstanceInfo } from "../types.js";
-import { cacheRead, cachedClients } from "./client-cache.js";
+import { cacheRead, cachedClients, returnsOf } from "./client-cache.js";
 import { annotatedPackage } from "./type-annotation.js";
 import { typechainContract } from "./typechain.js";
 
@@ -116,7 +116,7 @@ function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | 
     const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
     if (c?.package) return c;
   }
-  return fromCache(returned, chain, depth);
+  return fn ? fromCache(returnsOf(fn), chain, depth) : undefined;
 }
 
 const instanceOf = (u: CallExpression | NewExpression, c: Callee): InstanceInfo => ({ kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] });

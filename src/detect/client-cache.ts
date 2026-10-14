@@ -28,6 +28,8 @@ interface Walk {
   left: number;
   seen: Set<Node>;
   keyed: boolean;
+  /** A cache was read on the way: a helper that only builds a client is not one (callers handle those). */
+  cache: boolean;
 }
 
 /** The declaration an identifier names, through an import. */
@@ -138,6 +140,7 @@ export function cacheRead(c: CallExpression): VariableDeclaration | undefined {
 }
 
 function fromCache(decl: VariableDeclaration, key: Node | undefined, w: Walk, depth: number): Built[] | undefined {
+  w.cache = true;
   if (key && !Node.isStringLiteral(key) && !Node.isNumericLiteral(key) && !Node.isNoSubstitutionTemplateLiteral(key)) w.keyed = true;
   const writes = cacheWrites(decl);
   return writes ? all(writes, w, depth) : undefined;
@@ -201,9 +204,9 @@ export function cachedClients(e: Expression): ClientValues | undefined {
   const u = unwrap(e);
   const local = Node.isCallExpression(u) && (cacheRead(u) || localFunction(u));
   if (!local && !Node.isElementAccessExpression(u) && !Node.isIdentifier(u)) return undefined;
-  const w: Walk = { left: MAX_VISITS, seen: new Set(), keyed: false };
+  const w: Walk = { left: MAX_VISITS, seen: new Set(), keyed: false, cache: false };
   const values = walk(u, w, 0);
-  if (!values || values.length === 0) return undefined;
+  if (!values || values.length === 0 || !w.cache) return undefined;
   // the same construction reached twice is one candidate
   return { values: [...new Set(values)], keyed: w.keyed };
 }

@@ -3,13 +3,12 @@ import { memberChain, unwrap } from "../ast/expr.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
 import { cachedEndpoint } from "./rpc-cache.js";
-import { componentEndpoint, configEndpoint, optionValues } from "./rpc-config.js";
+import { componentEndpoint, configEndpoint, optionValues, ownConstruction, providedEndpoint } from "./rpc-config.js";
 import { urlOrNetwork, vendorEndpoint } from "./rpc-vendor.js";
 import {
   argsOf,
   at,
   calledName,
-  constructionOf,
   fromTransport,
   MAX_DEPTH,
   MAX_VISITS,
@@ -78,6 +77,9 @@ export function fromRpcClient(name: string, args: Expression[], reg: RegistryEnt
  * none and the library also talks to wallets.
  */
 function projectRpcEndpoint(project: Project, reg: RegistryEntry): Endpoint | null {
+  // the clients the app hands its context provider (`<WagmiProvider config>`, #85), when it renders one
+  const provided = providedEndpoint(project, reg);
+  if (provided !== undefined) return provided;
   const spec = reg.endpoint!;
   const nonHttp = spec.nonHttp ?? [];
   const marks = spec.clientPackage ? [spec.clientPackage] : [reg.package, ...(reg.aliases ?? [])];
@@ -147,7 +149,8 @@ export function rpcEndpoint(node: Construction, reg: RegistryEntry, spec: Method
   };
   const client = given ?? (spec.clientArg !== undefined ? at(args, spec.clientArg) : undefined);
   if (client) {
-    const c = constructionOf(client, reg);
+    const c = ownConstruction(client, reg);
+    if (c === null) return null;
     return c ? built(calledName(c) ?? "", argsOf(c)) : cachedProjectEndpoint(node.getProject(), reg);
   }
   // a client from a cache (#85): every value it may hold; none read as a guess

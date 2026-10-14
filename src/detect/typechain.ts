@@ -29,8 +29,10 @@ export function typechainContract(init: CallExpression | NewExpression, chain: s
   const name = owner.chain.at(-1) ?? (Node.isIdentifier(owner.root) ? owner.root.getText() : "");
   if (!FACTORY.test(name)) return undefined;
   const [address, runner] = init.getArguments() as Expression[];
+  if (!address) return undefined;
   // no ABI to read: the call itself, which `contract-abi` reads as none
   const abi = (Node.isIdentifier(owner.root) && owner.chain.length === 0 ? factoryAbi(owner.root) : undefined) ?? init;
-  if (!address || !runner) return undefined;
-  return { package: "ethers", importedName: "Contract", instance: { kind: "new", chain: ["Contract"], args: [address, abi, runner] }, chain };
+  // a contract on no runner sends nothing
+  const args = runner ? [address, abi, runner] : [address, abi];
+  return { package: "ethers", importedName: "Contract", instance: { kind: "new", chain: ["Contract"], args }, chain };
 }

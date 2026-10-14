@@ -55,6 +55,11 @@ describe("wagmi (#85)", () => {
     ]);
     expect((await scanFixture("rpc-clients/wagmi-wallet")).calls).toEqual([]);
   });
+
+  it("hooks use the config the app gives <WagmiProvider>: one built by another library is not read", async () => {
+    const r = await scanFixture("rpc-clients/wagmi-provided");
+    expect(r.calls.map((c) => [c.location.line, c.provider, c.operation?.name])).toEqual([[22, "reader.example-node.io", "eth_blockNumber"]]);
+  });
 });
 
 describe("contracts reached in other ways (#85)", () => {

@@ -107,7 +107,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `*` for the ABI's function (`Contract.*`, `methods.*.call`, `eth.contract.functions.*.call`; `notFunctions` lists
   the object's own members); ethers' runner and ABI decide what a direct call sends (`src/detect/rpc-contract.ts`,
   `contract-abi.ts`, `endpoint.signers`); vendor providers build their host from the network (`endpoint.clients.*.vendor`,
-  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`.
+  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`. #85: clients
+  from a cache a helper fills (`src/detect/client-cache.ts`, `rpc-cache.ts`, `Callee.cached`: one endpoint only when
+  every cached client agrees), a context object or provider (`useConnection()`, `endpoint.clients.*.component`), wagmi
+  configs (`wagmi.json`, `src/detect/rpc-config.ts`: `config`, `deep` transports), TypeChain factories
+  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

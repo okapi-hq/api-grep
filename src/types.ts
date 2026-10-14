@@ -245,6 +245,11 @@ export interface EndpointSpec {
    * prop): one the scan cannot read is the project's one client, as for a call that names none.
    */
   contextClient?: boolean;
+  /**
+   * The component that hands the app's client down to its hooks (`<WagmiProvider config={config}>`, #85): a call that
+   * names no client uses the ones the project gives it, when it renders it.
+   */
+  contextProvider?: { name: string; prop: string };
 }
 
 export interface RegistryEntry {

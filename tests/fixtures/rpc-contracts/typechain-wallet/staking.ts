@@ -20,3 +20,8 @@ export async function claim(staking: Contract) {
 export async function exit(staking: Contract) {
   return staking.connect(await wallet.getSigner()).exit();
 }
+
+export async function unbound(address: string) {
+  // a contract on no runner cannot send
+  return Staking__factory.connect(address).totalStaked();
+}

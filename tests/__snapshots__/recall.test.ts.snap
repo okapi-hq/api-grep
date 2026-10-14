@@ -61,6 +61,12 @@ exports[`regression fixtures > graphql-clients/apollo-clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/cached 1`] = `
+[
+  "regions.ts:25 unknown POST / Products",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
 [
   "radar.ts:8 graph.example-weather.net POST /v2/graphql Radar",
@@ -1573,6 +1579,12 @@ exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
   "prices.ts:6 unknown POST / eth_blockNumber",
   "prices.ts:7 unknown POST / eth_gasPrice",
   "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-provided 1`] = `
+[
+  "providers.tsx:22 reader.example-node.io POST /rpc eth_blockNumber",
 ]
 `;
 

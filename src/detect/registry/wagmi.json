@@ -19,7 +19,8 @@
     },
     "transports": {"http": {"url": "0", "headers": "1.fetchOptions.headers"}},
     "nonHttp": ["custom", "webSocket", "unstable_connector", "ipc"],
-    "types": ["Config", "PublicClient", "Client"]
+    "types": ["Config", "PublicClient", "Client"],
+    "contextProvider": {"name": "WagmiProvider", "prop": "config"}
   },
   "methods": {
     "call": {"method": "POST", "path": "", "rpc": "eth_call", "bodyArg": 0, "clientFirst": true},
