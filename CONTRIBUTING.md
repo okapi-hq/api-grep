@@ -275,5 +275,9 @@ The report is a contract other tools read. Its source is [`src/report/schema.ts`
    same checks. If a registry or `providers.json` changed, run `pnpm gen:support` (a test fails
    when `docs/sdk-support.md` is stale).
 4. Explain *why* in the description, and include before/after output when the report changes.
+5. Title the pull request and its commits as [Conventional Commits](https://www.conventionalcommits.org):
+   releases are automatic and read them. `fix:` makes a patch, `feat:` a minor, `feat!:` or a
+   `BREAKING CHANGE:` footer a major (a report schema major is one); `docs:`, `chore:`, `test:` and
+   `refactor:` make none. Nobody bumps the version by hand.
 
 By contributing, you agree that your contributions are licensed under the [MIT License](LICENSE).
