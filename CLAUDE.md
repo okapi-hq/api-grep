@@ -107,7 +107,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `*` for the ABI's function (`Contract.*`, `methods.*.call`, `eth.contract.functions.*.call`; `notFunctions` lists
   the object's own members); ethers' runner and ABI decide what a direct call sends (`src/detect/rpc-contract.ts`,
   `contract-abi.ts`, `endpoint.signers`); vendor providers build their host from the network (`endpoint.clients.*.vendor`,
-  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`.
+  `src/detect/rpc-vendor.ts`); web3.py properties are `property` entries, lowered as `FunctionDef.reads`. #85: clients
+  from a cache a helper fills (`src/detect/client-cache.ts`, `rpc-cache.ts`, `Callee.cached`: one endpoint only when
+  every cached client agrees), a context object or provider (`useConnection()`, `endpoint.clients.*.component`), wagmi
+  configs (`wagmi.json`, `src/detect/rpc-config.ts`: `config`, `deep` transports), TypeChain factories
+  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
@@ -156,8 +160,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   2.x registries, its requests built by lambdas that assign properties: `FunctionDef.props`, S3 from the SDK for
   Java 1.x). #50 adds openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend and
   Mailgun, the registry fields `argFields`, `bodySelf`, `urlArg`, `setupUrl` (`src/lang/ir/setup.ts`),
-  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`; Spring AI
-  and the remaining forms are #89. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`. #89 adds
+  Spring AI (`src/lang/jvm/registry/spring-ai.json` / `.ts`, registry field `configured`, the language hook `refineSdk`
+  in `src/lang/jvm/spring-ai.ts`, Spring Boot `application.yml` / `.properties` read by `src/lang/jvm/spring-config.ts`),
+  `methodFrom` (SendGrid), fluent maps with constructor `args` and `setterCase` (Azure options), `setters.putters`
+  (supabase-kt lambdas), Kotlin property reads (`src/lang/kotlin/property-reads.ts`) and builders filled across
+  functions; what it leaves is #96. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; so is #75 (`Lazy<T>` / `Provider<T>` holders, multibinding sets and Spring `List<T>` in
   `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of

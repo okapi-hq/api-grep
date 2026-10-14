@@ -92,9 +92,22 @@ function evalAttr(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: n
   return dyn(e, objParam ? "param" : "unknown");
 }
 
-/** `config.BASE_URL` (a project module), `Settings.API` / `self::BASE` (a class constant). */
+/** What `Settings`, `config` or `Db.Column` (a class nested in a project class: Kotlin `object`s, Java static classes) names. */
+function ownerOf(obj: Expr, fn: FunctionDef, at: number, ctx: IrCtx): Binding | undefined {
+  if (obj.k === "name") return lookup(obj.name, fn, at, ctx.idx);
+  if (obj.k === "qname") return bindingOfPath(obj.path, ctx.idx);
+  if (obj.k !== "attr") return undefined;
+  const outer = ownerOf(obj.obj, fn, at, ctx);
+  if (outer?.kind !== "class") return undefined;
+  const mod = outer.cls.module;
+  const key = mod.name && outer.cls.qname.startsWith(`${mod.name}.`) ? outer.cls.qname.slice(mod.name.length + 1) : outer.cls.qname;
+  const inner = mod.classes.get(`${key}.${obj.name}`);
+  return inner ? { kind: "class", cls: inner } : undefined;
+}
+
+/** `config.BASE_URL` (a project module), `Settings.API` / `self::BASE` (a class constant), `Db.Column.TEXT`. */
 function memberValue(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] | undefined {
-  const owner = e.obj.k === "name" ? lookup(e.obj.name, fn, e.pos.offset, ctx.idx) : e.obj.k === "qname" ? bindingOfPath(e.obj.path, ctx.idx) : undefined;
+  const owner = ownerOf(e.obj, fn, e.pos.offset, ctx);
   if (owner?.kind === "module") {
     const b = moduleMember(owner.mod, e.name, ctx.idx);
     if (b.kind === "value") return markConst(evaluate(b.assign.value, b.fn, ctx, depth + 1));

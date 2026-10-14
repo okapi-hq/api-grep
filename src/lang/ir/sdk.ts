@@ -236,7 +236,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
     const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
     const headers = [endpoint?.headers, m.spec.headersArg !== undefined ? argOf(m.method, m.spec.headersArg, "headers") : undefined].filter((h): h is Scoped => !!h);
     const args = m.segs.flatMap((s) => (s.call && s.fn ? s.call.args.map((a) => ({ expr: a.value, fn: s.fn! })) : []));
-    return {
+    const raw: IrRaw = {
       call,
       fn,
       client: "sdk",
@@ -250,6 +250,8 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
       model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,
     };
+    const refined = ctx.idx.lang.refineSdk ? ctx.idx.lang.refineSdk(raw, chain, ctx) : raw;
+    if (refined) return refined;
   }
   return undefined;
 }

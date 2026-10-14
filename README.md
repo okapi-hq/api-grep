@@ -262,6 +262,21 @@ in `sdk.chain` (`Contract.balanceOf`). Also web3.py properties that send a reque
 taking a connection (`getAccount`, `transfer`). Calls to Infura, Alchemy, QuickNode and Helius hosts are named by the
 vendor (`infura`, ...), raw HTTP calls included.
 
+Since [#85](https://github.com/okapi-hq/api-grep/issues/85), also clients reached in other ways. A client kept in a
+cache that a helper fills (`getProvider(chainId)` returning `providers[chainId]`, or a `Map` entry) goes to one host
+when every client the cache may hold agrees on it, else to an unknown host (never the first entry of a table of
+URLs), and gives no call when one of them is a wallet. Also covered: a client held in a context object
+(`services.rpc.getBlock(...)`), the connection of `@solana/wallet-adapter-react`'s `useConnection()` (the endpoint of
+the app's `<ConnectionProvider>`), and wagmi actions and hooks (`readContract(config, {...})`, `useReadContract`,
+`useBalance`, `usePublicClient()`), which send through the transports of the app's `createConfig`; wagmi writes go
+through the connected wallet and are not reported. For contracts: TypeChain factories
+(`Token__factory.connect(address, runner)`, also when the generated file is missing), `contract.connect(signer)` /
+`attach(address)`, contracts typed as parameters (`token: Contract`), and ABIs imported from JSON files (also a Hardhat
+artifact's `abi`), read to tell a view from a transaction. Calls to Solana's public clusters (`api.mainnet-beta.solana.com`,
+`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`. Clients handed down by an app's own
+React context, injected client factories and wagmi configs built by other libraries are
+[#98](https://github.com/okapi-hq/api-grep/issues/98).
+
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /
 `subscribe`, `useQuery`, `useLazyQuery`, `useSuspenseQuery`, `useBackgroundQuery`, `useMutation`, `useSubscription`),
@@ -463,7 +478,7 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
 | node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`, GraphQL and REST; Hydrogen's context clients); JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `viem`, `ethers`, `web3` (endpoint from the client or its HTTP transport) |
+| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`, GraphQL and REST; Hydrogen's context clients); JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `@solana/wallet-adapter-react`, `viem`, `wagmi`, `ethers`, `web3` (endpoint from the client or its HTTP transport, the wagmi config or the `<ConnectionProvider>`) |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
 | XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
@@ -580,8 +595,9 @@ SDK calls are detected through the JVM registries (`src/lang/jvm/registry/`): th
 AWS (S3, the S3 Transfer Manager, DynamoDB and its enhanced client, SQS, SNS, SES, SES v2 and Bedrock Runtime from the
 AWS SDK for Java 2.x and the AWS SDK for Kotlin; S3 from the AWS SDK for Java 1.x), Google Gen AI, Firestore and
 Firebase Admin, Twilio, Slack, Sentry and PostHog, the community openai-kotlin client, Azure OpenAI, LangChain4j model
-clients, Firebase for Android (Auth, Realtime Database, Storage, Functions), supabase-kt, SendGrid, Resend and Mailgun
-([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
+clients, Firebase for Android (Auth, Realtime Database, Storage, Functions), supabase-kt, SendGrid, Resend, Mailgun and
+Spring AI's OpenAI, Anthropic, Mistral AI and Ollama models, with the provider of the declared starter and the model and
+base URL of `application.yml` / `application.properties` ([sdk-support.md](docs/sdk-support.md)). Parameters given as builders
 (`MessageCreateParams.builder().model(Model.CLAUDE_SONNET_4_5).maxTokens(1024).build()`, also built
 in steps or filled by a lambda, and the AWS SDK for Kotlin's `PutObjectRequest { bucket = b }`) are read as the
 request body, and enum constants as the model ids they stand for.
@@ -772,9 +788,9 @@ package. `--changed-since` scans have no coverage section.
 - PHP has no type checker either: untyped properties and parameters used as HTTP clients are listed as
   `injected-client` (SDK clients are followed as in Python); Saloon connectors, Laravel `Mail` / `Storage` drivers and AWS command objects
   are not followed ([docs/languages.md](docs/languages.md#php)).
-- Kotlin: the JVM SDKs without a registry (Spring AI, [sdk-support.md](docs/sdk-support.md)) are listed in
-  `coverage.sdks` only (#89); interceptors that wrap another one and lists of
-  them built in steps are not followed (#100). The
+- Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in `coverage.sdks` only;
+  Spring AI calls through a shared interface in a project with two model starters are not listed (#96); interceptors
+  that wrap another one and lists of them built in steps are not followed (#100). The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation

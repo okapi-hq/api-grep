@@ -61,6 +61,12 @@ exports[`regression fixtures > graphql-clients/apollo-clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/cached 1`] = `
+[
+  "regions.ts:25 unknown POST / Products",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/graphql-request 1`] = `
 [
   "radar.ts:8 graph.example-weather.net POST /v2/graphql Radar",
@@ -437,6 +443,21 @@ exports[`regression fixtures > java/sdk-ai 1`] = `
   "Triage.java:10 google-ai POST /v1beta/models/{model}:generateContent",
   "Triage.java:16 mistral POST /v1/chat/completions",
   "Triage.java:21 aws-bedrock POST /model/{modelId}/converse",
+]
+`;
+
+exports[`regression fixtures > java/sdk-forms 1`] = `
+[
+  "Assistant.java:27 azure-openai POST /openai/deployments/{model}/chat/completions",
+  "Assistant.java:31 azure-openai POST /openai/deployments/{model}/images/generations",
+  "Drafts.java:24 anthropic POST /v1/messages",
+  "Drafts.java:31 anthropic POST /v1/messages",
+  "Notices.java:19 sendgrid GET /v3/suppression/bounces",
+  "Notices.java:26 sendgrid DELETE /v3/asm/suppressions/global/{email}",
+  "Notices.java:34 sendgrid POST /v3/mail/send",
+  "Notices.java:41 sendgrid DYNAMIC /v3/{endpoint}",
+  "Notices.java:45 mailgun POST /v3/notices.example.eu/messages",
+  "Notices.java:49 mailgun POST /v3/notices.example.com/messages",
 ]
 `;
 
@@ -874,6 +895,17 @@ exports[`regression fixtures > kotlin/sdk/payments 1`] = `
   "Billing.kt:35 stripe POST /v1/checkout/sessions",
   "Billing.kt:45 stripe POST /v1/payment_intents/{intent}/cancel",
   "Billing.kt:47 stripe GET /v1/customers",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/split 1`] = `
+[
+  "Lessons.kt:22 openai POST /v1/chat/completions",
+  "Lessons.kt:28 openai POST /v1/chat/completions",
+  "Lessons.kt:31 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:39 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:45 supabase POST /auth/v1/signup",
+  "Lessons.kt:50 firebase GET /v0/b/{bucket}/o/covers/{id}.png",
 ]
 `;
 
@@ -1594,6 +1626,17 @@ exports[`regression fixtures > robustness/odd-body 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rpc-clients/cached 1`] = `
+[
+  "archive.ts:17 archive.example-node.io POST /rpc eth_getBalance",
+  "chains.ts:19 unknown POST / eth_call",
+  "chains.ts:24 unknown POST / eth_blockNumber",
+  "context.ts:7 jobs.example-node.io POST /rpc eth_gasPrice",
+  "context.ts:11 jobs.example-node.io POST /rpc eth_getBlockByNumber",
+  "proxied.ts:21 unknown POST / eth_call",
+]
+`;
+
 exports[`regression fixtures > rpc-clients/ethers 1`] = `
 [
   "node.ts:8 env:ETH_NODE_URL POST / eth_getBalance",
@@ -1624,8 +1667,8 @@ exports[`regression fixtures > rpc-clients/solana 1`] = `
 
 exports[`regression fixtures > rpc-clients/solana-cluster 1`] = `
 [
-  "faucet.ts:6 api.devnet.solana.com POST / requestAirdrop",
-  "faucet.ts:10 api.mainnet-beta.solana.com POST / getMinimumBalanceForRentExemption",
+  "faucet.ts:6 solana-public-rpc POST / requestAirdrop",
+  "faucet.ts:10 solana-public-rpc POST / getMinimumBalanceForRentExemption",
 ]
 `;
 
@@ -1644,6 +1687,41 @@ exports[`regression fixtures > rpc-clients/viem 1`] = `
   "chain.ts:22 unknown POST / eth_gasPrice",
   "chain.ts:26 eth.example-node.io POST /v1/demo eth_chainId",
   "chain.ts:30 eth.example-node.io POST /v1/demo eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi 1`] = `
+[
+  "vault.tsx:12 eth.example-node.io POST /v1 eth_call",
+  "vault.tsx:13 eth.example-node.io POST /v1 eth_getBalance",
+  "vault.tsx:16 eth.example-node.io POST /v1 eth_getTransactionReceipt",
+  "vault.tsx:20 eth.example-node.io POST /v1 eth_getLogs",
+  "vault.tsx:26 eth.example-node.io POST /v1 eth_call",
+  "vault.tsx:30 eth.example-node.io POST /v1 eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
+[
+  "prices.ts:6 unknown POST / eth_blockNumber",
+  "prices.ts:7 unknown POST / eth_gasPrice",
+  "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-provided 1`] = `
+[
+  "providers.tsx:22 reader.example-node.io POST /rpc eth_blockNumber",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-wallet 1`] = `[]`;
+
+exports[`regression fixtures > rpc-clients/wallet-adapter 1`] = `
+[
+  "wallet-panel.tsx:11 solana.example-node.io POST /rpc getBalance",
+  "wallet-panel.tsx:17 solana.example-node.io POST /rpc getSignatureStatuses",
+  "wallet-panel.tsx:24 solana.example-node.io POST /rpc getSlot",
 ]
 `;
 
@@ -1676,6 +1754,22 @@ exports[`regression fixtures > rpc-contracts/spl-token 1`] = `
   "payouts.ts:17 helius POST / sendTransaction",
 ]
 `;
+
+exports[`regression fixtures > rpc-contracts/typechain 1`] = `
+[
+  "rewards.ts:9 env:REWARDS_RPC_URL POST / eth_call",
+  "rewards.ts:14 env:REWARDS_RPC_URL POST / eth_sendRawTransaction",
+  "treasury.ts:11 rpc.example-chain.net POST / eth_call",
+  "treasury.ts:16 rpc.example-chain.net POST / eth_sendRawTransaction",
+  "treasury.ts:20 rpc.example-chain.net POST / eth_call",
+  "treasury.ts:24 rpc.example-chain.net POST / eth_call",
+  "treasury.ts:29 rpc.example-chain.net POST / eth_sendRawTransaction",
+  "treasury.ts:34 rpc.example-chain.net POST / eth_call",
+  "treasury.ts:38 unknown POST / eth_call",
+]
+`;
+
+exports[`regression fixtures > rpc-contracts/typechain-wallet 1`] = `[]`;
 
 exports[`regression fixtures > rpc-contracts/vendors 1`] = `
 [
