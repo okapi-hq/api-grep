@@ -23,6 +23,7 @@ pnpm test:e2e                # builds dist/ and runs the CLI as a subprocess (in
 pnpm vitest run -u           # update snapshots after an intended change, then review the diff
 pnpm lint                    # zero warnings; max 300 lines per file, 50 per function
 pnpm typecheck
+pnpm eval:inventory --repos <dir> --inventory <csv|json>   # #114: totals of a reference-inventory evaluation (eval/README.md)
 pnpm build                   # tsup -> dist/, copies tree-sitter grammars to dist/grammars
 pnpm gen:schema              # regenerate schema/report.v1.json after a report schema change (bump SCHEMA_VERSION)
 pnpm gen:support             # regenerate docs/sdk-support.md after a registry / providers.json change

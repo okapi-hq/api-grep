@@ -1,0 +1,4 @@
+[
+  { "name": "demo-shop" },
+  { "name": "demo-notes", "subdir": "service", "language": "python" }
+]

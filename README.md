@@ -878,6 +878,10 @@ pnpm eval:score sample dub 100  # stratified sample to label by hand
 pnpm eval:score                 # precision per field and per hostKind, recall when available
 ```
 
+`pnpm eval:inventory --repos <dir> --inventory <file>` compares the scans of a set of repositories with a reference
+inventory of call sites and prints totals only (recall, stopped and partial scans, SDK coverage, providers left
+unresolved), for repositories that cannot be published; see [`eval/README.md`](eval/README.md).
+
 The labeling protocol is in [`eval/label/README.md`](eval/label/README.md). Between evaluations,
 `tests/recall.test.ts` checks recall on synthetic regression fixtures in CI (see
 [CONTRIBUTING.md](CONTRIBUTING.md#tests)).
