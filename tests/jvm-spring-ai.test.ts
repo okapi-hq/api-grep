@@ -33,7 +33,7 @@ describe("java: Spring AI clients configured by the starter and application.yml 
     expect(at(r, router, 36)).toMatchObject({ provider: "ollama", urlTemplate: "http://gpu-box.internal:11434/api/chat", model: { values: ["llama3.1:70b"] } });
     // two model starters: a ChatModel injected by its interface could be either
     expect(r.calls.some((c) => c.location.file === router && c.location.line === 41)).toBe(false);
-    expect(r.coverage.sdks.filter((s) => s.package.startsWith("org.springframework.ai")).map((s) => [s.package, s.status, s.calls])).toEqual([
+    expect(r.coverage!.sdks.filter((s) => s.package.startsWith("org.springframework.ai")).map((s) => [s.package, s.status, s.calls])).toEqual([
       ["org.springframework.ai:spring-ai-openai-spring-boot-starter", "ok", 2],
       ["org.springframework.ai:spring-ai-starter-model-mistral-ai", "ok", 1],
       ["org.springframework.ai:spring-ai-starter-model-ollama", "ok", 2],

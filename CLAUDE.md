@@ -156,8 +156,12 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   2.x registries, its requests built by lambdas that assign properties: `FunctionDef.props`, S3 from the SDK for
   Java 1.x). #50 adds openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend and
   Mailgun, the registry fields `argFields`, `bodySelf`, `urlArg`, `setupUrl` (`src/lang/ir/setup.ts`),
-  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`; Spring AI
-  and the remaining forms are #89. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
+  `setters.constructors` / `wrappers` (`src/lang/ir/constructed.ts`) and the language trait `indexOperator`. #89 adds
+  Spring AI (`src/lang/jvm/registry/spring-ai.json` / `.ts`, registry field `configured`, the language hook `refineSdk`
+  in `src/lang/jvm/spring-ai.ts`, Spring Boot `application.yml` / `.properties` read by `src/lang/jvm/spring-config.ts`),
+  `methodFrom` (SendGrid), fluent maps with constructor `args` and `setterCase` (Azure options), `setters.putters`
+  (supabase-kt lambdas), Kotlin property reads (`src/lang/kotlin/property-reads.ts`) and builders filled across
+  functions; what it leaves is #96. DI-provided clients and the remaining builder forms (#46: Dagger / Hilt,
   Spring, Koin in `src/lang/jvm/di/`, the engine's `injection` hook; `apply { }` steps; Ktor and Spring forms) are
   done; `Lazy<T>` injection points, multibindings and other locators are #75.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,

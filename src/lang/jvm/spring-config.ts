@@ -15,6 +15,8 @@ const FILES = ["application.yml", "application.yaml", "application.properties"];
 /** Lines read per file; a longer file is generated or not configuration a module writes by hand. */
 const MAX_LINES = 20_000;
 const MAX_VALUE = 2_000;
+/** A longer line is not a property a module writes by hand; the patterns stay linear on what is left. */
+const MAX_LINE = 4_000;
 
 type Props = Map<string, string>;
 
@@ -25,8 +27,11 @@ function unquote(v: string): string {
   const t = v.trim();
   if (t.length >= 2 && ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'")))) return t.slice(1, -1);
   // a trailing comment (`model: gpt-4o # the default`) is not the value
-  return t.replace(/\s+#.*$/, "");
+  const comment = t.search(/[ \t]#/);
+  return comment >= 0 ? t.slice(0, comment).trimEnd() : t;
 }
+
+const KEY = /^[A-Za-z0-9_.[\]-]+$/;
 
 function put(props: Props, key: string, value: string): void {
   if (value.length <= MAX_VALUE && key.length <= 300) props.set(relaxedKey(key), value);
@@ -35,10 +40,24 @@ function put(props: Props, key: string, value: string): void {
 export function parseProperties(text: string): Props {
   const props: Props = new Map();
   for (const line of text.split(/\r?\n/, MAX_LINES)) {
-    const m = /^\s*([A-Za-z0-9_.[\]-]+)\s*[=:]\s*(.*?)\s*$/.exec(line);
-    if (m && !line.trimStart().startsWith("#") && !line.trimStart().startsWith("!")) put(props, m[1]!, m[2]!);
+    const body = line.trim();
+    if (line.length > MAX_LINE || body.startsWith("#") || body.startsWith("!")) continue;
+    const eq = body.search(/[=:]/);
+    const key = eq > 0 ? body.slice(0, eq).trim() : "";
+    if (KEY.test(key)) put(props, key, body.slice(eq + 1).trim());
   }
   return props;
+}
+
+/** `key: value`, `key:` or `"quoted key": value`: the key and the value's text; undefined for anything else. */
+function yamlEntry(body: string): { key: string; value: string } | undefined {
+  const quote = body[0] === '"' || body[0] === "'" ? body.indexOf(body[0], 1) : -1;
+  const from = quote > 0 ? quote + 1 : 0;
+  const colon = body.indexOf(":", from);
+  if (colon <= 0 || (colon + 1 < body.length && body[colon + 1] !== " " && body[colon + 1] !== "\t")) return undefined;
+  const key = quote > 0 ? body.slice(1, quote) : body.slice(0, colon).trim();
+  if (!key || (quote < 0 && !/^[^\s#"'{[-]/.test(key)) || key.includes("#")) return undefined;
+  return { key, value: body.slice(colon + 1).trim() };
 }
 
 /** One YAML document: nested block mappings with scalar values (lists, block scalars and flow collections are left out). */
@@ -47,21 +66,22 @@ function parseYamlDocument(lines: string[]): Props {
   const stack: { indent: number; key: string }[] = [];
   let skipBelow = -1;
   for (const line of lines) {
+    if (line.length > MAX_LINE) continue;
     const indent = line.length - line.trimStart().length;
     const body = line.trim();
     if (body === "" || body.startsWith("#")) continue;
     if (skipBelow >= 0 && indent > skipBelow) continue;
     skipBelow = -1;
     while (stack.length > 0 && stack[stack.length - 1]!.indent >= indent) stack.pop();
-    const m = /^("[^"]*"|'[^']*'|[^\s:#"'{[-][^:#]*?)\s*:(?:\s+(.*))?$/.exec(body);
-    if (!m) {
+    const entry = yamlEntry(body);
+    if (!entry) {
       // a list item or anything else: what is nested under it is not a mapping of this document
       skipBelow = indent;
       continue;
     }
-    const key = [...stack.map((s) => s.key), unquote(m[1]!)].join(".");
-    const value = m[2]?.trim() ?? "";
-    if (value === "" || value.startsWith("#")) stack.push({ indent, key: unquote(m[1]!) });
+    const key = [...stack.map((s) => s.key), entry.key].join(".");
+    const value = entry.value;
+    if (value === "" || value.startsWith("#")) stack.push({ indent, key: entry.key });
     else if (/^[|>[{&*!]/.test(value)) skipBelow = indent;
     else put(props, key, unquote(value));
   }

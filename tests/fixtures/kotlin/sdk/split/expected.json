@@ -5,7 +5,8 @@
     { "file": "Lessons.kt", "line": 22, "provider": "openai" },
     { "file": "Lessons.kt", "line": 28, "provider": "openai" },
     { "file": "Lessons.kt", "line": 31, "provider": "supabase" },
-    { "file": "Lessons.kt", "line": 38, "provider": "supabase" },
-    { "file": "Lessons.kt", "line": 43, "provider": "firebase" }
+    { "file": "Lessons.kt", "line": 39, "provider": "supabase" },
+    { "file": "Lessons.kt", "line": 45, "provider": "supabase" },
+    { "file": "Lessons.kt", "line": 50, "provider": "firebase" }
   ]
 }

@@ -74,5 +74,7 @@
   { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" },
   { "name": "hydrogen-demo-store", "url": "https://github.com/Shopify/hydrogen-demo-store.git" },
   { "name": "weam", "url": "https://github.com/weam-ai/weam.git", "subdir": "nodejs" },
-  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" }
+  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" },
+  { "name": "spring-ai-examples", "url": "https://github.com/spring-projects/spring-ai-examples.git", "language": "java" },
+  { "name": "llm-apps-java-spring-ai", "url": "https://github.com/ThomasVitale/llm-apps-java-spring-ai.git", "language": "java" }
 ]

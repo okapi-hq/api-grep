@@ -30,7 +30,14 @@ class Lessons(private val openai: OpenAIClient, private val supabase: SupabaseCl
 
     suspend fun finish(id: Long, score: Int) = supabase.from("lessons").update({
         set("done", true)
-        set("score", score)
+        set(Db.Column.SCORE, score)
+    }) {
+        filter { eq("id", id) }
+    }
+
+    // a key set in a nested lambda may not be sent
+    suspend fun rename(id: Long, title: String?) = supabase.from("lessons").update({
+        title?.let { set(Db.Column.TITLE, it) }
     }) {
         filter { eq("id", id) }
     }
@@ -44,4 +51,11 @@ class Lessons(private val openai: OpenAIClient, private val supabase: SupabaseCl
 
     // a local value of the same name is no request
     fun local(links: Map<String, String>) = links.size
+}
+
+object Db {
+    object Column {
+        const val SCORE = "score"
+        const val TITLE = "title"
+    }
 }

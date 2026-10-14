@@ -38,8 +38,10 @@ describe("kotlin: remaining JVM SDK forms (#89)", () => {
     expect(at(r, "Lessons.kt", 22).body).toMatchObject({ properties: { model: { enum: ["gpt-4o-mini"] }, max_completion_tokens: { enum: [600] } }, required: ["model", "max_completion_tokens", "messages"] });
     expect(at(r, "Lessons.kt", 28).body).toMatchObject({ properties: { temperature: { enum: [0.3] } }, required: ["model", "max_completion_tokens", "messages"] });
     expect(at(r, "Lessons.kt", 31)).toMatchObject({ method: "PATCH", pathTemplate: "/rest/v1/lessons", body: { properties: { done: { enum: [true] }, score: { type: "integer" } }, required: ["done", "score"] } });
-    expect(at(r, "Lessons.kt", 38)).toMatchObject({ pathTemplate: "/auth/v1/signup", body: { properties: { phone: { type: "string" }, password: { type: "string" } } } });
-    expect(at(r, "Lessons.kt", 43)).toMatchObject({ provider: "firebase", method: "GET", pathTemplate: "/v0/b/{bucket}/o/covers/{id}.png", sdk: { chain: "downloadUrl" } });
-    expect(r.calls).toHaveLength(5);
+    // a key put in a nested lambda (`title?.let { ... }`) may not be sent
+    expect(at(r, "Lessons.kt", 39).body).toMatchObject({ properties: { title: {} }, required: [] });
+    expect(at(r, "Lessons.kt", 45)).toMatchObject({ pathTemplate: "/auth/v1/signup", body: { properties: { phone: { type: "string" }, password: { type: "string" } } } });
+    expect(at(r, "Lessons.kt", 50)).toMatchObject({ provider: "firebase", method: "GET", pathTemplate: "/v0/b/{bucket}/o/covers/{id}.png", sdk: { chain: "downloadUrl" } });
+    expect(r.calls).toHaveLength(6);
   });
 });

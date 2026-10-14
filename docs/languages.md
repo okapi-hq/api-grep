@@ -243,8 +243,8 @@ the S3 Transfer Manager and the DynamoDB Enhanced Client, S3 from the AWS SDK fo
 and PostHog (the Android / JVM facade and posthog-java); with #50 the community openai-kotlin client, Azure OpenAI,
 LangChain4j's OpenAI, Anthropic, Gemini, Mistral, Ollama and Bedrock models, Firebase for Android (Auth, Realtime
 Database, Storage, callable Functions), supabase-kt (Postgrest, Auth, Storage, Functions), SendGrid, Resend and
-Mailgun. The registries are in `src/lang/jvm/registry/`, keyed by Maven coordinates and fully qualified classes, so
-Java reads them as they are.
+Mailgun; with #89 Spring AI's OpenAI, Anthropic, Mistral AI and Ollama models (below). The registries are in
+`src/lang/jvm/registry/`, keyed by Maven coordinates and fully qualified classes, so Java reads them as they are.
 
 **SDK registries** (#33): JVM SDKs build clients with factories and builders, reach resources through accessor calls,
 and take parameters as builders.
@@ -303,7 +303,22 @@ and take parameters as builders.
   the params object (`files().retrieve(FileRetrieveParams.builder().fileId(id).build())`). Kotlin's index operator on
   an SDK object is its `get` (`indexOperator`: supabase-kt `postgrest["table"].select()`). An object filled by setters
   before it is sent (SendGrid's `Request` with `setEndpoint("mail/send")`, `setBody(...)`: the `setters` of a fluent
-  map in `clients.json`).
+  map in `clients.json`), and the HTTP method it sets (`setMethod(Method.GET)`, `methodFrom`; a request given none is
+  a POST, one given a parameter `DYNAMIC`, #89).
+- **Forms of #89:** option objects filled by setters on a constructor (Azure OpenAI `new
+  ChatCompletionsOptions(messages).setMaxTokens(300)`, also on a variable: a fluent map with `args`, the constructor's
+  arguments, and `setterCase`, `setMaxTokens` -> `max_tokens`; a setter called in a branch gives an optional field, for
+  every fluent map read on a variable). Bodies built by supabase-kt lambdas: the properties `signInWith(Email) { email =
+  e }` assigns (the entry's `setters`, `bodyArg` 1) and the keys `update({ set("done", true) })` sets
+  (`setters.putters`; a key set in a nested lambda, `x?.let { set(...) }`, is optional; a lambda setting none the scan
+  reads is not an empty body). Kotlin properties whose getter sends a request (Firebase Storage's `ref.downloadUrl`:
+  registry methods with `property`, recorded by the lowering as for web3.py, `src/lang/kotlin/property-reads.ts`).
+  Mailgun's EU host given to the two-argument `MailgunClient.config(baseUrl, key)` (`instance.urlArg` `"0/2"`: argument
+  0 of a call given two positional arguments; a base URL's trailing slash is not doubled). A builder filled across
+  several functions (`src/lang/ir/builders.ts`): one a project method returns (`base().addUserMessage(q).build()` with
+  `fun base() = Params.builder().model(m)`) and one a builder variable gets from a helper it is given to (`tone(params,
+  formal)`, the helper's steps on its parameter, optional when the helper call or the step may not run). A constant of
+  a nested project class (`Supabase.Column.TEXT`, Java static nested classes too) is its value.
 - **Models:** an enum constant of the SDK (`Model.CLAUDE_SONNET_4_5`, `ChatModel.GPT_4_1_MINI`) is the model id it
   stands for (`claude-sonnet-4-5`, `gpt-4.1-mini`: `setters.constants` and `constantRewrites`); other enum constants
   are their snake_case value (`SessionCreateParams.Mode.SUBSCRIPTION` -> `subscription`). String overloads
@@ -315,6 +330,40 @@ and take parameters as builders.
   root of `com.google.firebase`, shared with Android Firebase (`FirebaseApp`, `analytics`, `crashlytics`,
   `remoteconfig`), counts for it only where the manifests declare it (`declaredOnly` in `src/lang/jvm/packages.json`,
   #62), so an Android app is not reported as importing the server SDK.
+
+**Spring AI** (#89, `src/lang/jvm/registry/spring-ai.json` expanded by `spring-ai.ts`, the language's `refineSdk` in
+`src/lang/jvm/spring-ai.ts`): the code talks to beans the build's starter configures.
+
+- **Calls:** a `ChatClient` chain is one request, at its `call()` or `stream()` (`chatClient.prompt().user(q).options(o)
+  .call().content()`: `user`, `system`, `options`, `advisors`, `tools`... are `builders`), on a client from an injected
+  `ChatClient.Builder` (`builder.defaultSystem(s).build()`, also `mutate()`), `ChatClient.create(model)` or
+  `ChatClient.builder(model).build()`; `ChatModel.call(prompt)` / `stream`, `EmbeddingModel.embed` / `call`,
+  `ImageModel.call`, the transcription and speech models. Reading the response (`.content()`, `.entity(...)`) is the same
+  request. One entry per provider (OpenAI, Anthropic, Mistral AI, Ollama), artifact (the module `spring-ai-openai`, the
+  1.0 starter `spring-ai-starter-model-openai`, the milestone starter `spring-ai-openai-spring-boot-starter`) and kind
+  (chat, embedding, image, transcription, speech), with `configured` (`ConfiguredClient` in `src/lang/ir/language.ts`).
+- **Provider:** the interfaces (`ChatClient`, `ChatModel`) are shared: a chain through a provider's own class
+  (`OpenAiChatModel`, also the model `ChatClient.builder(model)` gets) is that provider's; otherwise the provider is the
+  one model starter or module the manifests between the file and the scanned directory declare. Two providers declared
+  and an interface the code does not tie to one: no call (the bean could be either). A starter declared and none of its
+  classes imported counts the shared interfaces' imports for it in `coverage.sdks` (`declaredOnly` roots; the module's
+  own declaration first, `src/lang/ir/scan.ts`).
+- **Model and base URL:** the model the code sets wins (the prompt's `options(X.builder().model(m))`, the request
+  object's options: `new Prompt(text, options)`, `new EmbeddingRequest(texts, options)`, a client's or model's
+  `defaultOptions`; options the scan cannot read leave it unknown), else the module's
+  `src/main/resources/application.yml` / `.yaml` / `.properties` (`spring.ai.<provider>.<kind>.options.model`, 2.0's
+  `spring.ai.<provider>.<kind>.model`; `base-url` of the kind, then of the provider), read as `@Value` reads a property:
+  the property named by its key with the file's value as default, `${X:d}` in the value an environment variable with
+  its default (`src/lang/jvm/spring-config.ts`). A base URL ending in `/v1` (Spring AI 2's OpenAI) is not doubled, and
+  one that names another known provider (`https://api.groq.com/openai`) gives that provider, as for any SDK. A model
+  built in the code (`OllamaChatModel.builder().ollamaApi(api).defaultOptions(o).build()`) ignores the properties: its
+  API object's `baseUrl(...)`, unknown when the API object cannot be read. The model is reported `from: "argument"`;
+  no body is listed (the provider's request is built by Spring AI).
+- **Configuration files** are read through `readConfigFile` (hostile input, symlinks inside the scanned directory, 4
+  MB at most), line by line with linear patterns, at most 20,000 lines: the default profile only (YAML documents
+  activated by `spring.config.activate.on-profile` or `spring.profiles` and `application-<profile>.*` files are left
+  out), nested block mappings with scalar values (lists, block scalars and flow collections are skipped), keys matched by
+  Spring's relaxed binding (`base-url`, `baseUrl`, `base_url`), `.properties` over YAML.
 
 **HTTP clients** (`src/lang/jvm/http/`, tables in `clients.json`):
 
@@ -568,10 +617,14 @@ file. A file that does not parse is then read once more with a `;` in place of t
 - `BuildConfig` values from `local.properties` or a computed `buildConfigField` have no default; build types and
   flavors other than the first literal are not listed.
 - SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
-  Azure OpenAI options, a DynamoDB-mapped item) give no body. An SDK builder filled in steps spread over several
-  functions is not read. SendGrid's `Request` method is not read (listed as POST).
-- Spring AI and other JVM SDKs listed in `providers.json` without a registry are reported as `unsupported` in
-  `coverage.sdks` (#89). AWS services without a registry (Lambda, Kinesis, the SDK for Java 1.x's clients other than
+  a DynamoDB-mapped item) give no body. A builder kept in a field and filled by several methods is not read.
+- Spring AI (#89): a project with two model starters calling a `ChatClient` or `ChatModel` it does not tie to one
+  provider (by its class, a `@Qualifier`, a bean name) gets no call there; the Kotlin beans DSL (`ref<ChatClient>()`),
+  Spring AI's own model enums (`MistralAiApi.ChatModel.MISTRAL_SMALL.getValue()`, unknown), Azure OpenAI, Vertex AI,
+  Bedrock and the other starters, the library's default model when none is configured, `application-<profile>` files
+  and configuration imported from elsewhere (`spring.config.import`, a config server) are not read (#96).
+- JVM SDKs listed in `providers.json` without a registry are reported as `unsupported` in `coverage.sdks`. AWS services
+  without a registry (Lambda, Kinesis, the SDK for Java 1.x's clients other than
   S3) are not in `providers.json`. The DynamoDB Enhanced Client's table name and item, and the AWS SDK for Kotlin's
   sealed-class values (`AttributeValue.S(v)`, `ConversationRole.User`), are not read.
 

@@ -3,6 +3,8 @@ import type { Scoped, SetterRules } from "./language.js";
 import { children, dottedPath, type Arg, type CallExpr, type Entry, type Expr, type FunctionDef } from "./model.js";
 import { lookup } from "./project.js";
 import { appliedSteps } from "./applied.js";
+import { evaluate } from "./evaluate.js";
+import { staticText } from "../../resolve/parts.js";
 import { mayNotRun } from "./edits.js";
 import { scopedIn } from "./fluent.js";
 import type { IrCtx } from "./raw.js";
@@ -144,6 +146,13 @@ function mutated(setters: Setter[], fn: FunctionDef, rules: SetterRules): Setter
   });
 }
 
+/** `set(Columns.DONE, true)`: a key named by a constant (also of a nested `object`) is its text. */
+function putKey(a: Expr, fn: FunctionDef, ctx: IrCtx): Expr {
+  if (a.k === "str") return a;
+  const text = staticText(evaluate(a, fn, ctx));
+  return text !== undefined ? { k: "str", v: text } : a;
+}
+
 /** The setters as a dict: one entry per field, list fields gathering their `add` items, map fields their `put` keys. */
 function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRules): Expr {
   const entries: Entry[] = [];
@@ -153,8 +162,9 @@ function dictOf(setters: Setter[], fn: FunctionDef, ctx: IrCtx, rules: SetterRul
     const [a, b] = s.args.filter((x) => !x.name && !x.spread).map((x) => x.value);
     // `set("name", v)` in supabase-kt's `update({ ... })`: a key of the value itself
     if (rules.putters?.includes(s.name) && a && b) {
-      entries.push({ key: a, value: b });
-      if (!s.optional && a.k === "str") always.add(a.v);
+      const key = putKey(a, fn, ctx);
+      entries.push({ key, value: b });
+      if (!s.optional && key.k === "str") always.add(key.v);
       continue;
     }
     const named = NOT_SETTERS.has(s.name) ? undefined : fieldOf(s.name, rules);
@@ -219,8 +229,23 @@ function lambdaSetters(lambda: FunctionDef, rules: SetterRules): Setter[] {
     const put = !!rules.putters?.includes(name) && c.args.length === 2;
     if ((nested || put) && !inner.has(c)) out.push({ name, args: c.args, offset: c.pos.offset, ...(put && mayNotRun(lambda, c.pos.offset, undefined) ? { optional: true } : {}) });
   }
+  if (rules.putters) out.push(...closurePuts(lambda, rules.putters));
   for (const p of lambda.props ?? []) out.push({ name: p.name, args: [{ value: p.value }], offset: p.offset });
   return out.sort((a, b) => (a.offset ?? 0) - (b.offset ?? 0));
+}
+
+/** Keys put in lambdas nested in a filling lambda (`text?.let { set("text", it) }`): they may not run. */
+function closurePuts(lambda: FunctionDef, putters: string[]): Setter[] {
+  const out: Setter[] = [];
+  const inner = lambda.module.allFunctions.filter((f) => f.parent === lambda);
+  for (const f of inner) {
+    for (const c of f.calls) {
+      const name = c.fn.k === "name" ? c.fn.name : "";
+      const value = c.args[1]?.value;
+      if (putters.includes(name) && c.args.length === 2 && value) out.push({ name, args: [c.args[0]!, { value: scopedIn(value, f, lambda) }], offset: c.pos.offset, optional: true });
+    }
+  }
+  return out;
 }
 
 /** A lambda given to a setter: the dict of the nested builder it fills, read in the lambda's scope. */
@@ -355,5 +380,8 @@ export function lambdaValue(s: Scoped, rules: SetterRules, ctx: IrCtx): Scoped |
   if (s.expr.k !== "fnref") return undefined;
   const lambda = s.expr.fn;
   if (lambda.params.length !== 1) return undefined;
-  return { expr: dictOf(lambdaSetters(lambda, rules), lambda, ctx, rules), fn: lambda };
+  const setters = lambdaSetters(lambda, rules);
+  // a lambda putting no key the scan reads (keys set in a loop, by a helper) is not an empty body
+  if (rules.putters && setters.length === 0) return undefined;
+  return { expr: dictOf(setters, lambda, ctx, rules), fn: lambda };
 }

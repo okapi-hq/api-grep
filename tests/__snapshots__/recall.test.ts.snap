@@ -796,8 +796,9 @@ exports[`regression fixtures > kotlin/sdk/split 1`] = `
   "Lessons.kt:22 openai POST /v1/chat/completions",
   "Lessons.kt:28 openai POST /v1/chat/completions",
   "Lessons.kt:31 supabase PATCH /rest/v1/lessons",
-  "Lessons.kt:38 supabase POST /auth/v1/signup",
-  "Lessons.kt:43 firebase GET /v0/b/{bucket}/o/covers/{id}.png",
+  "Lessons.kt:39 supabase PATCH /rest/v1/lessons",
+  "Lessons.kt:45 supabase POST /auth/v1/signup",
+  "Lessons.kt:50 firebase GET /v0/b/{bucket}/o/covers/{id}.png",
 ]
 `;
 

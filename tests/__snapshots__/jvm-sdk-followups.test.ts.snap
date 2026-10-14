@@ -368,6 +368,68 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
       "authScheme": "bearer",
       "body": {
         "properties": {
+          "title": {
+            "hint": "it",
+            "origin": "param",
+            "type": "dynamic",
+          },
+        },
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "title",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "title": "Canyon Meadow",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "PATCH",
+          "query": {},
+          "url": "https://{project}.supabase.co/rest/v1/lessons",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "{project}.supabase.co",
+      "hostKind": "literal",
+      "id": "af86d9220654",
+      "location": {
+        "col": 52,
+        "file": "Lessons.kt",
+        "language": "kotlin",
+        "line": 39,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/rest/v1/lessons",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "from.update",
+        "package": "io.github.jan-tennert.supabase:postgrest-kt",
+      },
+      "urlTemplate": "https://{project}.supabase.co/rest/v1/lessons",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
           "password": {
             "hint": "code",
             "type": "string",
@@ -401,8 +463,8 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
       "examples": [
         {
           "body": {
-            "password": "UBLWG5",
-            "phone": "+14155555046",
+            "password": "QWNNGJ",
+            "phone": "+14155557745",
           },
           "bodyEncoding": "json",
           "headers": {
@@ -419,12 +481,12 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
       "headers": [],
       "host": "{project}.supabase.co",
       "hostKind": "literal",
-      "id": "9a82ba46c5c4",
+      "id": "495729d6b283",
       "location": {
         "col": 54,
         "file": "Lessons.kt",
         "language": "kotlin",
-        "line": 38,
+        "line": 45,
       },
       "method": "POST",
       "optionsOpaque": false,
@@ -466,7 +528,7 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
           },
           "method": "GET",
           "query": {},
-          "url": "https://firebasestorage.googleapis.com/v0/b/cedar/o/covers/2181.png",
+          "url": "https://firebasestorage.googleapis.com/v0/b/ember/o/covers/2239.png",
           "variant": "minimal",
         },
       ],
@@ -474,12 +536,12 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
       "headers": [],
       "host": "firebasestorage.googleapis.com",
       "hostKind": "literal",
-      "id": "b46ac30698d8",
+      "id": "5ea3b46c8832",
       "location": {
         "col": 86,
         "file": "Lessons.kt",
         "language": "kotlin",
-        "line": 43,
+        "line": 50,
       },
       "method": "GET",
       "optionsOpaque": false,
@@ -530,7 +592,7 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
         "supported": true,
       },
       {
-        "calls": 1,
+        "calls": 2,
         "declared": true,
         "ecosystem": "maven",
         "importSites": 1,
@@ -560,25 +622,25 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
   "schemaVersion": "1.15.0",
   "stats": {
     "byClient": {
-      "sdk": 5,
+      "sdk": 6,
     },
     "byHostKind": {
-      "literal": 5,
+      "literal": 6,
     },
     "byLanguage": {
-      "kotlin": 5,
+      "kotlin": 6,
     },
     "byProvider": {
       "firebase": 1,
       "openai": 2,
-      "supabase": 2,
+      "supabase": 3,
     },
-    "callsFound": 5,
+    "callsFound": 6,
     "durationMs": 0,
     "filesScanned": 1,
     "redacted": 0,
-    "withBodyShape": 4,
-    "withDynamic": 3,
+    "withBodyShape": 5,
+    "withDynamic": 4,
   },
   "tool": "api-grep",
   "version": "<version>",
