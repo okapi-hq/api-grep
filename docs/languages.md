@@ -111,6 +111,7 @@ The engine (`src/lang/ir/`) then works on that model only:
 | `http.ts` | table-driven HTTP clients (functions, client objects, fluent modifiers) |
 | `steps.ts`, `fluent-chain.ts`, `fluent.ts` | fluent builders read from step tables (`Request.Builder().url(u).post(b)`, also through variables, fields and factories; `fluentChains` follows each return of a factory and each branch of a conditional) and values built entry by entry (`JSONObject().put(k, v)`, `FormBody.Builder().add(k, v)`, `HttpHeaders().set(k, v)`) |
 | `pairs.ts` | headers and query parameters set one at a time (builder steps, interceptors, annotated parameters), and those the client adds (`clientParts`) |
+| `conditional.ts` | the steps of code run for each request (interceptors, filters) that run on some requests only: in a branch, a loop, after an early return (`clientParts` `optional`, #69) |
 | `detect.ts`, `wrappers.ts` | detection per function, wrapper expansion up to four deep, `injected-client` / `injected-fetch` / `wrapper-depth` diagnostics |
 | `receiver.ts` | SDK calls on untyped parameters: the clients callers pass, else the one declared SDK, else `receiver-unknown` (#37) |
 | `extensions.ts` | Kotlin extension functions: the extension a member call runs, by the receiver type of its value's chain (#86) |
@@ -416,10 +417,15 @@ original's URL, method and body;
   with it (`addInterceptor`, `addNetworkInterceptor`, kept through `newBuilder()`, variables, fields, `by lazy` and
   factories). They are in `query` / `headers` and `authScheme` like any other, and listed in `clientParts` with
   `from: "interceptor"`. Headers set on a response (`chain.proceed(...).newBuilder()`, `Response.Builder()`) and
-  one-argument reads (`request.header("X")`) are not the request's. A header set in a branch of the interceptor
-  (`if (url.contains(...))`) is still listed for every call: the report has no way yet to mark a header optional
-  (#69). `okHttpClientFacts(client, ctx)` (`okhttp.ts`) gives them for any client expression:
-  Retrofit reads the client of `.client(okHttp)` with it.
+  one-argument reads (`request.header("X")`) are not the request's. A header or query parameter the interceptor sets
+  on some requests only has `optional: true` in `clientParts` (#69, `ir/conditional.ts`): set in a branch or a loop
+  body (`if (url.contains(...))`, a `when` entry, `x?.let { ... }`, Java's `ifPresent` / `forEach` lambdas), after an
+  early `return` that may run (`if (!allowed) return chain.proceed(request)`, `x ?: return ...`), or in a builder
+  extension or local helper that sets it in a branch or is called in one. A name every branch of an `if` / `else` or
+  an exhaustive `when` sets, or that the call (or another interceptor) always sets, is not optional. The same applies
+  to Spring interceptors and filters, Apache request interceptors and JAX-RS filters. Kotlin and Java lower each
+  `return`'s offset as `FunctionDef.exits`. `okHttpClientFacts(client, ctx)` (`okhttp.ts`, over
+  `interceptor-steps.ts`) gives them for any client expression: Retrofit reads the client of `.client(okHttp)` with it.
 - **`java.net.http`** (`java-http`): `send` / `sendAsync` of an `HttpRequest.newBuilder(uri)` chain (`uri`, `GET`,
   `POST`, `PUT`, `DELETE`, `method`, `header`, `headers(k, v, ...)`, `BodyPublishers.ofString`); `HttpURLConnection`
   (`URL(u).openConnection()`, reported there, with `requestMethod` / `setRequestMethod`, `setRequestProperty`,
@@ -692,8 +698,11 @@ file. A file that does not parse is then read once more with a `;` in place of t
 **Limitations:**
 
 - DI (#94, #100): a `Call.Factory` built by hand and handed to a class, and Spring's implicit `default` profile
-  (`application-default.properties` when no profile is active) are not read; a header an interceptor adds under a
-  condition (`if (isHostAllowed(url))`) is listed as if always added.
+  (`application-default.properties` when no profile is active) are not read.
+- Optional client parts (#69): a client default set in a branch (`if (token != null) defaultHeader(...)`, a branch of
+  Ktor's `defaultRequest { }`) and a header set on the request itself in a branch are still listed as always sent;
+  an early return that sends nothing (`return Response.Builder()...build()`, a cached response) still makes the
+  headers after it optional.
 - A member inherited from a base class is only read through `this.x`; a bare `x` resolves to the class's own members.
 - Extension functions (#86): an extension called inside `with(client) { ... }` or `client.run { ... }`, one called
   from Java (`StorageKt.delete(client, ...)`), and a builder extension used as a step (`Request.Builder().authed()`,

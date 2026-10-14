@@ -2,8 +2,9 @@ import type { ScopedCall } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
 import { callObject, type CallExpr, type Expr, type ModuleModel } from "../../ir/model.js";
 import type { ProjectIndex } from "../../ir/project.js";
+import { perRequestPairs } from "../../ir/conditional.js";
 import type { ClientPartFrom, IrCtx, IrPair } from "../../ir/raw.js";
-import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
+import { argAt, calleeIs, fluentChain, lambdaCalls, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { nameValuePairs } from "./name-value-pairs.js";
 import { withClosures } from "../elements.js";
@@ -54,9 +55,8 @@ function filterPairs(steps: ScopedCall[], d: ClientDefaults, ctx: IrCtx): IrPair
     const h = first ? handlerOf({ expr: first.value, fn: s.fn }, d.filterMethods ?? [], ctx) : undefined;
     const param = h?.fn.params[0]?.name;
     if (!h || !param) continue;
-    const parts = emptyParts();
-    for (const f of withClosures(h.fn)) readSteps(lambdaCalls(f).filter((c) => onRequest(c.call, param)), d.filterSteps ?? {}, parts);
-    out.push(...fromAll(parts.pairs, "interceptor", h));
+    const calls = withClosures(h.fn).flatMap((f) => lambdaCalls(f).filter((c) => onRequest(c.call, param)));
+    out.push(...fromAll(perRequestPairs(calls, d.filterSteps ?? {}, { root: h.fn }), "interceptor", h));
   }
   return out;
 }

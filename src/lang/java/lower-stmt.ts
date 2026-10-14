@@ -149,6 +149,7 @@ export function lowerStatement(n: SyntaxNode, st: JState): void {
       const e = named(n)[0];
       const value = e ? lowerExpr(e, st) : undefined;
       if (value && n.type === "return_statement") st.fn.returns.push(value);
+      if (n.type === "return_statement") (st.fn.exits ??= []).push({ offset: n.startIndex });
       if (value && n.type === "yield_statement") st.yields?.push(value);
       return;
     }

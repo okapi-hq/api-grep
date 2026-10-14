@@ -121,7 +121,7 @@ one comment per field and the second call left out:
 
 ```yaml
 $schema: https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json
-schemaVersion: 1.13.0           # report format version; readers check the major
+schemaVersion: 1.16.0           # report format version; readers check the major
 tool: api-grep
 version: 0.1.0                  # tool version
 repo: shop                      # name of the scanned directory
@@ -162,6 +162,7 @@ calls:                          # one entry per call, sorted by file, line, colu
     bodySource: literal         # literal | type | unknown | none: where the body shape came from
     clientParts:                # query parameters and headers the client adds, not the call (absent when none)
       - { where: header, name: authorization, from: interceptor }   # interceptor (OkHttp) | default (Ktor defaultRequest, Spring defaultHeader)
+      - { where: header, name: accept, from: interceptor, optional: true }   # added on some requests only (in a branch, after an early return)
     examples:                   # concrete requests with invented values
       - variant: minimal        # minimal | full | alt
         method: POST
@@ -589,7 +590,7 @@ definitions and lookups (`single { ... }`, `singleOf(::Repo)`, `get()`, `by inje
 
 | client | patterns |
 |---|---|
-| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class, one wrapping another, lists of them built with `buildList` or `add`) on every call it makes |
+| OkHttp | `client.newCall(Request.Builder().url(...).header(...).post(body).build())`, also built over several statements and sent through a wrapper; `HttpUrl` builders (`toHttpUrl().newBuilder().addQueryParameter(...)`), bodies from `toRequestBody(mediaType)` / `RequestBody.create`, `FormBody.Builder`, `MultipartBody.Builder`; builder steps inside `apply { }`; the headers and query parameters of the client's interceptors (`addInterceptor { ... }`, an interceptor class, one wrapping another, lists of them built with `buildList` or `add`) on every call it makes, `optional` in `clientParts` when set in a branch or after an early return |
 | `java.net.http` | `HttpRequest.newBuilder(uri)` / `.uri(...)` with `GET()` / `POST(...)` / `method(...)`, `header` / `headers`, `BodyPublishers.ofString`, sent by `send` / `sendAsync`; `HttpURLConnection` (`URL(u).openConnection()` with `requestMethod`, `setRequestProperty`, a written body, also in a helper the connection is passed to) |
 | Ktor client | `client.get/post/put/patch/delete/request(url) { parameter(...); header(...); setBody(...); contentType(...); bearerAuth(...); url { ... } }`, `method = HttpMethod.X`, `submitForm(url, formParameters = parameters { ... })`, `FormDataContent`, `MultiPartFormDataContent(formData { ... })`, kotlinx `buildJsonObject { ... }` bodies; the client's `defaultRequest { url(...); header(...) }` and `install(Auth) { bearer { ... } }` |
 | Spring | `RestTemplate` (`getForObject`, `postForObject`, `exchange` with `HttpMethod` and an `HttpEntity` or a `RequestEntity`, `UriComponentsBuilder` URLs, the headers of its interceptors), `WebClient` and `RestClient` chains (`post().uri(...).bodyValue(...).retrieve()`) with the `baseUrl`, `defaultHeader`, `defaultHeaders { }` and filters of their builder; `BodyInserters.fromFormData(...)` |
@@ -812,7 +813,7 @@ package. `--changed-since` scans have no coverage section.
   are not followed ([docs/languages.md](docs/languages.md#php)).
 - Kotlin: the JVM SDKs without a registry ([sdk-support.md](docs/sdk-support.md)) are listed in `coverage.sdks` only;
   Spring AI calls through a shared interface in a project with two model starters and nothing selecting one are not
-  listed, rather than guessed ([docs/languages.md](docs/languages.md#kotlin)); a header an interceptor adds under a
+  listed, rather than guessed ([docs/languages.md](docs/languages.md#kotlin)); a client default header set under a
   condition is listed as always added. The
   Kotlin grammar marks a class body closed on its member's line (`companion object { const val
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.

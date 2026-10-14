@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.15.0";
+export const SCHEMA_VERSION = "1.16.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -187,6 +187,12 @@ export const ClientPartSchema = z
     from: z
       .enum(["interceptor", "default"])
       .describe("interceptor: an interceptor of the client (OkHttp `addInterceptor`). default: a default the client is built with (Ktor `defaultRequest`, Spring `defaultHeader`)."),
+    optional: z
+      .boolean()
+      .optional()
+      .describe(
+        "true: added on some requests only (set in a branch or a loop of the interceptor, or after an early return: `if (url.contains(...)) builder.header(...)`). Absent when added to every request.",
+      ),
   })
   .meta({ id: "ClientPart", description: "A query parameter or header the client adds to every request it sends, rather than the call itself." });
 
