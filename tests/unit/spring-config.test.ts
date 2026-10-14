@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseProperties, parseYaml, relaxedKey } from "../../src/lang/jvm/spring-config.js";
+import { parseProperties, parseYaml, propertiesDocs, relaxedKey, yamlDocs } from "../../src/lang/jvm/spring-config-parse.js";
 
 describe("Spring Boot configuration files", () => {
   it("reads nested YAML mappings, quoted values and trailing comments; skips lists, block scalars and profiles", () => {
@@ -49,5 +49,18 @@ describe("Spring Boot configuration files", () => {
     parseYaml(text);
     parseProperties(text);
     expect(Date.now() - t).toBeLessThan(2000);
+  });
+});
+
+describe("Spring Boot configuration documents", () => {
+  it("splits documents and tells each one's profiles (#96)", () => {
+    const docs = propertiesDocs("a.model=x\n#---\nspring.config.activate.on-profile=dev, local\na.model=y\n!---\nspring.profiles=!prod\na.model=z\n");
+    expect(docs.map((d) => [d.props.get(relaxedKey("a.model")), d.profiles])).toEqual([
+      ["x", undefined],
+      ["y", ["dev", "local"]],
+      ["z", []],
+    ]);
+    expect(parseProperties("a.model=x\n#---\nspring.profiles=dev\na.model=y\n").get(relaxedKey("a.model"))).toBe("x");
+    expect(yamlDocs("a:\n  model: x\n---\nspring:\n  profiles: dev\na:\n  model: y\n")[1]!.profiles).toEqual(["dev"]);
   });
 });

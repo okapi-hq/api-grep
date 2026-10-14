@@ -244,7 +244,8 @@ the S3 Transfer Manager and the DynamoDB Enhanced Client, S3 from the AWS SDK fo
 and PostHog (the Android / JVM facade and posthog-java); with #50 the community openai-kotlin client, Azure OpenAI,
 LangChain4j's OpenAI, Anthropic, Gemini, Mistral, Ollama and Bedrock models, Firebase for Android (Auth, Realtime
 Database, Storage, callable Functions), supabase-kt (Postgrest, Auth, Storage, Functions), SendGrid, Resend and
-Mailgun; with #89 Spring AI's OpenAI, Anthropic, Mistral AI and Ollama models (below). The registries are in
+Mailgun; with #89 Spring AI's OpenAI, Anthropic, Mistral AI and Ollama models, with #96 its Azure OpenAI, Bedrock
+Converse, Google GenAI and DeepSeek models (below). The registries are in
 `src/lang/jvm/registry/`, keyed by Maven coordinates and fully qualified classes, so Java reads them as they are.
 
 **SDK registries** (#33): JVM SDKs build clients with factories and builders, reach resources through accessor calls,
@@ -340,31 +341,60 @@ and take parameters as builders.
   `ChatClient.Builder` (`builder.defaultSystem(s).build()`, also `mutate()`), `ChatClient.create(model)` or
   `ChatClient.builder(model).build()`; `ChatModel.call(prompt)` / `stream`, `EmbeddingModel.embed` / `call`,
   `ImageModel.call`, the transcription and speech models. Reading the response (`.content()`, `.entity(...)`) is the same
-  request. One entry per provider (OpenAI, Anthropic, Mistral AI, Ollama), artifact (the module `spring-ai-openai`, the
-  1.0 starter `spring-ai-starter-model-openai`, the milestone starter `spring-ai-openai-spring-boot-starter`) and kind
-  (chat, embedding, image, transcription, speech), with `configured` (`ConfiguredClient` in `src/lang/ir/language.ts`).
+  request. One entry per provider (OpenAI, Anthropic, Mistral AI, Ollama; with #96 Azure OpenAI, Bedrock Converse,
+  Google GenAI, DeepSeek), artifact (the module `spring-ai-openai`, the 1.0 starter `spring-ai-starter-model-openai`,
+  the milestone starter `spring-ai-openai-spring-boot-starter`; a kind can list its own, Google GenAI's embedding
+  starter) and kind (chat, embedding, image, transcription, speech), with `configured` (`ConfiguredClient` in
+  `src/lang/ir/language.ts`). A path holding the model (Azure's `/openai/deployments/{deployment}/chat/completions`,
+  Bedrock's `/model/{modelId}/converse`, Gemini's `/v1beta/models/{model}:generateContent`) reads it through the param
+  source `model` (the call's model); `stream` calls have their own path where the API does (`converse-stream`,
+  `:streamGenerateContent`).
 - **Provider:** the interfaces (`ChatClient`, `ChatModel`) are shared: a chain through a provider's own class
   (`OpenAiChatModel`, also the model `ChatClient.builder(model)` gets) is that provider's; otherwise the provider is the
-  one model starter or module the manifests between the file and the scanned directory declare. Two providers declared
-  and an interface the code does not tie to one: no call (the bean could be either). A starter declared and none of its
-  classes imported counts the shared interfaces' imports for it in `coverage.sdks` (`declaredOnly` roots; the module's
-  own declaration first, `src/lang/ir/scan.ts`).
+  one model starter or module of that kind the manifests between the file and the scanned directory declare (an
+  Anthropic starter next to OpenAI's gives no `EmbeddingModel`). With several (#96, `src/lang/jvm/spring-ai-beans.ts`):
+  the bean a `@Qualifier("anthropicChatModel")` (or the beans DSL's `ref<ChatModel>("name")`) names on the injection
+  point the client or model comes from (through locals, fields and `ChatClient.builder(m)`), else the provider
+  `spring.ai.model.chat` (`.embedding`, `.image`, `.audio.transcription`, `.audio.speech`) keeps, else the bean named
+  like the parameter or field (`ChatModel openAiChatModel`, Spring's fallback). Nothing of these: no call, the bean
+  could be either (Spring would refuse to start; listing one call per provider would list a request that is never
+  sent). Google GenAI with `spring.ai.google.genai.project-id` set goes to Vertex AI: no call. A starter declared and
+  none of its classes imported counts the shared interfaces' imports for it in `coverage.sdks` (`declaredOnly` roots;
+  the module's own declaration first, `src/lang/ir/scan.ts`).
 - **Model and base URL:** the model the code sets wins (the prompt's `options(X.builder().model(m))`, the request
   object's options: `new Prompt(text, options)`, `new EmbeddingRequest(texts, options)`, a client's or model's
   `defaultOptions`; options the scan cannot read leave it unknown), else the module's
   `src/main/resources/application.yml` / `.yaml` / `.properties` (`spring.ai.<provider>.<kind>.options.model`, 2.0's
-  `spring.ai.<provider>.<kind>.model`; `base-url` of the kind, then of the provider), read as `@Value` reads a property:
-  the property named by its key with the file's value as default, `${X:d}` in the value an environment variable with
-  its default (`src/lang/jvm/spring-config.ts`). A base URL ending in `/v1` (Spring AI 2's OpenAI) is not doubled, and
-  one that names another known provider (`https://api.groq.com/openai`) gives that provider, as for any SDK. A model
-  built in the code (`OllamaChatModel.builder().ollamaApi(api).defaultOptions(o).build()`) ignores the properties: its
-  API object's `baseUrl(...)`, unknown when the API object cannot be read. The model is reported `from: "argument"`;
-  no body is listed (the provider's request is built by Spring AI).
+  `spring.ai.<provider>.<kind>.model`, Azure's `options.deployment-name`; `base-url` of the kind, then of the provider,
+  Azure's `endpoint`), read as `@Value` reads a property: the property named by its key with the file's value as
+  default, `${X:d}` in the value an environment variable with its default (`src/lang/jvm/spring-config.ts`), else the
+  starter's default model in the Spring AI release the build declares (the starter's version, else the `spring-ai-bom`
+  one of a Gradle `platform` or a Maven `dependencyManagement` import, `Manifests.bom`), as the same property read with
+  that default. A base URL ending in `/v1` (Spring AI 2's OpenAI) is not doubled for paths starting with `/v1`, and one
+  that names another known provider (`https://api.groq.com/openai`) gives that provider, as for any SDK. A model built
+  in the code (`OllamaChatModel.builder().ollamaApi(api).defaultOptions(o).build()`) ignores the properties: its API
+  object's `baseUrl(...)`, unknown when the API object cannot be read. The model is reported `from: "argument"`; no
+  body is listed (the provider's request is built by Spring AI).
+- **Model enums and defaults** (#96, `src/lang/jvm/spring-ai-models.ts` over `registry/spring-ai-models.json`):
+  Spring AI's enums (`OpenAiApi.ChatModel`, `AnthropicApi.ChatModel`, `MistralAiApi.ChatModel` / `EmbeddingModel`,
+  `OllamaModel`, `DeepSeekApi.ChatModel`, OpenAI's image and audio models) read by `getValue()`, `getName()`, `id()`,
+  Kotlin's `.value` or as the constant itself, imported or written fully qualified; openai-java and anthropic-java
+  constants (`com.openai.models.ChatModel.GPT_4O_MINI.asString()`, used by Spring AI 2) by their registries' rules
+  (`sdkConstant` in `src/lang/ir/builders.ts`). The table was read from the sources of every release from 1.0.0 to
+  2.0.1: a constant whose value changed (`MISTRAL_SMALL` is `mistral-small-2603` from 2.0.1) needs the declared release,
+  and a default model needs a release of the table; otherwise the model stays unknown.
 - **Configuration files** are read through `readConfigFile` (hostile input, symlinks inside the scanned directory, 4
-  MB at most), line by line with linear patterns, at most 20,000 lines: the default profile only (YAML documents
-  activated by `spring.config.activate.on-profile` or `spring.profiles` and `application-<profile>.*` files are left
-  out), nested block mappings with scalar values (lists, block scalars and flow collections are skipped), keys matched by
-  Spring's relaxed binding (`base-url`, `baseUrl`, `base_url`), `.properties` over YAML.
+  MB at most), line by line with linear patterns, at most 20,000 lines (`spring-config-parse.ts`): the default
+  documents, then the files `spring.config.import` names on the classpath (`optional:classpath:llm.properties`, at
+  most 8), then the profiles `spring.profiles.active` names (literal or a placeholder's default, at most 4): their YAML
+  documents (`spring.config.activate.on-profile` or `spring.profiles` naming the profile; a profile expression such as
+  `!prod` matches none), `#---` documents of a `.properties` file, and `application-<profile>.*`, each over the ones
+  before. Nested block mappings with scalar values (lists, block scalars and flow collections are skipped), keys matched
+  by Spring's relaxed binding (`base-url`, `baseUrl`, `base_url`), `.properties` over YAML.
+- **Kotlin beans DSL** (#96): `ref<ChatClient>()` in `beans { bean { ... } }` (a file importing
+  `org.springframework.context.support.beans`) is the project's bean of that type, else one the starter makes (the
+  injection hook `lookupType`); the grammar reads `ref<ChatModel>("name")` as two comparisons, lowered as the call
+  (`typedCall` in `src/lang/kotlin/lower-expr.ts`, also for Koin's `get<Api>(named("x"))`).
 
 **HTTP clients** (`src/lang/jvm/http/`, tables in `clients.json`):
 
@@ -666,11 +696,13 @@ file. A file that does not parse is then read once more with a `;` in place of t
   flavors other than the first literal are not listed.
 - SDK parameters that are Java objects the SDK serializes itself (Gen AI contents, Firebase `UserRecord.CreateRequest`,
   a DynamoDB-mapped item) give no body. A builder kept in a field and filled by several methods is not read.
-- Spring AI (#89): a project with two model starters calling a `ChatClient` or `ChatModel` it does not tie to one
-  provider (by its class, a `@Qualifier`, a bean name) gets no call there; the Kotlin beans DSL (`ref<ChatClient>()`),
-  Spring AI's own model enums (`MistralAiApi.ChatModel.MISTRAL_SMALL.getValue()`, unknown), Azure OpenAI, Vertex AI,
-  Bedrock and the other starters, the library's default model when none is configured, `application-<profile>` files
-  and configuration imported from elsewhere (`spring.config.import`, a config server) are not read (#96).
+- Spring AI (#89, #96): a project with two model starters calling a `ChatClient` or `ChatModel` that no class,
+  qualifier, `spring.ai.model.<kind>` or bean name ties to one provider gets no call there. Not read: the Vertex AI
+  Gemini starter (gRPC by default, gone in 2.0), Google GenAI on Vertex AI, the other OpenAI-compatible starters
+  (MiniMax, Moonshot, ZhiPu AI), the Bedrock region (the host keeps `{region}`), default models of the image and audio
+  kinds and of Azure, Bedrock and Google GenAI, releases outside 1.0.0 to 2.0.1 for a value that changed, profiles
+  activated outside the files (`SPRING_PROFILES_ACTIVE`, the command line), profile expressions (`!prod`, `a & b`),
+  `file:` imports and a config server.
 - JVM SDKs listed in `providers.json` without a registry are reported as `unsupported` in `coverage.sdks`. AWS services
   without a registry (Lambda, Kinesis, the SDK for Java 1.x's clients other than
   S3) are not in `providers.json`. The DynamoDB Enhanced Client's table name and item, and the AWS SDK for Kotlin's
@@ -1286,7 +1318,7 @@ call site keeps its own single value.
 | #3 Supabase, Firebase, Sentry registries; no-crash scans | done | supabase-py (tables, rpc, auth, storage, functions), firebase-admin (Firestore references, Auth, FCM), sentry-sdk (`capture_*`, not `init`); per-file parse / internal errors | kreait/firebase-php (typed services too), google/cloud-firestore, sentry/sentry (+ Laravel, Symfony); no official Supabase SDK | Firestore (google-cloud-firestore, firebase-admin, Android), firebase-admin Auth, FCM and Realtime Database, sentry-java / sentry-android capture calls (#33); supabase-kt Postgrest, Auth, Storage and Functions, Firebase for Android Auth, Realtime Database, Storage and Functions (#50); per-file parse / internal errors |
 | #4 diagnostics | done | parse errors, internal errors, dropped calls, `injected-client`, `injected-fetch`, `wrapper-depth`, per-language file counts | same | same; a typed parameter that names no client is not an `injected-client` |
 | #5 regression fixtures and recall | done; `tests/fixtures/{javascript,html}/**/expected.json` too | `tests/fixtures/python/**/expected.json` are part of the recall check | `tests/fixtures/php/**/expected.json`, same check | `tests/fixtures/kotlin/**/expected.json` and `tests/fixtures/java/**/expected.json` (the same clients in Java, a mixed Kotlin / Java project, #43): OkHttp (interceptors too), `java.net.http`, Ktor, Spring, Feign, Retrofit, clients a DI container provides (`di-*`, #46), the SDK fixtures of #33, #49 and #50 (`tests/fixtures/kotlin/sdk/`, `tests/fixtures/java/aws/`), negatives (server endpoints, JAX-RS resources, gRPC, builders of other libraries) |
-| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), more AWS services and the AWS SDK for Kotlin (#49), Spring AI in #89 |
+| #6 provider roadmap | done | registries for every P1 / P2 provider with a Python SDK; `providers.json` lists PyPI packages per provider | the same for Packagist | Maven artifacts per provider in `providers.json`; registries for OpenAI, Anthropic, Stripe, AWS S3 and Bedrock Runtime, Gen AI, Firebase, Twilio, Slack, Sentry, PostHog (#33), openai-kotlin, Azure OpenAI, LangChain4j, Firebase Android, supabase-kt, SendGrid, Resend, Mailgun (#50), more AWS services and the AWS SDK for Kotlin (#49), Spring AI in #89 and #96 |
 | #7 SDK coverage | done | PyPI manifests, import names (`modules.json`), `ecosystem: "pypi"` | `composer.json`, namespaces per package (`namespaces.json`), `ecosystem: "composer"` | Gradle (Kotlin and Groovy DSL, version catalog) and `pom.xml`, package roots (`src/lang/jvm/packages.json`), `ecosystem: "maven"`; a declared artifact's roots win over an undeclared one's |
 | #8 provider resolution | done | env defaults, env var names, URL helpers, class base URLs; no template in `provider` | `env('X', 'default')`, `getenv() ?: '...'`, Laravel `config()` files, class constants, helpers, `$this->baseUrl` | `System.getenv("X") ?: "..."`, `System.getProperty`, `BuildConfig.X` with its Gradle literal, Spring `@Value("${x:default}")`, constants, `object` and companion members |
 | #30 operation outside the URL | `operation` field and its name in `id`; JSON-RPC (#34) and GraphQL (#35) from the body shape, query and SDK document argument; `gql` tags, `.graphql` imports, codegen AST documents (#56), Octokit `graphql()`, Apollo, urql and graphql-request (#54), Relay (with its compiled artifacts) and Shopify's clients (#67), Hydrogen, Relay containers and `loadQuery` (#83); JSON-RPC client libraries (#52); SOAP and action-style APIs (#36) from headers, the XML body and the query | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query; the `gql` client (#54), `sgqlc` (its `Operation` documents too) and ShopifyAPI (#67); web3.py and solana-py (#52) | JSON-RPC, GraphQL, SOAP and action-style APIs from the body shape, headers and query | same engine; no JSON-RPC, GraphQL or SOAP fixture yet |

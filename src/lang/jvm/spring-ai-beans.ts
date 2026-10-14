@@ -12,7 +12,8 @@ import { springPropertyText } from "./spring-config.js";
  * parameter or field (Spring's fallback). Nothing else tells: the call is then left out rather than guessed.
  */
 
-const MAX_STEPS = 6;
+/** Steps through calls, members, locals and fields before giving up. */
+const MAX_STEPS = 24;
 
 const positional = (args: { name?: string; spread?: unknown; value: Expr }[]): Expr[] => args.filter((a) => !a.name && !a.spread).map((a) => a.value);
 
@@ -31,7 +32,7 @@ function inner(e: Expr): Expr | undefined {
 export function sourcePoint(start: Expr, fn: FunctionDef, ctx: IrCtx): Point | undefined {
   let e: Expr = start;
   let scope = fn;
-  for (let step = 0; step < MAX_STEPS * 4; step++) {
+  for (let step = 0; step < MAX_STEPS; step++) {
     const next = inner(e);
     if (next) {
       e = next;

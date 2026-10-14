@@ -16,7 +16,8 @@ type Versioned = string | Record<string, string>;
 const ENUMS = table.enums as Record<string, Record<string, Versioned>>;
 const DEFAULTS = table.defaults as Record<string, Versioned>;
 const RELEASES = new Set(table.releases);
-const ACCESSORS = new Set(["getValue", "getName", "id", "getId", "value"]);
+/** Accessors of a model enum giving its id; `asString()` is the openai-java / anthropic-java one. */
+const ACCESSORS = new Set(["getValue", "getName", "id", "getId", "value", "asString"]);
 const BOM = "org.springframework.ai:spring-ai-bom";
 
 /** `1.0.10` after `1.0.9`: numeric parts, compared in order. */
@@ -47,7 +48,6 @@ export function springAiRelease(entry: IrRegistryEntry, fn: FunctionDef, ctx: Ir
 /** `X.CONST` (Kotlin `.value` too) or `X.CONST.getValue()`: the constant's expression, without the accessor. */
 function constantOf(e: Expr): Expr | undefined {
   if (e.k === "call" && e.args.length === 0 && e.fn.k === "attr" && ACCESSORS.has(e.fn.name)) return e.fn.obj;
-  if (e.k === "call" && e.args.length === 0 && e.fn.k === "attr" && e.fn.name === "asString") return e.fn.obj;
   if (e.k === "attr" && e.name === "value") return e.obj;
   return e.k === "attr" || e.k === "name" ? e : undefined;
 }

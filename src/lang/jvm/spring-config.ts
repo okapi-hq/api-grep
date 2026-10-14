@@ -5,8 +5,6 @@ import { upwards } from "./manifests.js";
 import { springPlaceholders } from "./placeholders.js";
 import { propertiesDocs, relaxedKey, yamlDocs, type ConfigDoc, type Props } from "./spring-config-parse.js";
 
-export { parseProperties, parseYaml, relaxedKey } from "./spring-config-parse.js";
-
 /**
  * Spring Boot configuration (`src/main/resources/application.properties`, `application.yml`): the properties a
  * module's code reads without naming them (Spring AI's `spring.ai.openai.chat.options.model`). The default documents,
