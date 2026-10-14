@@ -2,10 +2,11 @@ import { closeSync, openSync, readFileSync, readSync, statSync } from "node:fs";
 import path from "node:path";
 import { Project, ts, type SourceFile } from "ts-morph";
 import { BoundedFileSystem } from "./bounded-fs.js";
-import { isConfigFile, isInside, realPath, relativePosix } from "./files.js";
+import { isInside, realPath, relativePosix } from "./files.js";
 import { leanResolution } from "./module-resolution.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
 import { parseHtml, type HtmlDoc } from "./lang/html/extract.js";
+import { tsconfigFor, type TsconfigChoice } from "./tsconfig.js";
 
 export { readEnvHints, type LeftOut } from "./lang/files.js";
 
@@ -83,19 +84,6 @@ export interface Unreadable {
   /** Path relative to the scanned directory. */
   file: string;
   detail: string;
-}
-
-/** The nearest tsconfig.json, or jsconfig.json for a JavaScript project (path aliases live there too). */
-function findTsconfig(dir: string): string | undefined {
-  let cur = path.resolve(dir);
-  for (let i = 0; i < 5; i++) {
-    const candidate = ["tsconfig.json", "jsconfig.json"].map((name) => path.join(cur, name)).find(isConfigFile);
-    if (candidate) return candidate;
-    const parent = path.dirname(cur);
-    if (parent === cur) break;
-    cur = parent;
-  }
-  return undefined;
 }
 
 /** The first `bytes` of a regular file, or undefined when it cannot be read (a FIFO named `x.ts` would never answer). */
@@ -206,26 +194,23 @@ function compilerOptions(languages: CheckerLanguage[]): ts.CompilerOptions {
   return { allowJs: true, checkJs: false, maxNodeModuleJsDepth: 0, ...(languages.includes("html") ? { allowNonTsExtensions: true } : {}) };
 }
 
-function createProject(tsconfig: string | undefined, languages: CheckerLanguage[]): Project {
+/** The compiler options of a scan: its tsconfig and what that extends are read inside `bound` only. */
+function compilerOptionsOf({ file, bound }: TsconfigChoice, languages: CheckerLanguage[]): ts.CompilerOptions {
   const extra = compilerOptions(languages);
-  if (!tsconfig) return new Project({ resolutionHost: leanResolution, compilerOptions: { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true, ...extra } });
-  return new Project({ resolutionHost: leanResolution, tsConfigFilePath: tsconfig, skipAddingFilesFromTsConfig: true, compilerOptions: { skipLibCheck: true, noEmit: true, ...extra } });
-}
-
-function tsconfigFor(dir: string, explicit: string | undefined): string | undefined {
-  if (!explicit) return findTsconfig(dir);
-  const file = path.resolve(explicit);
-  if (!isConfigFile(file)) throw new Error(`tsconfig not found: ${file}`);
-  return file;
+  if (!file) return { skipLibCheck: true, noEmit: true, allowJs: false, strict: false, esModuleInterop: true, ...extra };
+  const fileSystem = bound === undefined ? undefined : new BoundedFileSystem(bound);
+  const project = new Project({ resolutionHost: leanResolution, fileSystem, tsConfigFilePath: file, skipAddingFilesFromTsConfig: true, compilerOptions: { skipLibCheck: true, noEmit: true, ...extra } });
+  return project.getCompilerOptions();
 }
 
 export function scopeOf(opts: LoadOptions): Scope {
   const dir = path.resolve(opts.dir);
   const languages = opts.languages ?? ["typescript"];
-  const tsconfig = tsconfigFor(dir, opts.tsconfig);
+  const choice = tsconfigFor(dir, opts.tsconfig);
+  const tsconfig = choice.file;
   const files = tsFiles(dir, opts.include, opts.exclude, languages);
-  // the tsconfig (and what it extends) may be above `dir`: read here, with the disk, not by the batches
-  const options = createProject(tsconfig, languages).getCompilerOptions();
+  // the tsconfig may be above `dir` (in its repository): read here, not by the batches
+  const options = compilerOptionsOf(choice, languages);
   return { dir, opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
 }
 

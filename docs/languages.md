@@ -72,8 +72,10 @@ graph read the disk through `src/bounded-fs.ts` (#112): only the scanned directo
 resolved, so neither `node_modules` nor `node_modules/@types` is looked for above it, a `/// <reference path>` or a
 `paths` alias out of it reads as a missing file, and TypeScript's current directory is the scanned directory, not the
 one the scan runs from. A report is then the same from any checkout location (a stray `~/node_modules` used to type a
-few bodies). The tsconfig, found in the scanned directory or up to four above, is parsed once with the disk (`scopeOf`) for its
-options. Union members of a type are
+few bodies). The tsconfig (`src/tsconfig.ts`) is looked for in the scanned directory and up to four directories above,
+never above the repository root (the nearest directory holding `.git`) nor, outside a repository, above the scanned
+directory: the eval used to read the scanning tool's own tsconfig for repositories without one. It is parsed once
+(`scopeOf`) for its options, it and what it extends read inside that same bound. Union members of a type are
 ordered by their text, not by when the checker first met them, and the properties of a mapped type over a union of
 keys by name: a shape no longer depends on which other files a checker read. The receiver resolver (#37) counts its 50
 callers among the calls of the function's group.

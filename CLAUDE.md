@@ -155,7 +155,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
 - The scanned repository is hostile input: files are listed through `src/lang/files.ts` (symlinks must stay inside the
   scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), the TypeScript
   checker and file graph read through `src/bounded-fs.ts` (nothing above the scanned directory: no parent
-  `node_modules`, so a report does not depend on the checkout location, #112), keys from the code go through
+  `node_modules`, so a report does not depend on the checkout location, #112), the tsconfig is found no higher than
+  the repository root (`src/tsconfig.ts`), keys from the code go through
   `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
   `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in

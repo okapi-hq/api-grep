@@ -53,4 +53,19 @@ describe("a report depends on the scanned directory only (#112)", () => {
     expect(bodyOf(report, "/v1/users")).toMatchObject({ properties: { password: { type: "string" } } });
     expect(bodyOf(report, "/v1/invites")).toMatchObject({ fromType: "InviteInput", properties: { role: { type: "string" } } });
   });
+
+  it("reads a tsconfig above it in its repository only", () => {
+    const code = {
+      "src/limits/quota.ts": `export const MAX_SEATS = 5;`,
+      "src/billing.ts": [`import { MAX_SEATS } from "@limits/quota";`, `export const buy = () => fetch("https://api.example.com/v1/seats", { method: "POST", body: JSON.stringify({ seats: MAX_SEATS }) });`].join("\n"),
+    };
+    const aliases = JSON.stringify({ compilerOptions: { baseUrl: ".", paths: { "@limits/*": ["checkout/src/limits/*"] } } });
+    const alone = path.join(tempRepo(under("checkout", code)), "checkout");
+    const above = tempRepo({ "tsconfig.json": aliases, ...under("checkout", code) });
+    const report = reportOf(path.join(above, "checkout"), above);
+    expect(report).toEqual(reportOf(alone, alone));
+    expect(bodyOf(report, "/v1/seats")).not.toMatchObject({ properties: { seats: { enum: [5] } } });
+    const repo = tempRepo({ ".git/HEAD": "ref: refs/heads/main\n", "tsconfig.json": aliases, ...under("checkout", code) });
+    expect(bodyOf(reportOf(path.join(repo, "checkout"), repo), "/v1/seats")).toMatchObject({ properties: { seats: { enum: [5] } } });
+  });
 });

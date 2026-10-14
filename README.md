@@ -432,7 +432,7 @@ api-grep serve --port 8080                            # HTTP server, see below
 | `--curl` | print example requests as curl commands |
 | `--examples <n>` | maximum example requests per call (default 3, `0` disables) |
 | `--out <file>` | write the JSON report to a file |
-| `--tsconfig <path>` | TypeScript: tsconfig.json to load (default: nearest) |
+| `--tsconfig <path>` | TypeScript: tsconfig.json to load (default: the nearest, up to the repository root) |
 | `--changed-since <ref>` | only scan files changed since a git ref, plus their direct importers |
 | `--include <glob>` / `--exclude <glob>` | filter scanned files (repeatable); excluded files are still read to resolve imports |
 | `--no-wrappers` | disable wrapper expansion |
@@ -749,8 +749,9 @@ A scanned repository is treated as hostile input:
   paths, `node_modules` packages and `@types` resolve inside it only. A package installed above
   the checkout (a stray `~/node_modules`), or a sibling package of a monorepo scanned from a
   subdirectory, is not read, so a report does not depend on where the repository is checked out
-  or where the scan runs. The nearest `tsconfig.json`, which may be above, gives the compiler
-  options only.
+  or where the scan runs. The nearest `tsconfig.json` is looked for up to the root of the
+  repository (the directory holding `.git`; the scanned directory when there is none), never
+  above, and gives the compiler options only; `--tsconfig` names one anywhere.
 - `--changed-since` runs `git` in the scanned directory with `core.fsmonitor` off and without
   external diff or textconv drivers. A `.git` directory that arrived with untrusted files (an
   archive, not a clone) can still configure other filters: use it on checkouts you made.

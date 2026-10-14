@@ -87,7 +87,7 @@ export function buildProgram(): Command {
     .option("--curl", "print example requests as curl commands (one per example)")
     .option("--examples <n>", "maximum example requests per call (default 3, 0 disables)", count)
     .option("--out <file>", "write JSON report to file")
-    .option("--tsconfig <path>", "TypeScript: tsconfig.json to load (default: nearest)")
+    .option("--tsconfig <path>", "TypeScript: tsconfig.json to load (default: the nearest, up to the repository root)")
     .option("--changed-since <ref>", "only files changed vs git ref (+ importers, one hop)")
     .option("--include <glob>", "include glob (repeatable)", collect)
     .option("--exclude <glob>", "exclude glob (repeatable)", collect)
