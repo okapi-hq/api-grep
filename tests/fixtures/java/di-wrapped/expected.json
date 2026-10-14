@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/100",
+  "calls": [
+    { "file": "Places.java", "line": 20, "provider": "maps.atlas-example.com" },
+    { "file": "Places.java", "line": 24, "provider": "tiles.atlas-example.com" }
+  ]
+}

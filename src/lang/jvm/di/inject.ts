@@ -83,22 +83,25 @@ function constructorArg(p: Param, init: FunctionDef, cls: ClassDef, ctx: IrCtx):
 }
 
 const params = new WeakMap<Param, Scoped | null>();
+/** Read without the scanned directory (a caller-level read): configuration files are not seen, so kept apart. */
+const paramsWithoutFiles = new WeakMap<Param, Scoped | null>();
 
 function injectedParam(p: Param, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   // `@Value("${billing.url:https://...}") String url` of a bean method: the configuration value, not a parameter
   if (p.default && names(p.annotations).has("Value") && injecting(fn)) return { expr: p.default, fn };
   // an extension function's receiver is the object it is called on, never injected
   if (p.kind !== "normal" || p.default || !p.type || p === fn.receiver) return undefined;
-  const hit = params.get(p);
+  const cache = ctx.rootDir ? params : paramsWithoutFiles;
+  const hit = cache.get(p);
   if (hit !== undefined) return hit ?? undefined;
   // set before reading: a provider reading its own type's parameter must not loop
-  params.set(p, null);
+  cache.set(p, null);
   let v: Scoped | undefined;
   const framework = injecting(fn);
   if (names(p.annotations).has("Assisted")) v = undefined;
   else if (framework) v = valueFor(p.type, { framework, quals: qualifiers(p.annotations, fn, ctx), name: p.name }, fn, ctx);
   else if (fn.name === "<init>" && fn.cls) v = constructorArg(p, fn, fn.cls, ctx);
-  params.set(p, v ?? null);
+  cache.set(p, v ?? null);
   return v;
 }
 

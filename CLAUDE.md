@@ -181,8 +181,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `src/lang/jvm/di/collections.ts`, beans by their supertypes, Koin `bind` and Injekt in `locators.ts`, elements of
   injected collections in `src/lang/jvm/elements.ts`); #94 adds `@ConfigurationProperties`
   (`src/lang/jvm/di/config-props.ts`), Koin `getAll<T>()`, `ObjectProvider` streams, loops over collections
-  (`FunctionDef.loops`), method references on builder variables and builder extensions adding interceptors; what it
-  leaves is #100.
+  (`FunctionDef.loops`), method references on builder variables and builder extensions adding interceptors; #100 adds
+  interceptors wrapping others (`src/lang/jvm/http/interceptors.ts`), lists built with `buildList` / `add`, builders
+  handed to a project function, nested and `@Bean`-bound configuration properties with their `application.yml` values.
   Calls in extension functions of a client type (#86: `FunctionDef.receiver`, `implicit` names, the extension a call
   runs in `src/lang/ir/extensions.ts`) are done.
 - Java: #43 (Java lowering, one index with Kotlin, the JVM clients and registries on Java) and #65 (Apache HttpClient,

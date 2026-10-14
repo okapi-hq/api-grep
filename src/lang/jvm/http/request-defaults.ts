@@ -6,7 +6,7 @@ import type { ClientPartFrom, IrCtx, IrPair } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { nameValuePairs } from "./name-value-pairs.js";
-import { withClosures } from "./okhttp.js";
+import { withClosures } from "../elements.js";
 import { handlerOf, type Handler } from "./spring-parts.js";
 
 /**

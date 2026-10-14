@@ -1,0 +1,10 @@
+catalog:
+  api:
+    base-url: https://eu.catalog-example.com
+inventory:
+  base-url: ${INVENTORY_URL:https://inventory.example.com}
+mirror:
+  primary:
+    base-url: https://mirror-a.example.com
+  backup:
+    base-url: https://mirror-b.example.com

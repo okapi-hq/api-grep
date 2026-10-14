@@ -1,44 +1,16 @@
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { ScopedCall } from "../../ir/fluent.js";
-import { callObject, dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
-import { classMethod } from "../../ir/project.js";
+import { callObject, dottedPath, type CallExpr, type Expr, type FunctionDef } from "../../ir/model.js";
+import { lastAssign, lookup } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
-import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
+import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, readSteps, type FluentChain } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
-import { elementsOf } from "../elements.js";
+import { elementsOf, withClosures } from "../elements.js";
+import { interceptorsOf, type Interceptor } from "./interceptors.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { chainFrom, rawOf } from "./request.js";
 import { JVM, type BuiltRequestClient } from "./tables.js";
-
-/** An interceptor's code, and what its values read: the constructor arguments and class of an interceptor object. */
-interface Interceptor {
-  fn: FunctionDef;
-  subst?: Subst;
-  self?: ClassDef;
-}
-
-/** `{ chain -> ... }`, `Interceptor { ... }`, `object : Interceptor { ... }`, `AuthInterceptor(token)` (a project class). */
-function interceptorOf(arg: Scoped, ctx: IrCtx): Interceptor | undefined {
-  const d = deref(arg.expr, arg.fn, ctx);
-  if (d.expr.k === "fnref") return { fn: d.expr.fn };
-  if (d.expr.k !== "call") return undefined;
-  const lambda = lambdaOf(d.expr);
-  if (lambda && calleeIs(d.expr, ["Interceptor"])) return { fn: lambda };
-  const target = calleeChain(d.expr, d.fn, ctx);
-  if (target.root.kind !== "class" || target.segs.length > 0) return undefined;
-  const cls = target.root.cls;
-  const intercept = classMethod(cls, "intercept", ctx.idx);
-  const init = classMethod(cls, "<init>", ctx.idx);
-  return intercept ? { fn: intercept, self: cls, ...(init ? { subst: substitutionFor(init, d.expr, d.fn) } : {}) } : undefined;
-}
-
-/** A function and the lambdas written in it, at any depth (`chain.request().let { ... }`). */
-export function withClosures(fn: FunctionDef): FunctionDef[] {
-  const out = [fn];
-  for (let i = 0; i < out.length && out.length < 32; i++) out.push(...fn.module.allFunctions.filter((f) => f.parent === out[i] && !out.includes(f)));
-  return out;
-}
 
 /**
  * A response the interceptor receives or makes (`chain.proceed(request).newBuilder()`, `Response.Builder()`, through
@@ -48,14 +20,40 @@ function onResponse(e: Expr, fn: FunctionDef, depth = 0): boolean {
   if (depth > 8) return false;
   if (e.k === "name") {
     for (let f: FunctionDef | undefined = fn; f; f = f.parent) {
-      const set = f.assigns.filter((a) => a.target === e.name).pop();
+      // the value it holds there (`b = b.header(...)` reassigns a builder): an assignment before the read, else the first
+      const set = lastAssign(f.assigns, e.name, e.pos.offset);
       if (set) return onResponse(set.value, f, depth + 1);
+      // `response.newBuilder().let { builder -> builder.header(...) }`: the lambda's parameter is what `let` runs on
+      if (f.params.some((p) => p.name === e.name)) return letReceiver(f, e.name, depth);
     }
     return false;
   }
   if (e.k !== "call") return false;
   if (calleeIs(e, ["Response.Builder"]) !== undefined) return true;
   return e.fn.k === "attr" && (e.fn.name === "proceed" || onResponse(e.fn.obj, fn, depth + 1));
+}
+
+/**
+ * Local functions an interceptor calls (`fun withToken(r: Request) = r.newBuilder().addHeader(...)` declared next to
+ * the lambda in its provider, #100): their steps are the interceptor's.
+ */
+function localHelpers(fns: FunctionDef[], ctx: IrCtx): FunctionDef[] {
+  const out: FunctionDef[] = [];
+  for (const f of fns) {
+    for (const c of f.calls) {
+      const b = c.fn.k === "name" ? lookup(c.fn.name, f, c.pos.offset, ctx.idx) : undefined;
+      // a local `fun` is a value of the function it is declared in
+      const local = b?.kind === "value" && b.assign.value.k === "fnref" ? b.assign.value.fn : b?.kind === "function" && b.fn.parent && !b.fn.cls ? b.fn : undefined;
+      if (local && !fns.includes(local) && !out.includes(local)) out.push(...withClosures(local));
+    }
+  }
+  return out;
+}
+
+/** A `let` / `also` lambda's parameter, lowered with the value it runs on as its default: whether that is a response. */
+function letReceiver(lambda: FunctionDef, name: string, depth: number): boolean {
+  const p = lambda.params.find((x) => x.name === name);
+  return !!p?.default && onResponse(p.default, lambda.parent ?? lambda, depth + 1);
 }
 
 /**
@@ -69,9 +67,35 @@ const requestStep = (c: ScopedCall): boolean => c.call.args.length >= 2 && !(c.c
  */
 function interceptorPairs(i: Interceptor, outer: Subst | undefined): IrPair[] {
   const parts = emptyParts();
-  for (const f of withClosures(i.fn)) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
+  const own = [...withClosures(i.fn), ...localHelpers(withClosures(i.fn), i.ctx)];
+  for (const f of own) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
   const subst = outer || i.subst ? new Map([...(outer ?? []), ...(i.subst ?? [])]) : undefined;
-  return parts.pairs.map((p) => ({ ...p, from: "interceptor", ...(subst ? { subst } : {}), ...(i.self ? { self: i.self } : {}) }));
+  const mark = (pairs: IrPair[], s: Subst | undefined): IrPair[] => pairs.map((p) => ({ ...p, from: "interceptor", ...(s ? { subst: s } : {}), ...(i.self ? { self: i.self } : {}) }));
+  return [...mark(parts.pairs, subst), ...builderExtensions(own, i.ctx).flatMap((x) => mark(x.pairs, new Map([...(subst ?? []), ...x.subst])))];
+}
+
+/** Whether an extension's receiver is OkHttp's request builder (`fun Request.Builder.addHeaderIfNotEmpty(...)`). */
+const onRequestBuilder = (ext: FunctionDef): boolean => {
+  const path = ext.receiver?.type ? dottedPath(ext.receiver.type)?.join(".") : undefined;
+  return !!path && (path.endsWith("Request.Builder") || (path === "Builder" && ext.module.importPaths.some((p) => p.join(".") === "okhttp3.Request.Builder")));
+};
+
+/**
+ * A project extension of the request builder an interceptor calls as a step (`newBuilder().addHeaderIfNotEmpty(name,
+ * value)`, #100): the headers it sets, read with the call's arguments.
+ */
+function builderExtensions(fns: FunctionDef[], ctx: IrCtx): { pairs: IrPair[]; subst: Subst }[] {
+  const out: { pairs: IrPair[]; subst: Subst }[] = [];
+  for (const f of fns) {
+    for (const c of f.calls) {
+      const exts = c.fn.k === "attr" ? (ctx.idx.extensions.get(c.fn.name) ?? []).filter(onRequestBuilder) : [];
+      if (exts.length !== 1) continue;
+      const parts = emptyParts();
+      for (const g of withClosures(exts[0]!)) readSteps(lambdaCalls(g).filter(requestStep), JVM.okhttp.interceptor!, parts);
+      if (parts.pairs.length > 0) out.push({ pairs: parts.pairs, subst: substitutionFor(exts[0]!, c, f) });
+    }
+  }
+  return out;
 }
 
 /**
@@ -83,19 +107,30 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
   const fc = fluentChain(client, () => false, ctx);
   const names = JVM.okhttp.interceptors ?? [];
   const out: IrPair[] = [];
+  const seen = new Map<FunctionDef, Subst[]>();
   for (const step of fc.steps) {
     // the interceptor is often a lambda: the argument as written, not a step value
     const first = calleeIs(step.call, names) !== undefined ? step.call.args[0] : undefined;
-    const added = first ? [{ arg: { expr: first.value, fn: step.fn }, ctx }] : helperAdds(step, names, ctx);
-    // each interceptor of a collection (an injected `Set<Interceptor>` added in a `forEach`)
+    const added = first ? [{ arg: { expr: first.value, fn: step.fn }, ctx }] : [...helperAdds(step, names, ctx), ...handedAdds(step, names, ctx)];
+    // each interceptor of a collection (an injected `Set<Interceptor>` added in a `forEach`), and those it wraps
     for (const a of added) {
-      for (const arg of elementsOf(a.arg, a.ctx)) {
-        const i = interceptorOf(arg, a.ctx);
-        if (i) out.push(...interceptorPairs(i, a.ctx.subst || fc.subst ? new Map([...(fc.subst ?? []), ...(a.ctx.subst ?? [])]) : undefined));
+      for (const i of elementsOf(a.arg, a.ctx).flatMap((arg) => interceptorsOf(arg, a.ctx))) {
+        // added on several paths (`is AppInterceptor -> addInterceptor(...)`, `is WireInterceptor -> ...`): once
+        if (repeated(seen, i)) continue;
+        out.push(...interceptorPairs(i, i.ctx.subst || fc.subst ? new Map([...(fc.subst ?? []), ...(i.ctx.subst ?? [])]) : undefined));
       }
     }
   }
   return out;
+}
+
+/** The same interceptor code with the same constructor arguments, met before. */
+function repeated(seen: Map<FunctionDef, Subst[]>, i: Interceptor): boolean {
+  const same = (a: Subst | undefined, b: Subst | undefined): boolean => (a?.size ?? 0) === (b?.size ?? 0) && [...(a ?? [])].every(([p, v]) => b?.get(p)?.expr === v.expr);
+  const list = seen.get(i.fn) ?? [];
+  if (list.some((s) => same(s, i.subst))) return true;
+  seen.set(i.fn, [...list, i.subst ?? (new Map() as Subst)]);
+  return false;
 }
 
 /** Whether an extension's receiver is OkHttp's client builder (`fun OkHttpClient.Builder.addInterceptors(...)`). */
@@ -113,16 +148,37 @@ function helperAdds(step: ScopedCall, names: string[], ctx: IrCtx): { arg: Scope
   if (step.call.fn.k !== "attr") return [];
   const exts = (ctx.idx.extensions.get(step.call.fn.name) ?? []).filter(onClientBuilder);
   const ext = exts.length === 1 ? exts[0]! : undefined;
-  if (!ext) return [];
-  const inner = withSubst(ctx, substitutionFor(ext, step.call, step.fn));
+  return ext ? addsIn(ext, names, withSubst(ctx, substitutionFor(ext, step.call, step.fn))) : [];
+}
+
+/** The interceptors a helper of the project adds to the builder it is given: the `addInterceptor` calls in it. */
+function addsIn(helper: FunctionDef, names: string[], ctx: IrCtx): { arg: Scoped; ctx: IrCtx }[] {
   const out: { arg: Scoped; ctx: IrCtx }[] = [];
-  for (const f of withClosures(ext)) {
+  for (const f of withClosures(helper)) {
     for (const c of f.calls) {
       const ref = c.fn.k === "attr" && c.fn.name === "forEach" ? c.args[0]?.value : undefined;
       const refName = ref?.k === "name" || ref?.k === "attr" ? ref.name : undefined;
-      if (refName && names.includes(refName) && c.fn.k === "attr") out.push({ arg: { expr: c.fn.obj, fn: f }, ctx: inner });
-      else if (calleeIs(c, names) !== undefined && c.args[0]) out.push({ arg: { expr: c.args[0].value, fn: f }, ctx: inner });
+      if (refName && names.includes(refName) && c.fn.k === "attr") out.push({ arg: { expr: c.fn.obj, fn: f }, ctx });
+      else if (calleeIs(c, names) !== undefined && c.args[0]) out.push({ arg: { expr: c.args[0].value, fn: f }, ctx });
     }
+  }
+  return out;
+}
+
+/**
+ * `Interceptors.addAll(builder, list)` (#100): a project function (a Java static helper, not an extension) given the
+ * builder variable a step is made on; the interceptors it adds, read with the call's arguments.
+ */
+function handedAdds(step: ScopedCall, names: string[], ctx: IrCtx): { arg: Scoped; ctx: IrCtx }[] {
+  const v = step.call.fn.k === "attr" && step.call.fn.obj.k === "name" ? step.call.fn.obj.name : undefined;
+  if (!v) return [];
+  const out: { arg: Scoped; ctx: IrCtx }[] = [];
+  for (const c of step.fn.calls) {
+    if (c === step.call || c.pos.offset >= step.call.pos.offset || !c.args.some((a) => !a.name && a.value.k === "name" && a.value.name === v)) continue;
+    const target = calleeChain(c, step.fn, ctx);
+    const helper = target.root.kind === "function" && target.segs.length === 0 && !target.root.fn.receiver ? target.root.fn : undefined;
+    // the helper hands its parameter on, it does not add to it: only the calls in it count
+    if (helper) out.push(...addsIn(helper, names, withSubst(ctx, substitutionFor(helper, c, step.fn))));
   }
   return out;
 }
