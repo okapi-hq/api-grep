@@ -22,8 +22,11 @@ describe("GraphQL: the literal arguments of selected fields (#56)", () => {
   });
 
   it("redacts strings and numbers under credential names, not enum values", () => {
-    const op = only('mutation { login(password: "x", pin: 1234, input: { secretKey: "y", user: "u" }, sortKey: NAME) { ok } }');
-    expect(op.arguments).toEqual({ login: { password: "<redacted>", pin: 1234, input: { secretKey: "<redacted>", user: "u" }, sortKey: "NAME" } });
+    const op = only('mutation { login(password: "x", pin: 1234, input: { secretKey: "y", user: "u" }, sortKey: NAME) { ok } metafield(key: "title") { value } }');
+    expect(op.arguments).toEqual({
+      login: { password: "<redacted>", pin: 1234, input: { secretKey: "<redacted>", user: "u" }, sortKey: "NAME" },
+      metafield: { key: "title" },
+    });
   });
 
   it("drops keys a report record cannot hold", () => {

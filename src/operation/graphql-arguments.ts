@@ -23,13 +23,16 @@ const MAX_VALUE_DEPTH = 16;
 
 const REDACTED = "<redacted>";
 
+/** A credential name; `key` alone is not one here: GraphQL APIs use it for a record's key (Shopify `metafield(key:)`). */
+const isCredential = (name: string): boolean => name.toLowerCase() !== "key" && isCredentialKey(name);
+
 class TooLarge extends Error {}
 
 function objectValue(fields: readonly { name: { value: string }; value: ValueNode }[], depth: number, credential: boolean): ArgumentSet {
   const out: ArgumentSet = {};
   for (const f of fields) {
     const name = f.name.value;
-    if (isSafeKey(name)) out[name] = valueOf(f.value, depth + 1, credential || isCredentialKey(name));
+    if (isSafeKey(name)) out[name] = valueOf(f.value, depth + 1, credential || isCredential(name));
   }
   return out;
 }

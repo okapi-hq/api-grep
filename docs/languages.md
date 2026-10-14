@@ -1043,7 +1043,8 @@ document with the `graphql` package's parser (no schema, no network):
   512)`) has the list of distinct argument sets in document order, `{}` for a selection without any; one set is the
   object itself. `arguments` is absent when no selected field has arguments, so a document without any reads as
   before. Values are facts of the code, so they go through the report's redaction: a string or number under a
-  credential name (`password`, `apiKey`, `input: { token }`, the names of `isCredentialKey`) is `<redacted>` (an
+  credential name (`password`, `apiKey`, `input: { token }`, the names of `isCredentialKey` but `key` alone, a
+  record's key in GraphQL APIs such as Shopify's `metafield(key:)`) is `<redacted>` (an
   enum value or a boolean is the schema's, kept), and a string that looks like a secret is redacted like any other.
   A computed part of a document (`` user(id: "${id}") ``, an f-string) inside a string literal is a `{name}`
   placeholder, as in templates elsewhere in the report, not the empty string (`src/operation/graphql-template.ts`
