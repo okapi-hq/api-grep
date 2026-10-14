@@ -52,8 +52,9 @@ function lowerTop(c: SyntaxNode, st: KtState): void {
       return lowerImport(c, st.mod);
     case "function_declaration": {
       const fn = lowerFunction(c, st, false);
-      // overloads: the name resolves to the first one, and every one is scanned
-      if (!st.mod.functions.has(fn.name)) st.mod.functions.set(fn.name, fn);
+      // overloads: the name resolves to the first one, and every one is scanned; an extension is a member of its
+      // receiver type, not a name (`ir/extensions.ts`)
+      if (!fn.receiver && !st.mod.functions.has(fn.name)) st.mod.functions.set(fn.name, fn);
       return;
     }
     case "class_declaration":

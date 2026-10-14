@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/75",
+  "calls": [
+    {"file": "Sources.kt", "line": 14, "provider": "cdn.comics-example.com"},
+    {"file": "Sources.kt", "line": 20, "provider": "api.comics-example.com"}
+  ]
+}

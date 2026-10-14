@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/75",
+  "calls": [
+    {"file": "Repositories.kt", "line": 10, "provider": "api.radio-example.com"},
+    {"file": "Repositories.kt", "line": 14, "provider": "uploads.radio-example.com"},
+    {"file": "Repositories.kt", "line": 26, "provider": "archive.radio-example.com"},
+    {"file": "Repositories.kt", "line": 30, "provider": "mirror.radio-example.com"}
+  ]
+}

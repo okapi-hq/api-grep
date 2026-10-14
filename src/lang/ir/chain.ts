@@ -1,4 +1,5 @@
-import { argFor, posOf, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
+import { extensionFor, libraryExtension } from "./extensions.js";
+import { argFor, posOf, receiverArg, type CallExpr, type ClassDef, type Expr, type FunctionDef, type ModuleModel, type Param } from "./model.js";
 import { overloadFor, overloadsFor } from "./overloads.js";
 import { baseBinding, bindingOfPath, classField, classFieldType, classMethod, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { injectedCall, injectedField, paramValue } from "./injected.js";
@@ -138,13 +139,27 @@ function memberOfClass(cls: ClassDef, name: string, isInstance: boolean, ctx: Ir
   return isInstance ? { root: { kind: "field", name }, segs: [] } : UNKNOWN;
 }
 
-function member(c: Chain, name: string, ctx: IrCtx, depth: number): Chain {
+/** A member of a value; `from` (the code reading it) sees the extension functions in its scope (Kotlin, #86). */
+function member(c: Chain, name: string, ctx: IrCtx, depth: number, from?: FunctionDef): Chain {
+  const ext = from && (c.root.kind !== "instance" || !classMethod(c.root.cls, name, ctx.idx)) ? extensionFor(c, name, from, ctx) : undefined;
+  if (ext) return { root: { kind: "function", fn: ext }, segs: [] };
   if (c.segs.length === 0) {
     if (c.root.kind === "module") return bindingChain(moduleMember(c.root.mod, name, ctx.idx), name, ctx, depth + 1);
     if (c.root.kind === "instance") return memberOfClass(c.root.cls, name, true, ctx, depth);
     if (c.root.kind === "class") return memberOfClass(c.root.cls, name, false, ctx, depth);
   }
   return { ...c, segs: [...c.segs, { name }] };
+}
+
+/**
+ * A bare name in an extension function that nothing in the project declares: a member of its receiver (`headBucket(...)`
+ * on `S3Client`), also when it is an extension the receiver's library defines (Ktor's `get(url)` on `HttpClient`).
+ */
+function implicitMember(e: Extract<Expr, { k: "name" }>, b: Binding, fn: FunctionDef, ctx: IrCtx, depth: number): Chain | undefined {
+  if (b.kind !== "none" && b.kind !== "external") return undefined;
+  const receiver = valueChain({ k: "name", name: "this", pos: e.pos }, fn, ctx, depth + 1);
+  if (!resolved(receiver) || (b.kind === "external" && !libraryExtension(b.path, receiver))) return undefined;
+  return member(receiver, e.name, ctx, depth, fn);
 }
 
 /** The call attached to the last member: `[requests, get]` + `get(...)` -> `[requests, get(...)]`. */
@@ -162,6 +177,7 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
     const arg = argFor(call, p);
     if (arg) subst.set(p, { expr: arg.value, fn });
   });
+  if (target.receiver) subst.set(target.receiver, { expr: receiverArg(call), fn });
   const inner = withSubst(ctx, subst);
   for (const ret of target.returns) {
     const c = valueChain(ret, target, inner, depth + 1);
@@ -202,8 +218,10 @@ function callChain(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number): Cha
 export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Chain {
   if (depth > MAX_DEPTH) return UNKNOWN;
   switch (e.k) {
-    case "name":
-      return bindingChain(lookup(e.name, fn, e.pos.offset, ctx.idx), e.name, ctx, depth);
+    case "name": {
+      const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
+      return (e.implicit && implicitMember(e, b, fn, ctx, depth)) || bindingChain(b, e.name, ctx, depth);
+    }
     case "qname":
       return bindingChain(bindingOfPath(e.path, ctx.idx), e.path.join("."), ctx, depth);
     case "this": {
@@ -216,7 +234,7 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
       return valueChain(e.expr, e.fn, ctx, depth + 1);
     // members and calls are structure (bounded by the expression); only lookups count against the depth
     case "attr":
-      return member(valueChain(e.obj, fn, ctx, depth), e.name, ctx, depth);
+      return member(valueChain(e.obj, fn, ctx, depth), e.name, ctx, depth, fn);
     case "call":
       return callChain(e, fn, ctx, depth);
     case "index": {

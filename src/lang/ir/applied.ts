@@ -33,7 +33,23 @@ export function appliedSteps(lambdas: FunctionDef[] | undefined): ScopedCall[] {
     const it = fn.params[0]?.name;
     const outer = new Set(outerCalls(fn));
     const own = (c: CallExpr): boolean => c.fn.k === "name" || (c.fn.k === "attr" && (c.fn.obj.k === "this" || (c.fn.obj.k === "name" && c.fn.obj.name === it)));
-    out.push(...lambdaCalls(fn).filter((c) => own(c.call) && outer.has(c.call)));
+    const steps = [...lambdaCalls(fn).filter((c) => own(c.call) && outer.has(c.call)), ...eachSteps(fn)];
+    out.push(...steps.sort((a, b) => a.call.pos.offset - b.call.pos.offset));
+  }
+  return out;
+}
+
+/**
+ * Steps made once per element of a collection (#75): `interceptors.forEach { addInterceptor(it) }` (the bare calls of
+ * the lambda) and `interceptors.forEach(::addInterceptor)` (a call of the reference with each element, a spread).
+ */
+function eachSteps(fn: FunctionDef): ScopedCall[] {
+  const out: ScopedCall[] = [];
+  for (const c of fn.calls) {
+    if (c.fn.k !== "attr" || c.fn.name !== "forEach") continue;
+    const arg = c.args[0]?.value;
+    if (arg?.k === "fnref") out.push(...lambdaCalls(arg.fn).filter((x) => x.call.fn.k === "name"));
+    else if (arg?.k === "name") out.push({ call: { k: "call", fn: arg, args: [{ value: c.fn.obj, spread: "list" }], pos: c.pos }, fn });
   }
   return out;
 }

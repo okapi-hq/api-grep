@@ -1,4 +1,4 @@
-import type { CallExpr, Expr, FunctionDef, Param } from "./model.js";
+import { exprText, type CallExpr, type Expr, type FunctionDef, type Param } from "./model.js";
 import { classField, classFieldType, lookup, receiverClass } from "./project.js";
 import type { IrCtx } from "./raw.js";
 
@@ -14,8 +14,11 @@ const SYNTHETIC = new Set(["lambda", "anonymous", "constructor"]);
 /** Types no other of the list is an instance of: two different ones never fit each other. */
 const DISTINCT = new Set(["String", "Boolean", ...NUMBERS, ...CLASSES, "GenericType", "TypeReference", "ParameterizedTypeReference", "HttpUrl", "URI", "URL"]);
 
+/** Extension functions are overloads of one another when they extend the same type, as written (Kotlin, #86). */
+const receiverText = (f: FunctionDef): string | undefined => (f.receiver?.type ? exprText(f.receiver.type) : undefined);
+
 const siblingsOf = (target: FunctionDef): FunctionDef[] =>
-  target.module.allFunctions.filter((f) => f.name === target.name && f.cls === target.cls && f.parent === target.parent);
+  target.module.allFunctions.filter((f) => f.name === target.name && f.cls === target.cls && f.parent === target.parent && receiverText(f) === receiverText(target));
 
 /** Whether the call's arguments (named ones by name) can be given to `f`: each parameter without a default gets one. */
 function fitsCount(f: FunctionDef, call: CallExpr): boolean {
@@ -73,7 +76,10 @@ function compatible(arg: string | undefined, param: Param | undefined): boolean 
 }
 
 /** Whether an overload hands its call to another of its name (`GET(url: String) = GET(url.toHttpUrl(), ...)`). */
-const delegates = (f: FunctionDef): boolean => f.calls.some((c) => (c.fn.k === "name" || (c.fn.k === "attr" && c.fn.obj.k === "this")) && c.fn.name === f.name);
+const delegates = (f: FunctionDef): boolean => f.calls.some((c) => (c.fn.k === "name" || (c.fn.k === "attr" && onSelf(c.fn.obj))) && c.fn.name === f.name);
+
+/** `this`, also an extension function's receiver (`this.store(...)` in `fun S3Client.store(...)`). */
+const onSelf = (e: Expr): boolean => e.k === "this" || (e.k === "name" && e.name === "this");
 
 function fitsTypes(f: FunctionDef, call: CallExpr, fn: FunctionDef, ctx: IrCtx): boolean {
   const positional = f.params.filter((p) => p.kind === "normal");
