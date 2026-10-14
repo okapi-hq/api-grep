@@ -877,7 +877,7 @@ document with the `graphql` package's parser (no schema, no network):
     (`src/detect/component.ts`). An artifact loaded with `require("./__generated__/Query.graphql")` is read from the
     scanned file it names (`export default` or `module.exports`).
   - Not covered: the `loadQuery` function `useQueryLoader` returns, and the refetch and pagination of fragments
-    through hooks (`useRefetchableFragment`, `usePaginationFragment`), whose query the compiler generates.
+    through hooks (`useRefetchableFragment`, `usePaginationFragment`), whose query the compiler generates (#92).
 - **Shopify's clients** (#67) are clients of one provider: registries of the `shopify` provider (whose host,
   `.myshopify.com`, also names raw calls to `{shop}.myshopify.com` since #83) with `documentArg`,
   as Octokit's `graphql`, at `{shop}.myshopify.com` (the shop is the session's or the code's) and the path
@@ -922,7 +922,7 @@ document with the `graphql` package's parser (no schema, no network):
     untyped parameter is theirs only when its callers pass one of their clients.
   - Not covered: `admin.rest.resources` of the app packages, records saved through an instance (`product.save()`),
     nested and owner-dependent Python resources (`Variant`, `Metafield`), `shopify-api-node` methods whose body
-    the library builds itself (`customerAddress.create`).
+    the library builds itself (`customerAddress.create`) (#92).
 - **sgqlc** (#67, `src/lang/python/registry/sgqlc.json`): the endpoint is called directly
   (`HTTPEndpoint(url, base_headers)(document, variables)`, also `RequestsEndpoint`): the registry's key is `()`, the
   call of the instance, and the endpoint is the one the instance is built with. The document is text, or an
