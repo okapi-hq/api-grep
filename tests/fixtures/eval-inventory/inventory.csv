@@ -1,0 +1,18 @@
+repo,file,line,service,kind,target
+demo-shop,src/orders.ts,4,supabase,third-party,orders.select
+demo-shop,src/orders.ts,10,supabase,,orders.insert
+demo-shop,src/orders.ts,13,supabase,,"orders.select, first of two on the line"
+demo-shop,src/orders.ts,13,supabase,,items.select
+demo-shop,src/billing.ts,6,stripe,,customers.create
+demo-shop,src/backend.ts,2,,internal,GET /api/{path}
+demo-shop,src/backend.ts,7,,internal,GET /api/cart
+demo-shop,src/weather.ts,2,forecast-api,,GET /forecast
+demo-shop,src/sync.ts,5,partner-api,,POST {url}
+demo-shop,src/orders.ts,30,supabase,,orders.delete
+demo-shop,./src/orders.ts,abc,supabase,,not a line
+other-repo,src/index.ts,1,stripe,,charges.create
+demo-notes,service/notes/client.py,7,demo-notes,,GET /health
+demo-notes,service/notes/client.py,11,github,,GET /repos/{owner}/{repo}/releases
+demo-notes,service/notes/client.py,15,,,GET /repos/{owner}/{repo}/tags
+demo-notes,service/notes/client.py,19,notes-sync,,POST {url}
+demo-notes,docs/example.py,3,github,,GET /zen

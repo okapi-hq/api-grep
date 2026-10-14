@@ -53,7 +53,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 | `docs/` | [languages.md](docs/languages.md) (architecture, per-language support, adding a language), [sdk-support.md](docs/sdk-support.md) (generated) |
 | `tests/unit/` | unit tests per module |
 | `tests/e2e/` | the built CLI run as a subprocess: commands, options, exit codes, hostile repositories |
-| `eval/` | evaluation harness over open-source repositories |
+| `eval/` | evaluation harness over open-source repositories, and `pnpm eval:inventory` for a reference inventory ([eval/README.md](eval/README.md)) |
 
 ## Tests
 
@@ -76,6 +76,17 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 - CLI behavior (options, output formats, exit codes) and anything about untrusted input
   belongs in `tests/e2e/`: those tests spawn `dist/cli.js` and build throwaway repositories
   with `tempRepo()`. `API_GREP_E2E_CLI=/path/to/cli.js` runs them against another build.
+
+## Evaluation against a reference inventory
+
+`pnpm eval:inventory --repos <dir> --inventory <file>` scans every repository under `<dir>` (one at a time, each in a
+child process with a 2 GB heap), matches the calls with a reference inventory of call sites (CSV or JSON:
+`repo,file,line` and optional `service,kind,target`) and prints the totals of the checks of #114: recall (#3),
+scans that stop and why reports are partial (#4), `coverage.sdks` of `@supabase/supabase-js` (#7) and the provider
+split of the matched calls (#8). The default output is counts only, so it can be posted when the repositories are
+private; `--detail` adds names and paths for local use. Options, the inventory format and how wrapper calls and
+third parties are counted: [eval/README.md](eval/README.md). Its tests use the invented repositories of
+`tests/fixtures/eval-inventory/`.
 
 ## Adding an SDK registry
 
