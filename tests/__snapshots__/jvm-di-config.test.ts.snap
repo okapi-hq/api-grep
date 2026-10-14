@@ -1,0 +1,669 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JVM DI: configuration properties and more injection forms (#94) > follows interceptors added through Koin getAll, a builder extension, a loop and a method reference 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-parcel-key",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept-language",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept-language": "en-GB",
+            "x-parcel-key": "<x-parcel-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://track.parcels-example.com/v1/parcels/lrwxt97i",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept-language": "en-GB",
+        "x-parcel-key": null,
+      },
+      "headers": [
+        "x-parcel-key",
+        "accept-language",
+      ],
+      "host": "track.parcels-example.com",
+      "hostKind": "literal",
+      "id": "586457e9d9d8",
+      "location": {
+        "col": 30,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 7,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/parcels/{id}",
+      "provider": "track.parcels-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://track.parcels-example.com/v1/parcels/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-parcel-key",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "accept-language",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept-language": "en-GB",
+            "x-parcel-key": "<x-parcel-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://labels.parcels-example.com/v1/labels/nfxy4hbr",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept-language": "en-GB",
+        "x-parcel-key": null,
+      },
+      "headers": [
+        "x-parcel-key",
+        "accept-language",
+      ],
+      "host": "labels.parcels-example.com",
+      "hostKind": "literal",
+      "id": "73a14b0149b9",
+      "location": {
+        "col": 29,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/labels/{id}",
+      "provider": "labels.parcels-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://labels.parcels-example.com/v1/labels/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://carriers.parcels-example.com/v1/carriers",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "carriers.parcels-example.com",
+      "hostKind": "literal",
+      "id": "a68a24f57598",
+      "location": {
+        "col": 22,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/carriers",
+      "provider": "carriers.parcels-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://carriers.parcels-example.com/v1/carriers",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 3,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "kotlin": 3,
+    },
+    "byProvider": {
+      "carriers.parcels-example.com": 1,
+      "labels.parcels-example.com": 1,
+      "track.parcels-example.com": 1,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: configuration properties and more injection forms (#94) > follows interceptors added through Koin getAll, a builder extension, a loop and a method reference 2`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-tenant",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-trace",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "ledger",
+            "x-trace": "on",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.ledger-example.com/v1/entries",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "ledger",
+        "x-trace": "on",
+      },
+      "headers": [
+        "x-tenant",
+        "x-trace",
+      ],
+      "host": "api.ledger-example.com",
+      "hostKind": "literal",
+      "id": "284e475eaadb",
+      "location": {
+        "col": 16,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 26,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/entries",
+      "provider": "api.ledger-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.ledger-example.com/v1/entries",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-tenant",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-trace",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "ledger",
+            "x-trace": "on",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://reports.ledger-example.com/v1/reports",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "ledger",
+        "x-trace": "on",
+      },
+      "headers": [
+        "x-tenant",
+        "x-trace",
+      ],
+      "host": "reports.ledger-example.com",
+      "hostKind": "literal",
+      "id": "5fccfa14326d",
+      "location": {
+        "col": 16,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 30,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/reports",
+      "provider": "reports.ledger-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://reports.ledger-example.com/v1/reports",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-tenant",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-trace",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "ledger",
+            "x-trace": "on",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://audit.ledger-example.com/v1/events",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "ledger",
+        "x-trace": "on",
+      },
+      "headers": [
+        "x-tenant",
+        "x-trace",
+      ],
+      "host": "audit.ledger-example.com",
+      "hostKind": "literal",
+      "id": "dfc6e3eaaa5b",
+      "location": {
+        "col": 16,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 34,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/events",
+      "provider": "audit.ledger-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://audit.ledger-example.com/v1/events",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://exports.ledger-example.com/v1/exports",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "exports.ledger-example.com",
+      "hostKind": "literal",
+      "id": "17829c70ad3c",
+      "location": {
+        "col": 16,
+        "file": "Ledger.java",
+        "language": "java",
+        "line": 38,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/exports",
+      "provider": "exports.ledger-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://exports.ledger-example.com/v1/exports",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "java": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 4,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "java": 4,
+    },
+    "byProvider": {
+      "api.ledger-example.com": 1,
+      "audit.ledger-example.com": 1,
+      "exports.ledger-example.com": 1,
+      "reports.ledger-example.com": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 0,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: configuration properties and more injection forms (#94) > reads Spring @ConfigurationProperties as configuration values with the class's defaults (Kotlin) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "x-api-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "unknown",
+          "where": "query",
+        },
+      ],
+      "envName": "weather.base-url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+          },
+          "method": "GET",
+          "query": {
+            "city": "Valencia",
+          },
+          "url": "https://api.weather-example.com/v1/forecast?city=Valencia",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+      ],
+      "host": "api.weather-example.com",
+      "hostKind": "env",
+      "id": "90fd98bddba0",
+      "location": {
+        "col": 31,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 26,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "api.weather-example.com",
+      "query": [
+        "city",
+      ],
+      "queryShape": {
+        "properties": {
+          "city": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "{env:weather.base-url}/v1/forecast?city={city}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [],
+      "envName": "weather.base-url",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.weather-example.com/v1/alerts",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.weather-example.com",
+      "hostKind": "env",
+      "id": "fc8c6b7b08c6",
+      "location": {
+        "col": 29,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 33,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/alerts",
+      "provider": "api.weather-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:weather.base-url}/v1/alerts",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [
+        {
+          "name": "baseUrl",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{baseUrl}/v1/stations",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "unknown",
+      "id": "a8e16785a6dc",
+      "location": {
+        "col": 29,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 43,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/stations",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "{baseUrl}/v1/stations",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 2,
+      "spring-webclient": 1,
+    },
+    "byHostKind": {
+      "env": 2,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "kotlin": 3,
+    },
+    "byProvider": {
+      "api.weather-example.com": 2,
+      "unknown": 1,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

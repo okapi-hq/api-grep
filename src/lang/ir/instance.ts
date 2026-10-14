@@ -3,7 +3,7 @@ import type { Scoped } from "./language.js";
 import { argFor, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "./model.js";
 import { classField, classMethod, projectBases } from "./project.js";
 import { withSubst, type IrCtx, type Subst } from "./raw.js";
-import { deref } from "./values.js";
+import { deref, entryOf } from "./values.js";
 
 const MAX_DEPTH = 4;
 
@@ -66,6 +66,11 @@ function replaced(call: CallExpr, caller: FunctionDef, name: string, ctx: IrCtx,
 export function instanceField(obj: Expr, name: string, fn: FunctionDef, ctx: IrCtx, depth = 0): FieldValue | undefined {
   if (depth > MAX_DEPTH) return undefined;
   const made = deref(obj, fn, ctx);
+  // an object a language gives as its fields (Spring `@ConfigurationProperties`, injected): the field's entry
+  if (made.expr.k === "dict") {
+    const hit = entryOf({ entries: made.expr.entries, fn: made.fn }, name, ctx);
+    return hit ? { ...hit, ctx } : undefined;
+  }
   if (made.expr.k !== "call") return undefined;
   return replaced(made.expr, made.fn, name, ctx, depth) ?? constructed(made.expr, made.fn, name, ctx);
 }

@@ -106,6 +106,9 @@ export function providedType(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): T
     const path = d.type ? dottedPath(d.type) : undefined;
     if (path) return keyOfPath(built(path, build), d.type!, fn, ctx);
     if (d.value && calls.length === 0) return providedType(d.value.expr, d.value.fn, ctx, depth + 1);
+    // `val builder = OkHttpClient.Builder()` filled in steps, then `builder.build()`: what the builder builds
+    const pos = d.value?.expr.k === "call" ? d.value.expr.pos : undefined;
+    if (d.value && build && pos) return providedType({ k: "call", fn: { k: "attr", obj: d.value.expr, name: "build", pos }, args: [], pos }, d.value.fn, ctx, depth + 1);
   }
   return undefined;
 }

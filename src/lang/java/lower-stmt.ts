@@ -96,9 +96,10 @@ function lowerFor(n: SyntaxNode, st: JState): void {
   const inner = inBlock(st);
   if (n.type === "enhanced_for_statement") {
     const value = n.childForFieldName("value");
-    if (value) lowerExpr(value, st);
+    const over = value ? lowerExpr(value, st) : undefined;
     const name = n.childForFieldName("name")?.text;
     if (name) inner.scope.names.add(name);
+    if (name && over) (st.fn.loops ??= []).push({ name, over, from: n.startIndex, to: n.endIndex });
   } else {
     for (const i of n.childrenForFieldName("init")) if (i) lowerAny(i, inner);
     for (const f of ["condition", "update"]) for (const c of n.childrenForFieldName(f)) if (c) lowerExpr(c, inner);

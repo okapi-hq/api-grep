@@ -21,7 +21,13 @@ export function callsOn(fn: FunctionDef, name: string, after: number): ScopedCal
   const fns = [fn, ...fn.module.allFunctions.filter((f) => f.parent === fn)];
   const out: ScopedCall[] = [];
   for (const f of fns) {
-    for (const c of f.calls) if (c.fn.k === "attr" && c.fn.obj.k === "name" && c.fn.obj.name === name && c.pos.offset > after) out.push({ call: c, fn: f });
+    for (const c of f.calls) {
+      if (c.pos.offset <= after || c.fn.k !== "attr") continue;
+      if (c.fn.obj.k === "name" && c.fn.obj.name === name) out.push({ call: c, fn: f });
+      // `interceptors.forEach(builder::addInterceptor)`: the method called on the variable with each element
+      const ref = c.fn.name === "forEach" ? c.args[0]?.value : undefined;
+      if (ref?.k === "attr" && ref.obj.k === "name" && ref.obj.name === name) out.push({ call: { k: "call", fn: ref, args: [{ value: c.fn.obj, spread: "list" }], pos: c.pos }, fn: f });
+    }
   }
   return out.sort((a, b) => a.call.pos.offset - b.call.pos.offset);
 }

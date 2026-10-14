@@ -28,10 +28,18 @@ const sameQuals = (p: Provider, at: Point): boolean => p.quals.length === at.qua
  */
 export function collected(type: Expr | undefined, at: Point, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   const g = generic(type);
-  const cands = g && COLLECTIONS.has(g.name) ? candidates(g.arg, at, fn, ctx) : undefined;
+  return g && COLLECTIONS.has(g.name) ? everyBinding(g.arg, at, fn, ctx) : undefined;
+}
+
+/**
+ * The bindings of `elem` a collection of the container holds: Spring's and Koin's every binding of the type (Spring's
+ * `ObjectProvider<T>.orderedStream()`, Koin's `getAll<T>()`), Dagger's multibinding contributions.
+ */
+export function everyBinding(elem: Expr, at: Point, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
+  const cands = candidates(elem, at, fn, ctx);
   if (!cands) return undefined;
   let items: Provider[];
-  if (at.framework === "spring") items = cands.filter((p) => !p.bag && (at.quals.length === 0 || sameQuals(p, at)));
+  if (at.framework === "spring" || at.framework === "koin") items = cands.filter((p) => !p.bag && (at.quals.length === 0 || sameQuals(p, at)));
   else {
     const own = cands.filter((p) => sameQuals(p, at));
     const whole = own.filter((p) => p.bag === "plain");
