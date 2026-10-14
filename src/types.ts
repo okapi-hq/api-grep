@@ -56,6 +56,8 @@ export interface RawCall {
   methodExpr?: Expression;
   impliedMethod?: string;
   bodyExpr?: Expression;
+  /** Several bodies the call may send, as alternatives (the variables of each `loadQuery(...)` call, #102). */
+  bodyAlternatives?: Expression[];
   bodyKey?: "body" | "json" | "form" | "data" | "input";
   queryExpr?: Expression;
   headersExpr?: Expression;
@@ -101,9 +103,10 @@ export interface MethodSpec {
   refetchQuery?: boolean;
   /**
    * A hook that sends through a function it returns (Relay's `useQueryLoader`, #92): element `index` of the array or
-   * one of `names` of the object; a destructuring that leaves it out sends nothing.
+   * one of `names` of the object; a destructuring that leaves it out sends nothing. `bodyArg`: the body is that
+   * argument of the function's calls in the same component (`loadQuery({ id })`, #102).
    */
-  sendsThrough?: { index?: number; names?: string[] };
+  sendsThrough?: { index?: number; names?: string[]; bodyArg?: number };
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];
@@ -124,6 +127,11 @@ export interface MethodSpec {
    * `Product.find()` lists them.
    */
   argPath?: { arg: number; path: string };
+  /**
+   * Argument N is an optional id the library tells from the options after it by their kind (shopify-api-node's
+   * `article.tags(blogId?, params)`, #102): an object given last in its place is the options, `null` no id.
+   */
+  optionalId?: number;
   /** Other paths the library picks by the ids it is given (#92): the one most placeholders of which have a value. */
   paths?: string[];
   /**

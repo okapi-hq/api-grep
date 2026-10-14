@@ -24,6 +24,7 @@
     "article.delete": {"method": "DELETE", "path": "/admin/api/{version}/blogs/{blog_id}/articles/{id}.json", "queryArg": 2, "params": {"version": "instance:0.apiVersion", "blog_id": "arg:0", "id": "arg:1"}},
     "article.get": {"method": "GET", "path": "/admin/api/{version}/blogs/{blog_id}/articles/{id}.json", "queryArg": 2, "params": {"version": "instance:0.apiVersion", "blog_id": "arg:0", "id": "arg:1"}},
     "article.list": {"method": "GET", "path": "/admin/api/{version}/blogs/{blog_id}/articles.json", "queryArg": 1, "params": {"version": "instance:0.apiVersion", "blog_id": "arg:0"}},
+    "article.tags": {"method": "GET", "path": "/admin/articles/tags.json", "queryArg": 1, "optionalId": 0, "argPath": {"arg": 0, "path": "/admin/blogs/{blog_id}/articles/tags.json"}, "params": {"blog_id": "arg:0"}},
     "article.update": {"method": "PUT", "path": "/admin/api/{version}/blogs/{blog_id}/articles/{id}.json", "bodyArg": 2, "bodyWrap": "article", "params": {"version": "instance:0.apiVersion", "blog_id": "arg:0", "id": "arg:1"}},
     "asset.create": {"method": "PUT", "path": "/admin/api/{version}/themes/{theme_id}/assets.json", "bodyArg": 1, "bodyWrap": "asset", "params": {"version": "instance:0.apiVersion", "theme_id": "arg:0"}},
     "asset.delete": {"method": "DELETE", "path": "/admin/api/{version}/themes/{theme_id}/assets.json", "queryArg": 1, "params": {"version": "instance:0.apiVersion", "theme_id": "arg:0"}},

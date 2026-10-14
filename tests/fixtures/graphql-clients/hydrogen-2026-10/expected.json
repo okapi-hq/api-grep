@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/102",
+  "calls": [
+    {"file": "routes.tsx", "line": 13, "provider": "shopify", "operation": "TeaProduct"},
+    {"file": "routes.tsx", "line": 14, "provider": "shopify", "operation": "Cart"},
+    {"file": "routes.tsx", "line": 20, "provider": "shopify", "operation": "Cart"},
+    {"file": "storefront.ts", "line": 18, "provider": "shopify", "operation": "TeaShop"}
+  ]
+}

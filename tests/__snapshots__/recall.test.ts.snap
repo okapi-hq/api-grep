@@ -90,6 +90,15 @@ exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen-2026-10 1`] = `
+[
+  "routes.tsx:13 shopify POST /api/{version}/graphql.json TeaProduct",
+  "routes.tsx:14 shopify POST /api/{version}/graphql.json Cart",
+  "routes.tsx:20 shopify POST /api/{version}/graphql.json Cart",
+  "storefront.ts:18 shopify POST /api/{version}/graphql.json TeaShop",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
 [
   "cart.tsx:9 shopify POST /api/{version}/graphql.json cartLinesAdd",
@@ -98,6 +107,17 @@ exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
   "cart.tsx:15 shopify POST /api/{version}/graphql.json cartNoteUpdate",
   "cart.tsx:20 shopify POST /api/{version}/graphql.json CartQuery",
   "cart.tsx:24 shopify POST /api/{version}/graphql.json cartDiscountCodesUpdate",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/hydrogen-cart-2026 1`] = `
+[
+  "delivery.tsx:9 shopify POST /api/{version}/graphql.json cartDeliveryAddressesAdd",
+  "delivery.tsx:11 shopify POST /api/{version}/graphql.json cartDeliveryAddressesUpdate",
+  "delivery.tsx:13 shopify POST /api/{version}/graphql.json cartDeliveryAddressesRemove",
+  "delivery.tsx:15 shopify POST /api/{version}/graphql.json cartDeliveryAddressesReplace",
+  "delivery.tsx:17 shopify POST /api/{version}/graphql.json cartGiftCardCodesAdd",
+  "delivery.tsx:19 shopify POST /api/{version}/graphql.json cartGiftCardCodesRemove",
 ]
 `;
 
@@ -136,6 +156,15 @@ exports[`regression fixtures > graphql-clients/relay-fragments 1`] = `
   "Shelf.js:33 api.example-library.dev POST /graphql LoanListRefetchQuery",
   "Shelf.js:59 api.example-library.dev POST /graphql ShelfQuery",
   "Shelf.js:64 api.example-library.dev POST /graphql ShelfQuery",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-loader-variables 1`] = `
+[
+  "environment.js:4 api.example-garden.dev POST /graphql null",
+  "Garden.tsx:23 api.example-garden.dev POST /graphql PlotQuery",
+  "Garden.tsx:31 api.example-garden.dev POST /graphql SeedsQuery",
+  "Garden.tsx:36 api.example-garden.dev POST /graphql HarvestQuery",
 ]
 `;
 
@@ -2058,6 +2087,16 @@ exports[`regression fixtures > sdk/shopify-node-bodies 1`] = `
   "fulfillment.js:14 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/close.json",
   "fulfillment.js:18 shopify POST /admin/api/2024-07/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json",
   "fulfillment.js:22 shopify POST /admin/api/2024-07/gift_cards/{id}/disable.json",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-node-tags 1`] = `
+[
+  "tags.ts:11 shopify GET /admin/blogs/{blog_id}/articles/tags.json",
+  "tags.ts:15 shopify GET /admin/articles/tags.json",
+  "tags.ts:19 shopify GET /admin/articles/tags.json",
+  "tags.ts:23 shopify GET /admin/blogs/{blog_id}/articles/tags.json",
+  "tags.ts:27 shopify GET /admin/articles/tags.json",
 ]
 `;
 

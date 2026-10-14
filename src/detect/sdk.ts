@@ -6,6 +6,7 @@ import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint, type Endpoint } from "./endpoint.js";
 import { contractCall } from "./rpc-contract.js";
 import { rpcEndpoint } from "./rpc-endpoint.js";
+import { keepsSender, withSenderArgs } from "./sender.js";
 import type { Registry } from "./registry/index.js";
 
 function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
@@ -21,6 +22,8 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
     if (callee.instance.kind === "call" && instChain.length > 1 && callee.chain.length === 1 && reg.recordFrom?.includes(instChain.at(-1)!)) {
       keys.add(`${instChain.slice(0, -1).join(".")}#${callee.chain[0]}`);
     }
+    // a method of what a factory returns, when the name alone is too common (`createCartServerHandlers().get`, #102)
+    if (callee.instance.kind === "call" && callee.chain.length === 1) keys.add(`${callee.instance.chain.join(".")}#${callee.chain[0]}`);
     const flat = [...instChain, ...callee.chain].join(".");
     if (flat) keys.add(flat);
   } else if (!callee.viaType) {
@@ -97,9 +100,29 @@ function endpointFirst(all: Expression[], spec: MethodSpec, callee: Callee): { u
   return { url: all[0], args: all.slice(1) };
 }
 
+/** Whether an argument is an object (a literal, or a value of an object type): not an id. */
+function isObjectArg(e: Expression): boolean {
+  const u = unwrap(e);
+  if (Node.isObjectLiteralExpression(u)) return true;
+  const t = u.getType();
+  return t.isObject() && !t.isArray() && t.getCallSignatures().length === 0;
+}
+
+/** The arguments as the library reads them when an optional id may be left out (`optionalId`): a hole for no id. */
+function withOptionalId(args: Expression[], at: number | undefined): Expression[] {
+  const given = at !== undefined ? args[at] : undefined;
+  if (at === undefined || !given) return args;
+  const u = unwrap(given);
+  if (Node.isNullLiteral(u) || (Node.isIdentifier(u) && u.getText() === "undefined")) return Object.assign([...args], { [at]: undefined });
+  if (args.length !== at + 1 || !isObjectArg(given)) return args;
+  const out = [...args];
+  out.splice(at, 1, undefined as unknown as Expression, given);
+  return out;
+}
+
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee, endpoint?: Endpoint): RawCall | null {
   const own = endpointFirst(node.getArguments() as Expression[], spec, callee);
-  const args = own.args;
+  const args = withOptionalId(own.args, spec.optionalId);
   const raw: RawCall = {
     node,
     client: "sdk",
@@ -173,25 +196,9 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
   for (const key of candidateKeys(callee, reg)) {
     const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
     if (spec?.sendsThrough && !keepsSender(node, spec.sendsThrough)) return null;
-    if (spec) return buildRaw(node, reg, key, spec, callee);
+    const raw = spec ? buildRaw(node, reg, key, spec, callee) : undefined;
+    if (raw && spec?.sendsThrough) return withSenderArgs(raw, node, spec.sendsThrough);
+    if (raw !== undefined) return raw;
   }
   return null;
-}
-
-/**
- * Whether the code keeps the function a hook sends through: `const [ref, loadQuery] = useQueryLoader(Q)` does,
- * `const { data } = usePaginationFragment(F, key)` and a result left unused do not.
- */
-function keepsSender(node: CallExpression, through: NonNullable<MethodSpec["sendsThrough"]>): boolean {
-  let p = node.getParent();
-  while (p && (Node.isAwaitExpression(p) || Node.isParenthesizedExpression(p) || Node.isAsExpression(p) || Node.isNonNullExpression(p))) p = p.getParent();
-  if (!p || Node.isExpressionStatement(p)) return false;
-  if (!Node.isVariableDeclaration(p)) return true;
-  const name = p.getNameNode();
-  if (Node.isArrayBindingPattern(name)) {
-    const el = through.index !== undefined ? name.getElements()[through.index] : undefined;
-    return !!el && !Node.isOmittedExpression(el);
-  }
-  if (!Node.isObjectBindingPattern(name)) return true;
-  return name.getElements().some((el) => !!el.getDotDotDotToken() || (through.names ?? []).includes((el.getPropertyNameNode() ?? el.getNameNode()).getText()));
 }

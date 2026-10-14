@@ -1,3 +1,4 @@
+import type { Expression } from "ts-morph";
 import { assembleCalls, type ResolvedCall } from "./assemble.js";
 import { getProp, toObjectLiteral } from "./ast/object.js";
 import { relativePosix } from "./files.js";
@@ -5,7 +6,7 @@ import { languageOf } from "./language.js";
 import { at } from "./detect/endpoint.js";
 import { rpcClientOperation } from "./operation/json-rpc.js";
 import type { Call, Operation } from "./report/schema.js";
-import { resolveBody, shapeOf } from "./resolve/body.js";
+import { resolveBody, shapeOf, type BodyResult } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { isAstDocument } from "./resolve/graphql-ast.js";
 import { relayDocument } from "./resolve/relay-artifact.js";
@@ -15,7 +16,7 @@ import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
-import { wrapShape } from "./resolve/shape-utils.js";
+import { unionOf, wrapShape } from "./resolve/shape-utils.js";
 import { withEdits } from "./resolve/edited-shape.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
@@ -89,9 +90,10 @@ const DOCUMENT_KEYS = ["query", "mutation", "subscription", "document", "operati
  * callers of the hook they are written in, a reference search the body leaves out.
  */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
-  if (sdk?.spec.document !== undefined) return { type: "string", enum: [sdk.spec.document] };
+  const given = sdk?.spec.documentArg !== undefined ? sdk.args[sdk.spec.documentArg] : undefined;
+  // the library's own document, unless the call gives one in its place (Hydrogen's `getCart(id, client, query)`)
+  if (sdk?.spec.document !== undefined && !given) return { type: "string", enum: [sdk.spec.document] };
   if (sdk?.spec.documentArg === undefined) return undefined;
-  const given = sdk.args[sdk.spec.documentArg];
   const arg = sdk.spec.documentProp ? getProp(given, sdk.spec.documentProp, ctx) : given;
   if (!arg) return { type: "unknown" };
   if (sdk.spec.refetchQuery) return refetchDocument(shapeOf(arg, ctx).shape, arg);
@@ -116,6 +118,14 @@ function rpcOperation(sdk: RawCall["sdk"], ctx: EvalCtx): Operation | undefined 
 
 const empty = (): Shape => ({ type: "object", properties: {}, required: [] });
 
+/** Bodies a call may send (the variables of each call of a hook's loader, #102), as one shape of alternatives. */
+function alternativeBodies(exprs: Expression[], ctx: EvalCtx): BodyResult {
+  const each = exprs.map((e) => resolveBody(e, ctx, "json"));
+  const names = new Set<string>();
+  const dynamic = each.flatMap((b) => b.dynamic).filter((d) => !names.has(`${d.where}:${d.name}`) && !!names.add(`${d.where}:${d.name}`));
+  return { shape: unionOf(each.flatMap((b) => (b.shape ? [b.shape] : []))), encoding: "json", dynamic, fromLiteral: each.every((b) => b.fromLiteral) };
+}
+
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -124,7 +134,8 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   dynamic.push(...url.dynamic);
   // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
-  const body = resolveBody(raw.bodyExpr, raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx, defaultEncoding(raw, method));
+  const bodyCtx = raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx;
+  const body = raw.bodyAlternatives ? alternativeBodies(raw.bodyAlternatives, bodyCtx) : resolveBody(raw.bodyExpr, bodyCtx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
   // a record sends the properties the code set on it (`product.title = t; product.save()`)
   if (raw.record && raw.sdk?.spec.record?.body) {

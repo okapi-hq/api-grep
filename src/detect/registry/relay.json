@@ -28,7 +28,7 @@
     "loadQuery": { "method": "POST", "path": "", "documentArg": 1, "bodyArg": 2, "clientArg": "0" },
     "createRefetchContainer": { "method": "POST", "path": "", "documentArg": 2 },
     "createPaginationContainer": { "method": "POST", "path": "", "documentArg": 2, "documentProp": "query" },
-    "useQueryLoader": { "method": "POST", "path": "", "documentArg": 0, "sendsThrough": { "index": 1 } },
+    "useQueryLoader": { "method": "POST", "path": "", "documentArg": 0, "sendsThrough": { "index": 1, "bodyArg": 0 } },
     "useRefetchableFragment": { "method": "POST", "path": "", "documentArg": 0, "refetchQuery": true, "sendsThrough": { "index": 1 } },
     "usePaginationFragment": { "method": "POST", "path": "", "documentArg": 0, "refetchQuery": true, "sendsThrough": { "names": ["loadNext", "loadPrevious", "refetch"] } },
     "useBlockingPaginationFragment": { "method": "POST", "path": "", "documentArg": 0, "refetchQuery": true, "sendsThrough": { "names": ["loadNext", "loadPrevious", "refetch"] } },
