@@ -1,5 +1,6 @@
 import { appendFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import { describe, expect, it } from "vitest";
 import type { Report } from "../src/report/schema.js";
 import { FIXTURES, scanFixture } from "./fixture-helpers.js";
@@ -8,13 +9,14 @@ import { FIXTURES, scanFixture } from "./fixture-helpers.js";
  * Regression fixtures: each directory with an `expected.json` lists the calls a scan must find (file, line, provider).
  * An empty list marks a negative fixture: any call there is a false call. `orUnfollowed` accepts a
  * `diagnostics.unfollowed` entry instead of a call; `todo` (an issue URL) parks a fixture whose feature is not built yet.
- * `operation` is the `operation.name` the call must carry (a JSON-RPC method, a GraphQL operation).
+ * `operation` is the `operation.name` the call must carry (a JSON-RPC method, a GraphQL operation); `arguments`, its
+ * `operation.arguments` exactly (`null` for none).
  */
 interface Expected {
   issue: string;
   todo?: string;
   skipped?: string[];
-  calls: { file: string; line: number; provider: string; operation?: string; orUnfollowed?: boolean }[];
+  calls: { file: string; line: number; provider: string; operation?: string; arguments?: unknown; orUnfollowed?: boolean }[];
 }
 
 const baseline = JSON.parse(readFileSync(path.join(FIXTURES, "..", "recall-baseline.json"), "utf8")) as { recall: number; falseCalls: number };
@@ -28,7 +30,8 @@ function fixturesWithExpectations(rel = ""): string[] {
 
 function found(r: Report, e: Expected["calls"][number]): boolean {
   const same = (c: Report["calls"][number]): boolean =>
-    c.location.file === e.file && c.location.line === e.line && c.provider === e.provider && (e.operation === undefined || c.operation?.name === e.operation);
+    c.location.file === e.file && c.location.line === e.line && c.provider === e.provider && (e.operation === undefined || c.operation?.name === e.operation) &&
+    (e.arguments === undefined || isDeepStrictEqual(c.operation?.arguments ?? null, e.arguments));
   if (r.calls.some(same)) return true;
   return !!e.orUnfollowed && !!r.diagnostics?.unfollowed.some((u) => u.file === e.file && u.line === e.line);
 }

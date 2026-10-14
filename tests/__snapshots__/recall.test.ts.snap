@@ -42,6 +42,17 @@ exports[`regression fixtures > graphql 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-arguments 1`] = `
+[
+  "store.ts:19 api.example-greenhouse.dev POST /graphql RecentPlants",
+  "store.ts:24 api.example-greenhouse.dev POST /graphql PlantCard",
+  "store.ts:29 api.example-greenhouse.dev POST /graphql SignIn",
+  "store.ts:33 api.example-greenhouse.dev POST /graphql invite",
+  "store.ts:37 api.example-greenhouse.dev POST /graphql ArchivedPlants",
+  "store.ts:41 api.example-greenhouse.dev POST /graphql PlantNames",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/apollo 1`] = `
 [
   "cakes.tsx:6 api.example-bakery.com POST /graphql ListCakes",
@@ -1152,6 +1163,16 @@ exports[`regression fixtures > python/graphql 1`] = `
   "tracker.py:43 api.example-tracker.dev POST /graphql SavedView",
   "tracker.py:47 api.example-tracker.dev POST /search",
   "tracker.py:51 api.example-tracker.dev POST /search",
+]
+`;
+
+exports[`regression fixtures > python/graphql-arguments 1`] = `
+[
+  "garden.py:15 api.example-greenhouse.dev POST /graphql RecentPlants",
+  "garden.py:20 api.example-greenhouse.dev POST /graphql PlantCard",
+  "garden.py:25 api.example-greenhouse.dev POST /graphql SignIn",
+  "garden.py:29 api.example-greenhouse.dev POST /graphql invite",
+  "garden.py:33 api.example-greenhouse.dev POST /graphql PlantNames",
 ]
 `;
 

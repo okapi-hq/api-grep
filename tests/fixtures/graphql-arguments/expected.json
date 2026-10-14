@@ -1,0 +1,20 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/56",
+  "calls": [
+    {
+      "file": "store.ts", "line": 19, "provider": "api.example-greenhouse.dev", "operation": "RecentPlants",
+      "arguments": {
+        "plants": {"first": 20, "after": "$cursor", "sortKey": "CREATED_AT", "reverse": true, "filter": {"tags": ["fern", "moss"], "price": {"lt": 9.5}, "owner": null}},
+        "plants.nodes.photos": {"size": 64}
+      }
+    },
+    {"file": "store.ts", "line": 24, "provider": "api.example-greenhouse.dev", "operation": "PlantCard", "arguments": {"plant": {"id": "{id}"}, "plant.photo": [{"size": 64}, {"size": 512}, {}]}},
+    {
+      "file": "store.ts", "line": 29, "provider": "api.example-greenhouse.dev", "operation": "SignIn",
+      "arguments": {"signIn": {"email": "gardener@example.com", "password": "<redacted>", "device": {"name": "kiosk", "apiKey": "<redacted>"}}}
+    },
+    {"file": "store.ts", "line": 33, "provider": "api.example-greenhouse.dev", "operation": "invite", "arguments": {"invite": {"code": "<redacted>"}}},
+    {"file": "store.ts", "line": 37, "provider": "api.example-greenhouse.dev", "operation": "ArchivedPlants", "arguments": {"plants": {"first": 100, "status": "ARCHIVED", "filter": {"indoor": false}}}},
+    {"file": "store.ts", "line": 41, "provider": "api.example-greenhouse.dev", "operation": "PlantNames", "arguments": null}
+  ]
+}

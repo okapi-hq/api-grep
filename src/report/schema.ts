@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.15.0";
+export const SCHEMA_VERSION = "1.16.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
@@ -152,6 +152,9 @@ export const ModelSchema = z
   })
   .meta({ id: "Model", description: "The model a call names, as far as the code tells statically." });
 
+/** A selected field's arguments by name: literal values as JSON, variables as `"$name"`. */
+const GraphqlArgumentsSchema = z.record(z.string(), z.unknown());
+
 export const OperationSchema = z
   .object({
     protocol: z
@@ -168,6 +171,12 @@ export const OperationSchema = z
       .array(z.string())
       .optional()
       .describe("GraphQL only: the selected field paths from the root, aliases resolved and fragments inlined (`order.id`, `order.customer.email`)."),
+    arguments: z
+      .record(z.string(), z.union([GraphqlArgumentsSchema, z.array(GraphqlArgumentsSchema)]))
+      .optional()
+      .describe(
+        "GraphQL only: the arguments of selected fields, by field path as in `fields` (`{ \"orders\": { \"first\": 10, \"sortKey\": \"CREATED_AT\" } }`). A literal is its JSON value (an enum value its name), a variable `\"$name\"`; a path that aliases select with different arguments has a list of them. Absent when no selected field has arguments, or past the bounds.",
+      ),
     alternatives: z.array(z.string()).optional().describe("Every name the call can send when a branch picks one, `name` first."),
     batch: z
       .boolean()
