@@ -58,6 +58,12 @@ function buildConfigRead(obj: SyntaxNode, name: string, st: KtState): Expr | und
   return { k: "env", name, ...(value !== undefined ? { fallback: { k: "str", v: value } } : {}) };
 }
 
+/** Whether a navigation is the callee of a call (`ref.downloadUrl()`), not a property read. */
+function calledAt(n: SyntaxNode): boolean {
+  const parent = n.parent;
+  return parent?.type === "call_expression" && parent.child(0)?.startIndex === n.startIndex;
+}
+
 /** `a.b`, `a?.b`, `X::class` and `X::class.java` (the class itself), `BuildConfig.X`. */
 function lowerNavigation(n: SyntaxNode, st: KtState): Expr {
   const kids = named(n);
@@ -71,8 +77,7 @@ function lowerNavigation(n: SyntaxNode, st: KtState): Expr {
   if (config) return config;
   const e: Expr = { k: "attr", obj: lowerExpr(obj, st), name: member.text, pos: posOf(member) };
   // `ref.downloadUrl`, a getter that sends a request: a call for the registry entries that say so
-  const called = n.parent?.type === "call_expression" && n.parent.child(0)?.startIndex === n.startIndex;
-  if (KOTLIN_PROPERTY_READS.has(member.text) && !called) (st.fn.reads ??= []).push({ k: "call", fn: e, args: [], pos: posOf(member), property: true });
+  if (KOTLIN_PROPERTY_READS.has(member.text) && !calledAt(n)) (st.fn.reads ??= []).push({ k: "call", fn: e, args: [], pos: posOf(member), property: true });
   return e;
 }
 

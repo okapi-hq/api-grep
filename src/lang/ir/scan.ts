@@ -131,7 +131,7 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
   const known = sdkPackages(lang.ecosystem);
   const declaredNames = lang.manifests.declared(manifestDirs(rootDir, files), rootDir);
   const declared = new Set([...known.keys()].filter((p) => declaredNames.has(lang.normalizePackage(p))));
-  const roots = [...known.keys()].map((pkg) => ({ pkg, roots: lang.importRoots(pkg, declared.has(pkg)).map((r) => r.split(".")) }));
+  const roots = [...known.keys()].map((pkg) => ({ pkg, norm: lang.normalizePackage(pkg), roots: lang.importRoots(pkg, declared.has(pkg)).map((r) => r.split(".")) }));
   const sites = new Map<string, number>();
   const near = declaredNear(lang, rootDir);
   for (const mod of scanned) {
@@ -144,7 +144,8 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
       let best: { pkg: string; rank: number } | undefined;
       for (const r of roots) {
         for (const root of r.roots) {
-          const rank = root.length + (declared.has(r.pkg) ? 1000 : 0) + (own.has(lang.normalizePackage(r.pkg)) ? 1000 : 0);
+          if (best && root.length + 2000 <= best.rank) continue;
+          const rank = root.length + (declared.has(r.pkg) ? 1000 + (own.has(r.norm) ? 1000 : 0) : 0);
           if (root.every((s, i) => p[i] === s) && rank > (best?.rank ?? 0)) best = { pkg: r.pkg, rank };
         }
       }
