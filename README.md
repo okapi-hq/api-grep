@@ -745,6 +745,12 @@ A scanned repository is treated as hostile input:
   value such as `@/etc/passwd` is sent as written, never read from disk.
 - Symlinks that lead out of the scanned directory are not followed, and `package.json`,
   `.env.example` and `tsconfig.json` are read only when they are small regular files.
+- The TypeScript checker reads nothing outside the scanned directory: imports, `/// <reference>`
+  paths, `node_modules` packages and `@types` resolve inside it only. A package installed above
+  the checkout (a stray `~/node_modules`), or a sibling package of a monorepo scanned from a
+  subdirectory, is not read, so a report does not depend on where the repository is checked out
+  or where the scan runs. The nearest `tsconfig.json`, which may be above, gives the compiler
+  options only.
 - `--changed-since` runs `git` in the scanned directory with `core.fsmonitor` off and without
   external diff or textconv drivers. A `.git` directory that arrived with untrusted files (an
   archive, not a clone) can still configure other filters: use it on checkouts you made.

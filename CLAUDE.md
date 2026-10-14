@@ -146,13 +146,17 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
   `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
-  check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
+  check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names. A fixture that needs a
+  package's types ships a few of them in its own `node_modules` (`tests/fixtures/sdk/node_modules/stripe`, unignored
+  in `.gitignore`): a scan never reads the tool's own `node_modules`.
 - Snapshots are part of the review: never update them blindly.
 - A per-file failure is a diagnostic (`diagnostics.skipped` / `droppedCalls`), never a crash.
 - `provider` never contains a template (`{...}`).
 - The scanned repository is hostile input: files are listed through `src/lang/files.ts` (symlinks must stay inside the
-  scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), keys from the
-  code go through `isSafeKey()`, and anything printed goes through `printable()`.
+  scanned directory), config files and manifests are read through `readConfigFile()` (`src/files.ts`), the TypeScript
+  checker and file graph read through `src/bounded-fs.ts` (nothing above the scanned directory: no parent
+  `node_modules`, so a report does not depend on the checkout location, #112), keys from the code go through
+  `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
   `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in

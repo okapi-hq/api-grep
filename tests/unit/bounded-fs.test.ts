@@ -22,15 +22,16 @@ function tree(name: string, files: Record<string, string>): string {
 
 const posix = process.platform !== "win32";
 
+const parent = tree("disk", {
+  "node_modules/pkg/index.d.ts": "export declare const v: string;",
+  "secret.ts": `export const token = "s3cret";`,
+  "outside.d.ts": "declare const OUTSIDE: string;",
+  "repo/src/a.ts": `/// <reference path="../../outside.d.ts" />\nimport { v } from "pkg";\nexport const a = v;\nexport const o = OUTSIDE;`,
+});
+const root = path.join(parent, "repo");
+if (posix) symlinkSync(path.join(parent, "secret.ts"), path.join(root, "src", "link.ts"));
+
 describe("the disk a scan's checker sees (#112)", () => {
-  const parent = tree("disk", {
-    "node_modules/pkg/index.d.ts": "export declare const v: string;",
-    "secret.ts": `export const token = "s3cret";`,
-    "outside.d.ts": "declare const OUTSIDE: string;",
-    "repo/src/a.ts": `/// <reference path="../../outside.d.ts" />\nimport { v } from "pkg";\nexport const a = v;\nexport const o = OUTSIDE;`,
-  });
-  const root = path.join(parent, "repo");
-  if (posix) symlinkSync(path.join(parent, "secret.ts"), path.join(root, "src", "link.ts"));
   const fs = new BoundedFileSystem(root);
 
   it("holds the scanned directory and nothing above it", () => {
@@ -56,7 +57,9 @@ describe("the disk a scan's checker sees (#112)", () => {
   it("is read-only", () => {
     expect(() => fs.writeFileSync(path.join(root, "x.ts"), "")).toThrow();
   });
+});
 
+describe("a scan's project (#112)", () => {
   it("leaves a package installed above the scanned directory and a file referenced there unread, and lib files loaded", () => {
     const loaded = loadBatch(scopeOf({ dir: root }), [path.join(root, "src", "a.ts")]);
     const a = loaded.project.getSourceFileOrThrow(path.join(root, "src", "a.ts"));
@@ -68,10 +71,17 @@ describe("the disk a scan's checker sees (#112)", () => {
     expect(read.some((f) => f.endsWith("lib.es5.d.ts"))).toBe(true);
   });
 
-  it("resolves a package installed inside it", () => {
+  it("resolves a package installed inside it, also when it is reached through a symlink", () => {
     const inside = tree("inside", { "node_modules/pkg/index.d.ts": "export declare const v: string;", "src/a.ts": `import { v } from "pkg";\nexport const a = v;` });
-    const loaded = loadBatch(scopeOf({ dir: inside }), [path.join(inside, "src", "a.ts")]);
-    expect(loaded.project.getSourceFileOrThrow(path.join(inside, "src", "a.ts")).getVariableDeclarationOrThrow("a").getType().getText()).toBe("string");
+    const typeOfA = (dir: string): string => {
+      const loaded = loadBatch(scopeOf({ dir }), [path.join(dir, "src", "a.ts")]);
+      return loaded.project.getSourceFileOrThrow(path.join(dir, "src", "a.ts")).getVariableDeclarationOrThrow("a").getType().getText();
+    };
+    expect(typeOfA(inside)).toBe("string");
+    if (!posix) return;
+    // TypeScript names a package by its real path, outside the root as given
+    symlinkSync(inside, path.join(tmp, "inside-link"));
+    expect(typeOfA(path.join(tmp, "inside-link"))).toBe("string");
   });
 });
 

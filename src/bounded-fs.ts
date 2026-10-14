@@ -41,10 +41,13 @@ export class BoundedFileSystem implements FileSystemHost {
     this.realRoot = realPath(this.root);
   }
 
-  /** `p` and, when it exists, what it points to are inside the root. */
+  /**
+   * `p` and, when it exists, what it points to are inside the root. When the root is reached through a symlink (`/tmp`
+   * on macOS), TypeScript names a package by its real path: inside the real root is inside.
+   */
   contains(p: string): boolean {
     const abs = path.resolve(p);
-    return isInside(this.root, abs) && isInside(this.realRoot, realPath(abs));
+    return (isInside(this.root, abs) || isInside(this.realRoot, abs)) && isInside(this.realRoot, realPath(abs));
   }
 
   isCaseSensitive(): boolean {
