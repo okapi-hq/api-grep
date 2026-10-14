@@ -74,5 +74,7 @@
   { "name": "aws-doc-sdk-examples-java", "url": "https://github.com/awsdocs/aws-doc-sdk-examples.git", "subdir": "javav2/example_code", "language": "java" },
   { "name": "hydrogen-demo-store", "url": "https://github.com/Shopify/hydrogen-demo-store.git" },
   { "name": "weam", "url": "https://github.com/weam-ai/weam.git", "subdir": "nodejs" },
-  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" }
+  { "name": "shopify-django-app", "url": "https://github.com/Shopify/shopify_django_app.git", "language": "python" },
+  { "name": "scaffold-eth-2", "url": "https://github.com/scaffold-eth/scaffold-eth-2.git", "subdir": "packages/nextjs" },
+  { "name": "lido-staking-widget", "url": "https://github.com/lidofinance/ethereum-staking-widget.git" }
 ]

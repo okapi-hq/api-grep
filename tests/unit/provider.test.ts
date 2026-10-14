@@ -108,4 +108,13 @@ describe("node vendors (#78)", () => {
     expect(providerForHost("{network}.infura.io")).toBe("infura");
     expect(providerForHost("infura.io.example.com")).toBeUndefined();
   });
+
+  it("names Solana's public clusters by their hosts only, never after an env var that may point anywhere (#85)", () => {
+    expect(providerForHost("api.mainnet-beta.solana.com")).toBe("solana-public-rpc");
+    expect(providerForHost("api.devnet.solana.com")).toBe("solana-public-rpc");
+    expect(providerForHost("explorer-api.mainnet-beta.solana.com")).toBeUndefined();
+    expect(providerFromEnvName("SOLANA_URL")).toBeUndefined();
+    expect(providerFromEnvName("SOLANA_RPC_URL")).toBeUndefined();
+    expect(providerFromEnvName("NEXT_PUBLIC_SOLANA_RPC_ENDPOINT")).toBeUndefined();
+  });
 });

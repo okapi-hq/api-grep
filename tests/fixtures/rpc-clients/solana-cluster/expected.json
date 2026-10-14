@@ -1,7 +1,7 @@
 {
   "issue": "https://github.com/okapi-hq/api-grep/issues/52",
   "calls": [
-    {"file": "faucet.ts", "line": 6, "provider": "api.devnet.solana.com", "operation": "requestAirdrop"},
-    {"file": "faucet.ts", "line": 10, "provider": "api.mainnet-beta.solana.com", "operation": "getMinimumBalanceForRentExemption"}
+    {"file": "faucet.ts", "line": 6, "provider": "solana-public-rpc", "operation": "requestAirdrop"},
+    {"file": "faucet.ts", "line": 10, "provider": "solana-public-rpc", "operation": "getMinimumBalanceForRentExemption"}
   ]
 }

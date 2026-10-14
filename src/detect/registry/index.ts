@@ -46,6 +46,8 @@ import solanaWeb3 from "./solana-web3.json" with { type: "json" };
 import viem from "./viem.json" with { type: "json" };
 import ethers from "./ethers.json" with { type: "json" };
 import web3 from "./web3.json" with { type: "json" };
+import wagmi from "./wagmi.json" with { type: "json" };
+import solanaWalletAdapter from "./solana-wallet-adapter.json" with { type: "json" };
 import splToken from "./spl-token.json" with { type: "json" };
 
 export class Registry {
@@ -84,6 +86,6 @@ export function defaultRegistry(): Registry {
   // Shopify's GraphQL and REST clients (#67, #83)
   entries.push(shopifyApi, shopifyAdminApiClient, shopifyStorefrontApiClient, shopifyApiNode, hydrogen);
   // JSON-RPC clients of any node (#52)
-  entries.push(solanaWeb3, splToken, viem, ethers, web3);
+  entries.push(solanaWeb3, splToken, solanaWalletAdapter, viem, ethers, web3, wagmi);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

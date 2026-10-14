@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/85",
+  "calls": [
+    {"file": "wallet-panel.tsx", "line": 11, "provider": "solana.example-node.io", "operation": "getBalance"},
+    {"file": "wallet-panel.tsx", "line": 17, "provider": "solana.example-node.io", "operation": "getSignatureStatuses"},
+    {"file": "wallet-panel.tsx", "line": 24, "provider": "solana.example-node.io", "operation": "getSlot"}
+  ]
+}
