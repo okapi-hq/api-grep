@@ -1,6 +1,7 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression, type Project } from "ts-morph";
 import { memberChain, unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp } from "../ast/object.js";
+import { memoValue } from "../ast/react.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
 import { innerValues } from "./client-cache.js";
@@ -126,6 +127,9 @@ export function constructionOf(e: Expression | undefined, reg: RegistryEntry, de
   const u = unwrap(e);
   if (Node.isIdentifier(u)) return constructionOf(valueOf(u), reg, depth + 1);
   if (!Node.isCallExpression(u) && !Node.isNewExpression(u)) return undefined;
+  // `useMemo(() => createConfig({...}), deps)` (#98)
+  const memo = Node.isCallExpression(u) ? memoValue(u) : u;
+  if (memo !== u) return constructionOf(memo, reg, depth + 1);
   return Object.hasOwn(reg.endpoint?.clients ?? {}, calledName(u) ?? "") ? u : undefined;
 }
 

@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/58",
+  "calls": [
+    {"file": "carrier.py", "line": 12, "provider": "ws.example-carrier.com", "operation": "Track"},
+    {"file": "carrier.py", "line": 17, "provider": "ws.example-carrier.com", "operation": "CancelShipment"},
+    {"file": "carrier.py", "line": 22, "provider": "ws.example-carrier.com", "operation": "GetRates"},
+    {"file": "carrier.py", "line": 27, "provider": "ws.example-carrier.com", "operation": "Track"},
+    {"file": "carrier.py", "line": 32, "provider": "eu.example-carrier.com", "operation": "Track"},
+    {"file": "carrier.py", "line": 37, "provider": "labels.example-carrier.com", "operation": "PrintLabel"},
+    {"file": "carrier.py", "line": 42, "provider": "env:CARRIER_WSDL", "operation": "Track"},
+    {"file": "carrier.py", "line": 50, "provider": "ws.example-archive.com", "operation": "Store"}
+  ]
+}

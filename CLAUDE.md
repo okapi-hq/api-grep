@@ -69,7 +69,9 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   coverage once. Java lowering is `src/lang/java/` (classes, `<init>` / `<clinit>`, annotations, lambdas, anonymous
   classes, string building, configuration reads); helpers both languages lower the same way are in `src/lang/jvm/`
   (`calls.ts`, `annotations.ts`, `paths.ts`).
-- Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template,string-template}.ts`.
+- Pure helpers shared by all languages: `src/resolve/{parts,url-shape,url-reference,header-names,shape-utils,sdk-template,string-template}.ts`;
+  SOAP client libraries (#58: `SoapClient`, zeep, node-soap) share `soap-endpoint.ts` and `wsdl.ts` (a WSDL file of the
+  repository, read through `readConfigFile` with the capped XML tokenizer, never one by URL).
 - Keys added to a dict or object after it is built (#38): tree-sitter languages lower `kwargs["k"] = v`, `.update`,
   `del`, `$params['k'] = $v` as `Assign.edit`, and `lookup` folds them in (`src/lang/ir/edits.ts`); TypeScript applies
   them to the shape (`src/resolve/object-edits.ts`, `edited-shape.ts`). Rules in `docs/languages.md`.
@@ -122,7 +124,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   from a cache a helper fills (`src/detect/client-cache.ts`, `rpc-cache.ts`, `Callee.cached`: one endpoint only when
   every cached client agrees), a context object or provider (`useConnection()`, `endpoint.clients.*.component`), wagmi
   configs (`wagmi.json`, `src/detect/rpc-config.ts`: `config`, `deep` transports), TypeChain factories
-  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`).
+  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`). #98, for
+  every SDK: the app's React contexts (`react-context.ts`) and `useMemo` (`src/ast/react.ts`) read by `held.ts` in
+  `callee.ts`, context objects given as untyped parameters (`Receiver.held`), factories a constructor is handed
+  (`injected-fn.ts`), ConnectKit configs (`innerConfig` in `rpc-config.ts`); Python dict caches (`src/lang/ir/cache.ts`,
+  `Seg.cache`).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

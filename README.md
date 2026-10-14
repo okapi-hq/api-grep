@@ -133,7 +133,7 @@ calls:                          # one entry per call, sorted by file, line, colu
       line: 6
       col: 10
       language: typescript      # typescript | javascript | html | python | php | kotlin | java
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), sdk | framework
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr | node-soap (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 | zeep (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress | php-soap (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -237,8 +237,17 @@ under a credential name (`password`, `apiKey`) is `<redacted>`; a path that alia
 has a list of them; absent when no selected field has any. A persisted query is named by its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
-(`Action` for AWS Query, `method` for Flickr): `protocol: action`. SOAP client libraries (`SoapClient`, zeep,
-node-soap) are [#58](https://github.com/okapi-hq/api-grep/issues/58).
+(`Action` for AWS Query, `method` for Flickr): `protocol: action`.
+
+SOAP client libraries ([#58](https://github.com/okapi-hq/api-grep/issues/58)) build the envelope from a WSDL, so the
+call is the operation the code calls: PHP's `SoapClient` (`$client->Track($args)`, `__soapCall('Track', [$args])`,
+`client: php-soap`), Python's zeep (`client.service.Track(Id=x)`, `client: zeep`) and node-soap
+(`client.TrackAsync(args)`, `client.Track(args, cb)`, `client: node-soap`). Each is a `POST` with `operation: { protocol:
+soap, name: Track, from: body }` and the arguments as an `xml` body. The URL is the address the code gives the client
+(PHP's `location` option, node-soap's `endpoint`, zeep's `create_service`), else the address a WSDL file of the
+repository declares (`soap:address`), else the WSDL URL without its `?wsdl` query (`https://ws.example.com/track?wsdl`
+is `https://ws.example.com/track`). A WSDL given by URL is never fetched: a client whose WSDL the scan cannot read has
+an unknown host. A method a WSDL file of the repository does not declare is not reported.
 
 JSON-RPC client libraries ([#52](https://github.com/okapi-hq/api-grep/issues/52)) are SDK calls whose operation is
 the RPC method the client method sends, not the method's own name: `connection.getParsedTransaction(sig)` is
@@ -277,9 +286,17 @@ through the connected wallet and are not reported. For contracts: TypeChain fact
 (`Token__factory.connect(address, runner)`, also when the generated file is missing), `contract.connect(signer)` /
 `attach(address)`, contracts typed as parameters (`token: Contract`), and ABIs imported from JSON files (also a Hardhat
 artifact's `abi`), read to tell a view from a transaction. Calls to Solana's public clusters (`api.mainnet-beta.solana.com`,
-`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`. Clients handed down by an app's own
-React context, injected client factories and wagmi configs built by other libraries are
-[#98](https://github.com/okapi-hq/api-grep/issues/98).
+`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`.
+
+Since [#98](https://github.com/okapi-hq/api-grep/issues/98), for any SDK client: a client handed down by the app's
+own React context (`useContext(RpcContext)`, also through the app's own hook, reads the `value` of its
+`<RpcContext.Provider>` elements: one host when they agree), a value memoized with `useMemo`, a client held in a
+context object given as an untyped parameter (`settle(ctx)` then `ctx.provider.getBalance(...)`: the callers' object),
+and a factory a constructor is handed (`constructor(private getProvider: (chainId) => Provider)`, then
+`this.getProvider(id)`: what the functions passed by the class's `new` expressions return, often a cache). wagmi
+configs memoized in a component, ConnectKit's `getDefaultConfig` (its transports, else wagmi's default HTTP ones) and a
+config picked at build time (`isTest ? testConfig : appConfig`) are read too. In Python, a client kept in a module's
+dict that a helper fills (`_clients[chain_id] = Web3(...)`) goes to one host only when every cached client agrees.
 
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /

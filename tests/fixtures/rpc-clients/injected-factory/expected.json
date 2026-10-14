@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "services.ts", "line": 11, "provider": "reader.example-node.io", "operation": "eth_call"},
+    {"file": "services.ts", "line": 16, "provider": "reader.example-node.io", "operation": "eth_blockNumber"},
+    {"file": "services.ts", "line": 31, "provider": "unknown", "operation": "eth_getBlockByNumber"}
+  ]
+}

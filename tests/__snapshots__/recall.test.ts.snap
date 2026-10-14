@@ -586,6 +586,13 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > javascript/soap-client 1`] = `
+[
+  "carrier.js:8 ws.example-carrier.com POST /track.svc Track",
+  "carrier.js:14 ws-eu.example-carrier.com POST /track.svc CancelShipment",
+]
+`;
+
 exports[`regression fixtures > json-rpc 1`] = `
 [
   "audited.ts:7 audit.example-log.com POST /v1/events",
@@ -1178,6 +1185,23 @@ exports[`regression fixtures > php/soap 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/soap-client 1`] = `
+[
+  "CarrierClient.php:14 ws.example-carrier.com POST /status TrackStatus",
+  "CarrierClient.php:20 unknown POST / GetRates",
+  "CarrierClient.php:25 unknown POST / TrackStatus",
+  "Tracker.php:21 ws.example-carrier.com POST /track Track",
+  "Tracker.php:27 ws.example-carrier.com POST /track CancelShipment",
+  "Tracker.php:32 rates.example-carrier.com POST /soap GetRates",
+  "Tracker.php:38 ws.example-weather.com POST /soap Forecast",
+  "Tracker.php:46 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "Tracker.php:53 labels.example-carrier.com POST /soap/v1 VoidLabel",
+  "Tracker.php:59 env:CARRIER_WSDL POST / null",
+]
+`;
+
+exports[`regression fixtures > php/soap-client-negative 1`] = `[]`;
+
 exports[`regression fixtures > php/wrappers/constructed-argument 1`] = `
 [
   "Upstream.php:23 unknown DYNAMIC /{path}",
@@ -1438,6 +1462,15 @@ exports[`regression fixtures > python/resolve/string-replace 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/rpc-cache 1`] = `
+[
+  "nodes.py:18 unknown POST / eth_getBlockByNumber",
+  "nodes.py:33 env:ARCHIVE_NODE_URL POST / eth_getBalance",
+  "nodes.py:49 unknown POST / getBalance",
+  "streams.py:23 local.example-node.io POST / eth_getCode",
+]
+`;
+
 exports[`regression fixtures > python/rpc-clients 1`] = `
 [
   "node.py:14 eth.example-node.io POST / eth_getBalance",
@@ -1556,6 +1589,21 @@ exports[`regression fixtures > python/soap 1`] = `
   "carrier.py:42 render.example-docs.com POST /pdf",
 ]
 `;
+
+exports[`regression fixtures > python/soap-client 1`] = `
+[
+  "carrier.py:12 ws.example-carrier.com POST /track Track",
+  "carrier.py:17 ws.example-carrier.com POST /track CancelShipment",
+  "carrier.py:22 ws.example-carrier.com POST /rates.asmx GetRates",
+  "carrier.py:27 ws.example-carrier.com POST /track Track",
+  "carrier.py:32 eu.example-carrier.com POST /soap/track Track",
+  "carrier.py:37 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "carrier.py:42 env:CARRIER_WSDL POST / Track",
+  "carrier.py:50 ws.example-archive.com POST /archive Store",
+]
+`;
+
+exports[`regression fixtures > python/soap-client-negative 1`] = `[]`;
 
 exports[`regression fixtures > python/urllib/urlretrieve 1`] = `
 [
@@ -1762,6 +1810,15 @@ exports[`regression fixtures > robustness/odd-body 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rpc-clients/app-context 1`] = `
+[
+  "archive.tsx:12 archive.example-node.io POST /rpc eth_getBlockByNumber",
+  "ledger.tsx:8 ledger.example-node.io POST /rpc eth_blockNumber",
+  "ledger.tsx:15 ledger.example-node.io POST /rpc eth_getBalance",
+  "regions.tsx:17 unknown POST / eth_gasPrice",
+]
+`;
+
 exports[`regression fixtures > rpc-clients/cached 1`] = `
 [
   "archive.ts:17 archive.example-node.io POST /rpc eth_getBalance",
@@ -1770,6 +1827,12 @@ exports[`regression fixtures > rpc-clients/cached 1`] = `
   "context.ts:7 jobs.example-node.io POST /rpc eth_gasPrice",
   "context.ts:11 jobs.example-node.io POST /rpc eth_getBlockByNumber",
   "proxied.ts:21 unknown POST / eth_call",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/context-param 1`] = `
+[
+  "jobs.js:7 jobs.example-node.io POST /rpc eth_getBalance",
 ]
 `;
 
@@ -1788,6 +1851,14 @@ exports[`regression fixtures > rpc-clients/ethers-helpers 1`] = `
   "node.ts:9 eth.example-node.io POST /rpc eth_blockNumber (wrapper:rpc)",
   "node.ts:11 eth.example-node.io POST /rpc net_peerCount (wrapper:rpc)",
   "node.ts:14 eth.example-node.io POST /rpc eth_getCode",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/injected-factory 1`] = `
+[
+  "services.ts:11 reader.example-node.io POST /rpc eth_call",
+  "services.ts:16 reader.example-node.io POST /rpc eth_blockNumber",
+  "services.ts:31 unknown POST / eth_getBlockByNumber",
 ]
 `;
 
@@ -1842,6 +1913,27 @@ exports[`regression fixtures > rpc-clients/wagmi-chains 1`] = `
   "prices.ts:6 unknown POST / eth_blockNumber",
   "prices.ts:7 unknown POST / eth_gasPrice",
   "prices.ts:13 unknown POST / eth_feeHistory",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-connectkit 1`] = `
+[
+  "reads.ts:5 eth.example-node.io POST /v1 eth_blockNumber",
+  "reads.ts:9 unknown POST / eth_gasPrice",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-context 1`] = `
+[
+  "rates.tsx:8 unknown POST / eth_call",
+  "rates.tsx:13 unknown POST / eth_getBalance",
+]
+`;
+
+exports[`regression fixtures > rpc-clients/wagmi-memo 1`] = `
+[
+  "pool.tsx:6 eth.example-node.io POST /v1 eth_call",
+  "pool.tsx:7 eth.example-node.io POST /v1 eth_blockNumber",
 ]
 `;
 
@@ -2054,6 +2146,12 @@ exports[`regression fixtures > sdk/posthog 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/react-context 1`] = `
+[
+  "assistant.tsx:15 anthropic POST /v1/messages",
+]
+`;
+
 exports[`regression fixtures > sdk/receiver/ambiguous 1`] = `[]`;
 
 exports[`regression fixtures > sdk/receiver/different-clients 1`] = `
@@ -2225,6 +2323,20 @@ exports[`regression fixtures > soap 1`] = `
   "markup.ts:18 notes.example-docs.com POST /raw",
 ]
 `;
+
+exports[`regression fixtures > soap-client 1`] = `
+[
+  "carrier.ts:9 ws.example-carrier.com POST /track Track",
+  "carrier.ts:16 ws.example-carrier.com POST /track CancelShipment",
+  "carrier.ts:24 rates.example-carrier.com POST /soap GetRates",
+  "carrier.ts:29 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "carrier.ts:35 labels.example-carrier.com POST /soap/v1 VoidLabel",
+  "carrier.ts:43 unknown POST / Store",
+  "carrier.ts:53 ws.example-carrier.com POST /pickup SchedulePickup",
+]
+`;
+
+exports[`regression fixtures > soap-client-negative 1`] = `[]`;
 
 exports[`regression fixtures > wrappers/deep-chain 1`] = `
 [

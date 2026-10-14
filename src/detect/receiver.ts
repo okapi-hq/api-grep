@@ -22,6 +22,8 @@ export interface Receiver {
   key: string;
   /** The client is a field the constructor sets from the parameter (`this.client = client`): `mc` is rooted at the field. */
   field?: boolean;
+  /** The parameter is an object holding the client (`ctx.provider.getBalance`, #98): only a caller's argument says what. */
+  held?: boolean;
 }
 
 export interface ReceiverResult {
@@ -108,7 +110,9 @@ export function receiverOf(node: CallExpression, callee: Callee, registry: Regis
   const fn = param.getParent();
   if (!isFunctionLike(fn)) return undefined;
   const key = mc.chain.join(".");
-  return hasMethod(registry, key) ? { param, fn, mc, key } : undefined;
+  if (hasMethod(registry, key)) return { param, fn, mc, key };
+  // `ctx.provider.getBalance(a)`: an object holding the client, followed through the callers only (#98)
+  return mc.chain.length >= 2 && hasMethod(registry, mc.chain.slice(1).join(".")) ? { param, fn, mc, key, held: true } : undefined;
 }
 
 /** In a wrapper expansion, the receiver is what the caller passed for the parameter. */
@@ -163,7 +167,7 @@ export class ReceiverResolver {
       const raws = this.fromCallers(node, r);
       // a field's one-member method (`this.client.graphql`), or a registry's `callersOnly` key (`db.product.create`), is
       // too common a name to stand for an SDK by itself: neither the manifests nor a diagnostic speak for it
-      const guess = (!r.field || r.mc.chain.length >= 2) && this.registry.entries().some((e) => !e.callersOnly && !!e.methods && Object.hasOwn(e.methods, r.key));
+      const guess = !r.held && (!r.field || r.mc.chain.length >= 2) && this.registry.entries().some((e) => !e.callersOnly && !!e.methods && Object.hasOwn(e.methods, r.key));
       const manifest = raws.length === 0 && guess ? this.fromManifest(node, r) : undefined;
       out = { raws: manifest ? [manifest] : raws, unknown: raws.length === 0 && !manifest && guess };
       this.results.set(node, out);

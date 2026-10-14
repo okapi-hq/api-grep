@@ -2,8 +2,9 @@ import type { EndpointSource } from "../../types.js";
 import { argAt } from "./args.js";
 import { calleeChain } from "./chain.js";
 import type { Scoped } from "./language.js";
+import { sameExpr } from "./cache.js";
 import type { IrCtx, IrSdkMatch, Seg } from "./raw.js";
-import { deref } from "./values.js";
+import { deref, staticKey } from "./values.js";
 
 /**
  * The endpoint of a GraphQL client call (#54) in a tree-sitter language: the URL and headers given to the client
@@ -37,15 +38,41 @@ export function irEndpoint(m: IrSdkMatch, ctx: IrCtx): IrEndpoint | null {
     const seg = before[i]!;
     const client = seg.call && Object.hasOwn(spec.clients, seg.name) ? spec.clients[seg.name]! : undefined;
     if (!client) continue;
-    const own = read(seg, client, ctx);
-    if (own.url) return own;
-    const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
-    if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
-    const transports = spec.transports ?? {};
-    const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
-    return t ? read(t, transports[t.name]!, ctx) : {};
+    const own = clientEndpoint(seg, client, spec, ctx);
+    if (!seg.cache) return own;
+    // a client read from a cache (#98): every value's endpoint, one only when they all agree
+    const all = [own, ...seg.cache.others.map((o) => (Object.hasOwn(spec.clients, o.name) ? clientEndpoint(o, spec.clients[o.name]!, spec, ctx) : {}))];
+    if (all.some((e) => e === null)) return null;
+    if (seg.cache.keyed && all.some((e) => pickedByKey(e!, ctx))) return {};
+    return all.every((e) => sameUrl(e!, own!, ctx)) ? own : {};
   }
   return {};
+}
+
+/** `RPC_URLS[chain_id]`, `RPC_URLS.get(chain_id)`: a URL picked with a key known at run time. */
+function pickedByKey(e: IrEndpoint, ctx: IrCtx): boolean {
+  const u = e.url ? deref(e.url.expr, e.url.fn, ctx) : undefined;
+  const key = u?.expr.k === "index" ? u.expr.key : u?.expr.k === "call" && u.expr.fn.k === "attr" && u.expr.fn.name === "get" ? u.expr.args[0]?.value : undefined;
+  return !!key && staticKey(key, u!.fn, ctx) === undefined;
+}
+
+type Spec = NonNullable<IrSdkMatch["entry"]["endpoint"]>;
+
+function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, ctx: IrCtx): IrEndpoint | null {
+  const own = read(seg, client, ctx);
+  if (own.url) return own;
+  const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
+  if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
+  const transports = spec.transports ?? {};
+  const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
+  return t ? read(t, transports[t.name]!, ctx) : {};
+}
+
+/** Two endpoints with the same URL: the same literal or variable, written in the same scope; an unknown one agrees with nothing. */
+function sameUrl(a: IrEndpoint, b: IrEndpoint, ctx: IrCtx): boolean {
+  if (!a.url || !b.url) return false;
+  const [x, y] = [deref(a.url.expr, a.url.fn, ctx), deref(b.url.expr, b.url.fn, ctx)];
+  return (x.fn === y.fn || x.expr.k === "str") && sameExpr(x.expr, y.expr);
 }
 
 function read(seg: Seg, source: EndpointSource, ctx: IrCtx): IrEndpoint {
