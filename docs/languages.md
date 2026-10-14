@@ -1057,7 +1057,7 @@ document with the `graphql` package's parser (no schema, no network):
     (`src/detect/component.ts`). An artifact loaded with `require("./__generated__/Query.graphql")` is read from the
     scanned file it names (`export default` or `module.exports`).
   - **#92**: the `loadQuery` function `useQueryLoader(query)` returns, reported where the hook is called (its
-    variables are those `loadQuery` is later given: not read); the refetch and pagination of fragments
+    variables are those `loadQuery` is later given: not read, #102); the refetch and pagination of fragments
     (`useRefetchableFragment`, `usePaginationFragment`, `useBlockingPaginationFragment`,
     `usePrefetchableForwardPaginationFragment`), whose query the compiler generates for the fragment's
     `@refetchable(queryName: "...")` (`refetchQuery`, `src/resolve/relay-refetch.ts`): the artifact of that name
@@ -1122,14 +1122,14 @@ document with the `graphql` package's parser (no schema, no network):
     `new`), ids read from the properties the code sets on the record before the call (`record:<id>` params,
     `product.id = id`, through the edits of #38), `save()` sending those properties as the body (`record.body`) and
     becoming a `PUT` to the record's path once its `id` is set (`record.withId`). A record read with `find` and saved
-    later is not followed. `shopify-api-node` methods whose body the library builds itself:
+    later is not followed (#102). `shopify-api-node` methods whose body the library builds itself:
     `customerAddress.create(customerId, params)` sends `{ address: params }`, `fulfillmentOrder.close(id, message)`
     `{ fulfillment_order: { message } }` (a dotted `bodyWrap`). Python `ShopifyAPI`: resources nested under an owner
     (`Variant.find(product_id=p)`, `Transaction.find(order_id=o)`) or naming it (`Metafield.find(resource="products",
     resource_id=p)`), through `paths` as above; records (`shopify.Product(attributes).save()` POSTs the attributes,
     a `PUT` when they hold the `id`; `shopify.Product.find(id).save()` PUTs, `.destroy()` DELETEs,
     `Order.find(id).close()` POSTs `/orders/{id}/close.json`). Attributes a Python record is given one by one
-    (`product.title = t`) are not read.
+    (`product.title = t`) are not read (#102).
   - **Auth and proxy, #92**: `shopify.auth.tokenExchange(...)`, `refreshToken`, `callback`, `clientCredentials` and
     `migrateToExpiringToken` request `POST /admin/oauth/access_token` (the body, the app's credentials, is the
     library's); `shopify.clients.graphqlProxy({ session, rawBody })` forwards the document the browser sent: a GraphQL
