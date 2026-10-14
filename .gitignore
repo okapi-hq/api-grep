@@ -1,4 +1,6 @@
 node_modules/
+# a fixture whose packages are installed inside the scanned directory
+!tests/fixtures/sdk/node_modules/
 dist/
 eval/repos/
 eval/out/

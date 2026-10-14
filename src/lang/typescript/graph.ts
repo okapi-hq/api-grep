@@ -16,6 +16,8 @@ export interface GraphInput {
   options: ts.CompilerOptions;
   /** The text the checker reads for a file in scope (an HTML page: its inline scripts), undefined when unreadable. */
   textOf: (file: string) => string | undefined;
+  /** What resolution reads: the scan bounds it to the scanned directory, as the checker's (`bounded-fs.ts`). */
+  host?: ts.ModuleResolutionHost;
 }
 
 /** Source files a program loads besides those in scope: `.json` and assets import nothing. */
@@ -65,8 +67,10 @@ class Graph {
   private readonly real = new Map<string, string>();
   private readonly cache: ts.ModuleResolutionCache;
   private readonly modes: ts.ResolutionMode[];
+  private readonly host: ts.ModuleResolutionHost;
 
   constructor(private readonly input: GraphInput) {
+    this.host = input.host ?? ts.sys;
     this.cache = ts.createModuleResolutionCache(process.cwd(), (f) => f, input.options);
     this.modes = modesOf(input.options);
     // one node per file in scope, even when two paths are one file through a symlink: indexes match `input.files`
@@ -108,7 +112,7 @@ class Graph {
 
   text(id: number): string | undefined {
     const file = this.paths[id]!;
-    return id < this.input.files.length ? this.input.textOf(file) : ts.sys.readFile(file);
+    return id < this.input.files.length ? this.input.textOf(file) : this.host.readFile(file);
   }
 
   /** Reads every file reached, in scope or not, and links each to what it imports. */
@@ -131,16 +135,16 @@ class Graph {
     const { options } = this.input;
     for (const spec of facts.specifiers) {
       for (const mode of this.modes) {
-        const r = ts.resolveModuleName(spec, file, options, ts.sys, this.cache, undefined, mode).resolvedModule;
+        const r = ts.resolveModuleName(spec, file, options, this.host, this.cache, undefined, mode).resolvedModule;
         if (r && !r.isExternalLibraryImport) out.add(r.resolvedFileName);
       }
     }
     for (const ref of facts.references) {
       const p = path.resolve(path.dirname(file), ref);
-      for (const candidate of [p, `${p}.ts`, `${p}.d.ts`, `${p}.tsx`, `${p}.js`]) if (ts.sys.fileExists(candidate)) out.add(candidate);
+      for (const candidate of [p, `${p}.ts`, `${p}.d.ts`, `${p}.tsx`, `${p}.js`]) if (this.host.fileExists(candidate)) out.add(candidate);
     }
     for (const name of facts.typeRefs) {
-      const r = ts.resolveTypeReferenceDirective(name, file, options, ts.sys).resolvedTypeReferenceDirective;
+      const r = ts.resolveTypeReferenceDirective(name, file, options, this.host).resolvedTypeReferenceDirective;
       if (r?.resolvedFileName && !r.isExternalLibraryImport) out.add(r.resolvedFileName);
     }
     return [...out].filter((t) => LOADABLE.test(t));

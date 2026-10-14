@@ -1,6 +1,7 @@
 import { closeSync, openSync, readFileSync, readSync, statSync } from "node:fs";
 import path from "node:path";
 import { Project, ts, type SourceFile } from "ts-morph";
+import { BoundedFileSystem } from "./bounded-fs.js";
 import { isConfigFile, isInside, realPath, relativePosix } from "./files.js";
 import { leanResolution } from "./module-resolution.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
@@ -223,6 +224,7 @@ export function scopeOf(opts: LoadOptions): Scope {
   const languages = opts.languages ?? ["typescript"];
   const tsconfig = tsconfigFor(dir, opts.tsconfig);
   const files = tsFiles(dir, opts.include, opts.exclude, languages);
+  // the tsconfig (and what it extends) may be above `dir`: read here, with the disk, not by the batches
   const options = createProject(tsconfig, languages).getCompilerOptions();
   return { dir, opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
 }
@@ -230,7 +232,7 @@ export function scopeOf(opts: LoadOptions): Scope {
 /** Some files of the scope in a project of their own, with what they import. */
 export function loadBatch(scope: Scope, files: string[]): Loaded {
   const { dir, opts, tsconfig } = scope;
-  const project = createProject(tsconfig, opts.languages ?? ["typescript"]);
+  const project = new Project({ resolutionHost: leanResolution, fileSystem: new BoundedFileSystem(dir), compilerOptions: scope.options });
   const unreadable = addFiles(project, dir, files, scope.html);
   if (tsconfig) {
     try {
