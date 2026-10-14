@@ -8,7 +8,7 @@ import { pythonLanguage } from "../../src/lang/python/index.js";
 import { normalizePypi } from "../../src/lang/python/manifests.js";
 import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
-const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*)$/;
+const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*|model)$/;
 
 const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven };
 

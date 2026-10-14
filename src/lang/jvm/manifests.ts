@@ -97,6 +97,14 @@ class JvmFiles {
     }
   }
 
+  /** The version a pom of the directory or its parents pins `group:artifact` at in `dependencyManagement` (an imported BOM). */
+  managed(dir: string, key: string): string | undefined {
+    const chain = upwards(dir, this.rootDir).flatMap((d) => this.pom(d) ?? []);
+    const prop = (name: string): string | undefined => chain.map((p) => p.properties.get(name)).find((v) => v !== undefined);
+    const hit = chain.map((p) => [...p.managed].find(([k]) => normalizeMaven(k) === key)?.[1]).find((v) => v !== undefined);
+    return pomVersion(hit, prop);
+  }
+
   /** A pom's dependencies; versions from its properties and `dependencyManagement`, then its parent directories' poms. */
   maven(dir: string, deps: Deps): void {
     const pom = this.pom(dir);
@@ -114,12 +122,16 @@ class JvmFiles {
 export function jvmManifests(): Manifests {
   const trees = new Map<string, JvmFiles>();
   const deps = new Map<string, Deps>();
+  const filesOf = (rootDir: string): JvmFiles => {
+    let files = trees.get(rootDir);
+    if (!files) trees.set(rootDir, (files = new JvmFiles(rootDir)));
+    return files;
+  };
   const depsOf = (dir: string, rootDir: string): Deps => {
     const key = `${rootDir}\0${dir}`;
     let d = deps.get(key);
     if (!d) {
-      let files = trees.get(rootDir);
-      if (!files) trees.set(rootDir, (files = new JvmFiles(rootDir)));
+      const files = filesOf(rootDir);
       d = new Map();
       files.gradle(dir, d);
       files.maven(dir, d);
@@ -127,15 +139,18 @@ export function jvmManifests(): Manifests {
     }
     return d;
   };
+  const version = (file: string, pkg: string, rootDir: string): string | undefined => {
+    const name = normalizeMaven(pkg);
+    for (const dir of upwards(path.dirname(file), rootDir)) {
+      const d = depsOf(dir, rootDir);
+      if (d.has(name)) return d.get(name);
+    }
+    return undefined;
+  };
   return {
     declared: (dirs, rootDir) => new Set([...dirs].flatMap((d) => [...depsOf(d, rootDir).keys()])),
-    version: (file, pkg, rootDir) => {
-      const name = normalizeMaven(pkg);
-      for (const dir of upwards(path.dirname(file), rootDir)) {
-        const d = depsOf(dir, rootDir);
-        if (d.has(name)) return d.get(name);
-      }
-      return undefined;
-    },
+    version,
+    // a Gradle `platform(...)` is a dependency; a Maven BOM is imported in `dependencyManagement`
+    bom: (file, pkg, rootDir) => version(file, pkg, rootDir) ?? filesOf(rootDir).managed(path.dirname(file), normalizeMaven(pkg)),
   };
 }
