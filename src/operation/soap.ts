@@ -1,6 +1,7 @@
 import type { ResolvedCall } from "../assemble.js";
 import type { Operation } from "../report/schema.js";
 import type { Shape } from "../types.js";
+import { namesOf } from "./names.js";
 
 /**
  * SOAP (#36): every operation goes to one service URL. A request is SOAP when it sends a `SOAPAction` header, a SOAP
@@ -73,4 +74,15 @@ export function soapOperations(r: ResolvedCall): Operation[] {
   const element = bodyElement(envelope);
   if (element) return [{ protocol: "soap", name: element, dynamic: false, from: "body" }];
   return [{ protocol: "soap", name: null, dynamic: true, from: hasHeader ? "header" : "body" }];
+}
+
+/**
+ * The operation a SOAP client library's call sends (#58): the method called on the client (`$client->Track()`,
+ * `client.service.Track()`, `client.TrackAsync()`), or the name given to `__soapCall`. The library writes it as the
+ * first element of the envelope's `Body`.
+ */
+export function soapClientOperation(name: string | Shape | undefined): Operation {
+  if (typeof name === "string") return { protocol: "soap", name, dynamic: false, from: "body" };
+  const acc = name ? namesOf(name) : { names: [], dynamic: true };
+  return { protocol: "soap", name: acc.names[0] ?? null, ...(acc.names.length > 1 ? { alternatives: acc.names } : {}), dynamic: acc.dynamic, from: "body" };
 }

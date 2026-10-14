@@ -25,14 +25,14 @@ function typescriptColumn(): Column {
       if (e) return Object.keys(e.methods ?? {}).length + Object.keys(e.commands ?? {}).length;
       return AI_SDK_PACKAGES.has(pkg) ? 1 : 0;
     },
-    clients: ["fetch", "axios", "got", "ky", "node http/https", "jQuery", "XMLHttpRequest", "AI SDK", "n8n / activepieces helpers", "HTML forms"],
+    clients: ["fetch", "axios", "got", "ky", "node http/https", "jQuery", "XMLHttpRequest", "node-soap", "AI SDK", "n8n / activepieces helpers", "HTML forms"],
   };
 }
 
 /** Clients read by a language's own detectors rather than its client tables. */
 const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = {
-  python: ["urllib"],
-  php: ["curl", "php-stream"],
+  python: ["urllib", "zeep"],
+  php: ["curl", "php-stream", "php-soap"],
   kotlin: ["okhttp", "java-http", "ktor", "spring-webclient", "feign", "retrofit", "apache-httpclient", "jaxrs-client", "async-http-client", "unirest", "vertx-webclient"],
 };
 

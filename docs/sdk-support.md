@@ -8,9 +8,9 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 102 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
-| Python (PyPI) | 46 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib` |
-| PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream` |
+| TypeScript / JavaScript (npm) | 102 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| Python (PyPI) | 46 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
+| PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream`, `php-soap` |
 | Kotlin and Java (Maven) | 77 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
 
 | provider | TypeScript / JavaScript (npm) | Python (PyPI) | PHP (Composer) | Kotlin and Java (Maven) |

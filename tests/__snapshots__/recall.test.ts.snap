@@ -575,6 +575,13 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > javascript/soap-client 1`] = `
+[
+  "carrier.js:8 ws.example-carrier.com POST /track.svc Track",
+  "carrier.js:14 ws-eu.example-carrier.com POST /track.svc CancelShipment",
+]
+`;
+
 exports[`regression fixtures > json-rpc 1`] = `
 [
   "audited.ts:7 audit.example-log.com POST /v1/events",
@@ -1167,6 +1174,23 @@ exports[`regression fixtures > php/soap 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/soap-client 1`] = `
+[
+  "CarrierClient.php:14 ws.example-carrier.com POST /status TrackStatus",
+  "CarrierClient.php:20 unknown POST / GetRates",
+  "CarrierClient.php:25 unknown POST / TrackStatus",
+  "Tracker.php:21 ws.example-carrier.com POST /track Track",
+  "Tracker.php:27 ws.example-carrier.com POST /track CancelShipment",
+  "Tracker.php:32 rates.example-carrier.com POST /soap GetRates",
+  "Tracker.php:38 ws.example-weather.com POST /soap Forecast",
+  "Tracker.php:46 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "Tracker.php:53 labels.example-carrier.com POST /soap/v1 VoidLabel",
+  "Tracker.php:59 env:CARRIER_WSDL POST / null",
+]
+`;
+
+exports[`regression fixtures > php/soap-client-negative 1`] = `[]`;
+
 exports[`regression fixtures > php/wrappers/constructed-argument 1`] = `
 [
   "Upstream.php:23 unknown DYNAMIC /{path}",
@@ -1544,6 +1568,21 @@ exports[`regression fixtures > python/soap 1`] = `
   "carrier.py:42 render.example-docs.com POST /pdf",
 ]
 `;
+
+exports[`regression fixtures > python/soap-client 1`] = `
+[
+  "carrier.py:12 ws.example-carrier.com POST /track Track",
+  "carrier.py:17 ws.example-carrier.com POST /track CancelShipment",
+  "carrier.py:22 ws.example-carrier.com POST /rates.asmx GetRates",
+  "carrier.py:27 ws.example-carrier.com POST /track Track",
+  "carrier.py:32 eu.example-carrier.com POST /soap/track Track",
+  "carrier.py:37 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "carrier.py:42 env:CARRIER_WSDL POST / Track",
+  "carrier.py:50 ws.example-archive.com POST /archive Store",
+]
+`;
+
+exports[`regression fixtures > python/soap-client-negative 1`] = `[]`;
 
 exports[`regression fixtures > python/urllib/urlretrieve 1`] = `
 [
@@ -2263,6 +2302,20 @@ exports[`regression fixtures > soap 1`] = `
   "markup.ts:18 notes.example-docs.com POST /raw",
 ]
 `;
+
+exports[`regression fixtures > soap-client 1`] = `
+[
+  "carrier.ts:9 ws.example-carrier.com POST /track Track",
+  "carrier.ts:16 ws.example-carrier.com POST /track CancelShipment",
+  "carrier.ts:24 rates.example-carrier.com POST /soap GetRates",
+  "carrier.ts:29 labels.example-carrier.com POST /soap/v1 PrintLabel",
+  "carrier.ts:35 labels.example-carrier.com POST /soap/v1 VoidLabel",
+  "carrier.ts:43 unknown POST / Store",
+  "carrier.ts:53 ws.example-carrier.com POST /pickup SchedulePickup",
+]
+`;
+
+exports[`regression fixtures > soap-client-negative 1`] = `[]`;
 
 exports[`regression fixtures > wrappers/deep-chain 1`] = `
 [

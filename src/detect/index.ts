@@ -9,6 +9,7 @@ import { detectFramework } from "./framework.js";
 import { detectGotKy } from "./got-ky.js";
 import { detectJquery } from "./jquery.js";
 import { detectNodeHttp } from "./node-http.js";
+import { detectNodeSoap } from "./node-soap.js";
 import type { Registry } from "./registry/index.js";
 import { receiverOf, substitutedReceiver, type ReceiverResolver } from "./receiver.js";
 import { detectSdk } from "./sdk.js";
@@ -36,6 +37,7 @@ type Detector = (node: CallExpression | NewExpression, callee: Callee, registry:
 const DETECTORS: readonly Detector[] = [
   (node, callee, registry) => detectSdk(node, callee, registry),
   (node, callee) => detectAiSdk(node, callee),
+  (node, callee, _registry, ctx) => detectNodeSoap(node, callee, ctx),
   (node, callee, _registry, ctx) => detectFetch(node, callee, ctx),
   (node, callee, _registry, ctx) => detectAxios(node, callee, ctx),
   (node, callee, _registry, ctx) => detectJquery(node, callee, ctx),
