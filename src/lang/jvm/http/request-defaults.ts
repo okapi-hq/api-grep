@@ -1,6 +1,6 @@
 import type { ScopedCall } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
-import type { CallExpr, Expr, ModuleModel } from "../../ir/model.js";
+import { callObject, type CallExpr, type Expr, type ModuleModel } from "../../ir/model.js";
 import type { ProjectIndex } from "../../ir/project.js";
 import type { ClientPartFrom, IrCtx, IrPair } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
@@ -126,7 +126,8 @@ function configured(d: ClientDefaults, start: ScopedCall, uses: (m: ModuleModel)
 export function clientDefaults(d: ClientDefaults | undefined, send: ScopedCall, start: ScopedCall | undefined, uses: (m: ModuleModel) => boolean, ctx: IrCtx): Defaults {
   if (!d) return { pairs: [] };
   const at = d.on === "send" ? send : start;
-  const client = at?.call.fn.k === "attr" ? { expr: at.call.fn.obj, fn: at.fn } : undefined;
+  const obj = at ? callObject(at.call) : undefined;
+  const client = obj && at ? { expr: obj, fn: at.fn } : undefined;
   const steps = client ? fluentChain(client, () => false, ctx).steps : [];
   const own = d.config && start ? configured(d, start, uses, ctx) : { pairs: [] };
   return { baseUrl: own.baseUrl, pairs: [...listPairs(steps, d, ctx), ...filterPairs(steps, d, ctx), ...own.pairs] };

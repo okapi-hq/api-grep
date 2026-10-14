@@ -1,6 +1,6 @@
 import { detectCall, detectIn, type Candidate, type IrDetected, type IrUnfollowed } from "./detect.js";
 import type { Scoped } from "./language.js";
-import { argFor, children, type CallExpr, type Expr, type FunctionDef, type Param } from "./model.js";
+import { argFor, children, receiverArg, type CallExpr, type Expr, type FunctionDef, type Param } from "./model.js";
 import { lookup, receiverClass } from "./project.js";
 import { mergeOverloads } from "./overload-merge.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type Subst } from "./raw.js";
@@ -20,6 +20,8 @@ function referencesParam(e: Expr, fn: FunctionDef, params: Set<Param>, ctx: IrCt
     if (b.kind === "param" && params.has(b.param)) return true;
     if (b.kind === "value" && depth < 1 && referencesParam(b.assign.value, b.fn, params, ctx, depth + 1)) return true;
   }
+  // a Kotlin builder lambda's properties (`DeleteObjectRequest { bucket = name }`)
+  if (e.k === "fnref" && e.fn.props?.some((p) => referencesParam(p.value, e.fn, params, ctx, depth))) return true;
   return children(e).some((c) => referencesParam(c, fn, params, ctx, depth));
 }
 
@@ -37,6 +39,8 @@ export function substitutionFor(target: FunctionDef, call: CallExpr, caller: Fun
     if (arg) subst.set(p, { expr: arg.value, fn: caller });
     else if (p.default) subst.set(p, { expr: p.default, fn: target });
   }
+  // an extension function runs on the call's object (`client.delete(k)`), or on the caller's own receiver
+  if (target.receiver) subst.set(target.receiver, { expr: receiverArg(call), fn: caller });
   return subst;
 }
 

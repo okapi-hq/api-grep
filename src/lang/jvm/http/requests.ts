@@ -4,7 +4,7 @@ import { calleeChain, typeChain, type Chain } from "../../ir/chain.js";
 import { evaluate } from "../../ir/evaluate.js";
 import { scopedIn, type ScopedCall } from "../../ir/fluent.js";
 import type { Scoped } from "../../ir/language.js";
-import type { CallExpr, Entry, Expr, FunctionDef, ModuleModel } from "../../ir/model.js";
+import { callObject, type CallExpr, type Entry, type Expr, type FunctionDef, type ModuleModel } from "../../ir/model.js";
 import { lookup } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrRaw } from "../../ir/raw.js";
 import { applyStep, argAt, calleeIs, emptyParts, fluentChain, fluentChains, type BuilderStep, type FluentChain, type RequestParts } from "../../ir/steps.js";
@@ -104,7 +104,8 @@ interface Found {
 function requestOf(spec: RequestClient, send: SendStep, c: ScopedCall, ctx: IrCtx): Found | undefined {
   const names = Object.keys(spec.starts);
   const isStart = (x: CallExpr): boolean => calleeIs(x, names) !== undefined;
-  const receiver = c.call.fn.k === "attr" ? { expr: c.call.fn.obj, fn: c.fn } : undefined;
+  const obj = callObject(c.call);
+  const receiver = obj ? { expr: obj, fn: c.fn } : undefined;
   const candidates = send.request ? send.request.map((i) => argAt(c, i)) : [receiver];
   let first: Found | undefined;
   for (const request of candidates) {

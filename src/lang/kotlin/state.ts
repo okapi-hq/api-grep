@@ -16,6 +16,11 @@ export interface KtState {
   cls?: { def: ClassDef; members: Set<string> };
   /** The scanned root: `BuildConfig` values come from the Gradle module of the file. */
   rootDir: string;
+  /**
+   * Inside an extension function (`fun S3Client.delete(...)`, #86): its name (`this@delete`), and whether `this` and
+   * bare names mean its receiver here (not in a lambda with a receiver of its own, `apply { }`, a DSL builder).
+   */
+  receiver?: { label: string; implicit: boolean };
 }
 
 /** What a lambda lowers to: its function, and the values of its expression statements in order (`buildString`). */
@@ -73,8 +78,18 @@ export function inFunction(st: KtState, fn: FunctionDef, closure: boolean): KtSt
   return { ...st, fn, scope: { names: new Set(fn.params.map((p) => p.name)), parent: closure ? st.scope : undefined } };
 }
 
-/** A bare name where it is read: a local or parameter, else a member of the class (`this.name`), else a top-level name. */
+/**
+ * A bare name where it is read: a local or parameter, else a member of the class (`this.name`), else a top-level name,
+ * which in an extension function may be a member of its receiver (`implicit`, resolved by the engine).
+ */
 export function nameRef(name: string, pos: Pos, st: KtState): Expr {
-  if (!isLocal(st.scope, name) && st.cls?.members.has(name)) return { k: "attr", obj: { k: "this", pos }, name, pos };
-  return { k: "name", name, pos };
+  const local = isLocal(st.scope, name);
+  if (!local && st.cls?.members.has(name)) return { k: "attr", obj: { k: "this", pos }, name, pos };
+  return { k: "name", name, pos, ...(!local && st.receiver?.implicit && /^[a-z]/.test(name) ? { implicit: true } : {}) };
+}
+
+/** `this`, `this@label`: the extension function's receiver where it is the one meant, else the class's `this`. */
+export function thisRef(label: string | undefined, pos: Pos, st: KtState): Expr {
+  const r = st.receiver;
+  return r && (label ? label === r.label : r.implicit) ? { k: "name", name: "this", pos } : { k: "this", pos };
 }
