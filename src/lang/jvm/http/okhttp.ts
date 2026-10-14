@@ -2,101 +2,15 @@ import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { ScopedCall } from "../../ir/fluent.js";
 import { callObject, dottedPath, type CallExpr, type Expr, type FunctionDef } from "../../ir/model.js";
-import { lastAssign, lookup } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
-import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, readSteps, type FluentChain } from "../../ir/steps.js";
+import { argAt, calleeIs, fluentChain, readSteps, type FluentChain } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
 import { elementsOf, withClosures } from "../elements.js";
+import { interceptorPairs } from "./interceptor-steps.js";
 import { interceptorsOf, type Interceptor } from "./interceptors.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { chainFrom, rawOf } from "./request.js";
 import { JVM, type BuiltRequestClient } from "./tables.js";
-
-/**
- * A response the interceptor receives or makes (`chain.proceed(request).newBuilder()`, `Response.Builder()`, through
- * variables of the function and the ones around it): the headers set on it are not the request's.
- */
-function onResponse(e: Expr, fn: FunctionDef, depth = 0): boolean {
-  if (depth > 8) return false;
-  if (e.k === "name") {
-    for (let f: FunctionDef | undefined = fn; f; f = f.parent) {
-      // the value it holds there (`b = b.header(...)` reassigns a builder): an assignment before the read, else the first
-      const set = lastAssign(f.assigns, e.name, e.pos.offset);
-      if (set) return onResponse(set.value, f, depth + 1);
-      // `response.newBuilder().let { builder -> builder.header(...) }`: the lambda's parameter is what `let` runs on
-      if (f.params.some((p) => p.name === e.name)) return letReceiver(f, e.name, depth);
-    }
-    return false;
-  }
-  if (e.k !== "call") return false;
-  if (calleeIs(e, ["Response.Builder"]) !== undefined) return true;
-  return e.fn.k === "attr" && (e.fn.name === "proceed" || onResponse(e.fn.obj, fn, depth + 1));
-}
-
-/**
- * Local functions an interceptor calls (`fun withToken(r: Request) = r.newBuilder().addHeader(...)` declared next to
- * the lambda in its provider, #100): their steps are the interceptor's.
- */
-function localHelpers(fns: FunctionDef[], ctx: IrCtx): FunctionDef[] {
-  const out: FunctionDef[] = [];
-  for (const f of fns) {
-    for (const c of f.calls) {
-      const b = c.fn.k === "name" ? lookup(c.fn.name, f, c.pos.offset, ctx.idx) : undefined;
-      // a local `fun` is a value of the function it is declared in
-      const local = b?.kind === "value" && b.assign.value.k === "fnref" ? b.assign.value.fn : b?.kind === "function" && b.fn.parent && !b.fn.cls ? b.fn : undefined;
-      if (local && !fns.includes(local) && !out.includes(local)) out.push(...withClosures(local));
-    }
-  }
-  return out;
-}
-
-/** A `let` / `also` lambda's parameter, lowered with the value it runs on as its default: whether that is a response. */
-function letReceiver(lambda: FunctionDef, name: string, depth: number): boolean {
-  const p = lambda.params.find((x) => x.name === name);
-  return !!p?.default && onResponse(p.default, lambda.parent ?? lambda, depth + 1);
-}
-
-/**
- * Header and query steps of the request: two arguments (`request.header("X")` reads one) on anything but a response.
- */
-const requestStep = (c: ScopedCall): boolean => c.call.args.length >= 2 && !(c.call.fn.k === "attr" && onResponse(c.call.fn.obj, c.fn));
-
-/**
- * The headers and query parameters an interceptor adds to every request (`header("Authorization", ...)`,
- * `addQueryParameter(...)`), read with the arguments of the client factories the client was built through (`outer`).
- */
-function interceptorPairs(i: Interceptor, outer: Subst | undefined): IrPair[] {
-  const parts = emptyParts();
-  const own = [...withClosures(i.fn), ...localHelpers(withClosures(i.fn), i.ctx)];
-  for (const f of own) readSteps(lambdaCalls(f).filter(requestStep), JVM.okhttp.interceptor!, parts);
-  const subst = outer || i.subst ? new Map([...(outer ?? []), ...(i.subst ?? [])]) : undefined;
-  const mark = (pairs: IrPair[], s: Subst | undefined): IrPair[] => pairs.map((p) => ({ ...p, from: "interceptor", ...(s ? { subst: s } : {}), ...(i.self ? { self: i.self } : {}) }));
-  return [...mark(parts.pairs, subst), ...builderExtensions(own, i.ctx).flatMap((x) => mark(x.pairs, new Map([...(subst ?? []), ...x.subst])))];
-}
-
-/** Whether an extension's receiver is OkHttp's request builder (`fun Request.Builder.addHeaderIfNotEmpty(...)`). */
-const onRequestBuilder = (ext: FunctionDef): boolean => {
-  const path = ext.receiver?.type ? dottedPath(ext.receiver.type)?.join(".") : undefined;
-  return !!path && (path.endsWith("Request.Builder") || (path === "Builder" && ext.module.importPaths.some((p) => p.join(".") === "okhttp3.Request.Builder")));
-};
-
-/**
- * A project extension of the request builder an interceptor calls as a step (`newBuilder().addHeaderIfNotEmpty(name,
- * value)`, #100): the headers it sets, read with the call's arguments.
- */
-function builderExtensions(fns: FunctionDef[], ctx: IrCtx): { pairs: IrPair[]; subst: Subst }[] {
-  const out: { pairs: IrPair[]; subst: Subst }[] = [];
-  for (const f of fns) {
-    for (const c of f.calls) {
-      const exts = c.fn.k === "attr" ? (ctx.idx.extensions.get(c.fn.name) ?? []).filter(onRequestBuilder) : [];
-      if (exts.length !== 1) continue;
-      const parts = emptyParts();
-      for (const g of withClosures(exts[0]!)) readSteps(lambdaCalls(g).filter(requestStep), JVM.okhttp.interceptor!, parts);
-      if (parts.pairs.length > 0) out.push({ pairs: parts.pairs, subst: substitutionFor(exts[0]!, c, f) });
-    }
-  }
-  return out;
-}
 
 /**
  * What an OkHttp client adds to each of its requests: the headers and query parameters of the interceptors given to

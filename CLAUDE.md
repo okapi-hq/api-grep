@@ -55,7 +55,8 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   `requests.json`: Apache HttpClient, JAX-RS client, AsyncHttpClient, Unirest, Vert.x `WebClient`), detectors over the IR
   driven by `clients.json`, with the
   engine's builder steps (`ir/steps.ts`), entry-by-entry values (`ir/fluent.ts`) and header / query pairs
-  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds), and the JVM SDK registries
+  (`ir/pairs.ts`, `Call.clientParts` for those an interceptor or a client default adds, `optional` when an interceptor
+  adds them on some requests only, `ir/conditional.ts`), and the JVM SDK registries
   (`src/lang/jvm/registry/`): SDK parameters given as builders (`X.builder().a(1).build()`) read as dicts through the
   language's `resolveCall` (`src/lang/ir/builders.ts`, rules in each registry's `setters`; Lombok `@Builder` classes and
   getters of the project in `src/lang/jvm/lombok.ts`). Clients a DI container provides (#46: Dagger / Hilt, Spring,

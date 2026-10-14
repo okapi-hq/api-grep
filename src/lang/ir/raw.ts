@@ -57,6 +57,8 @@ export interface IrPair {
   value?: Scoped;
   /** Added by the client (an interceptor, a default of its builder) to every request it sends. */
   from?: ClientPartFrom;
+  /** Set on some runs only of the code that adds it (a branch of an interceptor, `conditional.ts`). */
+  optional?: boolean;
   subst?: Subst;
   self?: ClassDef;
 }

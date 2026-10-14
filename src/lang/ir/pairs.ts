@@ -45,6 +45,8 @@ function pairKey(e: Expr, fn: FunctionDef, ctx: IrCtx): string | undefined {
  */
 export function resolvePairs(pairs: IrPair[] | undefined, base: IrCtx, headers: HeadersResult, query: IrQuery): PairsResult {
   const out: PairsResult = { clientParts: [] };
+  // a name the call or the client sets on every request: a client part is optional when nothing else always sets it
+  const always = new Set([...headers.names.map((n) => `header:${n}`), ...query.names.map((n) => `query:${n}`)]);
   for (const p of pairs ?? []) {
     const ctx = withSelf(withSubst(base, p.subst), p.self);
     const key = pairKey(p.name.expr, p.name.fn, ctx);
@@ -57,8 +59,10 @@ export function resolvePairs(pairs: IrPair[] | undefined, base: IrCtx, headers: 
     else addQuery(query, p, key, ctx);
     if (p.where === "query" && APIKEY_QUERY.has(key.toLowerCase())) out.queryAuth = "apikey";
     const name = p.where === "header" ? key.toLowerCase() : key;
+    if (!p.optional) always.add(`${p.where}:${name}`);
     if (p.from && !out.clientParts.some((c) => c.where === p.where && c.name === name)) out.clientParts.push({ where: p.where, name, from: p.from });
   }
+  for (const c of out.clientParts) if (!always.has(`${c.where}:${c.name}`)) c.optional = true;
   if (!headers.known && headers.authScheme === "none") headers.authScheme = "unknown";
   return out;
 }

@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/69",
+  "calls": [
+    {"file": "Atlas.java", "line": 68, "provider": "atlas.example.com"},
+    {"file": "Atlas.java", "line": 77, "provider": "atlas.example.com"},
+    {"file": "Atlas.java", "line": 88, "provider": "atlas.example.com"}
+  ]
+}
