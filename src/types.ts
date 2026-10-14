@@ -90,6 +90,8 @@ export interface MethodSpec {
   documentArg?: number;
   /** The document is this property of the document argument (Shopify `client.query({ data })`). */
   documentProp?: string;
+  /** The GraphQL document the library sends itself (Hydrogen's `cart.addLines(lines)`, #92). */
+  document?: string;
   queryArg?: number;
   pathArgs?: number[];
   pathFromBody?: string[];

@@ -90,6 +90,17 @@ exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
+[
+  "cart.tsx:9 shopify POST /api/{version}/graphql.json cartLinesAdd",
+  "cart.tsx:11 shopify POST /api/{version}/graphql.json cartLinesUpdate",
+  "cart.tsx:13 shopify POST /api/{version}/graphql.json cartLinesRemove",
+  "cart.tsx:15 shopify POST /api/{version}/graphql.json cartNoteUpdate",
+  "cart.tsx:20 shopify POST /api/{version}/graphql.json CartQuery",
+  "cart.tsx:24 shopify POST /api/{version}/graphql.json cartDiscountCodesUpdate",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/hydrogen-undeclared 1`] = `[]`;
 
 exports[`regression fixtures > graphql-clients/relay 1`] = `
@@ -1912,6 +1923,15 @@ exports[`regression fixtures > sdk/sentry 1`] = `
   "checkout.ts:8 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:6 sentry POST /api/{projectId}/envelope",
   "monitoring.ts:9 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-app-auth 1`] = `
+[
+  "sessions.js:5 shopify POST /admin/oauth/access_token",
+  "sessions.js:10 shopify POST /admin/oauth/access_token",
+  "sessions.js:15 shopify POST /admin/oauth/access_token",
+  "sessions.js:25 shopify POST /admin/api/{version}/graphql.json null",
 ]
 `;
 

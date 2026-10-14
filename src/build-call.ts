@@ -87,6 +87,7 @@ const DOCUMENT_KEYS = ["query", "mutation", "subscription", "document", "operati
  * callers of the hook they are written in, a reference search the body leaves out.
  */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
+  if (sdk?.spec.document !== undefined) return { type: "string", enum: [sdk.spec.document] };
   if (sdk?.spec.documentArg === undefined) return undefined;
   const given = sdk.args[sdk.spec.documentArg];
   const arg = sdk.spec.documentProp ? getProp(given, sdk.spec.documentProp, ctx) : given;

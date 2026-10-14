@@ -9515,11 +9515,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 45,
+    "filesSeen": 47,
     "languages": {
       "javascript": {
         "filesScanned": 0,
-        "filesSeen": 1,
+        "filesSeen": 3,
       },
       "typescript": {
         "filesScanned": 8,
@@ -9620,6 +9620,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "shopify-app-auth/sessions.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-app-auth/shopify.js",
+        "reason": "excluded",
+      },
+      {
         "file": "shopify-rest/admin.ts",
         "reason": "excluded",
       },
@@ -9677,7 +9685,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 37,
+      "excluded": 39,
     },
     "unfollowed": [],
   },

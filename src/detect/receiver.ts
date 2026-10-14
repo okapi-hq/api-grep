@@ -1,6 +1,7 @@
 import { Node, SyntaxKind, type CallExpression, type NewExpression, type ParameterDeclaration, type SourceFile } from "ts-morph";
 import { constructorAssignment, enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
+import { declarationsOf } from "../ast/object.js";
 import { isFunctionLike, type FunctionLike } from "../ast/function.js";
 import { evaluate } from "../resolve/evaluate.js";
 import type { Callee, RawCall, RegistryEntry, Subst } from "../types.js";
@@ -35,6 +36,21 @@ const untyped = (param: ParameterDeclaration): boolean => {
   const type = param.getTypeNode();
   return !type || UNTYPED.has(type.getText());
 };
+
+/**
+ * A variable the code fills itself (`const cart = new Map()`, `const cart = useCart()`), not one it is handed: its
+ * name says nothing of a framework's context client. Destructuring (`const { cart } = context`) and a property of the
+ * same name (`const cart = context.cart`) keep it.
+ */
+function builtHere(root: Node | undefined): boolean {
+  if (!root || !Node.isIdentifier(root)) return false;
+  return declarationsOf(root).some((d) => {
+    const init = Node.isVariableDeclaration(d) ? d.getInitializer() : undefined;
+    if (!init) return false;
+    const u = unwrap(init);
+    return !(Node.isPropertyAccessExpression(u) && u.getName() === root.getText());
+  });
+}
 
 const hasMethod = (registry: Registry, key: string): boolean => registry.entries().some((e) => !!e.methods && Object.hasOwn(e.methods, key));
 
@@ -148,7 +164,7 @@ export class ReceiverResolver {
     const mc = memberChain(node.getExpression());
     const names = [...(Node.isIdentifier(mc.root) ? [mc.root.getText()] : []), ...mc.chain];
     const [client, method] = names.slice(-2);
-    const entries = client && method ? this.contextEntries().get(client) : undefined;
+    const entries = client && method && !(names.length === 2 && builtHere(mc.root)) ? this.contextEntries().get(client) : undefined;
     const key = `${client}.${method}`;
     const declared = entries ? this.declared(node.getSourceFile().getFilePath()) : undefined;
     const entry = entries?.find((e) => !!e.methods && Object.hasOwn(e.methods, key) && [e.package, ...(e.aliases ?? [])].some((p) => declared!.has(p)));
