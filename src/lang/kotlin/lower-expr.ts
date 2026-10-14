@@ -192,6 +192,12 @@ function lowerIndex(n: SyntaxNode, st: KtState): Expr {
 /** `a to b` is a pair (a two-item list: an entry of `mapOf(...)`); other infix calls are values the scan cannot read. */
 function lowerInfix(n: SyntaxNode, st: KtState): Expr {
   const [left, op, right] = named(n);
+  // Koin's `single { Impl() } bind Api::class`: the call `bind` stands for (#75)
+  if (left && right && (op?.text === "bind" || op?.text === "binds")) {
+    const call: CallExpr = { k: "call", fn: { k: "attr", obj: lowerExpr(left, st), name: op.text, pos: posOf(op) }, args: [{ value: lowerExpr(right, st) }], pos: posOf(n) };
+    st.fn.calls.push(call);
+    return call;
+  }
   if (!left || !right || op?.text !== "to") return lowerOther(n, st);
   return { k: "list", items: [lowerExpr(left, st), lowerExpr(right, st)] };
 }

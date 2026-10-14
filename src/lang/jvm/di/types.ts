@@ -30,6 +30,14 @@ export function typeKey(type: Expr, fn: FunctionDef, ctx: IrCtx): TypeKey | unde
   return { simple };
 }
 
+/** `Lazy<OkHttpClient>`, `Set<Interceptor>`: the generic type's simple name and its first type argument. */
+export function generic(type: Expr | undefined): { name: string; arg: Expr } | undefined {
+  if (type?.k !== "index") return undefined;
+  const path = dottedPath(type.obj);
+  const arg = type.key.k === "list" ? type.key.items[0] : type.key;
+  return path && arg && arg.k !== "unknown" ? { name: path[path.length - 1]!, arg } : undefined;
+}
+
 const MAX_DEPTH = 3;
 const STARTS = new Set(["builder", "newBuilder", "create"]);
 

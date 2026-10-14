@@ -6,6 +6,7 @@ import { classMethod } from "../../ir/project.js";
 import type { IrCtx, IrPair, IrRaw, Seg, Subst } from "../../ir/raw.js";
 import { applyStep, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type BuilderStep, type RequestParts } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
+import { elementsOf } from "../elements.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { withClosures } from "./okhttp.js";
 import { rawOf } from "./request.js";
@@ -67,11 +68,10 @@ function handlerPairs(h: Handler): IrPair[] {
 /** The headers of the interceptors (or filters) given as these values: each one, or the items of a list of them. */
 function interceptorPairs(values: Scoped[], methods: string[], ctx: IrCtx): IrPair[] {
   const out: IrPair[] = [];
-  for (const v of values) {
-    for (const item of v.expr.k === "list" ? v.expr.items : [v.expr]) {
-      const h = handlerOf({ expr: item, fn: v.fn }, methods, ctx);
-      if (h) out.push(...handlerPairs(h));
-    }
+  // each item of a list, also an injected `List<ClientHttpRequestInterceptor>` (#75)
+  for (const item of values.flatMap((v) => elementsOf(v, ctx))) {
+    const h = handlerOf(item, methods, ctx);
+    if (h) out.push(...handlerPairs(h));
   }
   return out;
 }

@@ -1,11 +1,12 @@
 import { calleeChain, type Chain } from "../../ir/chain.js";
 import type { Scoped } from "../../ir/language.js";
 import type { ScopedCall } from "../../ir/fluent.js";
-import { callObject, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
+import { callObject, dottedPath, type CallExpr, type ClassDef, type Expr, type FunctionDef } from "../../ir/model.js";
 import { classMethod } from "../../ir/project.js";
 import { withSubst, type IrCtx, type IrPair, type IrRaw, type Subst } from "../../ir/raw.js";
 import { argAt, calleeIs, emptyParts, fluentChain, lambdaCalls, lambdaOf, readSteps, type FluentChain } from "../../ir/steps.js";
 import { deref } from "../../ir/values.js";
+import { elementsOf } from "../elements.js";
 import { substitutionFor } from "../../ir/wrappers.js";
 import { chainFrom, rawOf } from "./request.js";
 import { JVM, type BuiltRequestClient } from "./tables.js";
@@ -85,9 +86,11 @@ export function okHttpClientFacts(client: Scoped, ctx: IrCtx): IrPair[] {
   for (const step of fc.steps) {
     // the interceptor is often a lambda: the argument as written, not a step value
     const first = calleeIs(step.call, names) !== undefined ? step.call.args[0] : undefined;
-    const arg = first ? { expr: first.value, fn: step.fn } : undefined;
-    const i = arg ? interceptorOf(arg, ctx) : undefined;
-    if (i) out.push(...interceptorPairs(i, fc.subst));
+    // each interceptor of a collection (an injected `Set<Interceptor>` added in a `forEach`)
+    for (const arg of first ? elementsOf({ expr: first.value, fn: step.fn }, ctx) : []) {
+      const i = interceptorOf(arg, ctx);
+      if (i) out.push(...interceptorPairs(i, fc.subst));
+    }
   }
   return out;
 }
@@ -105,6 +108,23 @@ function copiedRequest(fc: FluentChain, spec: BuiltRequestClient, ctx: IrCtx): F
   return { start: base.start, steps: [...base.steps, ...fc.steps], ...(subst ? { subst } : {}) };
 }
 
+/** `callFactory(...)`, `Call.Factory { ... }`, ExoPlayer's `OkHttpDataSource.Factory { ... }`. */
+const factoryCall = (c: CallExpr): boolean => {
+  const last = c.fn.k === "attr" ? c.fn.name : (dottedPath(c.fn)?.pop() ?? "");
+  return last === "callFactory" || last.endsWith("Factory");
+};
+
+/**
+ * A call factory (`callFactory { request -> client.get().newCall(request) }`, `Call.Factory { ... }`): it sends the
+ * requests Retrofit or another library builds, read where they are declared, not a request of its own.
+ */
+function forwards(fn: FunctionDef, request: Scoped): boolean {
+  // the request is the one the factory is given (`request -> client.newCall(request)`)
+  const given = request.expr.k === "name" && fn.params.some((p) => request.expr.k === "name" && p.name === request.expr.name);
+  const isFn = (a: { name?: string; value: Expr }): boolean => a.value.k === "fnref" && a.value.fn === fn;
+  return given && fn.name === "lambda" && !!fn.parent?.calls.some((c) => c.args.some((a) => isFn(a) && (a.name === "callFactory" || factoryCall(c))));
+}
+
 /**
  * A request built with a request builder and sent by a client method (`client.newCall(request)`, `httpClient.send(request,
  * handler)`): reported at the send. The client must be the library's, or the request its builder's.
@@ -113,7 +133,7 @@ export function detectBuiltRequest(spec: BuiltRequestClient, call: CallExpr, fn:
   const send = chain.segs[chain.segs.length - 1];
   const index = send && send.call === call && Object.hasOwn(spec.sends, send.name) ? spec.sends[send.name] : undefined;
   const request = index !== undefined ? argAt({ call, fn }, index) : undefined;
-  if (!request) return undefined;
+  if (!request || forwards(fn, request)) return undefined;
   const fc = copiedRequest(fluentChain(request, (c) => calleeIs(c, spec.starts) !== undefined, ctx), spec, ctx);
   // `Request.Builder()` names its library; a bare `newBuilder()` (protobuf, gRPC descriptors) needs the client to
   const own = !!fc.start && calleeIs(fc.start.call, spec.starts.filter((s) => s.includes("."))) !== undefined;

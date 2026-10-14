@@ -240,12 +240,27 @@ exports[`regression fixtures > java/di-dagger 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/di-lazy 1`] = `
+[
+  "Meters.java:14 api.parking-example.com GET /v1/meters/{id}",
+  "Meters.java:27 receipts.parking-example.com GET /v1/{id}",
+]
+`;
+
 exports[`regression fixtures > java/di-spring 1`] = `
 [
   "Services.java:19 catalog.orders-example.com GET /v1/items/{id}",
   "Services.java:33 shipping.orders-example.com GET /v1/quotes",
   "Services.java:44 billing.orders-example.com GET /v1/invoices",
   "Services.java:55 internal GET /v1/events",
+]
+`;
+
+exports[`regression fixtures > java/di-spring-types 1`] = `
+[
+  "Services.java:21 api.invoices-example.com GET /v1/invoices/{id}",
+  "Services.java:25 reports.invoices-example.com GET /v1/reports/monthly",
+  "Services.java:29 payments.invoices-example.com GET /v1/payments/{id}",
 ]
 `;
 
@@ -509,12 +524,46 @@ exports[`regression fixtures > kotlin/di-hilt 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/di-injekt 1`] = `
+[
+  "Sources.kt:14 cdn.comics-example.com GET /chapters/{id}",
+  "Sources.kt:20 api.comics-example.com GET /v3/series/{id}",
+]
+`;
+
 exports[`regression fixtures > kotlin/di-koin 1`] = `
 [
   "Repositories.kt:14 api.tracks-example.com GET /v1/tracks",
   "Repositories.kt:19 api.tracks-example.com POST /v1/playlists",
   "Repositories.kt:24 uploads.tracks-example.com GET /v1/status",
   "Repositories.kt:31 api.tracks-example.com GET /v1/settings",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-koin-bind 1`] = `
+[
+  "Repositories.kt:10 api.radio-example.com GET /v1/stations",
+  "Repositories.kt:14 uploads.radio-example.com GET /v2/status",
+  "Repositories.kt:22 unknown GET /",
+  "Repositories.kt:26 archive.radio-example.com GET /v1/episodes (wrapper:ArchiveCalls.newCall)",
+  "Repositories.kt:30 mirror.radio-example.com GET /v1/list",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-lazy 1`] = `
+[
+  "Notes.kt:13 api.notes-example.com GET /v1/notes/{id}",
+  "Notes.kt:18 files.notes-example.com GET /v1/attachments/{id}",
+  "Notes.kt:22 sync.notes-example.com GET /v1/sync",
+  "Notes.kt:27 export.notes-example.com GET /v1/export",
+]
+`;
+
+exports[`regression fixtures > kotlin/di-multibind 1`] = `
+[
+  "Weather.kt:19 api.weather-example.com GET /v1/today",
+  "Weather.kt:23 maps.weather-example.com GET /v1/tiles/{z}",
+  "Weather.kt:27 legacy.weather-example.com GET /report",
 ]
 `;
 

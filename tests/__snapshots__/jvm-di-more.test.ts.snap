@@ -1,0 +1,1262 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > applies the interceptors of an injected multibinding set 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-app-version",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "city",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+            "x-app-version": "4.2.0",
+          },
+          "method": "GET",
+          "query": {
+            "city": "Graz",
+          },
+          "url": "https://api.weather-example.com/v1/today?city=Graz",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+        "x-app-version": "4.2.0",
+      },
+      "headers": [
+        "x-api-key",
+        "x-app-version",
+      ],
+      "host": "api.weather-example.com",
+      "hostKind": "literal",
+      "id": "eb6ead4d7e97",
+      "location": {
+        "col": 31,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 19,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/today",
+      "provider": "api.weather-example.com",
+      "query": [
+        "city",
+      ],
+      "queryShape": {
+        "properties": {
+          "city": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "city",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.weather-example.com/v1/today?city={city}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-maps-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "z",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-maps-key": "<x-maps-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://maps.weather-example.com/v1/tiles/282",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-maps-key": null,
+      },
+      "headers": [
+        "x-maps-key",
+      ],
+      "host": "maps.weather-example.com",
+      "hostKind": "literal",
+      "id": "f16701507891",
+      "location": {
+        "col": 24,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 23,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/tiles/{z}",
+      "provider": "maps.weather-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://maps.weather-example.com/v1/tiles/{z}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://legacy.weather-example.com/report",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "legacy.weather-example.com",
+      "hostKind": "literal",
+      "id": "76a39a0345b0",
+      "location": {
+        "col": 20,
+        "file": "Weather.kt",
+        "language": "kotlin",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/report",
+      "provider": "legacy.weather-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://legacy.weather-example.com/report",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 3,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "kotlin": 3,
+    },
+    "byProvider": {
+      "api.weather-example.com": 1,
+      "legacy.weather-example.com": 1,
+      "maps.weather-example.com": 1,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > follows Injekt definitions and lookups 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "user-agent": "comics-reader/2.1",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://cdn.comics-example.com/chapters/xoggscqe",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "user-agent": "comics-reader/2.1",
+      },
+      "headers": [
+        "user-agent",
+      ],
+      "host": "cdn.comics-example.com",
+      "hostKind": "literal",
+      "id": "de9abb029d76",
+      "location": {
+        "col": 31,
+        "file": "Sources.kt",
+        "language": "kotlin",
+        "line": 14,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/chapters/{id}",
+      "provider": "cdn.comics-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://cdn.comics-example.com/chapters/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://api.comics-example.com/v3/series/cwj4ld74",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.comics-example.com",
+      "hostKind": "literal",
+      "id": "69c6572c7215",
+      "location": {
+        "col": 38,
+        "file": "Sources.kt",
+        "language": "kotlin",
+        "line": 20,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/series/{id}",
+      "provider": "api.comics-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.comics-example.com/v3/series/{id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "ktor": 1,
+      "okhttp": 1,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "kotlin": 2,
+    },
+    "byProvider": {
+      "api.comics-example.com": 1,
+      "cdn.comics-example.com": 1,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > follows Koin \`bind\`, options and type qualifiers 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-radio-key",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-radio-key": "<x-radio-key>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.radio-example.com/v1/stations",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-radio-key": null,
+      },
+      "headers": [
+        "x-radio-key",
+      ],
+      "host": "api.radio-example.com",
+      "hostKind": "literal",
+      "id": "466c7bc94fda",
+      "location": {
+        "col": 22,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 10,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/stations",
+      "provider": "api.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.radio-example.com/v1/stations",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "ktor",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://uploads.radio-example.com/v2/status",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "uploads.radio-example.com",
+      "hostKind": "literal",
+      "id": "6c8226ae3612",
+      "location": {
+        "col": 28,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 14,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/status",
+      "provider": "uploads.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://uploads.radio-example.com/v2/status",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-archive-token",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "url",
+          "origin": "unknown",
+          "where": "host",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-archive-token": "<x-archive-token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://{url}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-archive-token": null,
+      },
+      "headers": [
+        "x-archive-token",
+      ],
+      "hostKind": "unknown",
+      "id": "95214f039968",
+      "location": {
+        "col": 52,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "unknown",
+      "query": [],
+      "urlTemplate": "",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-archive-token",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-archive-token": "<x-archive-token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://archive.radio-example.com/v1/episodes",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-archive-token": null,
+      },
+      "headers": [
+        "x-archive-token",
+      ],
+      "host": "archive.radio-example.com",
+      "hostKind": "literal",
+      "id": "4b0018bdce0d",
+      "location": {
+        "col": 22,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 26,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/episodes",
+      "provider": "archive.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://archive.radio-example.com/v1/episodes",
+      "via": "wrapper:ArchiveCalls.newCall",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://mirror.radio-example.com/v1/list",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "mirror.radio-example.com",
+      "hostKind": "literal",
+      "id": "c64a2a177f0d",
+      "location": {
+        "col": 21,
+        "file": "Repositories.kt",
+        "language": "kotlin",
+        "line": 30,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/list",
+      "provider": "mirror.radio-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://mirror.radio-example.com/v1/list",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "ktor": 1,
+      "okhttp": 4,
+    },
+    "byHostKind": {
+      "literal": 4,
+      "unknown": 1,
+    },
+    "byLanguage": {
+      "kotlin": 5,
+    },
+    "byProvider": {
+      "api.radio-example.com": 1,
+      "archive.radio-example.com": 1,
+      "mirror.radio-example.com": 1,
+      "unknown": 1,
+      "uploads.radio-example.com": 1,
+    },
+    "callsFound": 5,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 1,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > gives Spring beans by the interfaces they implement and as a List (Java) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-api-key",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-trace-source",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-api-key": "<api-key>",
+            "x-trace-source": "invoices",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.invoices-example.com/v1/invoices/xxzi6wwj",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-api-key": null,
+        "x-trace-source": "invoices",
+      },
+      "headers": [
+        "x-api-key",
+        "x-trace-source",
+      ],
+      "host": "api.invoices-example.com",
+      "hostKind": "literal",
+      "id": "f9755926e0a2",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 21,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/invoices/{id}",
+      "provider": "api.invoices-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.invoices-example.com/v1/invoices/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-rest",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://reports.invoices-example.com/v1/reports/monthly",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "reports.invoices-example.com",
+      "hostKind": "literal",
+      "id": "586ca22a17c6",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 25,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/reports/monthly",
+      "provider": "reports.invoices-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://reports.invoices-example.com/v1/reports/monthly",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "spring-webclient",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-tenant",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-tenant": "acme",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://payments.invoices-example.com/v1/payments/wyooqur2",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-tenant": "acme",
+      },
+      "headers": [
+        "x-tenant",
+      ],
+      "host": "payments.invoices-example.com",
+      "hostKind": "literal",
+      "id": "4a92093578a1",
+      "location": {
+        "col": 16,
+        "file": "Services.java",
+        "language": "java",
+        "line": 29,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/payments/{id}",
+      "provider": "payments.invoices-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://payments.invoices-example.com/v1/payments/{id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "java": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "spring-rest": 2,
+      "spring-webclient": 1,
+    },
+    "byHostKind": {
+      "literal": 3,
+    },
+    "byLanguage": {
+      "java": 3,
+    },
+    "byProvider": {
+      "api.invoices-example.com": 1,
+      "payments.invoices-example.com": 1,
+      "reports.invoices-example.com": 1,
+    },
+    "callsFound": 3,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > reads \`Lazy<T>\` / \`Provider<T>\` injection points and a Retrofit call factory (Kotlin) 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.notes-example.com/v1/notes/alr46hw1",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.notes-example.com",
+      "hostKind": "literal",
+      "id": "07b0f19f85f1",
+      "location": {
+        "col": 5,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 13,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/notes/{id}",
+      "provider": "api.notes-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.notes-example.com/v1/notes/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://files.notes-example.com/v1/attachments/ehyz5yrr",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "files.notes-example.com",
+      "hostKind": "literal",
+      "id": "2dc4c74a85cd",
+      "location": {
+        "col": 34,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 18,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/attachments/{id}",
+      "provider": "files.notes-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://files.notes-example.com/v1/attachments/{id}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://sync.notes-example.com/v1/sync",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "sync.notes-example.com",
+      "hostKind": "literal",
+      "id": "320749d9cde6",
+      "location": {
+        "col": 18,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/sync",
+      "provider": "sync.notes-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://sync.notes-example.com/v1/sync",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://export.notes-example.com/v1/export",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "export.notes-example.com",
+      "hostKind": "literal",
+      "id": "c8657f7c630e",
+      "location": {
+        "col": 20,
+        "file": "Notes.kt",
+        "language": "kotlin",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/export",
+      "provider": "export.notes-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://export.notes-example.com/v1/export",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "kotlin": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 3,
+      "retrofit": 1,
+    },
+    "byHostKind": {
+      "literal": 4,
+    },
+    "byLanguage": {
+      "kotlin": 4,
+    },
+    "byProvider": {
+      "api.notes-example.com": 1,
+      "export.notes-example.com": 1,
+      "files.notes-example.com": 1,
+      "sync.notes-example.com": 1,
+    },
+    "callsFound": 4,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Injekt (#75) > reads Dagger \`Lazy\` / \`Provider\` and a multibinding set in Java 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "retrofit",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-zone",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "unknown",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-zone": "north",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.parking-example.com/v1/meters/pzidamou",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-zone": "north",
+      },
+      "headers": [
+        "x-zone",
+      ],
+      "host": "api.parking-example.com",
+      "hostKind": "literal",
+      "id": "e80fafcd98fd",
+      "location": {
+        "col": 5,
+        "file": "Meters.java",
+        "language": "java",
+        "line": 14,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/meters/{id}",
+      "provider": "api.parking-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.parking-example.com/v1/meters/{id}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "okhttp",
+      "clientParts": [
+        {
+          "from": "interceptor",
+          "name": "x-zone",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-zone": "north",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://receipts.parking-example.com/v1/wji51us7",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-zone": "north",
+      },
+      "headers": [
+        "x-zone",
+      ],
+      "host": "receipts.parking-example.com",
+      "hostKind": "literal",
+      "id": "9b81a146087f",
+      "location": {
+        "col": 16,
+        "file": "Meters.java",
+        "language": "java",
+        "line": 27,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/{id}",
+      "provider": "receipts.parking-example.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://receipts.parking-example.com/v1/{id}",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "java": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.15.0",
+  "stats": {
+    "byClient": {
+      "okhttp": 1,
+      "retrofit": 1,
+    },
+    "byHostKind": {
+      "literal": 2,
+    },
+    "byLanguage": {
+      "java": 2,
+    },
+    "byProvider": {
+      "api.parking-example.com": 1,
+      "receipts.parking-example.com": 1,
+    },
+    "callsFound": 2,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 0,
+    "withDynamic": 2,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

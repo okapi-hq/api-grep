@@ -110,6 +110,11 @@ function accessor(n: SyntaxNode, st: KtState, name: string): Expr {
   return { k: "call", fn: { k: "fnref", fn }, args: [], pos: posOf(n) };
 }
 
+const LOOKUPS = new Set(["inject", "get", "injectLazy", "injectValue"]);
+
+/** A container lookup whose type a typed property gives (`by inject()`, `get()`, `injectLazy()`, `Injekt.get()`). */
+const isLookup = (fn: Expr): boolean => (fn.k === "name" && LOOKUPS.has(fn.name)) || (fn.k === "attr" && fn.name === "get" && fn.obj.k === "name" && fn.obj.name === "Injekt");
+
 export function propertyParts(n: SyntaxNode, st: KtState): PropertyParts {
   const kids = named(n).filter((c) => !isComment(c));
   const mods = modifiersOf(kids.find((c) => c.type === "modifiers"), st);
@@ -126,8 +131,9 @@ export function propertyParts(n: SyntaxNode, st: KtState): PropertyParts {
   if (setter) accessor(setter, st, `set-${id?.text ?? ""}`);
   const lowered = init ? lowerExpr(init, st) : delegate ? lowerExpr(delegate, st) : getter ? accessor(getter, st, `get-${id?.text ?? ""}`) : undefined;
   const value = injectedValue(mods.annotations) ?? lowered;
-  // `val client: HttpClient by inject()`, `= get()`: a Koin lookup of the declared type
-  if (type && value?.k === "call" && !value.typeArgs && value.fn.k === "name" && (value.fn.name === "inject" || value.fn.name === "get")) value.typeArgs = [type];
+  // `val client: HttpClient by inject()`, `= get()`: a Koin lookup of the declared type; Injekt's `by injectLazy()`,
+  // `= Injekt.get()`
+  if (type && value?.k === "call" && !value.typeArgs && isLookup(value.fn)) value.typeArgs = [type];
   return {
     ...(id?.type === "identifier" ? { name: id.text } : {}),
     destructured: multi ? named(multi).flatMap((v) => named(v)[0]?.text ?? []) : [],
