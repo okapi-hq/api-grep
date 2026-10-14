@@ -71,6 +71,8 @@
         "putBytes": {"method":"POST","path":"/v0/b/{bucket}/o?name={path}","params":{"path":"chain:getReference,child"},"bodyArg":0,"encoding":"raw"},
         "putStream": {"method":"POST","path":"/v0/b/{bucket}/o?name={path}","params":{"path":"chain:getReference,child"},"encoding":"raw"},
         "getDownloadUrl": {"method":"GET","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"}},
+        "downloadUrl": {"method":"GET","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"},"property":true},
+        "metadata": {"method":"GET","path":"/v0/b/{bucket}/o/{path}","params":{"path":"chain:getReference,child"},"property":true},
         "getBytes": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},
         "getFile": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},
         "getStream": {"method":"GET","path":"/v0/b/{bucket}/o/{path}?alt=media","params":{"path":"chain:getReference,child"}},

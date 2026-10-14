@@ -1,5 +1,5 @@
 {
-  "$comment": "supabase-kt (Kotlin): `createSupabaseClient(supabaseUrl, supabaseKey) { install(Postgrest) ... }` (or an injected `SupabaseClient`), then the plugin of each module: Postgrest (`supabase.from(\"table\").select()`, `.insert(row)`, `.update(...)`, `.delete { ... }`, `supabase.postgrest.rpc(\"fn\", params)`), Auth (`supabase.auth.signInWith(Email) { ... }`, `gotrue` before 3.0), Storage (`supabase.storage.from(\"bucket\").upload(path, bytes)`) and Functions (`supabase.functions.invoke(\"fn\", body)`), one entry per artifact (`variants`). Paths as in the Python supabase registry. `signInWith` gets a session from `/auth/v1/token` whatever the provider (an OAuth provider's browser flow ends there too); `publicUrl(path)` builds a URL locally. A plugin injected on its own (`postgrest: Postgrest`, `auth: Auth`, `storage: Storage`) is a client too; `postgrest[\"table\"]` is `from(\"table\")` (`get.select`). Request bodies built in Kotlin lambdas (`signInWith(Email) { email = e }`, `update({ set(\"a\", 1) })`) are not read.",
+  "$comment": "supabase-kt (Kotlin): `createSupabaseClient(supabaseUrl, supabaseKey) { install(Postgrest) ... }` (or an injected `SupabaseClient`), then the plugin of each module: Postgrest (`supabase.from(\"table\").select()`, `.insert(row)`, `.update(...)`, `.delete { ... }`, `supabase.postgrest.rpc(\"fn\", params)`), Auth (`supabase.auth.signInWith(Email) { ... }`, `gotrue` before 3.0), Storage (`supabase.storage.from(\"bucket\").upload(path, bytes)`) and Functions (`supabase.functions.invoke(\"fn\", body)`), one entry per artifact (`variants`). Paths as in the Python supabase registry. `signInWith` gets a session from `/auth/v1/token` whatever the provider (an OAuth provider's browser flow ends there too); `publicUrl(path)` builds a URL locally. A plugin injected on its own (`postgrest: Postgrest`, `auth: Auth`, `storage: Storage`) is a client too; `postgrest[\"table\"]` is `from(\"table\")` (`get.select`). Bodies built in Kotlin lambdas are read: the properties `signInWith(Email) { email = e; password = p }` assigns (`setters`), the keys `update({ set(\"done\", true) })` sets (`setters.putters`).",
   "provider": "supabase",
   "host": "{project}.supabase.co",
   "auth": "bearer",
@@ -11,6 +11,7 @@
       "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.postgrest.Postgrest"],
       "builders": ["postgrest"],
       "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Postgrest"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "setters": { "packages": ["io.github.jan.supabase.postgrest.query"], "case": "camel", "putters": ["set"] },
       "methods": {
         "from.select": {"method":"GET","path":"/rest/v1/{table}","params":{"table":"instance:0"}},
         "from.insert": {"method":"POST","path":"/rest/v1/{table}","params":{"table":"instance:0"},"bodyArg":0},
@@ -31,10 +32,11 @@
       "imports": ["io.github.jan.supabase.createSupabaseClient", "io.github.jan.supabase.SupabaseClient", "io.github.jan.supabase.auth.Auth", "io.github.jan.supabase.gotrue.Auth", "io.github.jan.supabase.gotrue.GoTrue"],
       "builders": ["auth", "gotrue"],
       "instance": { "names": ["createSupabaseClient", "SupabaseClient", "Auth", "GoTrue"], "urlArg": { "createSupabaseClient": "kw:supabaseUrl|0" } },
+      "setters": { "packages": ["io.github.jan.supabase.auth.providers.builtin"], "case": "camel", "fields": { "idToken": "id_token", "accessToken": "access_token", "captchaToken": "" } },
       "methods": {
-        "signUpWith": {"method":"POST","path":"/auth/v1/signup"},
-        "signInWith": {"method":"POST","path":"/auth/v1/token"},
-        "loginWith": {"method":"POST","path":"/auth/v1/token"},
+        "signUpWith": {"method":"POST","path":"/auth/v1/signup","bodyArg":1},
+        "signInWith": {"method":"POST","path":"/auth/v1/token","bodyArg":1},
+        "loginWith": {"method":"POST","path":"/auth/v1/token","bodyArg":1},
         "signInAnonymously": {"method":"POST","path":"/auth/v1/signup"},
         "signOut": {"method":"POST","path":"/auth/v1/logout"},
         "logout": {"method":"POST","path":"/auth/v1/logout"},

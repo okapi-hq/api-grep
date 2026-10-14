@@ -35,6 +35,11 @@ export interface IrMethodSpec extends MethodSpec {
   argFields?: { seg: string; fields: string[]; setters?: string };
   /** The call builds a model client whose settings are its requests' (LangChain4j `OpenAiChatModel.builder()...build()`): the built value is the body. */
   bodySelf?: boolean;
+  /**
+   * A `params` source holding the HTTP method the code sets (SendGrid's `request.setMethod(Method.GET)`: `arg:0.method`);
+   * the registry's method when it sets none, `DYNAMIC` when it is not known.
+   */
+  methodFrom?: string;
 }
 
 /**
@@ -69,6 +74,8 @@ export interface SetterRules {
   constructors?: boolean;
   /** Classes of those packages that stand for their one argument (`ModelId("gpt-4o")` -> `"gpt-4o"`). */
   wrappers?: string[];
+  /** Bare calls of a filling lambda that set a key from their two arguments (supabase-kt `update({ set("done", true) })`). */
+  putters?: string[];
 }
 
 /**
@@ -189,6 +196,12 @@ export interface FluentMapSpec {
   props?: Record<string, string>;
   /** Methods setting one entry from their argument (`request.setEndpoint("mail/send")` -> `endpoint`). */
   setters?: Record<string, string>;
+  /**
+   * Any other `setX(v)` sets the entry `x` in this case (Azure OpenAI options: `setMaxTokens(300)` -> `max_tokens`).
+   */
+  setterCase?: "snake";
+  /** The constructor's positional arguments are these entries (`ChatCompletionsOptions(messages)` -> `messages`). */
+  args?: string[];
   /** Methods that set no entry (`MultipartBody.Builder().setType(FORM)`). */
   skip?: string[];
   /** Methods adding every entry of their argument (`map.putAll(other)`). */
