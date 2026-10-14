@@ -1,3 +1,4 @@
+import type { ClientValues } from "./detect/client-cache.js";
 import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration } from "ts-morph";
 
 /** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
@@ -42,6 +43,8 @@ export interface Callee {
   thisRoot?: boolean;
   /** First construction when the chain went through several (`createClient(url).from(table)`: `createClient`). */
   rootInstance?: InstanceInfo;
+  /** The client came from a cache a helper fills (`getProvider(chainId)`, #85): every construction it may hold. */
+  cached?: ClientValues;
 }
 
 export interface RawCall {

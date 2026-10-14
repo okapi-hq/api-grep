@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/85",
+  "calls": [
+    {"file": "archive.ts", "line": 17, "provider": "archive.example-node.io", "operation": "eth_getBalance"},
+    {"file": "chains.ts", "line": 19, "provider": "unknown", "operation": "eth_call"},
+    {"file": "chains.ts", "line": 24, "provider": "unknown", "operation": "eth_blockNumber"},
+    {"file": "proxied.ts", "line": 21, "provider": "unknown", "operation": "eth_call"}
+  ]
+}

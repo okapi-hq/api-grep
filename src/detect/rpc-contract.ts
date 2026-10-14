@@ -4,6 +4,8 @@ import { declarationsOf } from "../ast/object.js";
 import type { Callee, MethodSpec, RegistryEntry } from "../types.js";
 import { readsOnly } from "./contract-abi.js";
 import { argsOf, at, calledName, MAX_DEPTH, valueOf, type Construction, type Endpoint } from "./endpoint.js";
+import { cachedClients } from "./client-cache.js";
+import { agreedEndpoint, candidateEndpoint } from "./rpc-cache.js";
 import { cachedProjectEndpoint, fromRpcClient, referenceName, rpcEndpoint } from "./rpc-endpoint.js";
 
 /**
@@ -92,13 +94,33 @@ function signerOf(c: Construction, node: Construction, reg: RegistryEntry, depth
   return runner && { endpoint: runner.endpoint, signs: signer.signs };
 }
 
+/**
+ * A runner read from a cache a helper fills (`getProvider(chainId)`, #85): each value's, combined; null when one is no
+ * HTTP client, undefined when one cannot be read (or the expression reads no cache).
+ */
+function cachedRunner(u: Expression, node: Construction, reg: RegistryEntry, depth: number): Runner | null | undefined {
+  const found = cachedClients(u);
+  if (!found) return undefined;
+  const runners: Runner[] = [];
+  for (const c of found.values) {
+    const signer = signerOf(c, node, reg, depth);
+    const endpoint = signer === undefined ? candidateEndpoint(c, reg) : signer?.endpoint;
+    if (endpoint === undefined || endpoint === null) return endpoint;
+    runners.push({ endpoint, signs: signer?.signs ?? "none" });
+  }
+  const signs = runners.every((r) => r.signs === runners[0]!.signs) ? runners[0]!.signs : "unknown";
+  return { endpoint: agreedEndpoint(runners.map((r) => r.endpoint), found.keyed), signs };
+}
+
 /** What an ethers contract is connected to; null when it is not an HTTP client (a browser wallet, a socket, none). */
 function runnerOf(e: Expression | undefined, node: Construction, reg: RegistryEntry, depth: number): Runner | null {
   if (!e || depth > MAX_DEPTH) return null;
   const u = unwrap(e);
   if (Node.isIdentifier(u)) {
     const value = valueOf(u);
-    return value ? runnerOf(value, node, reg, depth + 1) : unseen(u, node, reg);
+    if (value) return runnerOf(value, node, reg, depth + 1);
+    const cached = cachedRunner(u, node, reg, depth);
+    return cached !== undefined ? cached : unseen(u, node, reg);
   }
   if (Node.isCallExpression(u) || Node.isNewExpression(u)) {
     const name = calledName(u) ?? "";
@@ -111,7 +133,8 @@ function runnerOf(e: Expression | undefined, node: Construction, reg: RegistryEn
     const signer = signerOf(u, node, reg, depth);
     if (signer !== undefined) return signer;
   }
-  return unseen(u, node, reg);
+  const cached = cachedRunner(u, node, reg, depth);
+  return cached !== undefined ? cached : unseen(u, node, reg);
 }
 
 /** What an ethers contract function sends: `eth_call` for a view, a transaction otherwise, both when the ABI does not say. */

@@ -4,7 +4,8 @@ import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
-import type { Callee } from "../types.js";
+import type { Callee, InstanceInfo } from "../types.js";
+import { cacheRead, cachedClients } from "./client-cache.js";
 import { annotatedPackage } from "./type-annotation.js";
 
 const MAX_DEPTH = 6;
@@ -104,14 +105,33 @@ function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | 
   const returned = Node.isExpression(body) ? [body] : body.getDescendantsOfKind(SyntaxKind.ReturnStatement).flatMap((r) => r.getExpression() ?? []);
   for (const expr of returned) {
     const u = constructed(expr);
-    if (u) {
+    // `let p = cache.get(k)`: a cache entry, read below
+    if (u && !(Node.isCallExpression(u) && cacheRead(u))) {
       const c = describeCallee(u, depth + 1);
-      if (c.package || c.global) return { ...c, instance: { kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] }, chain };
+      if (c.package || c.global) return { ...c, instance: instanceOf(u, c), chain };
       continue;
     }
     const held = chain.length > 1 ? constructed(getProp(expr, chain[0]!)) : undefined;
     const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
     if (c?.package) return c;
+  }
+  return fromCache(returned, chain, depth);
+}
+
+const instanceOf = (u: CallExpression | NewExpression, c: Callee): InstanceInfo => ({ kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] });
+
+/**
+ * `return providers[chainId]` where the helper fills the cache (#85): the package of the clients it holds, all of
+ * them kept for the endpoint (`cached`); the other values may be classes of the app built on that package's.
+ */
+function fromCache(returned: Expression[], chain: string[], depth: number): Callee | undefined {
+  for (const expr of returned) {
+    const found = cachedClients(expr);
+    const described = found?.values.map((v) => [v, describeCallee(v, depth + 1)] as const) ?? [];
+    const packaged = described.filter(([, c]) => c.package);
+    const first = packaged[0];
+    if (!first || packaged.some(([, c]) => c.package !== first[1].package)) continue;
+    return { ...first[1], instance: instanceOf(first[0], first[1]), chain, cached: found };
   }
   return undefined;
 }

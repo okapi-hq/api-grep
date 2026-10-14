@@ -2,6 +2,7 @@ import { Node, SyntaxKind, type Expression, type Project, type TypeNode } from "
 import { memberChain, unwrap } from "../ast/expr.js";
 import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
+import { cachedEndpoint } from "./rpc-cache.js";
 import { urlOrNetwork, vendorEndpoint } from "./rpc-vendor.js";
 import {
   argsOf,
@@ -140,6 +141,8 @@ export function rpcEndpoint(node: Construction, reg: RegistryEntry, spec: Method
     const c = constructionOf(client, reg);
     return c ? fromRpcClient(calledName(c) ?? "", argsOf(c), reg) : cachedProjectEndpoint(node.getProject(), reg);
   }
+  // a client from a cache (#85): every value it may hold; none read as a guess
+  if (callee.cached) return cachedEndpoint(callee.cached, reg) ?? null;
   for (const inst of [callee.instance, callee.rootInstance]) {
     // a default import (`import Web3 from "web3"`) has an empty chain
     const ctor = inst ? (inst.chain.at(-1) ?? "default") : undefined;
