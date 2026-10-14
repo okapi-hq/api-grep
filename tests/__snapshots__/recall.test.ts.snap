@@ -90,6 +90,17 @@ exports[`regression fixtures > graphql-clients/hydrogen 1`] = `
 ]
 `;
 
+exports[`regression fixtures > graphql-clients/hydrogen-cart 1`] = `
+[
+  "cart.tsx:9 shopify POST /api/{version}/graphql.json cartLinesAdd",
+  "cart.tsx:11 shopify POST /api/{version}/graphql.json cartLinesUpdate",
+  "cart.tsx:13 shopify POST /api/{version}/graphql.json cartLinesRemove",
+  "cart.tsx:15 shopify POST /api/{version}/graphql.json cartNoteUpdate",
+  "cart.tsx:20 shopify POST /api/{version}/graphql.json CartQuery",
+  "cart.tsx:24 shopify POST /api/{version}/graphql.json cartDiscountCodesUpdate",
+]
+`;
+
 exports[`regression fixtures > graphql-clients/hydrogen-undeclared 1`] = `[]`;
 
 exports[`regression fixtures > graphql-clients/relay 1`] = `
@@ -114,6 +125,17 @@ exports[`regression fixtures > graphql-clients/relay-containers 1`] = `
   "Orchard.js:20 api.example-orchard.dev POST /graphql SeasonQuery",
   "Orchard.js:25 api.example-orchard.dev POST /graphql TreeDetailsRefetchQuery",
   "Orchard.js:31 api.example-orchard.dev POST /graphql TreeListPaginationQuery",
+]
+`;
+
+exports[`regression fixtures > graphql-clients/relay-fragments 1`] = `
+[
+  "environment.js:4 api.example-library.dev POST /graphql null",
+  "Shelf.js:5 api.example-library.dev POST /graphql BookListPaginationQuery",
+  "Shelf.js:21 api.example-library.dev POST /graphql ReaderBadgeRefetchQuery",
+  "Shelf.js:33 api.example-library.dev POST /graphql LoanListRefetchQuery",
+  "Shelf.js:59 api.example-library.dev POST /graphql ShelfQuery",
+  "Shelf.js:64 api.example-library.dev POST /graphql ShelfQuery",
 ]
 `;
 
@@ -1399,6 +1421,23 @@ exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/shopify-records 1`] = `
+[
+  "kites.py:8 shopify POST /admin/api/{version}/products.json",
+  "kites.py:13 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:15 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:19 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.py:23 shopify GET /admin/api/{version}/products/{id}.json",
+  "kites.py:23 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.py:27 shopify GET /admin/api/{version}/orders/{id}.json",
+  "kites.py:28 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.py:32 shopify GET /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.py:37 shopify POST /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.py:41 shopify GET /admin/api/{version}/products/{resource_id}/metafields.json",
+  "kites.py:45 shopify GET /admin/api/{version}/orders/{order_id}/transactions.json",
+]
+`;
+
 exports[`regression fixtures > python/shopify-rest 1`] = `
 [
   "store.py:11 shopify GET /admin/api/{version}/shop.json",
@@ -1973,6 +2012,25 @@ exports[`regression fixtures > sdk/sentry 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/shopify-app-auth 1`] = `
+[
+  "sessions.js:5 shopify POST /admin/oauth/access_token",
+  "sessions.js:10 shopify POST /admin/oauth/access_token",
+  "sessions.js:15 shopify POST /admin/oauth/access_token",
+  "sessions.js:25 shopify POST /admin/api/{version}/graphql.json null",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-node-bodies 1`] = `
+[
+  "fulfillment.js:6 shopify POST /admin/api/2024-07/customers/{customer_id}/addresses.json",
+  "fulfillment.js:10 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/hold.json",
+  "fulfillment.js:14 shopify POST /admin/api/2024-07/fulfillment_orders/{id}/close.json",
+  "fulfillment.js:18 shopify POST /admin/api/2024-07/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json",
+  "fulfillment.js:22 shopify POST /admin/api/2024-07/gift_cards/{id}/disable.json",
+]
+`;
+
 exports[`regression fixtures > sdk/shopify-rest 1`] = `
 [
   "admin.ts:9 shopify GET /admin/api/2024-07/orders.json",
@@ -1988,6 +2046,20 @@ exports[`regression fixtures > sdk/shopify-rest 1`] = `
   "legacy.js:20 shopify POST /admin/api/2024-07/orders/{id}/close.json",
   "legacy.js:25 shopify POST /admin/api/2024-07/customers.json",
   "legacy.js:33 shopify POST /admin/api/2024-07/customers.json (wrapper:newCustomer)",
+]
+`;
+
+exports[`regression fixtures > sdk/shopify-rest-records 1`] = `
+[
+  "app.kites.tsx:6 shopify GET /admin/api/{version}/products.json",
+  "app.kites.tsx:14 shopify POST /admin/api/{version}/redirects.json",
+  "kites.ts:10 shopify POST /admin/api/{version}/products.json",
+  "kites.ts:18 shopify PUT /admin/api/{version}/products/{id}.json",
+  "kites.ts:25 shopify POST /admin/api/{version}/products/{product_id}/variants.json",
+  "kites.ts:31 shopify POST /admin/api/{version}/orders/{id}/close.json",
+  "kites.ts:37 shopify DELETE /admin/api/{version}/products/{id}.json",
+  "kites.ts:41 shopify GET /admin/api/{version}/products/{product_id}/metafields.json",
+  "kites.ts:45 shopify GET /admin/api/{version}/metafields.json",
 ]
 `;
 

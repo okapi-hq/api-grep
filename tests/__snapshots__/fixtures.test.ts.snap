@@ -9515,15 +9515,15 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 45,
+    "filesSeen": 52,
     "languages": {
       "javascript": {
         "filesScanned": 0,
-        "filesSeen": 1,
+        "filesSeen": 4,
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 44,
+        "filesSeen": 48,
       },
     },
     "skipped": [
@@ -9620,11 +9620,39 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "shopify-app-auth/sessions.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-app-auth/shopify.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-node-bodies/fulfillment.js",
+        "reason": "excluded",
+      },
+      {
         "file": "shopify-rest/admin.ts",
         "reason": "excluded",
       },
       {
         "file": "shopify-rest/legacy.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-rest-records/app.kites.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-rest-records/kites.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-rest-records/local-models.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "shopify-rest-records/shopify.server.ts",
         "reason": "excluded",
       },
       {
@@ -9677,7 +9705,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 37,
+      "excluded": 44,
     },
     "unfollowed": [],
   },

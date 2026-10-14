@@ -43,8 +43,12 @@ export function jsonToShape(v: unknown): Shape {
   return { type: "object", properties: Object.fromEntries(entries.map(([k, x]) => [k, jsonToShape(x)])), required: entries.map(([k]) => k) };
 }
 
-/** A body an SDK sends under a key of its own (`bodyWrap`): `{ product: fields }` for `product.create(fields)`. */
+/**
+ * A body an SDK sends under a key of its own (`bodyWrap`): `{ product: fields }` for `product.create(fields)`; a dotted
+ * key nests it (`fulfillment_order.message` for `fulfillmentOrder.close(id, message)`).
+ */
 export function wrapShape(shape: Shape | undefined, key: string | undefined): Shape | undefined {
-  if (!shape || !key || !isSafeKey(key)) return shape;
-  return { type: "object", properties: { [key]: shape }, required: [key] };
+  const keys = key?.split(".") ?? [];
+  if (!shape || keys.length === 0 || !keys.every(isSafeKey)) return shape;
+  return keys.reduceRight<Shape>((inner, k) => ({ type: "object", properties: { [k]: inner }, required: [k] }), shape);
 }

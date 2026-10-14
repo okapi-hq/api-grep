@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/92",
+  "calls": [
+    {"file": "Shelf.js", "line": 5, "provider": "api.example-library.dev", "operation": "BookListPaginationQuery"},
+    {"file": "Shelf.js", "line": 21, "provider": "api.example-library.dev", "operation": "ReaderBadgeRefetchQuery"},
+    {"file": "Shelf.js", "line": 33, "provider": "api.example-library.dev", "operation": "LoanListRefetchQuery"},
+    {"file": "Shelf.js", "line": 59, "provider": "api.example-library.dev", "operation": "ShelfQuery"},
+    {"file": "Shelf.js", "line": 64, "provider": "api.example-library.dev", "operation": "ShelfQuery"}
+  ]
+}

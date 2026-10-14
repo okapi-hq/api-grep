@@ -9,12 +9,14 @@ import { resolveBody, shapeOf } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
 import { isAstDocument } from "./resolve/graphql-ast.js";
 import { relayDocument } from "./resolve/relay-artifact.js";
+import { refetchDocument } from "./resolve/relay-refetch.js";
 import { stringShapeOf } from "./resolve/string-template.js";
 import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
 import { wrapShape } from "./resolve/shape-utils.js";
+import { withEdits } from "./resolve/edited-shape.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
@@ -87,10 +89,12 @@ const DOCUMENT_KEYS = ["query", "mutation", "subscription", "document", "operati
  * callers of the hook they are written in, a reference search the body leaves out.
  */
 function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
+  if (sdk?.spec.document !== undefined) return { type: "string", enum: [sdk.spec.document] };
   if (sdk?.spec.documentArg === undefined) return undefined;
   const given = sdk.args[sdk.spec.documentArg];
   const arg = sdk.spec.documentProp ? getProp(given, sdk.spec.documentProp, ctx) : given;
   if (!arg) return { type: "unknown" };
+  if (sdk.spec.refetchQuery) return refetchDocument(shapeOf(arg, ctx).shape, arg);
   const artifact = relayDocument(arg);
   if (artifact) return stringShapeOf(artifact);
   const options = toObjectLiteral(arg, ctx);
@@ -110,6 +114,8 @@ function rpcOperation(sdk: RawCall["sdk"], ctx: EvalCtx): Operation | undefined 
   return rpcClientOperation(sdk.spec, arg ? shapeOf(arg, ctx).shape : undefined);
 }
 
+const empty = (): Shape => ({ type: "object", properties: {}, required: [] });
+
 /** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
@@ -120,6 +126,11 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
   const body = resolveBody(raw.bodyExpr, raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
+  // a record sends the properties the code set on it (`product.title = t; product.save()`)
+  if (raw.record && raw.sdk?.spec.record?.body) {
+    body.shape = withEdits(empty(), raw.record.decl, raw.node, (e) => shapeOf(e, ctx), body.dynamic);
+    body.encoding = "json";
+  }
   body.shape = wrapShape(body.shape, raw.sdk?.spec.bodyWrap);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });

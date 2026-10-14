@@ -1,5 +1,5 @@
 import path from "node:path";
-import { Node, type Expression, type ObjectLiteralExpression } from "ts-morph";
+import { Node, type Expression, type ObjectLiteralExpression, type SourceFile } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp, importedVariable } from "../ast/object.js";
 import { MAX_DOCUMENT_CHARS } from "../operation/graphql-document.js";
@@ -48,13 +48,18 @@ function requiredExport(u: Expression): Expression | undefined {
   const base = path.join(path.dirname(u.getSourceFile().getFilePath()), spec);
   const project = u.getProject();
   const sf = ["", ".js", ".ts"].map((ext) => project.getSourceFile(`${base}${ext}`)).find((f) => !!f);
-  const exported = sf?.getExportAssignments().find((a) => !a.isExportEquals())?.getExpression();
+  return sf && moduleExport(sf);
+}
+
+/** What a module exports: `export default node` or `module.exports = node`. */
+function moduleExport(sf: SourceFile): Expression | undefined {
+  const exported = sf.getExportAssignments().find((a) => !a.isExportEquals())?.getExpression();
   if (exported) return exported;
-  const assigned = sf?.getStatements().flatMap((s) => {
+  const assigned = sf.getStatements().flatMap((s) => {
     const e = Node.isExpressionStatement(s) ? s.getExpression() : undefined;
     return e && Node.isBinaryExpression(e) && e.getLeft().getText() === "module.exports" ? [e.getRight()] : [];
   });
-  return assigned?.at(-1);
+  return assigned.at(-1);
 }
 
 /** The artifact literal an expression names: written here, or a constant (imported or not) holding one. */
@@ -81,4 +86,10 @@ export function relayDocument(e: Expression): Part[] | undefined {
   const name = stringOf(getProp(params, "name"));
   const kind = stringOf(getProp(params, "operationKind"));
   return name && NAME.test(name) && kind && OPERATION_KINDS.has(kind) ? truncated(`${kind} ${name} `) : undefined;
+}
+
+/** The document of the artifact module `sf` (`__generated__/AppQuery.graphql.ts`). */
+export function artifactDocument(sf: SourceFile): Part[] | undefined {
+  const exported = moduleExport(sf);
+  return exported ? relayDocument(exported) : undefined;
 }
