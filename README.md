@@ -273,7 +273,9 @@ through the connected wallet and are not reported. For contracts: TypeChain fact
 (`Token__factory.connect(address, runner)`, also when the generated file is missing), `contract.connect(signer)` /
 `attach(address)`, contracts typed as parameters (`token: Contract`), and ABIs imported from JSON files (also a Hardhat
 artifact's `abi`), read to tell a view from a transaction. Calls to Solana's public clusters (`api.mainnet-beta.solana.com`,
-`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`.
+`api.devnet.solana.com`, `api.testnet.solana.com`) are named `solana-public-rpc`. Clients handed down by an app's own
+React context, injected client factories and wagmi configs built by other libraries are
+[#98](https://github.com/okapi-hq/api-grep/issues/98).
 
 GraphQL client libraries ([#54](https://github.com/okapi-hq/api-grep/issues/54)) are SDK calls (`client: sdk`) whose
 operation comes from the document they are given: Apollo Client (`client.query` / `mutate` / `watchQuery` /

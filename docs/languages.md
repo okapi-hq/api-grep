@@ -834,7 +834,9 @@ one-value enum:
     `solana-wallet-adapter.json` has the methods of `solana-web3.json` on `connection`).
   - **wagmi** (#85, `wagmi.json`, also `@wagmi/core`): actions taking the config first (`readContract(config, {...})`,
     `getBalance`, `waitForTransactionReceipt`), hooks (`useReadContract`, `useBalance`, `useBlockNumber`,
-    `useWaitForTransactionReceipt`, a `config` option or the project's one config) and the client of
+    `useWaitForTransactionReceipt`; a `config` option, else the config the app gives `<WagmiProvider config>`
+    (`endpoint.contextProvider`: one built by another library is not read, no call), else the project's one config)
+    and the client of
     `usePublicClient()` / `getPublicClient(config)` (`endpoint.clients.*.config`) send through the config's transports:
     `createConfig({ transports: { [chain.id]: http(url) } })` or its `client({ chain })` method, read through object
     literals, functions, spreads and reassigned variables (`deep`); RainbowKit's `getDefaultConfig` without transports
@@ -852,8 +854,9 @@ one-value enum:
   - **Public Solana clusters**: `api.mainnet-beta.solana.com`, `api.devnet.solana.com` and `api.testnet.solana.com`
     are the provider `solana-public-rpc` (also `clusterApiUrl(...)`), named by host only: an env var such as
     `SOLANA_RPC_URL` may point at any node.
-  - Not covered yet: a client handed down by an app's own React context (`useContext(RpcContext)`), or given as an
-    untyped parameter inside a context object; Python clients kept in a dict a helper fills (#FOLLOWUP).
+  - Not covered yet (#98): a client handed down by an app's own React context (`useContext(RpcContext)`), or given as an
+    untyped parameter inside a context object; client factories injected into a service; wagmi configs memoized in a
+    component or built by another library; Python clients kept in a dict a helper fills.
 - **Not covered**: JSON builders that are not literals (`JSONObject().put("method", ...)`) wait for Kotlin's HTTP
   clients (#32).
 
