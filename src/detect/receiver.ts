@@ -39,8 +39,8 @@ const untyped = (param: ParameterDeclaration): boolean => {
 
 /**
  * A variable the code fills itself (`const cart = new Map()`, `const cart = useCart()`), not one it is handed: its
- * name says nothing of a framework's context client. Destructuring (`const { cart } = context`) and a property of the
- * same name (`const cart = context.cart`) keep it.
+ * name says nothing of a framework's context client. Destructuring (`const { cart } = context`), a property of the
+ * same name (`const cart = context.cart`) and a value read from a typed router context keep it.
  */
 function builtHere(root: Node | undefined): boolean {
   if (!root || !Node.isIdentifier(root)) return false;
@@ -48,7 +48,24 @@ function builtHere(root: Node | undefined): boolean {
     const init = Node.isVariableDeclaration(d) ? d.getInitializer() : undefined;
     if (!init) return false;
     const u = unwrap(init);
-    return !(Node.isPropertyAccessExpression(u) && u.getName() === root.getText());
+    return !(Node.isPropertyAccessExpression(u) && u.getName() === root.getText()) && !routerContextRead(u);
+  });
+}
+
+/**
+ * `context.get(storefrontClientContext)` where the key is made by `createContext()` (React Router's middleware
+ * context, Hydrogen 2026.10, #102): the value the framework's middleware set, not one the code builds here.
+ */
+function routerContextRead(u: Node): boolean {
+  const callee = Node.isCallExpression(u) ? u.getExpression() : undefined;
+  const key = callee && Node.isPropertyAccessExpression(callee) && callee.getName() === "get" ? (u as CallExpression).getArguments()[0] : undefined;
+  if (!key || !Node.isIdentifier(key) || (u as CallExpression).getArguments().length !== 1) return false;
+  const sym = key.getSymbol();
+  // the key is mostly imported from the module that makes it
+  return ((sym?.isAlias() ? sym.getAliasedSymbol() : sym)?.getDeclarations() ?? []).some((d) => {
+    const made = Node.isVariableDeclaration(d) ? d.getInitializer() : undefined;
+    const fn = made && Node.isCallExpression(made) ? made.getExpression() : undefined;
+    return !!fn && Node.isIdentifier(fn) && fn.getText() === "createContext";
   });
 }
 
