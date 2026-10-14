@@ -121,7 +121,11 @@ Run lint, typecheck, test and test:e2e before declaring work done; CI runs the s
   from a cache a helper fills (`src/detect/client-cache.ts`, `rpc-cache.ts`, `Callee.cached`: one endpoint only when
   every cached client agrees), a context object or provider (`useConnection()`, `endpoint.clients.*.component`), wagmi
   configs (`wagmi.json`, `src/detect/rpc-config.ts`: `config`, `deep` transports), TypeChain factories
-  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`).
+  (`typechain.ts`), `connect` / `attach` and typed contracts (`contract-forms.ts`), JSON ABIs (`json-abi.ts`). #98, for
+  every SDK: the app's React contexts (`react-context.ts`) and `useMemo` (`src/ast/react.ts`) read by `held.ts` in
+  `callee.ts`, context objects given as untyped parameters (`Receiver.held`), factories a constructor is handed
+  (`injected-fn.ts`), ConnectKit configs (`innerConfig` in `rpc-config.ts`); Python dict caches (`src/lang/ir/cache.ts`,
+  `Seg.cache`).
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).

@@ -1,0 +1,6 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/98",
+  "calls": [
+    {"file": "assistant.tsx", "line": 15, "provider": "anthropic"}
+  ]
+}

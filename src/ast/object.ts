@@ -2,6 +2,7 @@ import { Node, type Expression, type ObjectLiteralExpression, type VariableDecla
 import { isSafeKey } from "../record-keys.js";
 import type { EvalCtx } from "../types.js";
 import { unwrap } from "./expr.js";
+import { memoValue } from "./react.js";
 
 /** Object hops per property read: a parameter to its argument, a spread, a const; two per wrapper an object is passed down. */
 const MAX_DEPTH = 8;
@@ -93,6 +94,9 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
   if (!expr || depth > MAX_DEPTH) return undefined;
   const u = unwrap(expr);
   if (Node.isObjectLiteralExpression(u)) return u;
+  // `useMemo(() => ({ ... }), deps)` hands out the object as it is (#98)
+  const memo = Node.isCallExpression(u) ? memoValue(u) : u;
+  if (memo !== u) return toObjectLiteral(memo, ctx, depth + 1);
   if (Node.isPropertyAccessExpression(u)) return toObjectLiteral(getProp(u.getExpression(), u.getName(), ctx, depth + 1), ctx, depth + 1);
   if (Node.isIdentifier(u)) {
     for (const decl of declarationsOf(u)) {
