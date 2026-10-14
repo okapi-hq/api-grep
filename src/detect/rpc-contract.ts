@@ -3,6 +3,7 @@ import { unwrap } from "../ast/expr.js";
 import { declarationsOf } from "../ast/object.js";
 import type { Callee, MethodSpec, RegistryEntry } from "../types.js";
 import { readsOnly } from "./contract-abi.js";
+import { contractView } from "./contract-forms.js";
 import { argsOf, at, calledName, MAX_DEPTH, valueOf, type Construction, type Endpoint } from "./endpoint.js";
 import { cachedClients } from "./client-cache.js";
 import { agreedEndpoint, candidateEndpoint } from "./rpc-cache.js";
@@ -82,6 +83,12 @@ function unseen(u: Expression, node: Construction, reg: RegistryEntry): Runner |
   return { endpoint, signs: typed && reg.endpoint!.types?.includes(typed) ? "none" : "unknown" };
 }
 
+/** A contract declared with its type (`token: Contract`, #85): on the project's one client, signed by whoever may. */
+function typedRunner(node: Construction, reg: RegistryEntry): Runner | null {
+  const endpoint = cachedProjectEndpoint(node.getProject(), reg);
+  return endpoint && { endpoint, signs: "unknown" };
+}
+
 /** `new Wallet(key, provider)`, `provider.getSigner()`: the provider's endpoint, signed by the app or by the node. */
 function signerOf(c: Construction, node: Construction, reg: RegistryEntry, depth: number): Runner | null | undefined {
   const signers = reg.endpoint!.signers ?? {};
@@ -148,7 +155,9 @@ function sent(kind: "auto" | "send", view: boolean | undefined, signs: Signs): s
  * A call on a contract object: its key, its spec with the RPC methods it sends, and its client's endpoint; null when it
  * sends nothing over HTTP (a wallet's contract), undefined when it is no contract call.
  */
-export function contractCall(node: Construction, callee: Callee, reg: RegistryEntry): ContractCall | null | undefined {
+export function contractCall(node: Construction, original: Callee, reg: RegistryEntry): ContractCall | null | undefined {
+  const view = contractView(node, original, reg);
+  const callee = view.callee;
   const m = reg.endpoint ? matchKey(callee, reg) : undefined;
   if (!m) return undefined;
   const { key, spec } = m;
@@ -162,7 +171,7 @@ export function contractCall(node: Construction, callee: Callee, reg: RegistryEn
     const endpoint = given ? rpcEndpoint(node, reg, spec, callee, [], given) : null;
     return endpoint && { key, spec, endpoint };
   }
-  const runner = runnerOf(given, node, reg, 0);
+  const runner = view.typed ? typedRunner(node, reg) : runnerOf(given, node, reg, 0);
   const rpc = runner && spec.contract ? sent(spec.contract, readsOnly(at(args, spec.abiArg), m.fn), runner.signs) : spec.rpc;
   if (!runner || !rpc || rpc.length === 0) return null;
   return { key, spec: { ...spec, rpc }, endpoint: runner.endpoint };

@@ -112,7 +112,7 @@ export function referenceName(type: TypeNode | undefined): string | undefined {
 }
 
 /** The type names a call's receivers are declared with: as written, else as the checker names them. */
-function receiverTypes(node: Construction): string[] {
+export function receiverTypes(node: Construction): string[] {
   const nodes = memberChain(node.getExpression()).nodes.slice(0, -1);
   const out: string[] = [];
   for (const n of nodes) {

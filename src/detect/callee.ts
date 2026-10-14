@@ -7,6 +7,7 @@ import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/or
 import type { Callee, InstanceInfo } from "../types.js";
 import { cacheRead, cachedClients } from "./client-cache.js";
 import { annotatedPackage } from "./type-annotation.js";
+import { typechainContract } from "./typechain.js";
 
 const MAX_DEPTH = 6;
 
@@ -137,6 +138,8 @@ function fromCache(returned: Expression[], chain: string[], depth: number): Call
 }
 
 function instanceCallee(init: CallExpression | NewExpression, chain: string[], depth: number): Callee {
+  const typechain = typechainContract(init, chain);
+  if (typechain) return typechain;
   const inner = describeCallee(init, depth + 1);
   const viaFactory = factoryReturn(inner, chain, depth);
   if (viaFactory) return viaFactory;

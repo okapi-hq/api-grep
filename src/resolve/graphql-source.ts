@@ -29,6 +29,9 @@ export function setDocumentRoot(project: Project, rootDir: string): void {
   roots.set(project, rootDir);
 }
 
+/** The scanned directory files the code imports are read within (JSON ABIs too, #85). */
+export const documentRoot = (project: Project): string | undefined => roots.get(project);
+
 function tagName(e: Expression): string | undefined {
   const u = unwrap(e);
   if (Node.isIdentifier(u)) return u.getText();

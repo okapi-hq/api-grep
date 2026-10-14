@@ -209,6 +209,13 @@ export interface EndpointSpec {
    */
   signers?: Record<string, { provider?: string; signs: "local" | "node" }>;
   /**
+   * A contract's methods that give the same contract on another runner or at another address (ethers, #85): the
+   * position of the construction their first argument replaces (`connect(signer)`: `2`, `attach(address)`: `0`).
+   */
+  rebind?: Record<string, string>;
+  /** Types a contract is declared with (`token: Contract`, #85): its functions are the ABI's, on a runner not known. */
+  contractTypes?: string[];
+  /**
    * The client a call is given comes from the app's context (Relay's environment, from `useRelayEnvironment()` or a
    * prop): one the scan cannot read is the project's one client, as for a call that names none.
    */

@@ -19,7 +19,9 @@
     },
     "nonHttp": ["BrowserProvider", "Web3Provider", "WebSocketProvider", "IpcProvider", "IpcSocketProvider", "SocketProvider", "InfuraWebSocketProvider", "AlchemyWebSocketProvider", "getWebSocketProvider"],
     "types": ["JsonRpcProvider", "StaticJsonRpcProvider", "Provider", "AbstractProvider", "BaseProvider", "JsonRpcApiProvider", "FallbackProvider", "InfuraProvider", "AlchemyProvider", "QuickNodeProvider"],
-    "signers": { "Wallet": { "provider": "1", "signs": "local" }, "getSigner": { "signs": "node" } }
+    "signers": { "Wallet": { "provider": "1", "signs": "local" }, "getSigner": { "signs": "node" } },
+    "rebind": { "connect": "2", "attach": "0" },
+    "contractTypes": ["Contract", "BaseContract"]
   },
   "notFunctions": ["addListener", "address", "attach", "callStatic", "connect", "deployed", "deploymentTransaction", "emit", "estimateGas", "fallback", "filters", "functions", "getAddress", "getDeployedCode", "getEvent", "getFunction", "interface", "listenerCount", "listeners", "off", "on", "once", "populateTransaction", "provider", "queryFilter", "removeAllListeners", "removeListener", "resolvedAddress", "runner", "signer", "target", "then", "toString", "valueOf", "waitForDeployment"],
   "methods": {

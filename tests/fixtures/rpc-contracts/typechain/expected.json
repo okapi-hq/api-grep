@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/85",
+  "calls": [
+    {"file": "rewards.ts", "line": 9, "provider": "env:REWARDS_RPC_URL", "operation": "eth_call"},
+    {"file": "rewards.ts", "line": 14, "provider": "env:REWARDS_RPC_URL", "operation": "eth_sendRawTransaction"},
+    {"file": "treasury.ts", "line": 11, "provider": "rpc.example-chain.net", "operation": "eth_call"},
+    {"file": "treasury.ts", "line": 16, "provider": "rpc.example-chain.net", "operation": "eth_sendRawTransaction"},
+    {"file": "treasury.ts", "line": 20, "provider": "rpc.example-chain.net", "operation": "eth_call"},
+    {"file": "treasury.ts", "line": 24, "provider": "rpc.example-chain.net", "operation": "eth_call"},
+    {"file": "treasury.ts", "line": 29, "provider": "rpc.example-chain.net", "operation": "eth_sendRawTransaction"},
+    {"file": "treasury.ts", "line": 34, "provider": "rpc.example-chain.net", "operation": "eth_call"},
+    {"file": "treasury.ts", "line": 38, "provider": "unknown", "operation": "eth_call"}
+  ]
+}
