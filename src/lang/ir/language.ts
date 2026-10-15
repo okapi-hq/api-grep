@@ -185,6 +185,10 @@ export interface ClientModifier {
   headerArgs?: [number, number];
   baseUrlArg?: number;
   queryArg?: number;
+  /** One query parameter from its name and value arguments (Resty `SetQueryParam("k", v)`). */
+  queryArgs?: [number, number];
+  /** The body, set before the verb call that sends it (Resty `R().SetBody(b).Post(url)`). */
+  bodyArg?: number;
   optionsArg?: number;
 }
 
@@ -263,7 +267,10 @@ export interface IrSource {
    * on the same line): a tree with no ERROR or MISSING node to point at still lowers.
    */
   allowHiddenErrors?: boolean;
-  /** A same-length rewrite of a file that does not parse as written, kept when it parses (Kotlin: `;` before a `}`). */
+  /**
+   * A rewrite of a file that does not parse as written, kept when it parses; it moves no position of the file: same
+   * length (Kotlin: `;` before a `}`) or appended at its end (Go: a final newline).
+   */
   repair?: (text: string) => string;
   extensions: string[];
   /** Out of scope by default: tests, virtualenvs, vendored code, build output. */
@@ -295,6 +302,11 @@ export interface IrLanguage extends IrSource {
   clients: ClientSpec[];
   /** Detectors for calls that tables cannot describe (`urlopen(Request(...))`, curl handles). */
   detectors?: IrDetector[];
+  /**
+   * Runs once every file is lowered, before the index is built: what one file's lowering cannot see alone (Go: a type
+   * declared in one file of a package and given methods in another, the struct literals giving its fields values).
+   */
+  link?: (modules: ModuleModel[]) => void;
   /** Detectors for requests a declaration describes rather than a call (an annotated interface method: Feign, Retrofit). */
   declarations?: IrDeclarationDetector[];
   /** Values built entry by entry (`JSONObject().put(...)`), read as dicts and lists. */

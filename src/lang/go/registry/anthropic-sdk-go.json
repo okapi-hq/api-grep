@@ -1,0 +1,25 @@
+{
+  "$comment": "anthropics/anthropic-sdk-go: `client := anthropic.NewClient(option.WithAPIKey(k))`; `client.Messages.New(ctx, anthropic.MessageNewParams{Model: anthropic.ModelClaudeSonnet4_5, MaxTokens: 1024, Messages: ...})`, the params struct read as its JSON. Beta calls also send `?beta=true`, left out of the paths as in the other registries.",
+  "package": "github.com/anthropics/anthropic-sdk-go",
+  "imports": ["github.com/anthropics/anthropic-sdk-go"],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against anthropic-sdk-go source, October 2026)",
+  "instance": {
+    "names": ["NewClient", "Client"],
+    "urlArg": { "NewClient": "kw:WithBaseURL" }
+  },
+  "methods": {
+    "Messages.New": {"method": "POST", "path": "/v1/messages", "bodyArg": 1},
+    "Messages.NewStreaming": {"method": "POST", "path": "/v1/messages", "bodyArg": 1},
+    "Messages.CountTokens": {"method": "POST", "path": "/v1/messages/count_tokens", "bodyArg": 1},
+    "Messages.Batches.New": {"method": "POST", "path": "/v1/messages/batches", "bodyArg": 1},
+    "Messages.Batches.Get": {"method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "params": {"message_batch_id": "arg:1"}},
+    "Beta.Messages.New": {"method": "POST", "path": "/v1/messages", "bodyArg": 1},
+    "Beta.Messages.NewStreaming": {"method": "POST", "path": "/v1/messages", "bodyArg": 1},
+    "Completions.New": {"method": "POST", "path": "/v1/complete", "bodyArg": 1},
+    "Models.List": {"method": "GET", "path": "/v1/models"},
+    "Models.Get": {"method": "GET", "path": "/v1/models/{model_id}", "params": {"model_id": "arg:1"}}
+  }
+}

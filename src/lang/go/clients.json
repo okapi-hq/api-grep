@@ -1,0 +1,64 @@
+{
+  "$comment": "Go HTTP clients read from tables (`ClientSpec` in src/lang/ir/language.ts); `imports` are Go import paths. `net/http`: the package functions (`http.Get(url)`, `http.Post(url, contentType, body)`, `http.PostForm(url, values)`) and the same methods of a `http.Client` (`&http.Client{}`, `http.DefaultClient`, a field or parameter of type `*http.Client`); requests built with `http.NewRequest` are read by `nethttp.ts`. The fhttp fork and go-retryablehttp keep the same API. Resty v2 and v3: `resty.New()` with its client settings, then `R()` and the request's (`SetHeader`, `SetBody`, `SetQueryParam`), sent by a verb method.",
+  "clients": [
+    {
+      "client": "net-http",
+      "imports": ["net/http", "github.com/bogdanfinn/fhttp", "github.com/hashicorp/go-retryablehttp"],
+      "instances": { "names": ["Client", "DefaultClient", "NewClient"] },
+      "functions": {
+        "Get": { "method": "GET" },
+        "Head": { "method": "HEAD" },
+        "Post": { "method": "POST", "bodyArg": 2, "bodyRole": "body" },
+        "PostForm": { "method": "POST", "bodyArg": 1, "bodyRole": "body:form" }
+      },
+      "keys": {}
+    },
+    {
+      "client": "resty",
+      "imports": ["github.com/go-resty/resty/v2", "resty.dev/v3"],
+      "instances": { "names": ["New", "NewWithClient", "Client", "Request"] },
+      "functions": {
+        "Get": { "method": "GET" },
+        "Head": { "method": "HEAD" },
+        "Options": { "method": "OPTIONS" },
+        "Delete": { "method": "DELETE" },
+        "Post": { "method": "POST" },
+        "Put": { "method": "PUT" },
+        "Patch": { "method": "PATCH" },
+        "Execute": { "methodArg": 0, "urlArg": 1 }
+      },
+      "modifiers": {
+        "R": {},
+        "NewRequest": {},
+        "SetBaseURL": { "baseUrlArg": 0 },
+        "SetHostURL": { "baseUrlArg": 0 },
+        "SetHeader": { "headerArgs": [0, 1] },
+        "SetHeaders": { "headersArg": 0 },
+        "SetAuthToken": { "auth": "bearer" },
+        "SetBasicAuth": { "auth": "basic" },
+        "SetBody": { "bodyArg": 0 },
+        "SetFormData": { "bodyArg": 0, "encoding": "form" },
+        "SetMultipartFormData": { "bodyArg": 0, "encoding": "multipart" },
+        "SetQueryParam": { "queryArgs": [0, 1] },
+        "SetQueryParams": { "queryArg": 0 },
+        "SetContext": {},
+        "SetResult": {},
+        "SetError": {},
+        "SetTimeout": {},
+        "SetRetryCount": {},
+        "SetRetryWaitTime": {},
+        "SetRetryMaxWaitTime": {},
+        "SetDebug": {},
+        "SetDoNotParseResponse": {},
+        "SetContentType": {},
+        "SetPathParam": {},
+        "SetPathParams": {},
+        "SetAuthScheme": {},
+        "SetTransport": {},
+        "SetLogger": {},
+        "EnableTrace": {}
+      },
+      "keys": {}
+    }
+  ]
+}

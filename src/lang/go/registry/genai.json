@@ -1,0 +1,30 @@
+{
+  "$comment": "googleapis/go-genai (Google Gen AI SDK for Go): `client, _ := genai.NewClient(ctx, &genai.ClientConfig{APIKey: k})`; `client.Models.GenerateContent(ctx, \"gemini-2.5-flash\", genai.Text(prompt), config)`: the model argument is part of the path. `Backend: genai.BackendVertexAI` targets Vertex AI instead (not expressible here); `HTTPOptions.BaseURL` is not read.",
+  "package": "google.golang.org/genai",
+  "imports": ["google.golang.org/genai"],
+  "provider": "google-ai",
+  "host": "generativelanguage.googleapis.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against go-genai source, Gemini API branch, October 2026)",
+  "instance": { "names": ["NewClient", "Client"] },
+  "inlinePathLiterals": true,
+  "methods": {
+    "Models.GenerateContent": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "arg:1"}},
+    "Models.GenerateContentStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "arg:1"}},
+    "Models.EmbedContent": {"method": "POST", "path": "/v1beta/models/{model}:batchEmbedContents", "params": {"model": "arg:1"}},
+    "Models.CountTokens": {"method": "POST", "path": "/v1beta/models/{model}:countTokens", "params": {"model": "arg:1"}},
+    "Models.GenerateImages": {"method": "POST", "path": "/v1beta/models/{model}:predict", "params": {"model": "arg:1"}},
+    "Models.GenerateVideos": {"method": "POST", "path": "/v1beta/models/{model}:predictLongRunning", "params": {"model": "arg:1"}},
+    "Models.List": {"method": "GET", "path": "/v1beta/models"},
+    "Models.Get": {"method": "GET", "path": "/v1beta/models/{model}", "params": {"model": "arg:1"}},
+    "Chats.Create.SendMessage": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "instance:1"}},
+    "Chats.Create.Send": {"method": "POST", "path": "/v1beta/models/{model}:generateContent", "params": {"model": "instance:1"}},
+    "Chats.Create.SendMessageStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "instance:1"}},
+    "Chats.Create.SendStream": {"method": "POST", "path": "/v1beta/models/{model}:streamGenerateContent", "params": {"model": "instance:1"}},
+    "Files.Upload": {"method": "POST", "path": "/upload/v1beta/files", "encoding": "multipart"},
+    "Files.List": {"method": "GET", "path": "/v1beta/files"},
+    "Files.Get": {"method": "GET", "path": "/v1beta/files/{name}", "params": {"name": "arg:1"}},
+    "Files.Delete": {"method": "DELETE", "path": "/v1beta/files/{name}", "params": {"name": "arg:1"}},
+    "Caches.Create": {"method": "POST", "path": "/v1beta/cachedContents"}
+  }
+}

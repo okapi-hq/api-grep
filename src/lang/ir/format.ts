@@ -1,6 +1,7 @@
 import type { Part } from "../../types.js";
 
-const PRINTF_RE = /%(?:\(([^)]+)\))?[-#0 +]*(?:\d+|\*)?(?:\.\d+)?[hlL]?([sdifrxXeEgGcuoa%])/g;
+// `v` and `q`: Go's `fmt.Sprintf` (`%v`, `%+v`, `%q`)
+const PRINTF_RE = /%(?:\(([^)]+)\))?[-#0 +]*(?:\d+|\*)?(?:\.\d+)?[hlL]?([sdifrxXeEgGcuoavq%])/g;
 const BRACE_RE = /\{\{|\}\}|\{([^{}!:]*)(?:![rsa])?(?::[^{}]*)?\}/g;
 
 /** Values for a format string: positional parts, and named parts (`%(name)s`, `{name}`). */

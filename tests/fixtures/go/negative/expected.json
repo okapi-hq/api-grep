@@ -1,0 +1,4 @@
+{
+  "issue": "Go: servers, handlers and request readers send nothing; tests, testdata and vendored code are out of scope",
+  "calls": []
+}

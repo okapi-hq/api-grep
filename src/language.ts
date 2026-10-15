@@ -16,6 +16,7 @@ const BY_EXTENSION: Record<string, Language> = {
   ".kt": "kotlin",
   ".kts": "kotlin",
   ".java": "java",
+  ".go": "go",
 };
 
 /** Language of a source file from its extension; the scanner parses anything else it is given as TypeScript. */

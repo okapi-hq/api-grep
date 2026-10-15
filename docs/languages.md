@@ -13,6 +13,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | PHP | supported | tree-sitter + shared engine | Packagist (Composer) | `composer.json` (`require`) |
 | Kotlin | supported: HTTP clients, Retrofit interfaces and SDK registries | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
 | Java | supported: the same clients and registries, one index with Kotlin | tree-sitter + shared engine (the Kotlin front end) | Maven | the same as Kotlin |
+| Go | supported: `net/http` (and go-retryablehttp, fhttp), Resty, SDK registries | tree-sitter + shared engine | Go modules | `go.mod` |
 
 ## Goals
 
@@ -20,7 +21,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   `api-grep scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
-  `ecosystem` (`npm`, `pypi`, `composer`, `maven`), so the same package name in two ecosystems (`openai`) is two rows.
+  `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
   `Call` schema, provider table, example requests, curl output, secret redaction, diagnostics and SDK coverage. Only detection and resolution are language specific.
 - **SDKs differ per language.** Each language has its own registries, keyed by the package name its ecosystem uses
@@ -96,7 +97,7 @@ callers among the calls of the function's group.
 
 ### Tree-sitter languages: the IR engine
 
-Python, PHP, Kotlin and Java are read without a type checker (Kotlin's and Java's declared types are kept, not checked), but they share
+Python, PHP, Kotlin, Java and Go are read without a type checker (Kotlin's, Java's and Go's declared types are kept, not checked), but they share
 most of what a scanner needs. Each is parsed with [tree-sitter](https://tree-sitter.github.io) (WebAssembly grammars,
 no native build) and **lowered** into a small language-neutral model (`src/lang/ir/model.ts`):
 
@@ -840,6 +841,68 @@ nested a few thousand deep still skip their file as an `internal-error`.
   (`this.client.register(f)` in the constructor), an Unirest instance configured in another file, AsyncHttpClient's
   request filters and the core Vert.x `HttpClient` are not read.
 
+## Go
+
+**Detected:** `net/http` (`http.Get`, `http.Head`, `http.Post`, `http.PostForm` and the same methods of a
+`http.Client`; requests built with `http.NewRequest` / `http.NewRequestWithContext`, with the headers, basic auth and
+query parameters the function then sets on them), go-retryablehttp and the fhttp fork (the same API), Resty v2 and v3
+(`resty.New()...R()...Post(url)`), and the SDKs in [`sdk-support.md`](sdk-support.md) (sashabaranov/go-openai,
+openai-go, anthropic-sdk-go, google.golang.org/genai). Raw HTTP calls to any provider's host (Telegram's
+`api.telegram.org/bot{token}/sendMessage`, Discord, Slack webhooks, OpenAI-compatible endpoints) are found through
+`net/http` like any other.
+
+**Resolved:** imports with and without an alias (a package used under its import path's last element, a table in
+`src/lang/go/packages.json` for the others), a local hiding an import of its name, package-level and local `const` /
+`var` (also of the other files of the package, and of other packages of the module through their import paths),
+`+`, `+=`, `fmt.Sprintf`, `path.Join`, `url.JoinPath`, `strings.Join` of a slice literal, raw and interpreted string
+literals, `os.Getenv` / `os.LookupEnv`, struct fields (typed by the declaration, valued by the project's struct literals
+and by `c.field = v` in methods), method receivers, embedded structs (as base classes), function literals, parameters
+and their callers' values, and calls returning several values (the first is the value, the last the error; `return
+"", err` returns nothing). Struct literals are calls of their type with their fields as named arguments
+(`src/lang/go/composite.ts`), so `&http.Client{}` is a client for the call chains; the language's `resolveCall`
+(`src/lang/go/structs.ts`) reads one as the dict it serializes to: a project struct by its `json` tags, an SDK's
+request struct by the SDK's naming (`MaxTokens` -> `max_tokens` for the OpenAI and Anthropic SDKs, camel case for
+genai), with the fields set on its variable afterwards (`req.Stream = true`). Maps keep the keys set later
+(`m["k"] = v`, see [#38](#keys-added-after-a-dict-is-built-38)).
+
+**Packages:** a module name is the file's import path: the `module` of the nearest `go.mod` and the directory under
+it (`github.com/acme/bot/internal/llm`, written `github_com.acme.bot.internal.llm` since the engine's roots are dotted;
+registries and client tables give Go import paths, converted the same way). `packageScope` makes the files of a
+directory see each other, and the language's `link` hook (run once every file is lowered) merges a type's methods
+declared in other files into the class of its declaration and gives struct fields the values of the project's struct
+literals (`src/lang/go/link.ts`).
+
+**Manifests:** the `require` directives of `go.mod` (single and block form, `// indirect` aside) with their versions;
+a module path is the prefix of its packages' import paths, so `importRoots` needs no table. A registry of a module
+with several major versions lists them in `majorVersions` (`["v2", "v3"]`): one entry per module path, so a call names
+the module the code imports (`github.com/openai/openai-go/v3`) and coverage counts it there.
+
+**Out of scope by default:** `vendor/`, `testdata/`, `*_test.go`.
+
+**How the open issues apply:** #3 (no-crash scans: per-file parse and internal errors; a file ending without a newline
+is repaired), #4 (the same diagnostics as the other tree-sitter languages; parameters are typed, so one whose type names no
+client is not an `injected-client`), #5
+(`tests/fixtures/go/**/expected.json` in the recall check, and a multi-package module checked by `tests/go.test.ts`),
+#6 and #7 (Go module paths per provider in `providers.json`, `ecosystem: "go"`), #8 (env reads, constants, struct
+fields), #37 (does not apply: parameters are typed), #38 (map keys), #39 (callers' values).
+
+**Limitations:**
+
+- Interfaces are not followed: a client held in an interface-typed field or parameter has no known implementation.
+  Generics, channels, goroutines' results and reflection are not read.
+- A function returning a value from several `return`s (a URL helper with a fallback) is not followed for a URL, as in
+  the other tree-sitter languages; a helper with one `return` is.
+- Headers set on a request by another function (`setHeaders(req)`) are not read; a request built and sent in different
+  functions is reported where it is built.
+- A package whose name is not its import path's last element (without `go-` / `-go` or a major version) and that is
+  imported without an alias is not recognised, unless `packages.json` lists it.
+- A struct literal reads as its JSON: a field renamed by its tag (`BaseURL string `json:"base_url"``) is not found
+  when the code reads `cfg.BaseURL` of that literal.
+- go-openai's Azure configuration (`DefaultAzureConfig`: deployment paths, `api-version`), genai's Vertex AI backend
+  and `HTTPOptions.BaseURL`, openai-go's Azure middleware, and options given in a slice (`opts...`) are not modelled.
+  Resty path parameters stay as placeholders. The go-telegram-bot-api SDK has no registry yet (its raw HTTP calls are
+  found; `bot.Send(msg)` is not).
+
 ## JavaScript and HTML
 
 **Detected:** everything the TypeScript front end detects (fetch, axios, got, ky, node http, SDK registries, the AI
@@ -1539,6 +1602,5 @@ Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered int
 
 | next candidates | ecosystem | notes |
 |---|---|---|
-| Go | Go modules (`go.mod`) | `net/http`, `resty`; SDK clients are structs (`stripe.Key`, `client.Customers.New(params)`) |
 | Ruby | RubyGems (`Gemfile`) | `Net::HTTP`, `Faraday`, `HTTParty`; SDKs are mostly module-level (`Stripe::Customer.create`) |
 | C# | NuGet | `HttpClient`, RestSharp, typed SDK clients |

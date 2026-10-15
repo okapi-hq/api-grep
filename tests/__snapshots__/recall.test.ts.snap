@@ -11,6 +11,44 @@ exports[`regression fixtures > action-api 1`] = `
 ]
 `;
 
+exports[`regression fixtures > go/negative 1`] = `[]`;
+
+exports[`regression fixtures > go/nethttp 1`] = `
+[
+  "linear.go:24 linear POST /graphql null",
+  "notify.go:23 www.githubstatus.com GET /api/v2/status.json",
+  "notify.go:28 slack POST /services/T000/B000/XXXX",
+  "notify.go:34 twilio POST /2010-04-01/Accounts/{sid}/Messages.json",
+  "notify.go:42 pagerduty POST /v2/enqueue",
+  "notify.go:52 open-meteo GET /v1/forecast",
+  "notify.go:66 mailgun POST /v3/{domain}/messages",
+  "notify.go:74 github HEAD /zen",
+  "retry.go:9 sentry POST /api/42/store",
+]
+`;
+
+exports[`regression fixtures > go/resty 1`] = `
+[
+  "shop.go:17 lemonsqueezy GET /v1/products",
+  "shop.go:22 paddle POST /transactions",
+  "shop.go:31 mailchimp DELETE /3.0/lists/{id}",
+]
+`;
+
+exports[`regression fixtures > go/sdk 1`] = `
+[
+  "goopenai.go:20 openai POST /v1/chat/completions",
+  "goopenai.go:36 openai POST /v1/embeddings",
+  "goopenai.go:46 deepseek POST /v1/chat/completions",
+  "goopenai.go:53 openrouter POST /chat/completions",
+  "official.go:15 openai POST /v1/chat/completions",
+  "official.go:25 xai POST /v1/responses",
+  "official.go:31 anthropic POST /v1/messages",
+  "official.go:44 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "official.go:49 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+]
+`;
+
 exports[`regression fixtures > graphql 1`] = `
 [
   "catalog.ts:26 api.example-catalog.com POST /graphql ListItems",

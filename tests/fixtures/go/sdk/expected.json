@@ -1,0 +1,14 @@
+{
+  "issue": "Go: go-openai, openai-go, anthropic-sdk-go and google.golang.org/genai registries",
+  "calls": [
+    {"file": "goopenai.go", "line": 20, "provider": "openai"},
+    {"file": "goopenai.go", "line": 36, "provider": "openai"},
+    {"file": "goopenai.go", "line": 46, "provider": "deepseek"},
+    {"file": "goopenai.go", "line": 53, "provider": "openrouter"},
+    {"file": "official.go", "line": 15, "provider": "openai"},
+    {"file": "official.go", "line": 25, "provider": "xai"},
+    {"file": "official.go", "line": 31, "provider": "anthropic"},
+    {"file": "official.go", "line": 44, "provider": "google-ai"},
+    {"file": "official.go", "line": 49, "provider": "google-ai"}
+  ]
+}

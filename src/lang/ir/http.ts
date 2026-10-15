@@ -74,6 +74,7 @@ interface Modified {
   pairs: IrPair[];
   baseUrl?: Scoped;
   query?: Scoped;
+  body?: Scoped;
   auth?: AuthScheme;
   encoding?: BodyEncoding;
   options: Options[];
@@ -91,6 +92,9 @@ function applyModifiers(spec: ClientSpec, mods: Seg[], ctx: IrCtx): Modified {
     if (headers) out.headers.push(headers);
     const name = at(m.headerArgs?.[0]);
     if (name) out.pairs.push({ where: "header", name, value: at(m.headerArgs?.[1]), from: "default" });
+    const param = at(m.queryArgs?.[0]);
+    if (param) out.pairs.push({ where: "query", name: param, value: at(m.queryArgs?.[1]) });
+    out.body = at(m.bodyArg) ?? out.body;
     out.baseUrl = at(m.baseUrlArg) ?? out.baseUrl;
     out.query = at(m.queryArg) ?? out.query;
     if (m.optionsArg !== undefined) out.options.push(arrayOptions(at(m.optionsArg), ctx));
@@ -108,7 +112,8 @@ function buildRaw(spec: ClientSpec, f: ClientFunction, method: Seg, shape: Shape
   const mod = applyModifiers(spec, shape.modifiers, ctx);
   const all = [opts, ...mod.options, ...(inst ? [inst] : [])];
   const pick = (role: OptionRole): Scoped | undefined => all.map((o) => byRole(spec, o, role)?.value).find((v) => v);
-  const { body, role } = bodyFrom(spec, f, method, opts);
+  const own = bodyFrom(spec, f, method, opts);
+  const { body, role } = own.body ? own : mod.body ? { body: mod.body, role: "body" as const } : own;
   const auth = pick("auth");
   const authRole = pick("auth:bearer") ? "bearer" : pick("auth:basic") ? "basic" : undefined;
   const methodArg = f.methodArg !== undefined ? argOf(method, f.methodArg) : undefined;

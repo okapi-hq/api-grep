@@ -14,7 +14,7 @@ import { argFor, exprText } from "./model.js";
 import { classField, lookup } from "./project.js";
 import { withSubst, type IrCtx, type Subst } from "./raw.js";
 import { classShape, constructedClass, typeShape } from "./types.js";
-import { staticKey } from "./values.js";
+import { knownConstant, staticKey } from "./values.js";
 
 const MAX_DEPTH = 6;
 const GENERIC_HINT = /^(input|data|value|body|params|opts|options|args|kwargs|payload|req|res|result|item|obj|e|x|v|self|this)$/;
@@ -51,6 +51,11 @@ function literalShape(e: Expr, fn: FunctionDef, ctx: IrCtx): Shape | undefined {
     case "concat":
     case "format":
       return stringShapeOf(evaluate(e, fn, ctx));
+    case "attr": {
+      // a library constant the language lists (`openai.GPT4o`): a value written in the code, as a literal is
+      const constant = knownConstant(e, ctx);
+      return constant !== undefined ? { type: "string", enum: [constant] } : undefined;
+    }
     default:
       return undefined;
   }

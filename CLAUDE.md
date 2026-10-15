@@ -13,7 +13,7 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`). It must stay static: no network, no code execution, no AI.
+Retrofit, Feign and the JVM SDK registries; `docs/languages.md`) and Go. It must stay static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -54,7 +54,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
   instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
   without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
-- Tree-sitter languages (Python, PHP, Kotlin, Java): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
+- Tree-sitter languages (Python, PHP, Kotlin, Java, Go): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
@@ -142,7 +142,18 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
-- `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`).
+- Go (`src/lang/go/`): a module name is the file's import path (`go.mod`'s `module` and the directory, dotted:
+  `github_com.acme.bot.internal.llm`; registries and `clients.json` give Go import paths, converted by `importRoot`);
+  the files of a directory are one package (`packageScope`), and the language's `link` hook (`link.ts`, run once every
+  file is lowered) merges a type's methods declared in other files and gives struct fields the values of the project's
+  struct literals. A struct literal lowers as a call of its type with named arguments (`composite.ts`); `resolveCall`
+  (`structs.ts`) reads it as the dict it serializes to (`json` tags; an SDK's naming, `MaxTokens` -> `max_tokens`) and
+  SDK helpers as what they build. `http.NewRequest` requests are reported where they are built (`nethttp.ts`), with the
+  headers and query the function then sets; `net/http` functions and Resty are tables (`clients.json`; Resty's
+  `SetBody` / `SetQueryParam` are the `ClientModifier` fields `bodyArg` / `queryArgs`). Model and method constants are
+  `constants.json` (`openai.GPT4o`), extracted from the SDKs' sources.
+- `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`,
+  `go` as module paths).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
   `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
@@ -154,7 +165,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -168,7 +179,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   kept inside, so a report does not depend on the checkout location (#112). Keys from the code go through
   `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
-  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/` (format: `IrRegistryEntry` in
+  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/`, Go in `src/lang/go/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
@@ -217,4 +228,6 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   done; so is #73 (requests started in branches: one call per start, `fluentChains` in `src/lang/ir/fluent-chain.ts`,
   `request-alternatives.ts` and `IrRaw.alternatives`; overloads picked by their arguments in `src/lang/ir/overloads.ts`;
   client defaults and filters in `src/lang/jvm/http/request-defaults.ts`; Lombok `@Singular` / `toBuilder()`).
-- Next language candidates (Go, Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.
+- Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
+  are done (`docs/languages.md#go`, limitations there).
+- Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.
