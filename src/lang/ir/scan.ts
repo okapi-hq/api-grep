@@ -11,6 +11,7 @@ import { parserFor, syntaxError, type Parser, type Tree } from "../tree-sitter.j
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { buildIrCall, type BuildIrCtx } from "./build.js";
 import { detectIn, type Candidate, type IrUnfollowed } from "./detect.js";
+import { collectHostLiterals } from "./host-literals.js";
 import { sourcesOf, type IrLanguage, type IrSource } from "./language.js";
 import type { ModuleModel } from "./model.js";
 import { ProjectIndex } from "./project.js";
@@ -35,9 +36,11 @@ function parseFile(parser: Parser, lang: IrSource, text: string): { tree: Tree; 
 
 /**
  * Parses and lowers every file; a file that does not parse, or makes the lowering throw, is skipped, not fatal. Files
- * outside the scanned set are still read so imports resolve through them, but their problems are not reported.
+ * outside the scanned set are still read so imports resolve through them, but their problems are not reported (nor
+ * their string literals, given to `hosts`).
  */
-async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, rootDir: string, diag: DiagnosticsCollector): Promise<ModuleModel[]> {
+async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, input: LanguageScanInput): Promise<ModuleModel[]> {
+  const { rootDir, diag, hosts } = input;
   const parser = await parserFor(lang.grammar);
   const modules: ModuleModel[] = [];
   try {
@@ -48,6 +51,7 @@ async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, r
         try {
           if (!problem) modules.push(Object.assign(lang.lower(tree.rootNode, file, rootDir), { language: lang.id }));
           else if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: problem });
+          if (!problem && hosts && scanned.has(file)) collectHostLiterals(tree.rootNode, lang.id, rel, hosts);
         } finally {
           tree.delete();
         }
@@ -201,7 +205,7 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   const files = sources.flatMap((s) => s.files);
   const inScope = new Set(files);
   const modules: ModuleModel[] = [];
-  for (const s of sources) modules.push(...(await lowerAll(s.source, s.all, inScope, rootDir, diag)));
+  for (const s of sources) modules.push(...(await lowerAll(s.source, s.all, inScope, input)));
   lang.link?.(modules);
   const idx = new ProjectIndex(lang, modules);
   const scannable = modules.filter((m) => inScope.has(m.file));

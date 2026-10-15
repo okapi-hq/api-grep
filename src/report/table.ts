@@ -1,6 +1,6 @@
 import Table from "cli-table3";
 import pc from "picocolors";
-import { coverageWarnings, diagnosticsLine, plural } from "./diagnostics.js";
+import { coverageWarnings, diagnosticsLine, hostsLine, plural } from "./diagnostics.js";
 import { printable } from "./printable.js";
 import type { Call, Report } from "./schema.js";
 
@@ -50,6 +50,7 @@ export function toTable(report: Report): string {
   const summary = `${plural(s.callsFound, "call", "calls")} in ${plural(s.filesScanned, "file", "files")}; languages: ${counts(s.byLanguage, 4)}; providers: ${counts(s.byProvider, 8)}`;
   const d = report.diagnostics;
   const coverage = d ? `\n${d.complete ? pc.dim(diagnosticsLine(d)) : pc.yellow(diagnosticsLine(d))}` : "";
+  const hosts = report.coverage?.hosts ? `\n${pc.dim(printable(hostsLine(report.coverage.hosts)))}` : "";
   const sdkWarnings = report.coverage ? coverageWarnings(report.coverage).map((w) => `\n${pc.yellow(`⚠ ${w}`)}`).join("") : "";
-  return `${table.toString()}\n${pc.dim(summary)}${coverage}${sdkWarnings}\n`;
+  return `${table.toString()}\n${pc.dim(summary)}${coverage}${hosts}${sdkWarnings}\n`;
 }

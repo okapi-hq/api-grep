@@ -1,3 +1,4 @@
+import type { HostLiterals } from "../hosts/literals.js";
 import type { DiagnosticsCollector } from "../report/diagnostics.js";
 import type { Call, Ecosystem, Language, SdkCoverage } from "../report/schema.js";
 import type { ScanOptions } from "../scan.js";
@@ -10,6 +11,8 @@ export interface LanguageScanInput {
   changed?: Set<string>;
   /** The languages of this front end to scan (`--language`), all of them by default. */
   languages: Language[];
+  /** Receives the string literals of the scanned files (`coverage.hosts`); undefined for `--changed-since` scans. */
+  hosts?: HostLiterals;
 }
 
 export interface FileCounts {

@@ -178,6 +178,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -195,7 +200,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -330,6 +335,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -347,7 +357,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -600,6 +610,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -617,7 +632,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -806,6 +821,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -823,7 +843,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -1052,6 +1072,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1069,7 +1094,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -1216,6 +1241,11 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1233,7 +1263,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 1,

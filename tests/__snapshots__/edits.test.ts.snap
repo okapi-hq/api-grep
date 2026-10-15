@@ -264,6 +264,11 @@ exports[`edited request arguments: kotlin > reads map["k"] = v on a HashMap and 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -281,7 +286,7 @@ exports[`edited request arguments: kotlin > reads map["k"] = v on a HashMap and 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -660,6 +665,11 @@ exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -689,7 +699,7 @@ exports[`edited request arguments: php > reads $params['k'] = v, +=, array_merge
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "guzzle": 1,
@@ -1766,6 +1776,11 @@ exports[`edited request arguments: python > keeps keys set in branches, optional
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [
       {
         "calls": 8,
@@ -1795,7 +1810,7 @@ exports[`edited request arguments: python > keeps keys set in branches, optional
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -2507,6 +2522,11 @@ exports[`edited request arguments: typescript and javascript > reads property as
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [
       {
         "calls": 5,
@@ -2540,7 +2560,7 @@ exports[`edited request arguments: typescript and javascript > reads property as
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "fetch": 1,

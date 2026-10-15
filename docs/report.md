@@ -86,6 +86,7 @@ diagnostics:                    # what the scan could not read, see Diagnostics
 coverage:                       # API SDKs the repo uses, see SDK coverage
   sdks:
     - { package: stripe, ecosystem: npm, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
+  hosts: { named: 1, explained: 1, unexplained: [] }   # API hosts the code names, see Host coverage
 ```
 
 ## Model names
@@ -400,3 +401,51 @@ and of `pom.xml` (test scope aside), as `group:artifact` (package roots that dif
 `imported-no-calls` (registry but no call: a wrapper, or a detection bug), `declared-not-imported`
 (probably unused). The table prints one `⚠` line per `unsupported` and `imported-no-calls`
 package. `--changed-since` scans have no coverage section.
+
+## Host coverage
+
+`coverage.hosts` (since 1.21.0) is a recall proxy: most API calls leave their host in the code
+(`"https://api.openai.com/v1/..."`, `BASE = "https://api.telegram.org"`), so the API-looking hosts the scanned files
+name, compared with the hosts of the calls found, show where calls are missed and why (a language, a client, a
+pattern):
+
+```json
+"hosts": {
+  "named": 23,
+  "explained": 21,
+  "unexplained": [
+    { "host": "api.telegram.org", "files": 2, "literals": 3, "language": "python", "first": { "file": "bot/client.py", "line": 14 } }
+  ]
+}
+```
+
+- `named`: distinct hosts in the string literals of the scanned files (template strings, f-strings, heredocs and
+  raw strings included; comments and Python docstrings are not literals). A literal counts for each `http(s)://` URL
+  it holds, or as a whole when it is nothing but a host (`hostname: "api.acme.com"`, then only for a known provider
+  host, an LLM gateway or an `api` label). Hosts are lower case, without port or user info, and never hold a
+  placeholder (`https://${region}.acme.com` names none).
+- A host is API-looking when it is a host of [`providers.json`](../src/normalize/providers.json), its first label is
+  `api`, `api-*` or `*-api`, it is an LLM gateway without a provider entry (Azure AI services, Hugging Face
+  endpoints, Cloudflare AI Gateway, …), or the URL's path looks like an API: a versioned segment (`/v1/`,
+  `/v2beta/`, `/v1.1`), `/api`, `/graphql`, `/rest/` or a bot token (`/bot{token}/`). A bare domain (`acme.com`,
+  `www.acme.com`) needs such a path; `github.com`, `gitlab.com`, `bitbucket.org` and `huggingface.co` count only
+  for their API and OAuth paths, not for links to repositories or models.
+- Never counted: single-label, loopback, private-network and reserved names (`backend`, `localhost`, `*.internal`,
+  `*.local`, `*.test`, `example.com`), IP addresses, placeholders (`your-domain.com`), documentation and site pages
+  (`docs.*`, `*-docs.*`, `developers.*`, `status.*`, `console.*`, `platform.*`), package registries' pages (npm,
+  PyPI, crates.io, pkg.go.dev, Packagist, Maven), schemas and namespaces (`w3.org`, `json-schema.org`, `schema.org`),
+  CDNs, fonts, images and badges, social and video sites, Wikipedia, and URLs to a page, an image, a script, a
+  stylesheet or an archive (`.html`, `.png`, `.js`, …), by their path.
+- `explained`: named hosts that are the host of at least one call in `calls`, case and port aside; a call's host
+  template (`{project}.supabase.co`) explains the hosts it matches, one with no literal domain (`{baseUrl}`) none.
+- `unexplained`: the others, most files first, then by host, at most 200 (`named - explained` counts them all).
+  `first` is the first place the host is named by file path, then line, and `language` that file's.
+
+What it does not measure: an SDK call to its default host leaves no literal, so a missed SDK call shows in
+`coverage.sdks`, not here; a host built from parts (`f"https://{region}.api.acme.com"`), read from configuration or
+the environment, or written in a language api-grep does not read (the scan never opens those files) is not named;
+test files and other files out of the default file set are not read. An unexplained host is not always a missed call: a
+URL can be shown to a user, logged or opened in a browser. Files
+over 2 MB are not read for hosts, only the first 64 KB of a literal is, and a scan keeps at most 50,000 host mentions.
+The table prints `hosts named in code: 23, explained by a call: 21; not explained: api.telegram.org (2 files)`.
+`--changed-since` scans have no coverage section.

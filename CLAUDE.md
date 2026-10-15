@@ -152,6 +152,10 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   headers and query the function then sets; `net/http` functions and Resty are tables (`clients.json`; Resty's
   `SetBody` / `SetQueryParam` are the `ClientModifier` fields `bodyArg` / `queryArgs`). Model and method constants are
   `constants.json` (`openai.GPT4o`), extracted from the SDKs' sources.
+- `coverage.hosts` (`src/hosts/`): the API-looking hosts in the string literals of the scanned files (each front end
+  hands its literals over: `src/lang/typescript/host-literals.ts` walks the TypeScript AST, `src/lang/ir/host-literals.ts`
+  the tree-sitter string nodes while lowering), compared with the calls' hosts; the filter is `api-host.ts`, rules in
+  `docs/report.md#host-coverage`. A recall proxy: keep it low-noise (a docs link counted reads as a missed call).
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`,
   `go` as module paths).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each

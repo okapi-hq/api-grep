@@ -46,6 +46,7 @@ end-to-end suite on Node.js 20, 22 and 24 and `pnpm audit --prod --audit-level h
 | `src/normalize/` | path templates and the provider table (`providers.json`) |
 | `src/examples/` | synthesized example requests |
 | `src/coverage.ts` | declared and imported SDKs compared with the calls found, per ecosystem |
+| `src/hosts/` | API-looking hosts named in the scanned files' string literals compared with the calls' hosts (`coverage.hosts`): the filter (`api-host.ts`), the literals each front end hands over (`literals.ts`), the comparison (`coverage.ts`) |
 | `src/secrets.ts` | what counts as a secret: redaction patterns, credential names, URL credentials |
 | `src/files.ts`, `src/package-json.ts` | reading the scanned repository's files safely (symlinks, size limits) |
 | `src/report/` | report schema, JSON, table and curl output, diagnostics, secret redaction |

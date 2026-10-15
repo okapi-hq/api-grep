@@ -456,6 +456,11 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 5,
+      "named": 5,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -473,7 +478,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "guzzle": 7,
@@ -789,6 +794,11 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -813,7 +823,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "laravel-http": 4,
@@ -1089,6 +1099,11 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1106,7 +1121,7 @@ exports[`php: Guzzle, Laravel Http, Symfony HttpClient > reads client objects, f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "symfony-http": 4,
@@ -2529,6 +2544,22 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 1,
+      "unexplained": [
+        {
+          "files": 1,
+          "first": {
+            "file": "Cloud.php",
+            "line": 47,
+          },
+          "host": "eu.i.posthog.com",
+          "language": "php",
+          "literals": 1,
+        },
+      ],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -2679,7 +2710,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "sdk": 19,
@@ -3085,6 +3116,11 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 5,
+      "named": 5,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3102,7 +3138,7 @@ exports[`php: constants > follows define(), namespaced and class constants, stat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "guzzle": 7,
@@ -3371,6 +3407,11 @@ exports[`php: curl, streams, PSR-18, WordPress > reads curl options, stream cont
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3388,7 +3429,7 @@ exports[`php: curl, streams, PSR-18, WordPress > reads curl options, stream cont
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "curl": 4,

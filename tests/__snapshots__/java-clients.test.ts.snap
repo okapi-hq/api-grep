@@ -353,6 +353,11 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -370,7 +375,7 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "spring-rest": 5,
@@ -1084,6 +1089,11 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1101,7 +1111,7 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "async-http-client": 5,
@@ -1530,6 +1540,11 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1547,7 +1562,7 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "jaxrs-client": 7,
@@ -2211,6 +2226,11 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2228,7 +2248,7 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 11,

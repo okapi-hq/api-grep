@@ -1631,6 +1631,22 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 3,
+      "named": 4,
+      "unexplained": [
+        {
+          "files": 1,
+          "first": {
+            "file": "cloud.py",
+            "line": 29,
+          },
+          "host": "sqs.us-east-1.amazonaws.com",
+          "language": "python",
+          "literals": 1,
+        },
+      ],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -1763,7 +1779,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "sdk": 22,
@@ -2265,6 +2281,11 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2293,7 +2314,7 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "requests": 10,
@@ -2570,6 +2591,11 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2594,7 +2620,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "httpx": 4,
@@ -2800,6 +2826,11 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2817,7 +2848,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "aiohttp": 2,
@@ -3137,6 +3168,11 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 5,
+      "named": 5,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3161,7 +3197,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "urllib": 4,
@@ -3731,6 +3767,11 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 8,
+      "named": 8,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3759,7 +3800,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "requests": 9,
@@ -4122,6 +4163,11 @@ exports[`python: wrappers > expands project functions and methods at their call 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4139,7 +4185,7 @@ exports[`python: wrappers > expands project functions and methods at their call 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "requests": 5,

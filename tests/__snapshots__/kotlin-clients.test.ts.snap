@@ -851,6 +851,11 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -868,7 +873,7 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "ktor": 13,
@@ -2117,6 +2122,11 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2134,7 +2144,7 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 20,
@@ -2573,6 +2583,11 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2590,7 +2605,7 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "feign": 6,
@@ -3249,6 +3264,11 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3266,7 +3286,7 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "spring-rest": 7,
@@ -3586,6 +3606,11 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3603,7 +3628,7 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "java-http": 6,
