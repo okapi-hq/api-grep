@@ -1,0 +1,26 @@
+{
+  "$comment": "serenity (Discord API v10): replies and messages sent from an event handler's `msg: Message` (`msg.channel_id.say(&ctx.http, text)`, `msg.reply(&ctx, text)`), a `ChannelId` (`ChannelId::new(id).say(&http, text)`) or a `User` (`user.direct_message(...)`). The ids come from the gateway's events: path placeholders stay unknown. `send_message` takes a `CreateMessage` builder, read as unknown.",
+  "package": "serenity",
+  "imports": ["serenity", "serenity.all", "serenity.model", "serenity.model.prelude", "serenity.model.channel", "serenity.model.id", "serenity.model.user"],
+  "provider": "discord",
+  "host": "discord.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against serenity 0.12 model methods, October 2026)",
+  "instance": {"names": ["Message", "ChannelId", "ChannelId.new", "GuildChannel", "PrivateChannel", "User"]},
+  "basePath": "/api/v10",
+  "methods": {
+    "channel_id.say": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","argFields":{"seg":"say","fields":["","content"]}},
+    "channel_id.send_message": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","bodyArg":1},
+    "channel_id.broadcast_typing": {"method":"POST","path":"/api/v10/channels/{channel_id}/typing"},
+    "reply": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","argFields":{"seg":"reply","fields":["","content"]}},
+    "reply_ping": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","argFields":{"seg":"reply_ping","fields":["","content"]}},
+    "react": {"method":"PUT","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"},
+    "delete": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+    "say": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","argFields":{"seg":"say","fields":["","content"]}},
+    "send_message": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","bodyArg":1},
+    "broadcast_typing": {"method":"POST","path":"/api/v10/channels/{channel_id}/typing"},
+    "author.direct_message": {"method":"POST","path":"/api/v10/users/@me/channels"},
+    "direct_message": {"method":"POST","path":"/api/v10/users/@me/channels"},
+    "create_dm_channel": {"method":"POST","path":"/api/v10/users/@me/channels"}
+  }
+}

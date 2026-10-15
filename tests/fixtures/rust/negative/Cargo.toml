@@ -1,0 +1,13 @@
+[package]
+name = "inbox-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }
+redis = "0.27"
+
+[dev-dependencies]
+wiremock = "0.6"

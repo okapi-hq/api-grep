@@ -200,7 +200,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -357,7 +357,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -632,7 +632,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -843,7 +843,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -1094,7 +1094,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -1263,7 +1263,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 1,

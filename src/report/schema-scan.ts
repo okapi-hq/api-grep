@@ -3,19 +3,19 @@ import { z } from "zod";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const LanguageSchema = z
-  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go", "shell"])
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go", "shell", "rust"])
   .meta({
     id: "Language",
     description:
-      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line).",
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, rust, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line).",
   });
 
 export const EcosystemSchema = z
-  .enum(["npm", "pypi", "composer", "maven", "go"])
+  .enum(["npm", "pypi", "composer", "maven", "go", "cargo"])
   .meta({
     id: "Ecosystem",
     description:
-      "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml), go (module paths from go.mod `require` directives).",
+      "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml), go (module paths from go.mod `require` directives), cargo (crates.io names from Cargo.toml `[dependencies]`, per-target dependencies and workspace dependencies).",
   });
 
 export const SkippedFileSchema = z

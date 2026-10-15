@@ -9,6 +9,8 @@ const STRING_NODES: Partial<Record<Language, string[]>> = {
   kotlin: ["string_literal", "multiline_string_literal"],
   java: ["string_literal"],
   go: ["interpreted_string_literal", "raw_string_literal"],
+  // macro arguments are token trees, whose strings are still string literal nodes (`format!("https://…/{x}")`)
+  rust: ["string_literal", "raw_string_literal"],
 };
 
 /** A Python string that is a statement of its own: a docstring, or text commented out. */

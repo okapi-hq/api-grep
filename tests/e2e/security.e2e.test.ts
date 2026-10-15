@@ -167,6 +167,18 @@ describe.skipIf(!posix)("shell scripts a hostile repository links to", () => {
   });
 });
 
+describe.skipIf(!posix)("Rust files a hostile repository links to", () => {
+  it("does the same for Rust sources and Cargo.toml", () => {
+    const outside = tempRepo({ "secret.rs": `pub fn leak() { let _ = reqwest::blocking::get("https://outside.example/leak"); }\n` });
+    const repo = tempRepo({ "src/main.rs": `mod leak;\nfn main() { let _ = reqwest::blocking::get("https://inside.example/ok"); }\n` });
+    symlinkSync("/dev/zero", path.join(repo, "Cargo.toml"));
+    symlinkSync(path.join(outside, "secret.rs"), path.join(repo, "src", "leak.rs"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => [c.host, c.location.language])).toEqual([["inside.example", "rust"]]);
+  });
+});
+
 describe.skipIf(!posix)("WSDL files a hostile repository links to (#58)", () => {
   it("reads no WSDL that links out of the repository or to a device", () => {
     const outside = tempRepo({ "x.wsdl": `<definitions><soap:address location="https://internal.corp.example/soap"/></definitions>` });

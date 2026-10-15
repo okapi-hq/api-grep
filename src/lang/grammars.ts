@@ -10,4 +10,5 @@ export const GRAMMARS: Record<string, string> = {
   java: "tree-sitter-java",
   go: "tree-sitter-go",
   bash: "tree-sitter-bash",
+  rust: "tree-sitter-rust",
 };

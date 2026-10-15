@@ -24,8 +24,8 @@ calls:                          # one entry per call, sorted by file, line, colu
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
       col: 10
-      language: typescript      # typescript | javascript | html | python | php | kotlin | java | go | shell
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr | node-soap (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 | zeep (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress | php-soap (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), net-http | resty (Go), curl | wget | httpie (shell), sdk | framework
+      language: typescript      # typescript | javascript | html | python | php | kotlin | java | go | shell | rust
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr | node-soap (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 | zeep (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress | php-soap (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), net-http | resty (Go), curl | wget | httpie (shell), reqwest | ureq | awc | isahc | surf (Rust), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -316,9 +316,9 @@ and validate reports with any JSON Schema validator (ajv, Python `jsonschema`, â
 
 Each call names its file and language in `location`, `stats.byLanguage` counts calls per language
 and `diagnostics.languages` files per language: `typescript`, `javascript`, `html` (inline scripts
-and forms, at their line in the page), `python`, `php`, `kotlin`, `java`, `go` and `shell` share one format. Coverage
-rows name their package `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`); shell scripts have no packages and add no
-row.
+and forms, at their line in the page), `python`, `php`, `kotlin`, `java`, `go`, `rust` and `shell` share one format.
+Coverage rows name their package `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`, `cargo`); shell scripts have no
+packages and add no row.
 
 ## Example requests
 
@@ -391,7 +391,9 @@ the `require` of `composer.json` for Composer (namespaces per package in
 Gradle build scripts (Kotlin and Groovy DSL, version catalog accessors, test configurations aside)
 and of `pom.xml` (test scope aside), as `group:artifact` (package roots that differ from the group in
 [`src/lang/jvm/packages.json`](../src/lang/jvm/packages.json)), and for Go the `require` directives of `go.mod`
-(`// indirect` ones aside), as module paths, a module counting for every import path under it:
+(`// indirect` ones aside), as module paths, a module counting for every import path under it, and for Cargo the
+`[dependencies]` of `Cargo.toml` (per-target ones too, `x.workspace = true` read from the workspace; dev and build
+dependencies aside), as crates.io names, a crate counting for the paths under its code name (`async_openai`):
 
 ```json
 { "package": "@notionhq/client", "ecosystem": "npm", "provider": "notion", "supported": false,

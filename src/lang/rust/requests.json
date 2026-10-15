@@ -1,0 +1,109 @@
+{
+  "$comment": "Rust HTTP clients whose request is built in steps after its verb call and sent by a call (`RustRequestClient` in requests.ts): `starts` are the calls a request starts from (a client's or the crate's verb function), `steps` what the calls after it set (`header`, `json`, `query`...), `sends` the calls that send it, with what they set themselves (ureq's `send_json(body)`). Step and send fields are `BuilderStep` (src/lang/ir/steps.ts); `pair: N` reads argument N as a `(name, value)` tuple (awc's `insert_header((K, V))`).",
+  "clients": [
+    {
+      "client": "reqwest",
+      "imports": ["reqwest", "reqwest_middleware"],
+      "starts": {
+        "get": { "method": "GET", "url": 0 },
+        "post": { "method": "POST", "url": 0 },
+        "put": { "method": "PUT", "url": 0 },
+        "patch": { "method": "PATCH", "url": 0 },
+        "delete": { "method": "DELETE", "url": 0 },
+        "head": { "method": "HEAD", "url": 0 },
+        "request": { "methodArg": 0, "url": 1 }
+      },
+      "steps": {
+        "header": { "header": [0, 1] },
+        "headers": { "headers": 0 },
+        "bearer_auth": { "bearer": 0 },
+        "basic_auth": { "basic": true },
+        "query": { "queryMap": 0 },
+        "json": { "body": 0, "bodyRole": "body:json" },
+        "form": { "body": 0, "bodyRole": "body:form" },
+        "multipart": { "body": 0, "bodyRole": "body:multipart" },
+        "body": { "body": 0 }
+      },
+      "sends": { "send": {}, "eventsource": {} }
+    },
+    {
+      "client": "ureq",
+      "imports": ["ureq"],
+      "starts": {
+        "get": { "method": "GET", "url": 0 },
+        "post": { "method": "POST", "url": 0 },
+        "put": { "method": "PUT", "url": 0 },
+        "patch": { "method": "PATCH", "url": 0 },
+        "delete": { "method": "DELETE", "url": 0 },
+        "head": { "method": "HEAD", "url": 0 },
+        "request": { "methodArg": 0, "url": 1 }
+      },
+      "steps": {
+        "set": { "header": [0, 1] },
+        "header": { "header": [0, 1] },
+        "query": { "query": [0, 1] },
+        "query_pairs": { "queryMap": 0 },
+        "content_type": { "contentType": 0 }
+      },
+      "sends": {
+        "call": {},
+        "send_json": { "body": 0, "bodyRole": "body:json" },
+        "send_form": { "body": 0, "bodyRole": "body:form" },
+        "send_string": { "body": 0, "bodyRole": "body:raw" },
+        "send_bytes": { "body": 0 },
+        "send": { "body": 0 },
+        "send_empty": {}
+      }
+    },
+    {
+      "client": "awc",
+      "imports": ["awc", "actix_web.client"],
+      "starts": {
+        "get": { "method": "GET", "url": 0 },
+        "post": { "method": "POST", "url": 0 },
+        "put": { "method": "PUT", "url": 0 },
+        "patch": { "method": "PATCH", "url": 0 },
+        "delete": { "method": "DELETE", "url": 0 },
+        "head": { "method": "HEAD", "url": 0 },
+        "request": { "methodArg": 0, "url": 1 }
+      },
+      "steps": {
+        "insert_header": { "pair": 0 },
+        "append_header": { "pair": 0 },
+        "bearer_auth": { "bearer": 0 },
+        "basic_auth": { "basic": true },
+        "query": { "queryMap": 0 },
+        "content_type": { "contentType": 0 }
+      },
+      "sends": {
+        "send": {},
+        "send_json": { "body": 0, "bodyRole": "body:json" },
+        "send_form": { "body": 0, "bodyRole": "body:form" },
+        "send_body": { "body": 0 }
+      }
+    },
+    {
+      "client": "surf",
+      "imports": ["surf"],
+      "starts": {
+        "get": { "method": "GET", "url": 0 },
+        "post": { "method": "POST", "url": 0 },
+        "put": { "method": "PUT", "url": 0 },
+        "patch": { "method": "PATCH", "url": 0 },
+        "delete": { "method": "DELETE", "url": 0 },
+        "head": { "method": "HEAD", "url": 0 }
+      },
+      "steps": {
+        "header": { "header": [0, 1] },
+        "query": { "queryMap": 0 },
+        "body_json": { "body": 0, "bodyRole": "body:json" },
+        "body_form": { "body": 0, "bodyRole": "body:form" },
+        "body_string": { "body": 0, "bodyRole": "body:raw" },
+        "body_bytes": { "body": 0 },
+        "body": { "body": 0 },
+        "content_type": { "contentType": 0 }
+      },
+      "sends": { "send": {}, "recv_json": {}, "recv_string": {}, "recv_bytes": {}, "recv_form": {} }
+    }
+  ]
+}

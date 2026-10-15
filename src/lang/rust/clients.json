@@ -1,0 +1,28 @@
+{
+  "$comment": "Rust HTTP functions that send a request themselves (`ClientSpec` in src/lang/ir/language.ts; `imports` are crate paths with `::` as `.`): reqwest's `reqwest::get(url)` and `reqwest::blocking::get(url)`, isahc's verb functions (`isahc::post(url, body)`, `isahc::get_async(url)`). Requests built with a client's verb call and sent later (reqwest, ureq, awc, surf) are read by requests.ts.",
+  "clients": [
+    {
+      "client": "reqwest",
+      "imports": ["reqwest", "reqwest.blocking"],
+      "functions": { "get": { "method": "GET" } },
+      "keys": {}
+    },
+    {
+      "client": "isahc",
+      "imports": ["isahc"],
+      "functions": {
+        "get": { "method": "GET" },
+        "get_async": { "method": "GET" },
+        "head": { "method": "HEAD" },
+        "head_async": { "method": "HEAD" },
+        "delete": { "method": "DELETE" },
+        "delete_async": { "method": "DELETE" },
+        "post": { "method": "POST", "bodyArg": 1, "bodyRole": "body" },
+        "post_async": { "method": "POST", "bodyArg": 1, "bodyRole": "body" },
+        "put": { "method": "PUT", "bodyArg": 1, "bodyRole": "body" },
+        "put_async": { "method": "PUT", "bodyArg": 1, "bodyRole": "body" }
+      },
+      "keys": {}
+    }
+  ]
+}

@@ -193,7 +193,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -452,7 +452,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 4,
@@ -654,7 +654,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

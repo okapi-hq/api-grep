@@ -1,7 +1,7 @@
 {
   "name": "api-grep",
   "version": "0.0.0-development",
-  "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP, Kotlin, Java, Go, shell and HTML repositories",
+  "description": "Outbound HTTP/SDK call extractor for TypeScript, JavaScript, Python, PHP, Kotlin, Java, Go, Rust, shell and HTML repositories",
   "keywords": [
     "typescript",
     "html",
@@ -12,6 +12,7 @@
     "go",
     "shell",
     "curl",
+    "rust",
     "static-analysis",
     "api",
     "http",
@@ -102,6 +103,7 @@
     "tree-sitter-java": "0.23.5",
     "tree-sitter-php": "0.24.2",
     "tree-sitter-python": "0.25.0",
+    "tree-sitter-rust": "0.24.0",
     "tsup": "^8.4.0",
     "tsx": "^4.23.15",
     "typescript": "^5.8.2",

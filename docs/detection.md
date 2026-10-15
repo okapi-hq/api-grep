@@ -220,6 +220,56 @@ values spliced in: `'{"text": "'"$MSG"'"}'`) is read as the body's shape, `a=1&b
 multipart, `-d @file.json` as the JSON file next to the script. A function whose request reads its arguments is reported
 at each of its calls in the file with `via: "wrapper:<name>"` (one level), taking the `case` / `if` branch the call's
 arguments select. Details: [languages.md](languages.md#shell).
+## Rust
+
+Rust files are read through tree-sitter into the shared engine. A file's module is its path in its crate (`src/lib.rs`
+and `src/main.rs` are the crate, `src/llm/client.rs` or `src/llm/client/mod.rs` is `<crate>::llm::client`, the crate's
+name from the nearest `Cargo.toml`); `crate::`, `self::` and `super::` paths, `use` declarations (aliases, lists,
+`self`, globs, `pub use` re-exports) and the crates of a workspace resolve through those names. An inline `mod x { ...
+}` is read like a type of its file, so `x::API` and `crate::m::x::API` find its constants and functions. `impl` blocks
+give a struct its methods and associated constants (`Self::BASE`), also from another file; `self` reads as the object,
+its fields typed by the struct declaration and given values by the project's struct literals (`Self { base_url: u }`
+in a constructor, `Settings { .. }` in an `impl Default`).
+
+| client | patterns |
+|---|---|
+| reqwest (async and `reqwest::blocking`) | `reqwest::get(url)`; a `Client` (`Client::new()`, `Client::builder()...build()?`, a field or parameter of type `Client`, `Arc<Client>`) and its `get` / `post` / `put` / `patch` / `delete` / `head` / `request(Method::POST, url)`, then `header(k, v)`, `headers(map)`, `bearer_auth`, `basic_auth`, `query(&[(k, v)])` (several calls add up), `json(&body)`, `form(&[...])`, `multipart`, `body`, sent by `send()` (or reqwest-eventsource's `eventsource()`) and reported there; steps through variables, `match` / `if` branches (one request: headers only some branches set are optional), fields and the project's functions returning a builder; the client builder's `default_headers(map)` and `user_agent(ua)` are the client's parts (`clientParts`) |
+| ureq (2 and 3) | `ureq::get(url)` / `post` / ... and an agent's (`ureq::agent()`, `AgentBuilder::new()...build()`, `Agent::config_builder()...`), `set(k, v)` / `header(k, v)`, `query(k, v)`, `query_pairs(...)`, sent by `call()`, `send_json(body)`, `send_form(&[...])`, `send_string(s)`, `send_bytes(b)`, `send(body)` |
+| awc | a client's verb calls, `insert_header((k, v))`, `bearer_auth`, `basic_auth`, `query(&q)`, sent by `send()`, `send_json(&b)`, `send_form(&f)`, `send_body(b)` |
+| surf | `surf::get(url)` / `post` / ..., `header`, `body_json` / `body_form` / `body_string`, `query`, sent by `send()` or `recv_json()` / `recv_string()` / `recv_bytes()` (a request only awaited is not read) |
+| isahc | `isahc::get(url)`, `isahc::post(url, body)`, `put`, `delete`, `head` and their `_async` forms |
+
+Bodies come from `serde_json::json!({...})` (objects, arrays and literals read from the macro's tokens, Rust code in
+it parsed as an expression; keys added afterwards with `body["k"] = v`), `HashMap` / `serde_json::Map` / `HeaderMap`
+values filled with `insert`, `HashMap::from([(k, v), ...])`, arrays of `(k, v)` tuples for forms and queries,
+`serde_json::to_string` / `to_vec`, and struct literals under the names serde serializes them to (`#[serde(rename =
+"...")]`, the container's `rename_all`, `skip` fields left out, `Option<T>` and `skip_serializing_if` fields optional);
+the header name constants of the `http` crate (`header::AUTHORIZATION`, `CONTENT_TYPE`) and `Method::POST` are read as
+their values, and a literal `Content-Type` header gives a raw body its encoding.
+
+SDK calls are detected through the Rust registries (`src/lang/rust/registry/`): async-openai (`Client::new()`,
+`Client::with_config(OpenAIConfig::new().with_api_base(u))` for another OpenAI-compatible provider, a client whose
+type is `Client<AzureConfig>` read from its callers; `client.chat().create(request)` and the other resources, the
+request built with `CreateChatCompletionRequestArgs::default().model("gpt-4o").messages([...]).build()?` read as the
+JSON its setters give, a message builder or `ChatCompletionRequestUserMessage::from(text)` as a message with its role,
+a request struct literal as written), openai-api-rs (`OpenAIClient::builder().with_endpoint(u)...build()?`,
+`client.chat_completion(ChatCompletionRequest::new(GPT4_O.to_string(), messages))`, the fields set on the request
+afterwards, its model constants), teloxide (`Bot::new(token)`, `Bot::from_env()` or a handler's `bot: Bot`;
+`bot.send_message(chat_id, text)` and the other Bot API methods, `POST api.telegram.org/bot{token}/sendMessage` with
+the positional arguments as the body) and serenity (`msg.channel_id.say(&ctx.http, text)`, `msg.reply(&ctx, text)`,
+`ChannelId::new(id).say(...)`: `POST discord.com/api/v10/channels/{channel_id}/messages`) ([sdk-support.md](sdk-support.md)).
+
+Values are resolved through string literals (raw strings too), `const` and `static` items (also of other modules and
+crates, of `impl` blocks and inline modules), `format!` with positional, named (`{name}`, `name = v`) and captured
+(`{base}`) arguments, `concat!`, `+`, `String::from` / `.to_string()` / `.into()` / `&` / `?` / `.unwrap()` /
+`.expect(..)` (the same value), `s.push_str(x)`, `[a, b].join("/")`, `Url::parse(base)?.join(p)`, `std::env::var("X")`
+/ `dotenvy::var("X")` / `env!("X")` / `option_env!("X")` with the default of `.unwrap_or("...")` /
+`.unwrap_or_else(|_| "...".into())`, `Lazy::new(|| ...)`, `LazyLock`, `lazy_static!`, `match` and `if` values (`Some(x)
+=> x` binds `x`), struct fields, function parameters (their callers' values, #39) and closures. `Cargo.toml` is read
+(`[dependencies]`, per-target dependencies, `x.workspace = true` against the workspace's `[workspace.dependencies]`;
+dev and build dependencies aside), so `coverage.sdks` lists the crates a crate depends on (`ecosystem: "cargo"`).
+`target/`, `vendor/`, `tests/`, `benches/`, `build.rs`, `tests.rs` / `*_tests.rs` / `*_test.rs`, `#[cfg(test)]`
+modules (inline, or the file a `#[cfg(test)] mod x;` declares) and `#[test]` functions are out of scope.
 
 ## How a call is resolved
 
@@ -227,6 +277,8 @@ The pipeline is `detect → resolve → normalize → validate → emit`. Detect
 are per language (TypeScript, JavaScript and HTML scripts through the type checker; Python, PHP, Kotlin, Java and Go
 through tree-sitter and a shared engine; shell command lines through tree-sitter, read directly, see
 [languages.md](languages.md)); everything
+are per language (TypeScript, JavaScript and HTML scripts through the type checker; Python, PHP, Kotlin, Java, Go and
+Rust through tree-sitter and a shared engine, see [languages.md](languages.md)); everything
 after that is shared, so a call is
 described and checked the same way whatever its language. The rules below are given for
 TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and `.format()`,
@@ -313,6 +365,14 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   not read; wrapper functions are expanded one level, within their file; a variable assigned in several places reads
   as one of them. Scripts the bash grammar mostly cannot read (zsh-only syntax) are listed as `parse-error`
   ([languages.md](languages.md#shell)).
+- Rust: traits are not followed (a client behind `dyn Trait` or a generic `T: Trait` has no known implementation),
+  nor are macros other than the ones listed (a `macro_rules!` that builds a request), requests kept in data
+  structures and sent by shared code (a `RequestData { url, body }` sent elsewhere), values a function returns from
+  several `return`s, or configuration a crate deserializes (`config.url` read from a file: unknown, even with a
+  `#[serde(default = "...")]`). A renamed dependency (`openai = { package = "async-openai" }`) is counted under its
+  crate but its code name is not matched. async-openai's `AzureConfig` deployment paths, other Anthropic and Gemini
+  crates (none dominates: listed in `coverage.sdks` only) and setters chained after a teloxide method
+  (`.parse_mode(...)`) are not read; path ids from the gateway (serenity's `channel_id`) stay placeholders.
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.

@@ -1,0 +1,15 @@
+{
+  "issue": "Rust: async-openai (Client::new, OpenAI-compatible bases), openai-api-rs, teloxide and serenity registries",
+  "calls": [
+    {"file": "bots.rs", "line": 8, "provider": "telegram"},
+    {"file": "bots.rs", "line": 15, "provider": "telegram"},
+    {"file": "bots.rs", "line": 27, "provider": "discord"},
+    {"file": "bots.rs", "line": 30, "provider": "discord"},
+    {"file": "openai.rs", "line": 17, "provider": "openai"},
+    {"file": "openai.rs", "line": 25, "provider": "openai"},
+    {"file": "openai.rs", "line": 31, "provider": "openai"},
+    {"file": "openai.rs", "line": 44, "provider": "openrouter"},
+    {"file": "openai.rs", "line": 62, "provider": "deepseek"},
+    {"file": "openai_api.rs", "line": 21, "provider": "together"}
+  ]
+}

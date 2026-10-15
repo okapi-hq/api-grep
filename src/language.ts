@@ -20,6 +20,7 @@ const BY_EXTENSION: Record<string, Language> = {
   ".sh": "shell",
   ".bash": "shell",
   ".zsh": "shell",
+  ".rs": "rust",
 };
 
 /** Language of a source file from its extension; the scanner parses anything else it is given as TypeScript. */

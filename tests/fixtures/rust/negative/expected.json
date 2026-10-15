@@ -1,0 +1,4 @@
+{
+  "issue": "Rust: servers, handlers, channels, maps and response reads send nothing; #[cfg(test)] modules and their files, *_tests.rs, tests/, benches/, target/, vendor/ and build.rs are out of scope",
+  "calls": []
+}

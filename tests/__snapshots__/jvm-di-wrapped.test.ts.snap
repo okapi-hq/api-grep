@@ -169,7 +169,7 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -351,7 +351,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -635,7 +635,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "okhttp": 4,
