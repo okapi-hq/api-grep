@@ -439,6 +439,33 @@ pattern):
   PyPI, crates.io, pkg.go.dev, Packagist, Maven), schemas and namespaces (`w3.org`, `json-schema.org`, `schema.org`),
   CDNs, fonts, images and badges, social and video sites, Wikipedia, and URLs to a page, an image, a script, a
   stylesheet or an archive (`.html`, `.png`, `.js`, …), by their path.
+- Never counted either, since they name an API's host without calling it:
+  - by their path: an OAuth authorization page, which the user's browser opens (`/authorize` alone or after an
+    `oauth`, `oauth2`, `connect`, `auth` or `openidconnect` segment, `/o/oauth2/v2/auth`,
+    `/protocol/openid-connect/auth`, any URL with `response_type=`), while the token, device and introspection endpoints, and a payment's
+    `/orders/{id}/authorize`, still count; an OAuth scope written as a URL (`www.googleapis.com/auth/drive`,
+    `graph.microsoft.com/User.Read`); a docs page by its first segment, after a locale (`/docs`, `/reference`,
+    `/robots`, `/guides`, `/changelog`, …); on a generic cloud endpoint whose account or project is in the path
+    (`*.amazonaws.com`, `*.googleapis.com`, Azure, Cloudflare), a segment to fill in (`your-account-id`,
+    `YOUR_PROJECT`, `{your_key}`, `XXX`, `changeme`) or a sample's (`example`, `my-queue`, `123456789012`), as in a
+    configuration default (`env('SQS_PREFIX', 'https://sqs.us-east-1.amazonaws.com/your-account-id')`); elsewhere a
+    placeholder still counts, since such a URL is often the one a call sends
+    (`https://hooks.slack.com/services/T000/B000/XXXX`);
+  - by the text around them: a link in text for a person (`[label](url)`, `<url>`, Slack's `<url|label>`,
+    `href="url"`);
+  - by where the literal sits: an argument of a logging or printing call (`console.*`, `print`, `println!`,
+    `eprintln!`, `log::info!`, `fmt.Print*`, `System.out.*`, `logger.*`, `log.*`, `logging.*`, Android's `Log.*`,
+    `Log::info`, Laravel's `$this->info`, PHP's `echo`), also through formatting calls inside it
+    (`console.log(chalk.green(...))`, `logger.info("{}".format(url))`), an error's message (`new Error(...)`,
+    `raise ValueError(...)`, `fmt.Errorf`, `.expect(...)`), a URL handed to a browser (`res.redirect`,
+    `window.open`, `webbrowser.open`); but a call inside them still counts (`console.log(await fetch(url))`);
+  - the value of a key or variable naming a page, a redirect or a scope (`homepage`, `website`, `docs`,
+    `documentation_url`, `href`, `link`, `redirect_uri`, `callback_url`, `authorizationURL`, `scope`), and the
+    `url` or `uri` of a dict, object, array or struct with no request-like key beside it (`method`, `headers`,
+    `body`, `params`, `baseURL`, `auth`, `token`, …), such as a list of bots (`{ name: "Slackbot", url:
+    "https://api.slack.com/robots" }`), when its path has a docs segment anywhere (`/help`, `/docs`, `/wiki`, …);
+  - test code inside a scanned file: Rust's `#[cfg(test)]` modules and `#[test]` / `#[tokio::test]` functions (the
+    Rust front end reports no call from them either), Vitest's in-source `if (import.meta.vitest)` blocks.
 - `explained`: named hosts that are the host of at least one call in `calls`, case and port aside; a call's host
   template (`{project}.supabase.co`) explains the hosts it matches, one with no literal domain (`{baseUrl}`) none.
 - `unexplained`: the others, most files first, then by host, at most 200 (`named - explained` counts them all).
@@ -448,7 +475,7 @@ What it does not measure: an SDK call to its default host leaves no literal, so 
 `coverage.sdks`, not here; a host built from parts (`f"https://{region}.api.acme.com"`), read from configuration or
 the environment, or written in a language api-grep does not read (the scan never opens those files) is not named;
 test files and other files out of the default file set are not read. An unexplained host is not always a missed call: a
-URL can be shown to a user, logged or opened in a browser. Files
+URL can still be shown to a user, compared or opened in a browser in ways the rules above do not see. Files
 over 2 MB are not read for hosts, only the first 64 KB of a literal is, and a scan keeps at most 50,000 host mentions.
 The table prints `hosts named in code: 23, explained by a call: 21; not explained: api.telegram.org (2 files)`.
 `--changed-since` scans have no coverage section.

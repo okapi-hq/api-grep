@@ -11,6 +11,21 @@ import { lowerType } from "./types.js";
 /** `#[cfg(test)]`, `#[test]`, `#[tokio::test]`: test code, out of scope like the files of `tests/`. */
 const isTest = (attrs: SyntaxNode[]): boolean => attrs.some((a) => /^#\[\s*(?:cfg\s*\(\s*test\s*\)|(?:[\w:]+::)?test\b)/.test(a.text));
 
+/**
+ * The `#[cfg(test)]` and `#[test]` items of a file, outermost only, as character ranges in file order: `coverage.hosts`
+ * does not read their literals, as the lowering does not read their calls.
+ */
+export function rustTestCode(root: SyntaxNode): Array<[number, number]> {
+  const ranges: Array<[number, number]> = [];
+  for (const a of root.descendantsOfType("attribute_item")) {
+    if (!a || !isTest([a])) continue;
+    let item = a.nextNamedSibling;
+    while (item && (item.type === "attribute_item" || item.type.endsWith("comment"))) item = item.nextNamedSibling;
+    if (item && !ranges.some(([s, e]) => s <= item.startIndex && item.endIndex <= e)) ranges.push([item.startIndex, item.endIndex]);
+  }
+  return ranges.sort((x, y) => x[0] - y[0]);
+}
+
 /** A function body in its own state: its parameters and locals. */
 export function lowerFunctionBody(fn: FunctionDef, n: SyntaxNode, st: RustState): void {
   const inner: RustState = { ...st, fn, locals: new Set(), urls: new Set() };

@@ -4251,14 +4251,14 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "named": 1,
       "unexplained": [
         {
-          "files": 2,
+          "files": 1,
           "first": {
             "file": "mocked.ts",
             "line": 4,
           },
           "host": "api.stripe.com",
           "language": "typescript",
-          "literals": 2,
+          "literals": 1,
         },
       ],
     },

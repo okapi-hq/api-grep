@@ -51,7 +51,7 @@ async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, i
         try {
           if (!problem) modules.push(Object.assign(lang.lower(tree.rootNode, file, rootDir), { language: lang.id }));
           else if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: problem });
-          if (!problem && hosts && scanned.has(file)) collectHostLiterals(tree.rootNode, lang.id, rel, hosts);
+          if (!problem && hosts && scanned.has(file)) collectHostLiterals(tree.rootNode, lang.id, rel, hosts, lang.testCode?.(tree.rootNode));
         } finally {
           tree.delete();
         }

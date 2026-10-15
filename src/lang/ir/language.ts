@@ -3,6 +3,7 @@ import type { ClientKind, Ecosystem, Language } from "../../report/schema.js";
 import type { AuthScheme, BodyEncoding, MethodSpec, RegistryEntry } from "../../types.js";
 import type { SyntaxNode } from "../tree-sitter.js";
 import type { Chain } from "./chain.js";
+import type { TestRanges } from "./host-literals.js";
 import type { CallExpr, ClassDef, Expr, FunctionDef, ModuleModel, Param } from "./model.js";
 import type { IrCtx, IrRaw } from "./raw.js";
 
@@ -281,6 +282,8 @@ export interface IrSource {
   /** Out of scope by default: tests, virtualenvs, vendored code, build output. */
   excludes: string[];
   lower(root: SyntaxNode, file: string, rootDir: string): ModuleModel;
+  /** The file's own test code (Rust's `#[cfg(test)]` and `#[test]` items), whose literals `coverage.hosts` does not read. */
+  testCode?: (root: SyntaxNode) => TestRanges;
 }
 
 /** A language read through tree-sitter and the shared engine. */

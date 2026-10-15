@@ -156,8 +156,12 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `constants.json` (`openai.GPT4o`), extracted from the SDKs' sources.
 - `coverage.hosts` (`src/hosts/`): the API-looking hosts in the string literals of the scanned files (each front end
   hands its literals over: `src/lang/typescript/host-literals.ts` walks the TypeScript AST, `src/lang/ir/host-literals.ts`
-  the tree-sitter string nodes while lowering), compared with the calls' hosts; the filter is `api-host.ts`, rules in
-  `docs/report.md#host-coverage`. A recall proxy: keep it low-noise (a docs link counted reads as a missed call).
+  the tree-sitter string nodes while lowering), compared with the calls' hosts; the filter is `api-host.ts` (paths
+  that are no call, `url-noise.ts`: OAuth authorization pages and scopes, docs pages, cloud endpoints to fill in),
+  and each front end gives a literal a role from where it sits (`typescript/host-context.ts`, `ir/host-context.ts`,
+  read by name in `hosts/context.ts`: a log's or an error's text, a redirect, a link key, a `url` beside no request
+  key), Rust's test items through `IrSource.testCode`; rules in `docs/report.md#host-coverage`. A recall proxy: keep
+  it low-noise (a docs link counted reads as a missed call).
 - Shell (`src/lang/shell/`): not the IR. tree-sitter-bash parses `.sh` / `.bash` / `.zsh` files and extension-less files
   with a shell `#!` line (`files.ts`); `scope.ts` collects the file's assignments (`export`, `readonly`, `local`, arrays,
   loop and `read` targets, the most informative one wins: a value over `X="$2"` option parsing over `X=""`), `words.ts`

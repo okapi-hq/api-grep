@@ -1,5 +1,7 @@
 import type { Language } from "../report/schema.js";
 import { isApiHost, isBareApiHost } from "./api-host.js";
+import type { LiteralRole } from "./context.js";
+import { isDocsPath } from "./url-noise.js";
 
 /** A host a string literal names, and where. */
 export interface HostMention {
@@ -34,15 +36,24 @@ const linesBefore = (text: string, index: number): number => {
   return n;
 };
 
-/** The API-looking hosts a string literal's text names: every `http(s)://` URL in it, or the literal itself when it is a host. */
-export function hostsInLiteral(literal: string): HostMention[] {
+/** A link in text for a person: Markdown's `[label](url)` or `<url>`, Slack's `<url|label>`, HTML's `href="url"`. */
+const LINK_BEFORE = /(?:\]\(|<|\bhref=["']?)$/i;
+/** A URL written as a link for a person, read from the characters before it. */
+const isLink = (text: string, start: number): boolean => LINK_BEFORE.test(text.slice(Math.max(0, start - 6), start));
+
+/**
+ * The API-looking hosts a string literal's text names: every `http(s)://` URL in it, or the literal itself when it is a
+ * host. A `weak` literal (a `url` among keys that are no request's, `context.ts`) does not count a docs page's URL.
+ */
+export function hostsInLiteral(literal: string, role?: LiteralRole): HostMention[] {
   const text = literal.length > MAX_LITERAL_CHARS ? literal.slice(0, MAX_LITERAL_CHARS) : literal;
-  if (!text.includes(".")) return [];
+  if (!text.includes(".") || role === "text" || role === "link") return [];
   const out: HostMention[] = [];
   if (text.includes("://")) {
     for (const m of text.matchAll(URL_RE)) {
       const host = normalizeHost(m[1]!);
-      if (host && isApiHost(host, m[2]!)) out.push({ host, lineOffset: linesBefore(text, m.index) });
+      if (!host || !isApiHost(host, m[2]!) || isLink(text, m.index)) continue;
+      if (role !== "weak" || !isDocsPath(m[2]!, true)) out.push({ host, lineOffset: linesBefore(text, m.index) });
     }
     return out;
   }
@@ -67,10 +78,13 @@ export class HostLiterals {
   readonly seen = new Map<string, HostSeen>();
   private mentions = 0;
 
-  /** A string literal of a scanned file (`file` relative to the scanned directory) starting at `line` (1-based). */
-  add(text: string, file: string, line: number, language: Language): void {
+  /**
+   * A string literal of a scanned file (`file` relative to the scanned directory) starting at `line` (1-based), and its
+   * role when its front end read one (`context.ts`).
+   */
+  add(text: string, file: string, line: number, language: Language, role?: LiteralRole): void {
     if (this.mentions >= MAX_MENTIONS) return;
-    for (const m of hostsInLiteral(text)) {
+    for (const m of hostsInLiteral(text, role)) {
       this.mentions++;
       const at = { file, line: line + m.lineOffset };
       const s = this.seen.get(m.host);

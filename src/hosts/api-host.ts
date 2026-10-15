@@ -1,9 +1,11 @@
 import { isLocalhost, isProviderHost, providerForHost } from "../normalize/provider.js";
+import { isNoCallPath } from "./url-noise.js";
 
 /**
  * Which hosts written in the code look like an API's (`coverage.hosts`). Noise is worse than a miss here: a link to the
  * docs counted as "named, not explained" would read as a call api-grep missed. The rules, in order: a well-formed
- * public host; not a placeholder, documentation, package registry, schema or asset host; then a known provider host,
+ * public host; no path a browser opens or a person fills in (`url-noise.ts`); not a placeholder, documentation,
+ * package registry, schema or asset host; then a known provider host,
  * an `api` label, an LLM gateway or an API-like path (a bare domain, `github.com`, needs the path).
  */
 
@@ -90,7 +92,7 @@ export function hasApiLabel(host: string): boolean {
  * without port or user info; `path` starts with `/` or is empty.
  */
 export function isApiHost(host: string, path: string): boolean {
-  if (!isPublicHostName(host) || ASSET_PATH.test(path.replace(/[?#].*$/s, ""))) return false;
+  if (!isPublicHostName(host) || ASSET_PATH.test(path.replace(/[?#].*$/s, "")) || isNoCallPath(host, path)) return false;
   const exact = isProviderHost(host);
   if (!exact && isNoise(host)) return false;
   const domain = registrableDomain(host);

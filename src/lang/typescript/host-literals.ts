@@ -2,6 +2,7 @@ import { ts, type SourceFile } from "ts-morph";
 import { relativePosix } from "../../files.js";
 import { MAX_SOURCE_CHARS, type HostLiterals } from "../../hosts/literals.js";
 import { languageOf } from "../../language.js";
+import { isInSourceTest, literalRole } from "./host-context.js";
 
 /** A template's text with each substitution as `${}`: a host split by one is no host. */
 function templateText(t: ts.TemplateExpression): string {
@@ -12,7 +13,8 @@ const isModuleSpecifier = (n: ts.Node): boolean => (ts.isImportDeclaration(n.par
 
 /**
  * Hands the string and template literals of a scanned file (an HTML page: its inline scripts, at their lines) to
- * `hosts`. Comments are not literals; module specifiers (`https://esm.sh/...`) are imports, not calls. An explicit
+ * `hosts`, each with its role (`host-context.ts`: a log's text, a link's value). Comments are not literals; module
+ * specifiers (`https://esm.sh/...`) are imports, not calls; Vitest's in-source tests are not read. An explicit
  * stack: a long `a + b + ...` chain nests deeper than the call stack allows.
  */
 export function collectHostLiterals(sf: SourceFile, rootDir: string, hosts: HostLiterals): void {
@@ -21,7 +23,7 @@ export function collectHostLiterals(sf: SourceFile, rootDir: string, hosts: Host
   const file = relativePosix(rootDir, sf.getFilePath());
   const language = languageOf(file);
   const add = (n: ts.Node, text: string): void => {
-    if (text.includes(".")) hosts.add(text, file, node.getLineAndCharacterOfPosition(n.getStart(node)).line + 1, language);
+    if (text.includes(".")) hosts.add(text, file, node.getLineAndCharacterOfPosition(n.getStart(node)).line + 1, language, literalRole(n, node));
   };
   const stack: ts.Node[] = [node];
   // a template's own parts are read whole below; only its substitutions hold other literals (order does not matter)
@@ -34,6 +36,6 @@ export function collectHostLiterals(sf: SourceFile, rootDir: string, hosts: Host
       continue;
     }
     if (ts.isTemplateExpression(n)) add(n, templateText(n));
-    ts.forEachChild(n, push);
+    if (!isInSourceTest(n, node)) ts.forEachChild(n, push);
   }
 }
