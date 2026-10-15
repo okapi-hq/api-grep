@@ -1,0 +1,21 @@
+{
+  "issue": "Shell: curl command lines, their options, variables, wrapper functions and sourced files",
+  "calls": [
+    {"file": "notify.sh", "line": 9, "provider": "telegram"},
+    {"file": "notify.sh", "line": 14, "provider": "discord"},
+    {"file": "notify.sh", "line": 18, "provider": "slack"},
+    {"file": "github.sh", "line": 9, "provider": "github"},
+    {"file": "github.sh", "line": 15, "provider": "github"},
+    {"file": "github.sh", "line": 16, "provider": "github"},
+    {"file": "github.sh", "line": 17, "provider": "github"},
+    {"file": "github.sh", "line": 19, "provider": "github"},
+    {"file": "llm.sh", "line": 5, "provider": "openai"},
+    {"file": "llm.sh", "line": 14, "provider": "anthropic"},
+    {"file": "llm.sh", "line": 19, "provider": "ollama"},
+    {"file": "llm.sh", "line": 20, "provider": "internal"},
+    {"file": "mail.bash", "line": 2, "provider": "mailgun"},
+    {"file": "mail.bash", "line": 9, "provider": "storage.example.org"},
+    {"file": "deploy", "line": 3, "provider": "api.render.com"},
+    {"file": "deploy", "line": 4, "provider": "env:DEPLOY_HOOK_URL"}
+  ]
+}

@@ -3,11 +3,11 @@ import { z } from "zod";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const LanguageSchema = z
-  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go"])
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go", "shell"])
   .meta({
     id: "Language",
     description:
-      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, and kotlin and java together (one front end, so names resolve across the two).",
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line).",
   });
 
 export const EcosystemSchema = z

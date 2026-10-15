@@ -1,0 +1,1656 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`shell: curl > reads curl command lines, their variables, wrapper functions and sourced files 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.render.com/v1/services/srv-example/deploys",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.render.com",
+      "hostKind": "const",
+      "id": "abf47b73595b",
+      "location": {
+        "col": 1,
+        "file": "deploy",
+        "language": "shell",
+        "line": 3,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/services/srv-example/deploys",
+      "provider": "api.render.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.render.com/v1/services/srv-example/deploys",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "envName": "DEPLOY_HOOK_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://{env:DEPLOY_HOOK_URL}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "env",
+      "id": "8e4fe0d2d319",
+      "location": {
+        "col": 1,
+        "file": "deploy",
+        "language": "shell",
+        "line": 4,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "env:DEPLOY_HOOK_URL",
+      "query": [],
+      "urlTemplate": "{env:DEPLOY_HOOK_URL}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "arg1",
+          "origin": "param",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/glacier",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "8e28ed2a62b3",
+      "location": {
+        "col": 3,
+        "file": "github.sh",
+        "language": "shell",
+        "line": 9,
+      },
+      "method": "GET",
+      "optionsOpaque": true,
+      "pathTemplate": "/{arg1}",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/{arg1}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/repos/acme/widgets/releases/latest",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "ea3f7fbcf616",
+      "location": {
+        "col": 10,
+        "file": "github.sh",
+        "language": "shell",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/acme/widgets/releases/latest",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/acme/widgets/releases/latest",
+      "via": "wrapper:gh_api",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "labels": {
+            "items": {
+              "enum": [
+                "release",
+              ],
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "title",
+          "labels",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "title",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "labels": [
+              "release",
+            ],
+            "title": "River Quill",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.github.com/repos/acme/widgets/issues",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "fd0a708db706",
+      "location": {
+        "col": 1,
+        "file": "github.sh",
+        "language": "shell",
+        "line": 16,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/acme/widgets/issues",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/acme/widgets/issues",
+      "via": "wrapper:gh_api",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "per_page": "50",
+            "state": "open",
+          },
+          "url": "https://api.github.com/repos/acme/widgets/issues?state=open&per_page=50",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "21baee633896",
+      "location": {
+        "col": 1,
+        "file": "github.sh",
+        "language": "shell",
+        "line": 17,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/acme/widgets/issues",
+      "provider": "github",
+      "query": [
+        "state",
+        "per_page",
+      ],
+      "queryShape": {
+        "properties": {
+          "per_page": {
+            "enum": [
+              "50",
+            ],
+            "type": "string",
+          },
+          "state": {
+            "enum": [
+              "open",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+          "per_page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/acme/widgets/issues",
+      "via": "wrapper:gh_api",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "HEAD",
+          "query": {},
+          "url": "https://api.github.com/zen",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "cdc5f461e326",
+      "location": {
+        "col": 1,
+        "file": "github.sh",
+        "language": "shell",
+        "line": 19,
+      },
+      "method": "HEAD",
+      "optionsOpaque": false,
+      "pathTemplate": "/zen",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/zen",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "arg1",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "env": "OPENAI_MODEL",
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0.2,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "temperature",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "model",
+          "origin": "env",
+          "where": "body",
+        },
+        {
+          "name": "content",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Birch cedar grove koala saffron echo.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0.2,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+        "authorization",
+      ],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "0c495bb2ae7e",
+      "location": {
+        "col": 9,
+        "file": "llm.sh",
+        "language": "shell",
+        "line": 5,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "env": "OPENAI_MODEL",
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              256,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "enum": [
+                    "Summarise the report",
+                  ],
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [],
+      "envName": "ANTHROPIC_BASE_URL",
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 256,
+            "messages": [
+              {
+                "content": "Summarise the report",
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+        "x-api-key": null,
+      },
+      "headers": [
+        "content-type",
+        "accept",
+        "x-api-key",
+        "anthropic-version",
+      ],
+      "host": "api.anthropic.com",
+      "hostKind": "env",
+      "id": "136acaec78da",
+      "location": {
+        "col": 1,
+        "file": "llm.sh",
+        "language": "shell",
+        "line": 14,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:ANTHROPIC_BASE_URL}/v1/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "model": {
+            "enum": [
+              "llama3",
+            ],
+            "type": "string",
+          },
+          "prompt": {
+            "enum": [
+              "hi",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "prompt",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "model": "llama3",
+            "prompt": "hi",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "http://localhost:11434/api/generate",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "localhost:11434",
+      "hostKind": "literal",
+      "id": "561baf9a4b0d",
+      "location": {
+        "col": 1,
+        "file": "llm.sh",
+        "language": "shell",
+        "line": 19,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "llama3",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/api/generate",
+      "provider": "ollama",
+      "query": [],
+      "scheme": "http",
+      "urlTemplate": "http://localhost:11434/api/generate",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "curl",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "http://127.0.0.1:8080/health",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "127.0.0.1:8080",
+      "hostKind": "literal",
+      "id": "bc98d2e8ebc8",
+      "location": {
+        "col": 1,
+        "file": "llm.sh",
+        "language": "shell",
+        "line": 20,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/health",
+      "provider": "internal",
+      "query": [],
+      "scheme": "http",
+      "urlTemplate": "http://127.0.0.1:8080/health",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "attachment": {
+            "type": "string",
+          },
+          "from": {
+            "enum": [
+              "Reports <reports@example.org>",
+            ],
+            "type": "string",
+          },
+          "subject": {
+            "enum": [
+              "Nightly report",
+            ],
+            "type": "string",
+          },
+          "to": {
+            "env": "RECIPIENT",
+            "type": "string",
+          },
+        },
+        "required": [
+          "from",
+          "to",
+          "subject",
+          "attachment",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "MAILGUN_DOMAIN",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "env",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "attachment": "fable grove",
+            "from": "Reports <reports@example.org>",
+            "subject": "Nightly report",
+            "to": "iris.ekwall@example.com",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.mailgun.net/v3/juniper.example.org/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.mailgun.net",
+      "hostKind": "literal",
+      "id": "f4a3339caa7a",
+      "location": {
+        "col": 1,
+        "file": "mail.bash",
+        "language": "shell",
+        "line": 2,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/{MAILGUN_DOMAIN}/messages",
+      "provider": "mailgun",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.mailgun.net/v3/{env:MAILGUN_DOMAIN}/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "type": "unknown",
+      },
+      "bodyEncoding": "raw",
+      "bodySource": "unknown",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "date",
+          "origin": "call",
+          "where": "path",
+        },
+        {
+          "name": "body",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": "Maple summit opal onyx nimbus dune.",
+          "bodyEncoding": "raw",
+          "headers": {
+            "content-type": "application/octet-stream",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://storage.example.org/reports/2025-03-14T09%3A54%3A27Z.pdf",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "storage.example.org",
+      "hostKind": "literal",
+      "id": "c94b5b4b4fbd",
+      "location": {
+        "col": 1,
+        "file": "mail.bash",
+        "language": "shell",
+        "line": 9,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/reports/{date}.pdf",
+      "provider": "storage.example.org",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://storage.example.org/reports/{date}.pdf",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "chat_id": {
+            "env": "TELEGRAM_CHAT_ID",
+            "type": "string",
+          },
+          "parse_mode": {
+            "enum": [
+              "Markdown",
+            ],
+            "type": "string",
+          },
+          "text": {
+            "enum": [
+              "Nightly report is ready",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "chat_id",
+          "text",
+          "parse_mode",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "TELEGRAM_BOT_TOKEN",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "chat_id",
+          "origin": "env",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "chat_id": "xav19d2i",
+            "parse_mode": "Markdown",
+            "text": "Nightly report is ready",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.telegram.org/bot%3CTELEGRAM_BOT_TOKEN%3E/sendMessage",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.telegram.org",
+      "hostKind": "const",
+      "id": "be86d91310e2",
+      "location": {
+        "col": 1,
+        "file": "notify.sh",
+        "language": "shell",
+        "line": 9,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+      "provider": "telegram",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.telegram.org/bot{env:TELEGRAM_BOT_TOKEN}/sendMessage",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "content": {
+            "enum": [
+              "Nightly report is ready",
+            ],
+            "type": "string",
+          },
+          "tts": {
+            "enum": [
+              false,
+            ],
+            "type": "boolean",
+          },
+          "username": {
+            "enum": [
+              "report-bot",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "content",
+          "username",
+          "tts",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [
+        {
+          "name": "DISCORD_WEBHOOK_ID",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "DISCORD_WEBHOOK_TOKEN",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "content": "Nightly report is ready",
+            "tts": false,
+            "username": "report-bot",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://discord.com/api/webhooks/jrx7eyzn/%3CDISCORD_WEBHOOK_TOKEN%3E",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "discord.com",
+      "hostKind": "const",
+      "id": "eebbc8a6c636",
+      "location": {
+        "col": 1,
+        "file": "notify.sh",
+        "language": "shell",
+        "line": 14,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/webhooks/{DISCORD_WEBHOOK_ID}/{DISCORD_WEBHOOK_TOKEN}",
+      "provider": "discord",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://discord.com/api/webhooks/{env:DISCORD_WEBHOOK_ID}/{env:DISCORD_WEBHOOK_TOKEN}",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "text": {
+            "enum": [
+              "ping",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "curl",
+      "dynamic": [],
+      "envName": "SLACK_WEBHOOK_URL",
+      "examples": [
+        {
+          "body": {
+            "text": "ping",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{env:SLACK_WEBHOOK_URL}/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+        "accept",
+      ],
+      "hostKind": "env",
+      "id": "11d1efb3260b",
+      "location": {
+        "col": 10,
+        "file": "notify.sh",
+        "language": "shell",
+        "line": 18,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "slack",
+      "query": [],
+      "urlTemplate": "{env:SLACK_WEBHOOK_URL}",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "languages": {
+      "shell": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.22.0",
+  "stats": {
+    "byClient": {
+      "curl": 16,
+    },
+    "byHostKind": {
+      "const": 6,
+      "env": 3,
+      "literal": 7,
+    },
+    "byLanguage": {
+      "shell": 16,
+    },
+    "byProvider": {
+      "anthropic": 1,
+      "api.render.com": 1,
+      "discord": 1,
+      "env:DEPLOY_HOOK_URL": 1,
+      "github": 5,
+      "internal": 1,
+      "mailgun": 1,
+      "ollama": 1,
+      "openai": 1,
+      "slack": 1,
+      "storage.example.org": 1,
+      "telegram": 1,
+    },
+    "callsFound": 16,
+    "durationMs": 0,
+    "filesScanned": 6,
+    "redacted": 0,
+    "withBodyShape": 8,
+    "withDynamic": 7,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`shell: wget and HTTPie > reads their methods, headers, bodies and query items 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "wget",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "token <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/user/repos",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "3b8dd05f92bf",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 4,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/user/repos",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user/repos",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "message": {
+            "enum": [
+              "deployed",
+            ],
+            "type": "string",
+          },
+          "token": {
+            "env": "PUSHOVER_TOKEN",
+            "type": "string",
+          },
+          "user": {
+            "env": "PUSHOVER_USER",
+            "type": "string",
+          },
+        },
+        "required": [
+          "token",
+          "user",
+          "message",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "wget",
+      "dynamic": [
+        {
+          "name": "token",
+          "origin": "env",
+          "where": "body",
+        },
+        {
+          "name": "user",
+          "origin": "env",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "message": "deployed",
+            "token": "<token>",
+            "user": "dune orbit",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.pushover.net/1/messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.pushover.net",
+      "hostKind": "literal",
+      "id": "1adc29cb5817",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 6,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/1/messages.json",
+      "provider": "api.pushover.net",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.pushover.net/1/messages.json",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "wget",
+      "dynamic": [
+        {
+          "name": "ZONE_ID",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "x-auth-email": "ops@example.org",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.cloudflare.com/client/v4/zones/lfrt9z77/purge_cache",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-auth-email": "ops@example.org",
+      },
+      "headers": [
+        "x-auth-email",
+      ],
+      "host": "api.cloudflare.com",
+      "hostKind": "literal",
+      "id": "446afbb99f36",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 9,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/client/v4/zones/{ZONE_ID}/purge_cache",
+      "provider": "cloudflare",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.cloudflare.com/client/v4/zones/{env:ZONE_ID}/purge_cache",
+    },
+    {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "query": {
+            "enum": [
+              "{ viewer { id } }",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "httpie",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "query": "{ viewer { id } }",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "<authorization>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.linear.app",
+      "hostKind": "literal",
+      "id": "4fd85a4dacb6",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 11,
+      },
+      "method": "POST",
+      "operation": {
+        "dynamic": false,
+        "fields": [
+          "viewer.id",
+        ],
+        "from": "document",
+        "name": "viewer",
+        "protocol": "graphql",
+        "type": "query",
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "Body": {
+            "enum": [
+              "hello",
+            ],
+            "type": "string",
+          },
+          "From": {
+            "env": "FROM",
+            "type": "string",
+          },
+          "To": {
+            "env": "TO",
+            "type": "string",
+          },
+        },
+        "required": [
+          "To",
+          "From",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "httpie",
+      "dynamic": [
+        {
+          "name": "TWILIO_SID",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "To",
+          "origin": "env",
+          "where": "body",
+        },
+        {
+          "name": "From",
+          "origin": "env",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "hello",
+            "From": "greta.nakamura@example.com",
+            "To": "maya.moreau@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/rekgvcgc/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "1377206ec1a9",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 13,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/2010-04-01/Accounts/{TWILIO_SID}/Messages.json",
+      "provider": "twilio",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/{env:TWILIO_SID}/Messages.json",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "httpie",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "http://localhost:3000/health",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "localhost:3000",
+      "hostKind": "literal",
+      "id": "17fde0f427c7",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/health",
+      "provider": "internal",
+      "query": [],
+      "scheme": "http",
+      "urlTemplate": "http://localhost:3000/health",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "count": {
+            "enum": [
+              3,
+            ],
+            "type": "integer",
+          },
+          "tags": {
+            "items": {
+              "enum": [
+                "a",
+                "b",
+              ],
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "count",
+          "tags",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "httpie",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "count": 3,
+            "tags": [
+              "a",
+            ],
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PATCH",
+          "query": {
+            "search": "widgets",
+          },
+          "url": "http://api.example.org/v1/items/42?search=widgets",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "count": 3,
+            "tags": [
+              "b",
+            ],
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PATCH",
+          "query": {
+            "search": "widgets",
+          },
+          "url": "http://api.example.org/v1/items/42?search=widgets",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.example.org",
+      "hostKind": "literal",
+      "id": "4427e102bcf9",
+      "location": {
+        "col": 1,
+        "file": "fetch.sh",
+        "language": "shell",
+        "line": 17,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/items/42",
+      "provider": "api.example.org",
+      "query": [
+        "search",
+      ],
+      "queryShape": {
+        "properties": {
+          "search": {
+            "enum": [
+              "widgets",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "search",
+        ],
+        "type": "object",
+      },
+      "scheme": "http",
+      "urlTemplate": "http://api.example.org/v1/items/42",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 1,
+    "filesSeen": 1,
+    "languages": {
+      "shell": {
+        "filesScanned": 1,
+        "filesSeen": 1,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.22.0",
+  "stats": {
+    "byClient": {
+      "httpie": 4,
+      "wget": 3,
+    },
+    "byHostKind": {
+      "literal": 7,
+    },
+    "byLanguage": {
+      "shell": 7,
+    },
+    "byProvider": {
+      "api.example.org": 1,
+      "api.pushover.net": 1,
+      "cloudflare": 1,
+      "github": 1,
+      "internal": 1,
+      "linear": 1,
+      "twilio": 1,
+    },
+    "callsFound": 7,
+    "durationMs": 0,
+    "filesScanned": 1,
+    "redacted": 0,
+    "withBodyShape": 4,
+    "withDynamic": 3,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

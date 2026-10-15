@@ -36,7 +36,8 @@ export interface LanguageScanResult {
  */
 export interface LanguageFrontEnd {
   ids: Language[];
-  ecosystem: Ecosystem;
+  /** The package registry its SDKs come from; none for a language without packages (shell). */
+  ecosystem?: Ecosystem;
   /** Resolves to undefined when no file of its languages is in scope. */
   scan(input: LanguageScanInput): Promise<LanguageScanResult | undefined>;
 }

@@ -1,0 +1,2 @@
+# a virtualenv's script
+curl https://api.example.org/from-a-venv

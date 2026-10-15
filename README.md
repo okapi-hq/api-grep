@@ -8,11 +8,27 @@
 
 Point api-grep at a repository and it lists the external APIs the code talks to: the provider, the method and
 path, the names and types of what each request sends, and how it authenticates. It reads TypeScript, JavaScript,
-HTML, Python, PHP, Kotlin, Java and Go. Nothing is executed and nothing leaves your machine.
+HTML, Python, PHP, Kotlin, Java, Go and shell scripts. Nothing is executed and nothing leaves your machine.
 
 ```sh
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/okapi-hq/api-grep scan /repo
 ```
+
+## Supported languages
+
+<table align="center">
+  <tr>
+    <td align="center" width="88"><a href="docs/languages.md#typescript-javascript-and-html"><img src="https://cdn.simpleicons.org/typescript" width="40" height="40" alt="TypeScript"><br><sub><b>TypeScript</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#javascript-and-html"><img src="https://cdn.simpleicons.org/javascript" width="40" height="40" alt="JavaScript"><br><sub><b>JavaScript</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#javascript-and-html"><img src="https://cdn.simpleicons.org/html5" width="40" height="40" alt="HTML"><br><sub><b>HTML</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#python"><img src="https://cdn.simpleicons.org/python" width="40" height="40" alt="Python"><br><sub><b>Python</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#php"><img src="https://cdn.simpleicons.org/php" width="40" height="40" alt="PHP"><br><sub><b>PHP</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#kotlin"><img src="https://cdn.simpleicons.org/kotlin" width="40" height="40" alt="Kotlin"><br><sub><b>Kotlin</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#java"><img src="https://cdn.simpleicons.org/openjdk/ED8B00" width="40" height="40" alt="Java"><br><sub><b>Java</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#go"><img src="https://cdn.simpleicons.org/go" width="40" height="40" alt="Go"><br><sub><b>Go</b></sub></a></td>
+    <td align="center" width="88"><a href="docs/languages.md#shell"><img src="https://cdn.simpleicons.org/gnubash" width="40" height="40" alt="Shell"><br><sub><b>Shell</b></sub></a></td>
+  </tr>
+</table>
 
 ## Example
 
@@ -80,7 +96,8 @@ CRM. api-grep reads the code and answers it. Use it for:
 
 1. It parses every source file. TypeScript, JavaScript and inline HTML scripts go through the TypeScript type
    checker, so a callee is known by its declaration, not its name: `import http from "axios"` is still axios, and a
-   local function called `fetch` is not `fetch`. Python, PHP, Kotlin, Java and Go are parsed with tree-sitter into a shared intermediate form.
+   local function called `fetch` is not `fetch`. Python, PHP, Kotlin, Java and Go are parsed with tree-sitter into a shared intermediate form;
+   shell scripts with tree-sitter's bash grammar, their command lines read as they would run.
 2. It looks for calls to HTTP clients (fetch, axios, requests, Guzzle, OkHttp, Retrofit and [many
    more](docs/detection.md)) and to about 250 SDK packages (Stripe, OpenAI, Anthropic, AWS, Firebase, Supabase,
    Shopify...), each described by a registry of its methods and the requests they send.
@@ -125,7 +142,7 @@ api-grep serve --port 8080                         # HTTP server that scans uplo
 
 | option | description |
 |---|---|
-| `--language <ids>` | `typescript`, `javascript`, `html`, `python`, `php`, `kotlin`, `java`, `go`, comma-separated (default: all with files) |
+| `--language <ids>` | `typescript`, `javascript`, `html`, `python`, `php`, `kotlin`, `java`, `go`, `shell`, comma-separated (default: all with files) |
 | `--json` | print the JSON report instead of the table |
 | `--out <file>` | write the JSON report to a file |
 | `--curl` | print example requests as curl commands |
@@ -189,6 +206,7 @@ versioned separately from the tool.
 | PHP | Guzzle, Laravel `Http`, Symfony HttpClient, curl, PSR-18, streams, WordPress, `SoapClient` |
 | Kotlin, Java | OkHttp, `java.net.http`, `HttpURLConnection`, Ktor, Spring `RestTemplate` / `WebClient` / `RestClient`, Feign, Retrofit, Apache HttpClient, JAX-RS, AsyncHttpClient, Unirest, Vert.x |
 | Go | `net/http` (`http.Get` / `Post` / `PostForm`, `http.NewRequest` sent by any client), go-retryablehttp, fhttp, Resty |
+| Shell | curl, wget and HTTPie command lines in `.sh` / `.bash` / `.zsh` files and `#!` scripts, with the script's variables and wrapper functions |
 
 GraphQL clients (Apollo, urql, Relay, graphql-request, gql), JSON-RPC clients (viem, ethers, web3, Solana) and
 Shopify's SDKs report the operation they send. The full list of SDKs per language is in
