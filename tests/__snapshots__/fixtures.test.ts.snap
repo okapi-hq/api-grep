@@ -794,6 +794,11 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 5,
+      "named": 5,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -811,7 +816,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1225,6 +1230,11 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 3,
+      "named": 3,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1242,7 +1252,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2046,6 +2056,11 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2063,7 +2078,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3026,6 +3041,11 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 7,
+      "named": 7,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3043,7 +3063,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3647,6 +3667,11 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3664,7 +3689,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4071,6 +4096,11 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4088,7 +4118,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4216,6 +4246,22 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 1,
+      "unexplained": [
+        {
+          "files": 2,
+          "first": {
+            "file": "mocked.ts",
+            "line": 4,
+          },
+          "host": "api.stripe.com",
+          "language": "typescript",
+          "literals": 2,
+        },
+      ],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4252,7 +4298,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4362,6 +4408,11 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 1,
+      "named": 1,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4379,7 +4430,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9442,6 +9493,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -9733,7 +9789,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -10664,6 +10720,11 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 3,
+      "named": 3,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -10700,7 +10761,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "axios": 2,

@@ -3,11 +3,13 @@ import type { BuildCtx } from "../../build-call.js";
 import { ReceiverResolver } from "../../detect/receiver.js";
 import type { Registry } from "../../detect/registry/index.js";
 import { selectChanged } from "../../git.js";
+import type { HostLiterals } from "../../hosts/literals.js";
 import { loadBatch, type Scope, type Unreadable } from "../../project.js";
 import type { Call } from "../../report/schema.js";
 import { setDocumentRoot } from "../../resolve/graphql-source.js";
 import { importedPackages } from "./coverage.js";
 import { DeferredDiagnostics } from "./deferred.js";
+import { collectHostLiterals } from "./host-literals.js";
 import { buildAll, detectAll } from "./detect-all.js";
 
 export interface BatchCtx {
@@ -21,6 +23,7 @@ export interface BatchCtx {
   groupOf: (file: string) => number | undefined;
   /** Rank of each file in scope in a single project: a batch reads its files in that order. */
   order: Map<string, number>;
+  hosts?: HostLiterals;
 }
 
 const paths = (files: SourceFile[]): string[] => files.map((sf) => sf.getFilePath() as string);
@@ -61,6 +64,7 @@ export class Merged {
     for (const sf of scanned) {
       this.scanned.push(sf.getFilePath());
       if (!ctx.changed) this.imports.set(sf.getFilePath(), importedPackages(sf));
+      if (ctx.hosts) collectHostLiterals(sf, ctx.scope.dir, ctx.hosts);
     }
   }
 }

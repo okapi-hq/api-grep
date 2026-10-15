@@ -90,6 +90,7 @@ function scanBatches(scope: Scope, input: LanguageScanInput, registry: Registry,
     declared: declaredNear(scope.dir, packages),
     groupOf,
     order,
+    hosts: input.hosts,
   };
   for (const batch of packBatches(files, groups, budget, input.changed)) merged.scanBatch(batch, ctx);
   return merged;

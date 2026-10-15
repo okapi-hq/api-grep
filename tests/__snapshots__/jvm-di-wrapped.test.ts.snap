@@ -136,6 +136,22 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 1,
+      "unexplained": [
+        {
+          "files": 1,
+          "first": {
+            "file": "src/main/kotlin/com/example/catalog/Catalog.kt",
+            "line": 12,
+          },
+          "host": "api.catalog-example.com",
+          "language": "kotlin",
+          "literals": 1,
+        },
+      ],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -153,7 +169,7 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -313,6 +329,11 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -330,7 +351,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -592,6 +613,11 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 4,
+      "named": 4,
+      "unexplained": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -609,7 +635,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

@@ -56,6 +56,11 @@ for (const p of PROVIDERS) {
 }
 SUFFIXES.sort((a, b) => b[0].length - a[0].length);
 
+/** A host a provider lists exactly (`registry.npmjs.org`), not by suffix; lower case, without port. */
+export function isProviderHost(host: string): boolean {
+  return EXACT.has(host);
+}
+
 /**
  * Provider of a host: an exact host first, then the longest matching suffix (`maps.googleapis.com` before
  * `.googleapis.com`). A templated subdomain (`{instance}.my.salesforce.com`) matches the providers listed by suffix.

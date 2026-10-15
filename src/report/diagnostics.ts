@@ -1,4 +1,4 @@
-import type { Coverage, Diagnostics, DroppedCall, SkippedFile, UnfollowedCall } from "./schema.js";
+import type { Coverage, Diagnostics, DroppedCall, HostCoverage, SkippedFile, UnfollowedCall } from "./schema.js";
 
 /** Files left out by --exclude / --include are listed one by one up to this count, then only counted. */
 const MAX_LISTED_EXCLUSIONS = 200;
@@ -77,4 +77,12 @@ export function coverageWarnings(coverage: Coverage): string[] {
     if (s.status === "imported-no-calls") out.push(`${s.package} ${where}, but no call was found (used through a wrapper?)`);
   }
   return out;
+}
+
+/** `hosts named in code: 42, explained by a call: 37; not explained: api.acme.com (3 files), ...` (the first five). */
+export function hostsLine(h: HostCoverage): string {
+  const line = `hosts named in code: ${h.named}, explained by a call: ${h.explained}`;
+  const shown = h.unexplained.slice(0, 5).map((u) => `${u.host} (${plural(u.files, "file", "files")})`);
+  const more = h.named - h.explained - shown.length;
+  return shown.length === 0 ? line : `${line}; not explained: ${shown.join(", ")}${more > 0 ? `, +${more}` : ""}`;
 }

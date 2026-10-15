@@ -1063,12 +1063,16 @@
           "items": {
             "$ref": "#/definitions/SdkCoverage"
           }
+        },
+        "hosts": {
+          "description": "Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0.",
+          "$ref": "#/definitions/HostCoverage"
         }
       },
       "required": [
         "sdks"
       ],
-      "description": "API SDKs the repository declares or imports. Absent for --changed-since scans."
+      "description": "API SDKs the repository declares or imports, and API hosts its code names. Absent for --changed-since scans."
     },
     "SdkCoverage": {
       "type": "object",
@@ -1137,6 +1141,79 @@
         "go"
       ],
       "description": "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml), go (module paths from go.mod `require` directives)."
+    },
+    "HostCoverage": {
+      "type": "object",
+      "properties": {
+        "named": {
+          "type": "number",
+          "description": "Distinct API-looking hosts named by the string literals (template strings and f-strings included, comments and docstrings aside) of the scanned files: a known provider host, a first label `api`, `api-*` or `*-api`, an LLM gateway, or a URL whose path looks like an API (`/v1/`, `/v2beta/`, `/api/`, `/graphql`, `/rest/`, `/bot{token}/`). Internal, loopback, placeholder, documentation, package registry, schema, asset and repository-link hosts are not counted."
+        },
+        "explained": {
+          "type": "number",
+          "description": "Of `named`, the hosts that are the host of at least one call in `calls` (case and port aside; a host template such as `{project}.supabase.co` explains the hosts it matches)."
+        },
+        "unexplained": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UnexplainedHost"
+          },
+          "description": "The named hosts no call explains, by `files` (most first), then host; at most 200 (`named - explained` counts them all)."
+        }
+      },
+      "required": [
+        "named",
+        "explained",
+        "unexplained"
+      ],
+      "description": "API-looking hosts the scanned code names, compared with the hosts of the calls found: a recall proxy per scan. SDK calls to a default host leave no literal, and files of languages api-grep does not read are not counted."
+    },
+    "UnexplainedHost": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "The host, lower case, without port."
+        },
+        "files": {
+          "type": "number",
+          "description": "Scanned files whose string literals name it."
+        },
+        "literals": {
+          "type": "number",
+          "description": "String literals naming it (a literal holding two URLs to it counts twice)."
+        },
+        "language": {
+          "description": "Language of the first file naming it.",
+          "$ref": "#/definitions/Language"
+        },
+        "first": {
+          "type": "object",
+          "properties": {
+            "file": {
+              "type": "string",
+              "description": "Path relative to the scanned directory."
+            },
+            "line": {
+              "type": "number",
+              "description": "1-based line of the URL."
+            }
+          },
+          "required": [
+            "file",
+            "line"
+          ],
+          "description": "The first place it is named, by file path, then line."
+        }
+      },
+      "required": [
+        "host",
+        "files",
+        "literals",
+        "language",
+        "first"
+      ],
+      "description": "An API-looking host the code names that no reported call has: where api-grep likely misses calls."
     }
   }
 }

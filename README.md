@@ -88,7 +88,8 @@ CRM. api-grep reads the code and answers it. Use it for:
    helper functions that wrap a client, and clients injected by Spring, Dagger or Koin. A value that can't be known
    becomes a `{placeholder}` and is listed under `dynamic`.
 4. `diagnostics` lists the files and calls the scan couldn't read. `coverage` lists the
-   SDKs your manifests declare and whether api-grep supports them, so "0 calls" never hides "not supported".
+   SDKs your manifests declare and whether api-grep supports them, so "0 calls" never hides "not supported", and the
+   API hosts your code names that no call found explains, a measure of what the scan may miss.
 
 There is no AI and no network access, and the same code always gives the same report.
 

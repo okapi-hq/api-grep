@@ -972,6 +972,11 @@ exports[`Kotlin: calls made in extension functions of a client type (#86) > read
     },
   ],
   "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
     "sdks": [
       {
         "calls": 6,
@@ -1001,7 +1006,7 @@ exports[`Kotlin: calls made in extension functions of a client type (#86) > read
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.20.0",
+  "schemaVersion": "1.21.0",
   "stats": {
     "byClient": {
       "ktor": 4,

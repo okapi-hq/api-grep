@@ -2,6 +2,14 @@ import { z } from "zod";
 
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
+export const LanguageSchema = z
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go"])
+  .meta({
+    id: "Language",
+    description:
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, and kotlin and java together (one front end, so names resolve across the two).",
+  });
+
 export const EcosystemSchema = z
   .enum(["npm", "pypi", "composer", "maven", "go"])
   .meta({
@@ -88,14 +96,46 @@ export const SdkCoverageSchema = z
   })
   .meta({ id: "SdkCoverage", description: "An API SDK the repository uses, compared with the calls found through it." });
 
+export const UnexplainedHostSchema = z
+  .object({
+    host: z.string().describe("The host, lower case, without port."),
+    files: z.number().describe("Scanned files whose string literals name it."),
+    literals: z.number().describe("String literals naming it (a literal holding two URLs to it counts twice)."),
+    language: LanguageSchema.describe("Language of the first file naming it."),
+    first: z
+      .object({ file: z.string().describe("Path relative to the scanned directory."), line: z.number().describe("1-based line of the URL.") })
+      .describe("The first place it is named, by file path, then line."),
+  })
+  .meta({ id: "UnexplainedHost", description: "An API-looking host the code names that no reported call has: where api-grep likely misses calls." });
+
+export const HostCoverageSchema = z
+  .object({
+    named: z
+      .number()
+      .describe(
+        "Distinct API-looking hosts named by the string literals (template strings and f-strings included, comments and docstrings aside) of the scanned files: a known provider host, a first label `api`, `api-*` or `*-api`, an LLM gateway, or a URL whose path looks like an API (`/v1/`, `/v2beta/`, `/api/`, `/graphql`, `/rest/`, `/bot{token}/`). Internal, loopback, placeholder, documentation, package registry, schema, asset and repository-link hosts are not counted.",
+      ),
+    explained: z.number().describe("Of `named`, the hosts that are the host of at least one call in `calls` (case and port aside; a host template such as `{project}.supabase.co` explains the hosts it matches)."),
+    unexplained: z
+      .array(UnexplainedHostSchema)
+      .describe("The named hosts no call explains, by `files` (most first), then host; at most 200 (`named - explained` counts them all)."),
+  })
+  .meta({
+    id: "HostCoverage",
+    description:
+      "API-looking hosts the scanned code names, compared with the hosts of the calls found: a recall proxy per scan. SDK calls to a default host leave no literal, and files of languages api-grep does not read are not counted.",
+  });
+
 export const CoverageSchema = z
-  .object({ sdks: z.array(SdkCoverageSchema) })
-  .meta({ id: "Coverage", description: "API SDKs the repository declares or imports. Absent for --changed-since scans." });
+  .object({ sdks: z.array(SdkCoverageSchema), hosts: HostCoverageSchema.optional().describe("Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0.") })
+  .meta({ id: "Coverage", description: "API SDKs the repository declares or imports, and API hosts its code names. Absent for --changed-since scans." });
 
 export type Ecosystem = z.infer<typeof EcosystemSchema>;
 export type Diagnostics = z.infer<typeof DiagnosticsSchema>;
 export type Coverage = z.infer<typeof CoverageSchema>;
 export type SdkCoverage = z.infer<typeof SdkCoverageSchema>;
+export type HostCoverage = z.infer<typeof HostCoverageSchema>;
+export type UnexplainedHost = z.infer<typeof UnexplainedHostSchema>;
 export type SkippedFile = z.infer<typeof SkippedFileSchema>;
 export type DroppedCall = z.infer<typeof DroppedCallSchema>;
 export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;

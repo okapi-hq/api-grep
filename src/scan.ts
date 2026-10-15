@@ -4,6 +4,8 @@ import { callId } from "./assemble.js";
 import { buildExamples } from "./examples/build.js";
 import type { Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit } from "./git.js";
+import { hostCoverage } from "./hosts/coverage.js";
+import { HostLiterals } from "./hosts/literals.js";
 import { errorText } from "./lang/files.js";
 import { selectLanguages } from "./lang/index.js";
 import { readEnvExamples, withEnvExamples } from "./model/env-examples.js";
@@ -116,10 +118,10 @@ interface Scanned {
 }
 
 /** Runs each language front end in turn and merges what they found. */
-async function scanLanguages(rootDir: string, opts: ScanOptions, diag: DiagnosticsCollector, changed?: Set<string>): Promise<Scanned> {
+async function scanLanguages(rootDir: string, opts: ScanOptions, diag: DiagnosticsCollector, changed?: Set<string>, hosts?: HostLiterals): Promise<Scanned> {
   const out: Scanned = { calls: [], filesSeen: 0, filesScanned: 0, coverage: [], languages: {} };
   for (const { frontEnd, languages } of selectLanguages(opts.languages)) {
-    const r: LanguageScanResult | undefined = await frontEnd.scan({ rootDir, opts, diag, changed, languages });
+    const r: LanguageScanResult | undefined = await frontEnd.scan({ rootDir, opts, diag, changed, languages, hosts });
     if (!r) continue;
     out.calls.push(...r.calls);
     out.coverage.push(...r.coverage);
@@ -138,7 +140,9 @@ export async function scan(opts: ScanOptions): Promise<Report> {
   if (!existsSync(rootDir) || !statSync(rootDir).isDirectory()) throw new Error(`directory not found: ${rootDir}`);
   const diag = new DiagnosticsCollector(opts.onWarning);
   const changed = opts.changedSince ? await changedFiles(rootDir, opts.changedSince) : undefined;
-  const found = await scanLanguages(rootDir, opts, diag, changed);
+  // a --changed-since scan sees a few files: their imports and hosts say nothing about the repo
+  const hosts = changed ? undefined : new HostLiterals();
+  const found = await scanLanguages(rootDir, opts, diag, changed, hosts);
   const built = withEnvExamples(onePerRequest(sortCalls(found.calls)), readEnvExamples(rootDir));
   const { valid: calls, dropped } = splitValid(withExamples(built, opts.examples ?? 3, opts));
   for (const d of dropped) diag.drop(d);
@@ -152,7 +156,6 @@ export async function scan(opts: ScanOptions): Promise<Report> {
     calls,
     stats: computeStats(calls, found.filesScanned, Date.now() - started),
     diagnostics: diag.finish(found.filesSeen, found.filesScanned, found.languages),
-    // a --changed-since scan sees a few files: their imports say nothing about the repo's SDKs
-    coverage: changed ? undefined : { sdks: found.coverage },
+    coverage: hosts ? { sdks: found.coverage, hosts: hostCoverage(hosts, calls) } : undefined,
   };
 }
