@@ -2343,6 +2343,41 @@ exports[`regression fixtures > sdk/supabase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > shell/clients 1`] = `
+[
+  "fetch.sh:4 github GET /user/repos",
+  "fetch.sh:6 api.pushover.net POST /1/messages.json",
+  "fetch.sh:9 cloudflare DELETE /client/v4/zones/{ZONE_ID}/purge_cache",
+  "fetch.sh:11 linear POST /graphql viewer",
+  "fetch.sh:13 twilio POST /2010-04-01/Accounts/{TWILIO_SID}/Messages.json",
+  "fetch.sh:15 internal GET /health",
+  "fetch.sh:17 api.example.org PATCH /v1/items/42",
+]
+`;
+
+exports[`regression fixtures > shell/curl 1`] = `
+[
+  "deploy:3 api.render.com POST /v1/services/srv-example/deploys",
+  "deploy:4 env:DEPLOY_HOOK_URL GET /",
+  "github.sh:9 github GET /{arg1}",
+  "github.sh:15 github GET /repos/acme/widgets/releases/latest (wrapper:gh_api)",
+  "github.sh:16 github POST /repos/acme/widgets/issues (wrapper:gh_api)",
+  "github.sh:17 github GET /repos/acme/widgets/issues (wrapper:gh_api)",
+  "github.sh:19 github HEAD /zen",
+  "llm.sh:5 openai POST /v1/chat/completions",
+  "llm.sh:14 anthropic POST /v1/messages",
+  "llm.sh:19 ollama POST /api/generate",
+  "llm.sh:20 internal GET /health",
+  "mail.bash:2 mailgun POST /v3/{MAILGUN_DOMAIN}/messages",
+  "mail.bash:9 storage.example.org PUT /reports/{date}.pdf",
+  "notify.sh:9 telegram POST /bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+  "notify.sh:14 discord POST /api/webhooks/{DISCORD_WEBHOOK_ID}/{DISCORD_WEBHOOK_TOKEN}",
+  "notify.sh:18 slack POST /",
+]
+`;
+
+exports[`regression fixtures > shell/negative 1`] = `[]`;
+
 exports[`regression fixtures > soap 1`] = `
 [
   "carrier.ts:5 ws.example-carrier.com POST /track/v2 Track",

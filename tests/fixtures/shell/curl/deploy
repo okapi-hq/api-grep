@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+. ./config.sh
+curl -fsS -X POST -H "Authorization: Bearer $RENDER_TOKEN" "$RENDER_API/services/$SERVICE_ID/deploys"
+curl -fsS "$DEPLOY_HOOK_URL"

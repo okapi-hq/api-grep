@@ -1,0 +1,4 @@
+{
+  "issue": "Shell: text that only names a command (comments, strings, heredocs, aliases), commands without a URL, functions shadowing a client; tests, virtualenvs and build wrappers are out of scope",
+  "calls": []
+}

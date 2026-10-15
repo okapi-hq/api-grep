@@ -9,4 +9,5 @@ export const GRAMMARS: Record<string, string> = {
   kotlin: "@tree-sitter-grammars/tree-sitter-kotlin",
   java: "tree-sitter-java",
   go: "tree-sitter-go",
+  bash: "tree-sitter-bash",
 };

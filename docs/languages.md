@@ -14,6 +14,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Kotlin | supported: HTTP clients, Retrofit interfaces and SDK registries | tree-sitter + shared engine | Maven | `build.gradle.kts`, `build.gradle`, `gradle/libs.versions.toml`, `pom.xml` |
 | Java | supported: the same clients and registries, one index with Kotlin | tree-sitter + shared engine (the Kotlin front end) | Maven | the same as Kotlin |
 | Go | supported: `net/http` (and go-retryablehttp, fhttp), Resty, SDK registries | tree-sitter + shared engine | Go modules | `go.mod` |
+| Shell | supported: curl, wget and HTTPie command lines | tree-sitter (bash grammar), read directly | none | none |
 
 ## Goals
 
@@ -40,7 +41,7 @@ Call[] ──▶ examples ─▶ schema check ─▶ redaction ─▶ JSON / tab
            stats, diagnostics, SDK coverage per ecosystem                              (shared)
 ```
 
-- `src/lang/types.ts` defines a `LanguageFrontEnd`: an id, an ecosystem, file extensions and a `scan` that returns `Call`s,
+- `src/lang/types.ts` defines a `LanguageFrontEnd`: an id, an ecosystem (none for shell), file extensions and a `scan` that returns `Call`s,
   files seen and scanned, and coverage rows. `src/lang/index.ts` lists the languages; `src/scan.ts` runs each one and
   merges the results.
 - `src/assemble.ts` turns what a front end resolved (URL shape, method, body, headers, query, SDK match) into the report
@@ -903,6 +904,67 @@ fields), #37 (does not apply: parameters are typed), #38 (map keys), #39 (caller
   Resty path parameters stay as placeholders. The go-telegram-bot-api SDK has no registry yet (its raw HTTP calls are
   found; `bot.Send(msg)` is not).
 
+## Shell
+
+**Detected:** curl, wget and HTTPie (`http` / `https`) command lines in shell scripts: `.sh`, `.bash` and `.zsh` files,
+and files with no extension whose first line is a `sh`, `bash`, `zsh` or `dash` `#!` line (`bin/deploy`). Commands are
+read wherever they run: in pipelines, conditions, functions, `$(...)` and backticks; text that only names a command is
+not (comments, strings such as `echo "curl ..."`, heredocs, aliases). Runners in front of the program are dropped
+(`sudo`, `env A=1`, `timeout 30`, `command`, `exec`, `nohup`, `time`, `nice`), and a program kept in a variable is
+read (`CURL="curl -fsS"; $CURL "$URL"`).
+
+| client | what is read |
+|---|---|
+| curl | the URL (each non-option argument that reads as a URL, or `--url`; at most five), `-X` / `--request`; `-d` / `--data` / `--data-raw` / `--data-binary` / `--data-urlencode` / `--json` / `-F` / `--form` imply POST, `-G` sends the data as the query, `-I` / `--head` is HEAD, `-T` / `--upload-file` PUT; `-H` / `--header` (also `-A`, `-e`, `-b name=value`), `-u` / `--user` (basic), `--oauth2-bearer`; `--url-query`; short options in clusters (`-sSL`, `-XPOST`) |
+| wget | the URL, `--method`, `--post-data` / `--body-data`, `--post-file` / `--body-file`, `--header`, `--user-agent`, `--user` / `--http-user` (basic), short options in clusters (`-qO-`) |
+| HTTPie | `http` / `https [flags] [METHOD] URL [items]`: `Header:value`, `name==query`, `field=text`, `field:=json`, `field@file` (multipart), `--form` / `-f`, `--multipart`, `-a` / `--auth` with `-A` / `--auth-type`; `:3000/path` is localhost |
+
+**Resolved:** a variable the file assigns (`BASE="https://..."`, `export`, `readonly`, `local`, `declare`) is a constant
+(`hostKind: "const"`); `$X` / `${X}` with no assignment in the file is an env read (`hostKind: "env"`, `envName: "X"`), and
+`${X:-https://default}` gives the default as the host with the env var's name. When a name is assigned several times,
+an assignment in the same function before the use wins, then the top-level one that says the most: a value over one
+reading the name itself (`X=${X:-default}`), over option parsing (`X="$2"`, `X=$OPTARG`), over an empty initialisation
+(`X=""`), which reads as unassigned. `${X%/}` drops a trailing slash; other parameter expansions read as the variable.
+Arrays (`HEADERS=(-H "a: b")`, `"${HEADERS[@]}"`) are expanded; a value read at run time is a placeholder named after
+its variable (`ID=$(jq -r .id f)` gives `{ID}`, origin `call`), a loop variable is a parameter. A file sourced with a
+path the scan can read (`source ./config.sh`, `. "$(dirname "$0")/env.sh"`, next to the script or at the root) gives its
+top-level values to the env reads of the script, one level deep (`src/lang/shell/sourced.ts`). An unquoted value the
+scan cannot read is split into words by the shell, so it holds options as often as a URL: `curl $CURL_OPTS "$API/v1"`
+takes `"$API/v1"` as the URL, `curl $URL` takes `$URL`.
+
+**Bodies:** a JSON document written in the script is read as JSON with the shell values in it
+(`-d '{"text": "'"$MSG"'", "n": '$N'}'`: `text` a string, `n` a dynamic value); `a=1&b=$X` data and `-d a=1 -d b=2`
+are form data (`--json` values are joined as they are, `-d` values with `&`); `-F` fields are multipart (a file field is a
+string); `<...>` is XML; `-d @payload.json` reads a JSON file next to the script, any other file is an unknown body
+(`bodySource: "unknown"`). A literal `Content-Type` header gives the encoding of a body the scan cannot read
+(`-d "$PAYLOAD"`).
+
+**Wrappers:** a function whose request reads its arguments (`api() { curl -H "$AUTH" "$BASE/$1" "${@:2}"; }`) is
+also reported at each of its calls in the file, `via: "wrapper:api"`, with the arguments read there (`api repos/x -X
+POST` is a POST). A `case "$1" in get) ...` or `if [ "$1" = post ]` around the command is decided by the call's
+arguments. A function named like a client (`curl() { command curl --retry 3 "$@"; }`) is what a plain `curl` runs.
+`--no-wrappers` turns the expansion off.
+
+**Out of scope by default:** `vendor/`, `tests/`, `test/`, `testdata/`, `__tests__/`, `*_test.sh`, `test_*.sh`,
+`*.test.sh`, virtualenvs (`.venv/`, `venv/`, `site-packages/`, `.tox/`) and the Maven and Gradle wrappers (`mvnw`,
+`gradlew`).
+
+**Parse errors:** the grammar is bash's. What it cannot read (an `ERROR` node, often zsh-only syntax) is left out and
+the rest of the file is read; a file of which more than half is unread is a `parse-error` in `diagnostics.skipped`.
+
+**Limitations:**
+
+- No shell is run: `eval`, `bash -c "..."`, `sh -c '...'`, `xargs curl`, commands in heredocs fed to a shell
+  (`ssh host <<EOF`) and curl config files are not read (a curl whose URL is only in its `-K` config is reported with an
+  unknown host and `optionsOpaque`).
+- Wrapper expansion is one level and within one file: a wrapper called from another wrapper, or defined in a sourced
+  file, is reported where it is written with its arguments as placeholders (`{arg1}`). Options the scan cannot read
+  (`"$@"` with no call site, `"${OPTS[@]}"` of an unknown array) make the call `optionsOpaque`.
+- Shell variables are dynamic: a value assigned in several places reads as one of them (see **Resolved**), and a value
+  from a file the script does not source by a readable path (a `.env` the repository does not hold) is an env read.
+- curl's URL globbing (`[1-10]`, `{a,b}`), `--next`, `--variable` / `--expand-*` and `--config` files are not modelled.
+- Shell scripts have no package manifest: they add no `coverage.sdks` rows.
+
 ## JavaScript and HTML
 
 **Detected:** everything the TypeScript front end detects (fetch, axios, got, ky, node http, SDK registries, the AI
@@ -1598,7 +1660,9 @@ call site keeps its own single value.
 
 A language whose needs go beyond the IR (a type system the engine should use, like C#) can implement
 `Language` directly, as TypeScript does. A language that shares its ecosystem and its code with another (Java with
-Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered into one index.
+Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered into one index. A language whose calls are
+command lines rather than expressions (shell) reads its syntax tree directly into the `ResolvedCall` of
+`src/assemble.ts`, without the IR (`src/lang/shell/`).
 
 | next candidates | ecosystem | notes |
 |---|---|---|

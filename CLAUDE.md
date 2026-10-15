@@ -13,7 +13,8 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`) and Go. It must stay static: no network, no code execution, no AI.
+Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go and shell scripts (curl, wget, HTTPie). It must stay static: no
+network, no code execution, no AI.
 
 ## Commands
 
@@ -156,6 +157,15 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   hands its literals over: `src/lang/typescript/host-literals.ts` walks the TypeScript AST, `src/lang/ir/host-literals.ts`
   the tree-sitter string nodes while lowering), compared with the calls' hosts; the filter is `api-host.ts`, rules in
   `docs/report.md#host-coverage`. A recall proxy: keep it low-noise (a docs link counted reads as a missed call).
+- Shell (`src/lang/shell/`): not the IR. tree-sitter-bash parses `.sh` / `.bash` / `.zsh` files and extension-less files
+  with a shell `#!` line (`files.ts`); `scope.ts` collects the file's assignments (`export`, `readonly`, `local`, arrays,
+  loop and `read` targets, the most informative one wins: a value over `X="$2"` option parsing over `X=""`), `words.ts`
+  turns words into `Part`s (an unassigned `$X` is an env read, `${X:-default}` one with a fallback), `argv.ts` expands a
+  command's arguments (`"$@"`, `"${ARR[@]}"`, `$CURL` set to `"curl -s"`, runners such as `sudo` / `timeout`), and
+  `curl.ts` / `wget.ts` / `httpie.ts` read the options into a `ShellRequest` that `build.ts` turns into a `ResolvedCall`.
+  A function sending a request built from its arguments is expanded at its call sites in the file, one level, with the
+  `case` / `if` branches the arguments select (`extract.ts`, `branches.ts`); `source ./x.sh` gives the sourced file's
+  top-level values to env reads (`sourced.ts`). A file mostly unread by the bash grammar (zsh syntax) is a `parse-error`.
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`,
   `go` as module paths).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
@@ -169,7 +179,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -234,4 +244,5 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   client defaults and filters in `src/lang/jvm/http/request-defaults.ts`; Lombok `@Singular` / `toBuilder()`).
 - Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
   are done (`docs/languages.md#go`, limitations there).
+- Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).
 - Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

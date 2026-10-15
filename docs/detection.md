@@ -199,11 +199,34 @@ package-level and local constants and variables (also of other files and package
 Go SDK modules a module requires (`ecosystem: "go"`, `// indirect` requirements aside). `_test.go` files, `vendor/` and
 `testdata/` are out of scope.
 
+## Shell
+
+Shell scripts (`.sh`, `.bash`, `.zsh`, and files with no extension whose first line is a `sh`, `bash`, `zsh` or `dash`
+`#!` line) are parsed with the bash grammar of tree-sitter and their command lines read directly. A command is read
+wherever it runs (pipelines, conditions, functions, `$(...)`, backticks); `echo "curl ..."`, comments, heredocs and
+aliases are text, not commands.
+
+| client | patterns |
+|---|---|
+| curl | URL (non-option arguments, `--url`), `-X` / `--request`, `-d` / `--data*` / `--json` / `-F` / `--form` (POST unless `-X` or `-G`), `-G` (data in the query), `-I` / `--head` (HEAD), `-T` (PUT), `-H` / `--header`, `-u` / `--user` (basic), `--oauth2-bearer`, `--url-query`, multi-line commands joined by `\` |
+| wget | URL, `--method`, `--post-data` / `--post-file` (POST), `--body-data` / `--body-file`, `--header`, `--user` / `--http-user` (basic) |
+| HTTPie | `http` / `https [METHOD] URL`, `Header:value`, `name==value` (query), `field=value` / `field:=json` (JSON body), `--form`, `--multipart`, `field@file`, `-a` with `-A bearer` / `basic` |
+
+Values: a variable assigned in the file (`BASE=...`, `export`, `readonly`, `local`, `declare`, arrays) is a constant; a
+variable the file does not assign is an env var (`hostKind: "env"`), `${VAR:-https://default}` an env var whose default
+gives the host; `$(...)` is a value read at run time, named after the variable it is assigned to. Files a script sources
+by a path the scan can read (`source ./config.sh`) give it their top-level values. JSON written in the script (with shell
+values spliced in: `'{"text": "'"$MSG"'"}'`) is read as the body's shape, `a=1&b=2` as form data, `-F` fields as
+multipart, `-d @file.json` as the JSON file next to the script. A function whose request reads its arguments is reported
+at each of its calls in the file with `via: "wrapper:<name>"` (one level), taking the `case` / `if` branch the call's
+arguments select. Details: [languages.md](languages.md#shell).
+
 ## How a call is resolved
 
 The pipeline is `detect → resolve → normalize → validate → emit`. Detection and resolution
 are per language (TypeScript, JavaScript and HTML scripts through the type checker; Python, PHP, Kotlin, Java and Go
-through tree-sitter and a shared engine, see [languages.md](languages.md)); everything
+through tree-sitter and a shared engine; shell command lines through tree-sitter, read directly, see
+[languages.md](languages.md)); everything
 after that is shared, so a call is
 described and checked the same way whatever its language. The rules below are given for
 TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and `.format()`,
@@ -286,6 +309,10 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   struct literal whose tag renames it (`json:"base_url"`) is not found by its Go name. Package names are the import
   path's last element (a table lists the exceptions: `tgbotapi`, `anthropic`), so a library whose package name differs
   and is imported without an alias is not recognised.
+- Shell: nothing is run, so `eval`, `bash -c "..."`, `xargs curl`, heredocs fed to a shell and curl `-K` config files are
+  not read; wrapper functions are expanded one level, within their file; a variable assigned in several places reads
+  as one of them. Scripts the bash grammar mostly cannot read (zsh-only syntax) are listed as `parse-error`
+  ([languages.md](languages.md#shell)).
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.

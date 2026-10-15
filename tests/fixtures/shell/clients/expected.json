@@ -1,0 +1,12 @@
+{
+  "issue": "Shell: wget and HTTPie command lines",
+  "calls": [
+    {"file": "fetch.sh", "line": 4, "provider": "github"},
+    {"file": "fetch.sh", "line": 6, "provider": "api.pushover.net"},
+    {"file": "fetch.sh", "line": 9, "provider": "cloudflare"},
+    {"file": "fetch.sh", "line": 11, "provider": "linear"},
+    {"file": "fetch.sh", "line": 13, "provider": "twilio"},
+    {"file": "fetch.sh", "line": 15, "provider": "internal"},
+    {"file": "fetch.sh", "line": 17, "provider": "api.example.org"}
+  ]
+}
