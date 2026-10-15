@@ -1,5 +1,6 @@
 import type { Arg, CallExpr, Entry, Expr, FunctionDef, ModuleModel, Pos } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
+import { forwardedCall, submittedCall, valueCall } from "./lower-calls.js";
 import { callEdit } from "./lower-edits.js";
 import { PROPERTY_READS } from "./property-reads.js";
 
@@ -116,8 +117,12 @@ function lowerCall(n: SyntaxNode, st: PyState): Expr {
   if (fn.k === "attr" && fn.name === "format" && (fn.obj.k === "str" || fn.obj.k === "name" || fn.obj.k === "attr")) {
     return { k: "format", style: "brace", template: fn.obj, args };
   }
-  const call: CallExpr = { k: "call", fn, args, pos: posOf(n) };
+  const value = valueCall(callee, args, st, posOf(n));
+  if (value) return value;
+  const call: CallExpr = { k: "call", ...(forwardedCall(callee, fn, args, st) ?? { fn, args }), pos: posOf(n) };
   st.fn.calls.push(call);
+  const submitted = submittedCall(fn, args, st, call.pos);
+  if (submitted) st.fn.calls.push(submitted);
   const edit = callEdit(fn, args, n.endIndex);
   if (edit) st.fn.assigns.push(edit);
   return call;

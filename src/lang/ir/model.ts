@@ -147,6 +147,10 @@ export interface FunctionDef {
   pos: Pos;
   /** A Python `@staticmethod` / PHP `static function`: no `self`. */
   isStatic?: boolean;
+  /** Values a Python generator yields (`yield client` in a FastAPI dependency). */
+  yields?: Expr[];
+  /** A Python `@property` / `@cached_property`: reading the attribute runs it, `self.client` is what it returns. */
+  isProperty?: boolean;
   /** Offsets of blocks that may not run (branches, loop bodies, handlers), for the keys a dict gets there. */
   branches?: Branch[];
   annotations?: Annotation[];

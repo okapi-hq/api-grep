@@ -139,6 +139,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
       inlinePath: reg.inlinePathLiterals,
       basePath: reg.basePath,
       routeByModel: reg.routeByModel,
+      ...(reg.routes ? { routes: reg.routes } : {}),
       anyHost: !!reg.endpoint,
     },
     bodyKey: "input",

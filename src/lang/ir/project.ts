@@ -132,6 +132,8 @@ const MAX_REEXPORTS = 6;
 /** A variable, function or class the module itself declares at top level. */
 function ownMember(mod: ModuleModel, name: string): Binding | undefined {
   const a = lastAssign(mod.top.assigns, name, undefined);
+  // `try: from openai import OpenAI / except ImportError: OpenAI = None`: the name is the import where it is used
+  if (a && mod.imports.has(name) && mod.top.assigns.every((x) => x.target !== name || x.value.k === "null")) return undefined;
   if (a) return { kind: "value", assign: editedAssign(mod.top, a, undefined), fn: mod.top };
   const fn = mod.functions.get(name);
   if (fn) return { kind: "function", fn };

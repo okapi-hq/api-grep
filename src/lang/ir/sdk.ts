@@ -170,8 +170,29 @@ function argFieldsBody(m: IrSdkMatch, spec: NonNullable<IrMethodSpec["argFields"
   return entries.length > 0 ? { expr: { k: "dict", entries }, fn } : undefined;
 }
 
+/**
+ * The fields named by `fieldArgs` from the positional arguments (`bot.send_message(chat_id, text)`), then the keyword
+ * arguments (`parse_mode=...`) or the array at `bodyArg` (PHP).
+ */
+function fieldArgsDict(m: IrSdkMatch, call: CallExpr): Expr | undefined {
+  const entries: Entry[] = [];
+  const positional = call.args.filter((a) => !a.name && !a.spread);
+  m.spec.fieldArgs!.forEach((field, i) => {
+    if (field && positional[i]) entries.push({ key: { k: "str", v: field }, value: positional[i].value });
+  });
+  const kw = m.spec.bodyKwargs || m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
+  if (kw?.k === "dict") entries.push(...kw.entries);
+  const options = m.spec.bodyArg !== undefined ? positional[m.spec.bodyArg] : undefined;
+  if (options) entries.push({ value: options.value, spread: true });
+  return entries.length > 0 ? { k: "dict", entries } : undefined;
+}
+
 function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   const spec = m.spec;
+  if (spec.fieldArgs) {
+    const dict = spec.queryKwargs ? undefined : fieldArgsDict(m, call);
+    return dict ? { expr: dict, fn } : undefined;
+  }
   if (spec.argFields) return argFieldsBody(m, spec.argFields, fn);
   if (spec.bodySelf) return { expr: call, fn };
   // a record sends the attributes it is built with and those set on it (`product.title = t; product.save()`, #92, #102)
@@ -214,7 +235,14 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
  */
 function readsArgs(spec: IrMethodSpec): boolean {
   const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.urlArg, spec.modelArg, spec.documentArg, ...(spec.pathArgs ?? [])];
-  return positions.some((i) => i !== undefined) || !!spec.argFields || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
+  return positions.some((i) => i !== undefined) || !!spec.argFields || !!spec.fieldArgs || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
+}
+
+/** The model the method is given, else the one the client was built with (`modelSeg`). */
+function modelOf(m: IrSdkMatch): Scoped | undefined {
+  const own = m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined;
+  const seg = !own && m.spec.modelSeg ? [...m.segs.slice(0, -1)].reverse().find((s) => !!s.call && m.spec.modelSeg!.includes(s.name)) : undefined;
+  return own ?? (seg ? argOf(seg, 0, "model") : undefined);
 }
 
 /** The file's manifests declare another package with the entry's class names (`sameClassesAs`) and not the entry's. */
@@ -233,7 +261,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
     // a property read matches a property entry, a call a method: `w3.eth.get_balance` handed over is no request
     if (!m || !!m.spec.property !== !!call.property || otherPackage(entry, fn, ctx)) continue;
     const body = bodyOf(m, call, fn, ctx);
-    const query = m.spec.queryKwargs ? kwargsDict(call, pathKwargs(m)) : undefined;
+    const query = m.spec.queryKwargs ? (m.spec.fieldArgs ? fieldArgsDict(m, call) : kwargsDict(call, pathKwargs(m))) : undefined;
     const endpoint = entry.endpoint ? irEndpoint(m, ctx) : undefined;
     if (endpoint === null) continue;
     const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
@@ -251,7 +279,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       baseUrl: baseUrl ?? setupBaseUrl(entry, ctx),
       headers,
       inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
-      model: m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined,
+      model: modelOf(m),
     };
     const refined = ctx.idx.lang.refineSdk ? ctx.idx.lang.refineSdk(raw, chain, ctx) : raw;
     if (refined) return refined;

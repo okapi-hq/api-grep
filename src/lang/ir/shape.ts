@@ -16,6 +16,8 @@ import { withSubst, type IrCtx, type Subst } from "./raw.js";
 import { classShape, constructedClass, typeShape } from "./types.js";
 import { constantAt, knownConstant, staticKey } from "./values.js";
 
+/** Assignments of one field read for its shape: a bound on hostile input. */
+const MAX_FIELD_VALUES = 8;
 const MAX_DEPTH = 6;
 const GENERIC_HINT = /^(input|data|value|body|params|opts|options|args|kwargs|payload|req|res|result|item|obj|e|x|v|self|this)$/;
 /** Calls that hand back the object they are given (`model.model_dump()`, `asdict(x)`, `dict(x)`). */
@@ -197,6 +199,16 @@ function attrShape(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: 
   return { shape: { type: "dynamic", origin: "unknown", hint: e.name }, fromLiteral: false, origin: "unknown" };
 }
 
+/** Values of a field set in several places (`self.model = model or "a"` in one branch, `"b"` in another): any of them. */
+function fieldShape(fields: { value: Expr; fn: FunctionDef }[], ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
+  const each = fields.slice(0, MAX_FIELD_VALUES).map((f) => shapeOf(f.value, f.fn, ctx, depth + 1, dynamic));
+  // `self.x = None` before it is set: not one of the values a request sends
+  const set = each.filter((r) => r.shape.type !== "null");
+  const kept = set.length > 0 ? set : each;
+  if (kept.length === 1) return kept[0]!;
+  return { shape: unionOf(kept.map((r) => r.shape)), fromLiteral: kept.every((r) => r.fromLiteral), origin: kept.find((r) => r.origin)?.origin };
+}
+
 /** Shape of an arbitrary expression: literals first, then variables and arguments, then declared types. */
 export function shapeOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, dynamic: DynamicPart[] = []): ShapeResult {
   if (depth > MAX_DEPTH) return { shape: { type: "unknown" }, fromLiteral: false };
@@ -226,8 +238,8 @@ export function shapeOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, dynamic
     }
     case "attr":
       if (e.obj.k === "this" && fn.cls) {
-        const f = classField(fn.cls, e.name, ctx.idx)[0];
-        if (f) return shapeOf(f.value, f.fn, ctx, depth + 1, dynamic);
+        const fields = classField(fn.cls, e.name, ctx.idx);
+        if (fields.length > 0) return fieldShape(fields, ctx, depth, dynamic);
       }
       return attrShape(e, fn, ctx, depth, dynamic);
     default:

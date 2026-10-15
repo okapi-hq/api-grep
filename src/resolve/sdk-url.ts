@@ -1,6 +1,6 @@
-import type { Expression, Node, VariableDeclaration } from "ts-morph";
-import { memberChain } from "../ast/expr.js";
-import { getProp } from "../ast/object.js";
+import { Node, type Expression, type VariableDeclaration } from "ts-morph";
+import { memberChain, unwrap } from "../ast/expr.js";
+import { declarationsOf, getProp } from "../ast/object.js";
 import type { EvalCtx, Part, RawCall, UrlShape } from "../types.js";
 import { evaluate } from "./evaluate.js";
 import { editsBefore, type ObjectEdit } from "./object-edits.js";
@@ -54,7 +54,23 @@ function tsSource(raw: RawCall, ctx: EvalCtx): SdkSource<Expression> {
     param: (source) => paramOf(raw, source, ctx),
     arg: (i) => sdk.args[i],
     bodyProp: (name) => getProp(raw.bodyExpr, name, ctx),
+    routes: sdk.routes,
+    routeCall,
   };
+}
+
+/** `Routes.channelMessages(id)`, also held by a constant: the helper's name and its arguments. */
+function routeCall(e: Expression): { name: string; args: Expression[] } | undefined {
+  let u = unwrap(e);
+  if (Node.isIdentifier(u)) {
+    const decl = declarationsOf(u)[0];
+    const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
+    if (init) u = unwrap(init);
+  }
+  if (!Node.isCallExpression(u)) return undefined;
+  const callee = unwrap(u.getExpression());
+  const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : Node.isIdentifier(callee) ? callee.getText() : undefined;
+  return name ? { name, args: u.getArguments() as Expression[] } : undefined;
 }
 
 /** URL and method of an SDK call from its registry entry. */

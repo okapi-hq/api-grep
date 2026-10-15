@@ -26,6 +26,7 @@ import sentryPhp from "./registry/sentry-php.json" with { type: "json" };
 import slackPhpApi from "./registry/slack-php-api.json" with { type: "json" };
 import stripePhp from "./registry/stripe-php.json" with { type: "json" };
 import twilioPhp from "./registry/twilio-php.json" with { type: "json" };
+import telegramBotSdk from "./registry/telegram-bot-sdk.json" with { type: "json" };
 
 /** Registries sharing an import root are told apart by their instance names (`Aws.S3` / `Aws.BedrockRuntime`). */
 export const PHP_REGISTRY = [
@@ -45,6 +46,7 @@ export const PHP_REGISTRY = [
   sendgridPhp,
   mailgunPhp,
   slackPhpApi,
+  telegramBotSdk,
 ] as unknown as IrRegistryEntry[];
 
 const NAMESPACES: Record<string, string[]> = namespaces.namespaces;

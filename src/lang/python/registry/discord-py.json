@@ -1,0 +1,130 @@
+[
+  {
+    "$comment": "discord.py 2.x (Discord API v10) and its forks: `client.run(token)` logs in (`GET /users/@me`), `await client.fetch_channel(id)`, `await tree.sync()` registers the application commands. The objects events and commands hand over send requests of their own: `await message.channel.send(...)`, `await message.reply(...)`, `await interaction.response.send_message(...)` (an interaction callback), `await ctx.send(...)` with a typed `commands.Context`; keyword arguments and `content` are the body. Untyped event parameters (`async def on_message(message)`) are followed by the method chain (`message.channel.send`).",
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["Client", "AutoShardedClient", "ext.commands.Bot", "ext.commands.AutoShardedBot"]},
+    "methods": {
+      "run": {"method": "GET", "path": "/api/v10/users/@me"},
+      "start": {"method": "GET", "path": "/api/v10/users/@me"},
+      "login": {"method": "GET", "path": "/api/v10/users/@me"},
+      "fetch_channel": {"method": "GET", "path": "/api/v10/channels/{channel_id}", "params": {"channel_id": "arg:0"}},
+      "fetch_user": {"method": "GET", "path": "/api/v10/users/{user_id}", "params": {"user_id": "arg:0"}},
+      "fetch_guild": {"method": "GET", "path": "/api/v10/guilds/{guild_id}", "params": {"guild_id": "arg:0"}},
+      "fetch_invite": {"method": "GET", "path": "/api/v10/invites/{invite_code}", "params": {"invite_code": "arg:0"}},
+      "application_info": {"method": "GET", "path": "/api/v10/oauth2/applications/@me"},
+      "get_channel.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "params": {"channel_id": "seg:get_channel:0"}, "fieldArgs": ["content"], "bodyKwargs": true},
+      "get_partial_messageable.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "params": {"channel_id": "seg:get_partial_messageable:0"}, "fieldArgs": ["content"], "bodyKwargs": true},
+      "get_user.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "tree.sync": {"method": "PUT", "path": "/api/v10/applications/{application_id}/commands"}
+    }
+  },
+  {
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["app_commands.CommandTree"]},
+    "methods": {
+      "sync": {"method": "PUT", "path": "/api/v10/applications/{application_id}/commands"}
+    }
+  },
+  {
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["Interaction"]},
+    "methods": {
+      "response.send_message": {"method": "POST", "path": "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", "fieldArgs": ["content"], "bodyKwargs": true},
+      "response.defer": {"method": "POST", "path": "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", "bodyKwargs": true},
+      "response.edit_message": {"method": "POST", "path": "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", "bodyKwargs": true},
+      "response.send_modal": {"method": "POST", "path": "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", "fieldArgs": ["modal"]},
+      "response.autocomplete": {"method": "POST", "path": "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", "fieldArgs": ["choices"]},
+      "followup.send": {"method": "POST", "path": "/api/v10/webhooks/{application_id}/{interaction_token}", "fieldArgs": ["content"], "bodyKwargs": true},
+      "edit_original_response": {"method": "PATCH", "path": "/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original", "bodyKwargs": true},
+      "original_response": {"method": "GET", "path": "/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+      "delete_original_response": {"method": "DELETE", "path": "/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+      "channel.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "user.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true}
+    }
+  },
+  {
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["Message"]},
+    "methods": {
+      "reply": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "channel.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "author.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "edit": {"method": "PATCH", "path": "/api/v10/channels/{channel_id}/messages/{message_id}", "bodyKwargs": true},
+      "delete": {"method": "DELETE", "path": "/api/v10/channels/{channel_id}/messages/{message_id}"},
+      "add_reaction": {"method": "PUT", "path": "/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", "params": {"emoji": "arg:0"}},
+      "remove_reaction": {"method": "DELETE", "path": "/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/{user_id}", "params": {"emoji": "arg:0"}},
+      "clear_reactions": {"method": "DELETE", "path": "/api/v10/channels/{channel_id}/messages/{message_id}/reactions"},
+      "pin": {"method": "PUT", "path": "/api/v10/channels/{channel_id}/pins/{message_id}"},
+      "unpin": {"method": "DELETE", "path": "/api/v10/channels/{channel_id}/pins/{message_id}"},
+      "create_thread": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages/{message_id}/threads", "bodyKwargs": true}
+    }
+  },
+  {
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["TextChannel", "Thread", "DMChannel", "VoiceChannel", "abc.Messageable", "abc.GuildChannel", "ext.commands.Context", "User"]},
+    "methods": {
+      "send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "reply": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "channel.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "author.send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true},
+      "fetch_message": {"method": "GET", "path": "/api/v10/channels/{channel_id}/messages/{message_id}", "params": {"message_id": "arg:0"}},
+      "history": {"method": "GET", "path": "/api/v10/channels/{channel_id}/messages", "queryKwargs": true},
+      "purge": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages/bulk-delete"},
+      "delete_messages": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages/bulk-delete"},
+      "typing": {"method": "POST", "path": "/api/v10/channels/{channel_id}/typing"},
+      "trigger_typing": {"method": "POST", "path": "/api/v10/channels/{channel_id}/typing"},
+      "create_thread": {"method": "POST", "path": "/api/v10/channels/{channel_id}/threads", "bodyKwargs": true},
+      "create_webhook": {"method": "POST", "path": "/api/v10/channels/{channel_id}/webhooks", "bodyKwargs": true}
+    }
+  },
+  {
+    "package": "discord.py",
+    "aliases": ["py-cord", "nextcord", "disnake"],
+    "imports": ["discord", "nextcord", "disnake"],
+    "provider": "discord",
+    "host": "discord.com",
+    "auth": "apikey",
+    "generatedFrom": "manual (discord.py 2.x, Discord API v10; py-cord, nextcord and disnake share its API)",
+    "instance": {"names": ["Member"]},
+    "methods": {
+      "kick": {"method": "DELETE", "path": "/api/v10/guilds/{guild_id}/members/{user_id}"},
+      "ban": {"method": "PUT", "path": "/api/v10/guilds/{guild_id}/bans/{user_id}", "bodyKwargs": true},
+      "unban": {"method": "DELETE", "path": "/api/v10/guilds/{guild_id}/bans/{user_id}"},
+      "timeout": {"method": "PATCH", "path": "/api/v10/guilds/{guild_id}/members/{user_id}"},
+      "edit": {"method": "PATCH", "path": "/api/v10/guilds/{guild_id}/members/{user_id}", "bodyKwargs": true},
+      "add_roles": {"method": "PUT", "path": "/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}"},
+      "remove_roles": {"method": "DELETE", "path": "/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}"},
+      "send": {"method": "POST", "path": "/api/v10/channels/{channel_id}/messages", "fieldArgs": ["content"], "bodyKwargs": true}
+    }
+  }
+]

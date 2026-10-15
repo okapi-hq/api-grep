@@ -1,4 +1,5 @@
 import { Node, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { assignedConstruction } from "../ast/assigned.js";
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, nestedReturnsOf, returnsOf, type FunctionLike } from "../ast/function.js";
@@ -87,6 +88,8 @@ function constructed(expr: Expression | undefined): CallExpression | NewExpressi
     const decl = declarationsOf(u)[0];
     const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
     u = init ? unwrap(memoValue(init)) : undefined;
+    // `let client; ... client = new OpenAI()`: the construction it is given later
+    if ((!u || !(Node.isCallExpression(u) || Node.isNewExpression(u))) && decl && Node.isVariableDeclaration(decl)) u = assignedConstruction(decl);
   }
   return u && (Node.isCallExpression(u) || Node.isNewExpression(u)) ? u : undefined;
 }
@@ -238,6 +241,8 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
     const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
     if (c?.package) return c;
   }
+  const assigned = Node.isVariableDeclaration(decl) ? assignedConstruction(decl) : undefined;
+  if (assigned) return instanceCallee(assigned, chain, depth);
   const typed = typeFallback(mc, 0, decl);
   return typed.package || !Node.isBindingElement(decl) ? typed : (destructuredCallee(decl, chain, depth) ?? typed);
 }

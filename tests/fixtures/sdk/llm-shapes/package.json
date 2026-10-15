@@ -1,0 +1,1 @@
+{"name":"llm-shapes","private":true,"dependencies":{"openai":"^5.20.0","@anthropic-ai/sdk":"^0.60.0","@google/genai":"^1.16.0"}}

@@ -115,7 +115,9 @@ third parties are counted: [eval/README.md](eval/README.md). Its tests use the i
    ```
 
    Each key in `methods` is the member chain after the client instance. `bodyArg`, `queryArg`
-   and `pathArgs` give the argument positions; `pathFromBody` takes path parameters from body
+   and `pathArgs` give the argument positions; `fieldArgs` names the body fields a library takes as positional
+   arguments (node-telegram-bot-api's `sendMessage(chatId, text, form)` is `["chat_id", "text"]` with `bodyArg: 2`, the
+   options object adding its keys); `pathFromBody` takes path parameters from body
    properties; `encoding` sets the body encoding (`form`, `multipart` or `raw`; JSON otherwise). A
    method can also set its own `host` and `auth`, read its body from a property of an argument
    (`bodyProp`), and name where each path placeholder comes from in `params`: `arg:N`,
@@ -136,7 +138,9 @@ third parties are counted: [eval/README.md](eval/README.md). Its tests use the i
    `documentProp` names the property of the argument holding the document (Shopify `query({ data })`); `components` lists
    JSX components that send a request (Relay `QueryRenderer`, their `props` as arguments) and `contextClients` the
    clients a framework hands to handlers by name (Hydrogen `context.storefront`). `bodyWrap` sends the body under a key,
-   `argPath` switches the path when an argument is given, and `callersOnly` keeps a registry of common method names
+   `argPath` switches the path when an argument is given, `routes` (registry) and `routeHelperArg` (method) read a route
+helper (discord.js `rest.put(Routes.applicationCommands(id), { body })`: the helper's path in place of `{route}`, its
+arguments filling the placeholders), and `callersOnly` keeps a registry of common method names
    (`order.list`) out of the manifest fallback for untyped parameters (#83). #92 adds `paths` (other paths the
    library picks by the ids it is given), `record` (a method of a record built with `new`, key `<Class>#<method>`:
    `record:<name>` params, `body`, `withId`), `keyAliases`, a dotted `bodyWrap`, `document` (a document the library
@@ -189,7 +193,11 @@ makes the keyword arguments the body, `bodyKw` names one keyword argument holdin
 reads the query from keyword arguments. Path parameters also accept `kw:<name>`, `seg:<call>:<N>`
 (argument N of a named call in the chain, `services(sid)`) and `chain:<a>,<b>` (Firestore references);
 `arg:N` matches the keyword argument named like the placeholder too. `builders` are calls that only
-narrow a request (`collection`, `document`). See `IrRegistryEntry` in
+narrow a request (`collection`, `document`). `fieldArgs` names the positional arguments the library sends as fields,
+the keyword arguments adding theirs (`bot.send_message(chat_id, text, parse_mode=...)`; with `queryKwargs` they are the
+query string); `modelSeg` names the client constructors whose `model` is the request's when the method is given none
+(`InferenceClient(model=...)`). A registry file may hold a list of entries of one package, one per object type that
+sends requests (python-telegram-bot's `Bot`, `Update`, `Message`); spread it into `PYTHON_REGISTRY`. See `IrRegistryEntry` in
 [`src/lang/ir/language.ts`](src/lang/ir/language.ts) for every field.
 
 1. Add the file and import it in [`src/lang/python/index.ts`](src/lang/python/index.ts) (`PYTHON_REGISTRY`).
@@ -199,7 +207,9 @@ narrow a request (`collection`, `document`). See `IrRegistryEntry` in
 3. Add a fixture in `tests/fixtures/python/sdk/` and run `pnpm gen:support`.
 
 The Python, PHP and JVM Stripe registries are derived from the TypeScript one: run
-`pnpm gen:stripe-ports` after `pnpm gen:registry stripe`.
+`pnpm gen:stripe-ports` after `pnpm gen:registry stripe`. The Telegram registries of every language come from
+`pnpm gen:telegram` (`scripts/gen-telegram.ts`, the Bot API methods in `scripts/telegram/methods.ts`): edit the method
+list or a library's signatures there, never the generated JSON.
 
 ### PHP
 

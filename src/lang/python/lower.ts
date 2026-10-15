@@ -18,10 +18,14 @@ export function moduleName(file: string, rootDir: string): { name: string; isPac
   return { name, isPackage };
 }
 
+/** Decorators making a method an attribute read: `self.client` runs it. */
+const PROPERTIES = new Set(["property", "cached_property", "functools.cached_property"]);
+
 function lowerFunction(n: SyntaxNode, st: ModState, cls: ClassDef | undefined, decorators: string[]): FunctionDef {
   const name = field(n, "name")?.text ?? "anonymous";
   const isStatic = decorators.includes("staticmethod");
   const fn = newFunction(name, st.mod, n, { cls: cls ?? st.fn.cls, isStatic });
+  if (cls && decorators.some((d) => PROPERTIES.has(d))) fn.isProperty = true;
   if (st.fn !== st.mod.top && !cls) {
     fn.parent = st.fn;
     fn.inherits = ["*"];
@@ -182,6 +186,7 @@ function lowerStatement(c: SyntaxNode, st: ModState): void {
   if (SKIP.has(c.type)) return;
   if (c.type === "expression_statement") {
     for (const e of named(c)) if (e.type === "assignment" || e.type === "augmented_assignment") lowerAssignment(e, st);
+    else if (e.type === "yield" && named(e)[0] && !e.text.startsWith("yield from")) (st.fn.yields ??= []).push(lowerExpr(named(e)[0]!, st));
     else lowerExpr(e, st);
   } else if (c.type === "function_definition") lowerDef(c, st, []);
   else if (c.type === "decorated_definition") {

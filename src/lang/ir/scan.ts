@@ -134,7 +134,8 @@ function declaredNear(lang: IrLanguage, rootDir: string): (file: string) => Set<
 }
 
 /** SDK coverage of the language's ecosystem: the packages its manifests declare and its files import. */
-function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: ModuleModel[], calls: Call[]): SdkCoverage[] {
+function coverage(idx: ProjectIndex, rootDir: string, files: string[], scanned: ModuleModel[], calls: Call[]): SdkCoverage[] {
+  const lang = idx.lang;
   const known = sdkPackages(lang.ecosystem);
   const declaredNames = lang.manifests.declared(manifestDirs(rootDir, files), rootDir);
   const declared = new Set([...known.keys()].filter((p) => declaredNames.has(lang.normalizePackage(p))));
@@ -145,6 +146,8 @@ function coverage(lang: IrLanguage, rootDir: string, files: string[], scanned: M
     const hit = new Set<string>();
     const own = near(mod.file);
     for (const p of mod.importPaths) {
+      // the repository's own package of that name (`agents/` next to the code) is not the SDK
+      if (idx.resolvePath(p, mod)) continue;
       // `Sentry\Laravel\Integration` is sentry/sentry-laravel's, not sentry/sentry's: the longest root wins, a declared
       // package's first (firebase-admin's `com.google.firebase.auth` is not the undeclared Android firebase-auth's), and
       // of those the one the file's own module declares (Spring AI's `ChatClient` is the module's model starter's)
@@ -222,7 +225,7 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   const { raws, scanned } = detectAll(selected, ctx, input);
   const calls = buildAll(raws, ctx, diag);
   const counts = fileCounts(sources, selected, scanned, input.changed);
-  return { calls, files: counts, coverage: input.changed ? [] : coverage(lang, rootDir, files, scanned, calls) };
+  return { calls, files: counts, coverage: input.changed ? [] : coverage(idx, rootDir, files, scanned, calls) };
 }
 
 /** A tree-sitter language as a scanner front end: its own language and the ones it reads alongside. */

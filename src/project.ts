@@ -29,6 +29,13 @@ export const DEFAULT_EXCLUDES = [
   ...TEST_FILES,
   "**/__mocks__/**",
   "**/__tests__/**",
+  // test directories and test runner configuration: imports there are not the app's use of an SDK
+  "**/test/**",
+  "**/tests/**",
+  "**/integration_test/**",
+  "**/integration_tests/**",
+  "**/cypress/**",
+  ...["jest.config", "jest.setup", "vitest.config", "vitest.setup", "vitest.workspace", "playwright.config", "karma.conf", "setupTests"].map((n) => `**/${n}.*`),
   "**/__testfixtures__/**",
   "**/*.d.ts",
   // bundled, minified and vendored JavaScript is build output, not the repository's code

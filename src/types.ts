@@ -118,6 +118,12 @@ export interface MethodSpec {
    */
   sendsThrough?: { index?: number; names?: string[]; bodyArg?: number };
   queryArg?: number;
+  /**
+   * The positional arguments are these fields of the request, in order (node-telegram-bot-api's `sendMessage(chatId,
+   * text, options)`: `chat_id`, `text`; `""` skips one). The object at `bodyArg` (TypeScript, PHP) or the keyword
+   * arguments (Python `bodyKwargs`, `queryKwargs`: the fields are then the query) add their keys to them.
+   */
+  fieldArgs?: string[];
   pathArgs?: number[];
   pathFromBody?: string[];
   routeArg?: number;
@@ -142,6 +148,11 @@ export interface MethodSpec {
    * `article.tags(blogId?, params)`, #102): an object given last in its place is the options, `null` no id.
    */
   optionalId?: number;
+  /**
+   * The argument that may be a call of one of the registry's `routes` (`rest.put(Routes.applicationCommands(id))`): its
+   * path replaces `{route}` in `path`; any other value fills `{route}` as written (`rest.post(\`/channels/${id}/messages\`)`).
+   */
+  routeHelperArg?: number;
   /** Other paths the library picks by the ids it is given (#92): the one most placeholders of which have a value. */
   paths?: string[];
   /**
@@ -330,6 +341,11 @@ export interface RegistryEntry {
    * the context is the key `<name>.<method>` of this registry.
    */
   contextClients?: string[];
+  /**
+   * Route helpers of the library (discord.js `Routes.channelMessages(id)`) -> their path; a method's `routeHelperArg` names
+   * the argument that may be one, its arguments filling the path's placeholders in order.
+   */
+  routes?: Record<string, string>;
   /** Key prefixes the code may write for the registry's (`admin.rest.resources.` for `rest.`, #92). */
   keyAliases?: Record<string, string>;
   /**
@@ -371,6 +387,8 @@ export interface SdkMatch {
   inlinePath?: boolean;
   basePath?: string;
   routeByModel?: boolean;
+  /** The registry's route helpers (`routes`). */
+  routes?: Record<string, string>;
   /** A GraphQL client (`endpoint` in the registry): its headers and auth come from the code too. */
   anyHost?: boolean;
 }

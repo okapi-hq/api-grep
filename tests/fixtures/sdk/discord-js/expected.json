@@ -1,0 +1,18 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "bot.js", "line": 6, "provider": "discord"},
+    {"file": "bot.js", "line": 7, "provider": "discord"},
+    {"file": "bot.js", "line": 8, "provider": "discord"},
+    {"file": "bot.js", "line": 13, "provider": "discord"},
+    {"file": "bot.js", "line": 14, "provider": "discord"},
+    {"file": "bot.js", "line": 15, "provider": "discord"},
+    {"file": "bot.js", "line": 20, "provider": "discord"},
+    {"file": "bot.js", "line": 21, "provider": "discord"},
+    {"file": "bot.js", "line": 24, "provider": "discord"},
+    {"file": "deploy.ts", "line": 6, "provider": "discord"},
+    {"file": "deploy.ts", "line": 7, "provider": "discord"},
+    {"file": "deploy.ts", "line": 9, "provider": "discord"},
+    {"file": "deploy.ts", "line": 10, "provider": "discord"}
+  ]
+}

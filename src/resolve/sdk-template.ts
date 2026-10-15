@@ -24,6 +24,9 @@ export interface SdkSource<E> {
   arg(index: number, name?: string): E | undefined;
   /** A property of the body argument (`pathFromBody`). */
   bodyProp(name: string): E | undefined;
+  /** The registry's route helpers (`routes`), and the helper a value calls with its arguments (`Routes.user(id)`). */
+  routes?: Record<string, string>;
+  routeCall?(e: E): { name: string; args: E[] } | undefined;
 }
 
 function originOfExpr<E>(src: SdkSource<E>, e: E | undefined): string | undefined {
@@ -188,8 +191,26 @@ function chosenRoute<E>(src: SdkSource<E>): { method: string; pathT: string } {
   return { method: src.spec.method, pathT: src.spec.paths ? pickPath(src, [pathT, ...src.spec.paths]) : pathT };
 }
 
+/**
+ * `rest.put(Routes.applicationCommands(appId), ...)`: the helper's path in place of `{route}`, its arguments filling the
+ * placeholders in order (the call's own arguments no longer do).
+ */
+function helperRoute<E>(src: SdkSource<E>): SdkSource<E> | undefined {
+  const at = src.spec.routeHelperArg;
+  const arg = at !== undefined ? src.arg(at) : undefined;
+  const call = arg !== undefined && src.routes ? src.routeCall?.(arg) : undefined;
+  const route = call && Object.hasOwn(src.routes!, call.name) ? src.routes![call.name]! : undefined;
+  if (!call || route === undefined) return undefined;
+  const path = src.spec.path.replace("{route}", route);
+  const pathArgs = placeholderNames(path).map((_, i) => i);
+  const spec = { ...src.spec, path, pathArgs, params: undefined, routeHelperArg: undefined, paths: undefined, argPath: undefined };
+  return { ...src, spec, arg: (i) => call.args[i] };
+}
+
 /** URL and method of an SDK call from its registry entry. */
 export function sdkTarget<E>(src: SdkSource<E>): { url: UrlShape; method: string } {
+  const routed = helperRoute(src);
+  if (routed) return sdkTarget(routed);
   let { method, pathT } = chosenRoute(src);
   if (src.spec.routeArg !== undefined) {
     const arg = src.arg(src.spec.routeArg);
