@@ -103,6 +103,9 @@ importers:
       tree-sitter-python:
         specifier: 0.25.0
         version: 0.25.0
+      tree-sitter-rust:
+        specifier: 0.24.0
+        version: 0.24.0
       tsup:
         specifier: ^8.4.0
         version: 8.5.1(postcss@8.5.28)(tsx@4.23.15)(typescript@5.9.3)(yaml@2.9.0)
@@ -1704,6 +1707,14 @@ packages:
       tree-sitter:
         optional: true
 
+  tree-sitter-rust@0.24.0:
+    resolution: {integrity: sha512-NWemUDf629Tfc90Y0Z55zuwPCAHkLxWnMf2RznYu4iBkkrQl2o/CHGB7Cr52TyN5F1DAx8FmUnDtCy9iUkXZEQ==}
+    peerDependencies:
+      tree-sitter: ^0.22.1
+    peerDependenciesMeta:
+      tree-sitter:
+        optional: true
+
   ts-api-utils@2.5.0:
     resolution: {integrity: sha512-OJ/ibxhPlqrMM0UiNHJ/0CKQkoKF243/AEmplt3qpRgkW8VG7IfOS41h7V8TjITqdByHzrjcS/2si+y4lIh8NA==}
     engines: {node: '>=18.12'}
@@ -3247,6 +3258,11 @@ snapshots:
       node-gyp-build: 4.8.4
 
   tree-sitter-python@0.25.0:
+    dependencies:
+      node-addon-api: 8.9.2
+      node-gyp-build: 4.8.4
+
+  tree-sitter-rust@0.24.0:
     dependencies:
       node-addon-api: 8.9.2
       node-gyp-build: 4.8.4

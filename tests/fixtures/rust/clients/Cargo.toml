@@ -1,0 +1,12 @@
+[package]
+name = "mailroom"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.12", features = ["json", "stream"] }
+reqwest-eventsource = "0.6"
+awc = "3"
+surf = "2"
+isahc = "1"
+url = "2"

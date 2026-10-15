@@ -13,8 +13,8 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go and shell scripts (curl, wget, HTTPie). It must stay static: no
-network, no code execution, no AI.
+Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust and shell scripts (curl, wget, HTTPie). It must stay
+static: no network, no code execution, no AI.
 
 ## Commands
 
@@ -55,7 +55,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
   instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
   without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
-- Tree-sitter languages (Python, PHP, Kotlin, Java, Go): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
+- Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
@@ -166,8 +166,19 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   A function sending a request built from its arguments is expanded at its call sites in the file, one level, with the
   `case` / `if` branches the arguments select (`extract.ts`, `branches.ts`); `source ./x.sh` gives the sourced file's
   top-level values to env reads (`sourced.ts`). A file mostly unread by the bash grammar (zsh syntax) is a `parse-error`.
+- Rust (`src/lang/rust/`): a module name is its path in its crate (the crate's name from the nearest `Cargo.toml`, `-`
+  as `_`, then the path under `src/`: `relay_bot.llm.client`); `use`, `crate::`, `self::` and `super::` paths are made
+  absolute while lowering (`paths.ts`), an inline `mod x { }` is a class of its file, and the `link` hook moves `impl`
+  methods to their struct's class and gives struct fields the values of the project's struct literals (`link.ts`).
+  Macro arguments are tokens to tree-sitter: `format!`, `concat!`, `env!`, `vec!`, `lazy_static!` are parsed again
+  (`reparse.ts`, positions mapped back through `SHIFT`), `json!` is read from its tokens (`json-macro.ts`).
+  Conversions and error handling (`.clone()`, `?`, `.unwrap()`, `Arc::new`) stand for their value at lowering
+  (`calls.ts`). reqwest, ureq, awc and surf requests are built in steps after a verb call and reported at the call
+  that sends them (`requests.ts` over `requests.json`, the engine's `fluentChains`); `resolveCall` (`structs.ts`) reads
+  struct literals by their serde names and async-openai / openai-api-rs request builders. Registries give paths as the
+  code writes them (`async_openai`); `Cargo.toml` (workspaces too) feeds coverage under `ecosystem: "cargo"`.
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`,
-  `go` as module paths).
+  `go` as module paths, `cargo` as crates.io names).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
   `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
@@ -180,6 +191,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
   `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, Rust under `tests/fixtures/rust/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -193,7 +205,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   kept inside, so a report does not depend on the checkout location (#112). Keys from the code go through
   `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
-  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/`, Go in `src/lang/go/registry/` (format: `IrRegistryEntry` in
+  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/`, Go in `src/lang/go/registry/`, Rust in `src/lang/rust/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
@@ -245,4 +257,6 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
   are done (`docs/languages.md#go`, limitations there).
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).
+- Rust: reqwest, ureq, awc, surf, isahc and the async-openai, openai-api-rs, teloxide and serenity registries are done
+  (`docs/languages.md#rust`, limitations there).
 - Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

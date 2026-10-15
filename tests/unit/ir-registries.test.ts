@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { goLanguage } from "../../src/lang/go/index.js";
 import { normalizeGoModule } from "../../src/lang/go/manifests.js";
+import { rustLanguage } from "../../src/lang/rust/index.js";
+import { normalizeCrate } from "../../src/lang/rust/manifests.js";
 import type { IrRegistryEntry } from "../../src/lang/ir/language.js";
 import { normalizeMaven } from "../../src/lang/jvm/manifests.js";
 import { kotlinLanguage } from "../../src/lang/kotlin/index.js";
@@ -12,9 +14,9 @@ import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
 const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*|model)$/;
 
-const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule };
+const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule, cargo: normalizeCrate };
 
-function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven" | "go"): void {
+function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven" | "go" | "cargo"): void {
   const ids = new Set(PROVIDERS.map((p) => p.id));
   const normalize = NORMALIZE[ecosystem];
   const known = new Set([...sdkPackages(ecosystem).keys()].map(normalize));
@@ -62,6 +64,12 @@ describe("tree-sitter language registries", () => {
     }
   });
 
+  it("rust: providers exist, packages are known, imports are crate paths as the code writes them", () => {
+    checkRegistry(rustLanguage.registry, "cargo");
+    for (const e of rustLanguage.registry) for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*(?:\.[A-Z]\w*)?$/);
+    for (const pkg of sdkPackages("cargo").keys()) expect(pkg, pkg).toMatch(/^[a-z][a-z0-9-]*$/);
+  });
+
   it("jvm: imports are classes or packages, setter rules name packages of the SDK", () => {
     for (const e of kotlinLanguage.registry) {
       for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][\w]*(?:\.[a-z][\w]*)+(?:\.[A-Z]\w*)?$/);
@@ -82,7 +90,7 @@ describe("tree-sitter language registries", () => {
   });
 
   it("every client table names an import root and known option roles", () => {
-    for (const c of [...pythonLanguage.clients, ...phpLanguage.clients, ...goLanguage.clients]) {
+    for (const c of [...pythonLanguage.clients, ...phpLanguage.clients, ...goLanguage.clients, ...rustLanguage.clients]) {
       expect(c.imports.length > 0 || c.global).toBe(true);
       for (const role of Object.values(c.keys)) expect(role).toMatch(/^(?:url|baseUrl|method|query|headers|auth(?::(?:bearer|basic))?|body(?::(?:json|form|multipart|raw))?)$/);
     }

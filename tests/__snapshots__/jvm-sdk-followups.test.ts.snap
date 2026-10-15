@@ -624,7 +624,7 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "sdk": 6,

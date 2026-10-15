@@ -5,6 +5,7 @@ import type { IrLanguage } from "../src/lang/ir/language.js";
 import { kotlinLanguage } from "../src/lang/kotlin/index.js";
 import { phpLanguage } from "../src/lang/php/index.js";
 import { pythonLanguage } from "../src/lang/python/index.js";
+import { rustLanguage } from "../src/lang/rust/index.js";
 import { PROVIDERS } from "../src/normalize/provider.js";
 import type { Ecosystem } from "../src/report/schema.js";
 
@@ -35,6 +36,7 @@ const DETECTED_CLIENTS: Partial<Record<IrLanguage["id"], string[]>> = {
   python: ["urllib", "zeep"],
   php: ["curl", "php-stream", "php-soap"],
   kotlin: ["okhttp", "java-http", "ktor", "spring-webclient", "feign", "retrofit", "apache-httpclient", "jaxrs-client", "async-http-client", "unirest", "vertx-webclient"],
+  rust: ["ureq", "awc", "surf"],
 };
 
 function irColumn(title: string, lang: IrLanguage): Column {
@@ -53,6 +55,7 @@ export const COLUMNS: Column[] = [
   irColumn("PHP (Composer)", phpLanguage),
   irColumn("Kotlin and Java (Maven)", kotlinLanguage),
   irColumn("Go (modules)", goLanguage),
+  irColumn("Rust (crates.io)", rustLanguage),
 ];
 
 function cell(col: Column, packages: string[] | undefined): string {

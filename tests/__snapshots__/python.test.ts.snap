@@ -1779,7 +1779,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "sdk": 22,
@@ -2314,7 +2314,7 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "requests": 10,
@@ -2620,7 +2620,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "httpx": 4,
@@ -2848,7 +2848,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "aiohttp": 2,
@@ -3197,7 +3197,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "urllib": 4,
@@ -3800,7 +3800,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "requests": 9,
@@ -4185,7 +4185,7 @@ exports[`python: wrappers > expands project functions and methods at their call 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.22.0",
+  "schemaVersion": "1.23.0",
   "stats": {
     "byClient": {
       "requests": 5,

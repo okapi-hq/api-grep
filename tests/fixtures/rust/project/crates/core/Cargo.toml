@@ -1,0 +1,9 @@
+[package]
+name = "helpdesk-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest.workspace = true
+async-openai = { workspace = true }
+serde_json.workspace = true

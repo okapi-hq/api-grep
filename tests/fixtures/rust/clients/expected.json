@@ -1,0 +1,13 @@
+{
+  "issue": "Rust: awc, surf and isahc requests; URLs joined with Url::join and [..].join, a LazyLock with option_env!, reqwest-eventsource",
+  "calls": [
+    {"file": "clients.rs", "line": 13, "provider": "api.mailchimp.com"},
+    {"file": "clients.rs", "line": 15, "provider": "api.mailroom.example"},
+    {"file": "clients.rs", "line": 16, "provider": "openai"},
+    {"file": "clients.rs", "line": 17, "provider": "hooks.mailroom.example"},
+    {"file": "clients.rs", "line": 23, "provider": "sendgrid"},
+    {"file": "clients.rs", "line": 27, "provider": "resend"},
+    {"file": "clients.rs", "line": 32, "provider": "postmark"},
+    {"file": "clients.rs", "line": 33, "provider": "api.ipify.org"}
+  ]
+}

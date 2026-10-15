@@ -1,0 +1,2147 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`rust: SDK registries > reads async-openai builders and configs, openai-api-rs requests, teloxide and serenity calls 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "chat_id": {
+            "hint": "chat",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "chat_id",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "token",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "chat_id",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "chat_id": "tzlvihg8",
+            "text": "Dune compass yarrow kestrel canyon timber.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.telegram.org/bot%3Ctoken%3E/sendMessage",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.telegram.org",
+      "hostKind": "literal",
+      "id": "172e1e469033",
+      "location": {
+        "col": 5,
+        "file": "bots.rs",
+        "language": "rust",
+        "line": 8,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/bot{token}/sendMessage",
+      "provider": "telegram",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "send_message",
+        "package": "teloxide",
+        "version": "0.13",
+      },
+      "urlTemplate": "https://api.telegram.org/bot{token}/sendMessage",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "chat_id": {
+            "hint": "id",
+            "origin": "unknown",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "chat_id",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "token",
+          "origin": "sdk",
+          "where": "path",
+        },
+        {
+          "name": "chat_id",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "chat_id": "4uomxy92",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.telegram.org/bot%3Ctoken%3E/sendDice",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.telegram.org",
+      "hostKind": "literal",
+      "id": "40fd6c09c125",
+      "location": {
+        "col": 9,
+        "file": "bots.rs",
+        "language": "rust",
+        "line": 15,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/bot{token}/sendDice",
+      "provider": "telegram",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "send_dice",
+        "package": "teloxide",
+        "version": "0.13",
+      },
+      "urlTemplate": "https://api.telegram.org/bot{token}/sendDice",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "content": {
+            "enum": [
+              "Pong!",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "content",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "channel_id",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "content": "Pong!",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://discord.com/api/v10/channels/3zxyq3eu/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "discord.com",
+      "hostKind": "literal",
+      "id": "198c6d3cfe01",
+      "location": {
+        "col": 21,
+        "file": "bots.rs",
+        "language": "rust",
+        "line": 27,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/v10/channels/{channel_id}/messages",
+      "provider": "discord",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "channel_id.say",
+        "package": "serenity",
+        "version": "0.12",
+      },
+      "urlTemplate": "https://discord.com/api/v10/channels/{channel_id}/messages",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "content": {
+            "enum": [
+              "Commands: !ping",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "content",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "channel_id",
+          "origin": "sdk",
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "content": "Commands: !ping",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://discord.com/api/v10/channels/tbztwngx/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "discord.com",
+      "hostKind": "literal",
+      "id": "987e2c3b271a",
+      "location": {
+        "col": 21,
+        "file": "bots.rs",
+        "language": "rust",
+        "line": 30,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/v10/channels/{channel_id}/messages",
+      "provider": "discord",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "reply",
+        "package": "serenity",
+        "version": "0.12",
+      },
+      "urlTemplate": "https://discord.com/api/v10/channels/{channel_id}/messages",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "Text",
+                  "origin": "call",
+                  "type": "dynamic",
+                },
+                "name": {
+                  "type": "null",
+                },
+                "role": {
+                  "hint": "user",
+                  "origin": "unknown",
+                  "type": "dynamic",
+                },
+                "tool_call_id": {
+                  "type": "null",
+                },
+                "tool_calls": {
+                  "type": "null",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+                "name",
+                "tool_calls",
+                "tool_call_id",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+          "temperature": {
+            "enum": [
+              0,
+            ],
+            "type": "integer",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "temperature",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Compass jasper orbit ultra opal onyx.",
+                "name": null,
+                "role": "user",
+                "tool_call_id": null,
+                "tool_calls": null,
+              },
+            ],
+            "model": "gpt-4o-mini",
+            "temperature": 0,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.together.xyz/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.together.xyz",
+      "hostKind": "literal",
+      "id": "eb1f0e814b3f",
+      "location": {
+        "col": 5,
+        "file": "openai_api.rs",
+        "language": "rust",
+        "line": 21,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "together",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat_completion",
+        "package": "openai-api-rs",
+        "version": "6.0.8",
+      },
+      "urlTemplate": "https://api.together.xyz/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              512,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "content": {
+                      "enum": [
+                        "You answer support tickets.",
+                      ],
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "system",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "properties": {
+                    "content": {
+                      "hint": "question",
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "user",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 512,
+            "messages": [
+              {
+                "content": "You answer support tickets.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_tokens": 512,
+            "messages": [
+              {
+                "content": "Zenith willow canyon yonder koala hollow.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "22b6ed74f6ac",
+      "location": {
+        "col": 20,
+        "file": "openai.rs",
+        "language": "rust",
+        "line": 17,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "async-openai",
+        "version": "0.28.3",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "input": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "text-embedding-3-small",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "input",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "input",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "input": [
+              "orbit compass",
+            ],
+            "model": "text-embedding-3-small",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/embeddings",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "4f383940fa5d",
+      "location": {
+        "col": 5,
+        "file": "openai.rs",
+        "language": "rust",
+        "line": 25,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "text-embedding-3-small",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/embeddings",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "embeddings.create",
+        "package": "async-openai",
+        "version": "0.28.3",
+      },
+      "urlTemplate": "https://api.openai.com/v1/embeddings",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "model": {
+            "enum": [
+              "dall-e-3",
+            ],
+            "type": "string",
+          },
+          "n": {
+            "enum": [
+              1,
+            ],
+            "type": "integer",
+          },
+          "prompt": {
+            "hint": "prompt",
+            "type": "string",
+          },
+        },
+        "required": [
+          "prompt",
+          "model",
+          "n",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "prompt",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "model": "dall-e-3",
+            "n": 1,
+            "prompt": "Quiet amber grove river grove juniper.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/images/generations",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "200777e472a0",
+      "location": {
+        "col": 5,
+        "file": "openai.rs",
+        "language": "rust",
+        "line": 31,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "dall-e-3",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/images/generations",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "images.create",
+        "package": "async-openai",
+        "version": "0.28.3",
+      },
+      "urlTemplate": "https://api.openai.com/v1/images/generations",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "question",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "anthropic/claude-sonnet-4.5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "envName": "OPENROUTER_BASE_URL",
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Glacier zenith birch maple ultra yarrow.",
+                "role": "user",
+              },
+            ],
+            "model": "anthropic/claude-sonnet-4.5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://openrouter.ai/api/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "openrouter.ai",
+      "hostKind": "env",
+      "id": "02e9f92f7643",
+      "location": {
+        "col": 5,
+        "file": "openai.rs",
+        "language": "rust",
+        "line": 44,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "anthropic/claude-sonnet-4.5",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/v1/chat/completions",
+      "provider": "openrouter",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "async-openai",
+        "version": "0.28.3",
+      },
+      "urlTemplate": "{env:OPENROUTER_BASE_URL}/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "deepseek-chat",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Dune summit nimbus quartz yarrow fable.",
+                "role": "user",
+              },
+            ],
+            "model": "deepseek-chat",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.deepseek.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.deepseek.com",
+      "hostKind": "literal",
+      "id": "01c4a6c431a7",
+      "location": {
+        "col": 9,
+        "file": "openai.rs",
+        "language": "rust",
+        "line": 62,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "deepseek-chat",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "deepseek",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.create",
+        "package": "async-openai",
+        "version": "0.28.3",
+      },
+      "urlTemplate": "https://api.deepseek.com/v1/chat/completions",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 3,
+      "named": 3,
+      "unexplained": [],
+    },
+    "sdks": [
+      {
+        "calls": 5,
+        "declared": true,
+        "ecosystem": "cargo",
+        "importSites": 1,
+        "imported": true,
+        "package": "async-openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "cargo",
+        "importSites": 1,
+        "imported": true,
+        "package": "openai-api-rs",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "cargo",
+        "importSites": 1,
+        "imported": true,
+        "package": "serenity",
+        "provider": "discord",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "cargo",
+        "importSites": 1,
+        "imported": true,
+        "package": "teloxide",
+        "provider": "telegram",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "rust": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.23.0",
+  "stats": {
+    "byClient": {
+      "sdk": 10,
+    },
+    "byHostKind": {
+      "env": 1,
+      "literal": 9,
+    },
+    "byLanguage": {
+      "rust": 10,
+    },
+    "byProvider": {
+      "deepseek": 1,
+      "discord": 2,
+      "openai": 3,
+      "openrouter": 1,
+      "telegram": 2,
+      "together": 1,
+    },
+    "callsFound": 10,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 10,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`rust: a workspace of several crates > follows modules (crate::, super::, use, inline mod), impl blocks across files, other crates and wrappers 1`] = `
+[
+  "crates/app/src/bin/digest.rs:7 postmark POST https://api.postmarkapp.com/email",
+  "crates/app/src/main.rs:6 groq POST https://api.groq.com/openai/v1/chat/completions (wrapper:Groq.ask>Groq.post)",
+  "crates/app/src/main.rs:7 openai POST https://api.openai.com/v1/moderations (wrapper:moderate)",
+  "crates/app/src/main.rs:8 pagerduty POST https://events.pagerduty.com/v2/enqueue (wrapper:page_oncall)",
+  "crates/core/src/llm/chat.rs:6 groq POST https://api.groq.com/openai/v1{path}",
+  "crates/core/src/llm/chat.rs:11 groq POST https://api.groq.com/openai/v1/chat/completions (wrapper:Groq.post)",
+  "crates/core/src/llm/moderation.rs:5 openai POST https://api.openai.com/v1/moderations",
+  "crates/core/src/notify.rs:5 pagerduty POST https://events.pagerduty.com/v2/enqueue",
+]
+`;
+
+exports[`rust: reqwest > reads verb and request(method, url) calls, builder steps, json!, serde structs, forms, query pairs and client defaults 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              1024,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 1024,
+            "messages": [
+              {
+                "content": "Estuary velvet birch estuary kestrel lantern.",
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+            "x-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "anthropic-version": "2023-06-01",
+        "x-api-key": null,
+      },
+      "headers": [
+        "x-api-key",
+        "anthropic-version",
+      ],
+      "host": "api.anthropic.com",
+      "hostKind": "const",
+      "id": "6ee4ce5060c7",
+      "location": {
+        "col": 19,
+        "file": "chat.rs",
+        "language": "rust",
+        "line": 35,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.anthropic.com/v1/messages",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "llama-3.3-70b-versatile",
+            ],
+            "type": "string",
+          },
+          "stream": {
+            "enum": [
+              false,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "stream",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [],
+      "envName": "GROQ_BASE_URL",
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Anchor timber canyon willow estuary island.",
+                "role": "user",
+              },
+            ],
+            "model": "llama-3.3-70b-versatile",
+            "stream": false,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.groq.com/openai/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.groq.com",
+      "hostKind": "env",
+      "id": "faafc008fec9",
+      "location": {
+        "col": 9,
+        "file": "chat.rs",
+        "language": "rust",
+        "line": 54,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "llama-3.3-70b-versatile",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/openai/v1/chat/completions",
+      "provider": "groq",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:GROQ_BASE_URL}/chat/completions",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "contents": {
+            "items": {
+              "hint": "text",
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "maxOutputTokens": {
+            "enum": [
+              256,
+            ],
+            "type": "integer",
+          },
+          "temperature": {
+            "type": "null",
+          },
+        },
+        "required": [
+          "contents",
+          "maxOutputTokens",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "contents": [
+              "Yonder garden cedar willow zephyr nimbus.",
+            ],
+            "maxOutputTokens": 256,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-goog-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "contents": [
+              "Timber timber delta juniper quill jetty.",
+              "Delta indigo jetty jetty kestrel ultra.",
+            ],
+            "maxOutputTokens": 256,
+            "temperature": null,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-goog-api-key": "<api-key>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+          "variant": "full",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+        "x-goog-api-key": null,
+      },
+      "headers": [
+        "content-type",
+        "x-goog-api-key",
+      ],
+      "host": "generativelanguage.googleapis.com",
+      "hostKind": "literal",
+      "id": "cb9c817c2f51",
+      "location": {
+        "col": 9,
+        "file": "chat.rs",
+        "language": "rust",
+        "line": 63,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "path",
+        "values": [
+          "gemini-2.5-flash",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1beta/models/gemini-2.5-flash:generateContent",
+      "provider": "google-ai",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "prompt",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "deepseek-chat",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Kestrel quill sable sable anchor maple.",
+                "role": "user",
+              },
+            ],
+            "model": "deepseek-chat",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.deepseek.com/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.deepseek.com",
+      "hostKind": "literal",
+      "id": "485c5d8f3a48",
+      "location": {
+        "col": 5,
+        "file": "chat.rs",
+        "language": "rust",
+        "line": 76,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "deepseek-chat",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/chat/completions",
+      "provider": "deepseek",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.deepseek.com/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "reqwest",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "accept",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "user-agent": "relay-desk/0.1",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/jasper/sable",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+        "user-agent": "relay-desk/0.1",
+      },
+      "headers": [
+        "authorization",
+        "accept",
+        "user-agent",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "0e682699e23b",
+      "location": {
+        "col": 12,
+        "file": "github.rs",
+        "language": "rust",
+        "line": 18,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/{path}",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com{path}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "reqwest",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "accept",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "owner",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "repo",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "page",
+          "origin": "param",
+          "shape": {
+            "hint": "page",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "user-agent": "relay-desk/0.1",
+          },
+          "method": "GET",
+          "query": {
+            "page": "4",
+            "per_page": "100",
+            "state": "open",
+          },
+          "url": "https://api.github.com/repos/glacier/meadow/issues?state=open&per_page=100&page=4",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+        "user-agent": "relay-desk/0.1",
+      },
+      "headers": [
+        "authorization",
+        "accept",
+        "user-agent",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "f634bf88ea94",
+      "location": {
+        "col": 9,
+        "file": "github.rs",
+        "language": "rust",
+        "line": 22,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/repos/{owner}/{repo}/issues",
+      "provider": "github",
+      "query": [
+        "state",
+        "per_page",
+        "page",
+      ],
+      "queryShape": {
+        "properties": {
+          "page": {
+            "hint": "page",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "per_page": {
+            "enum": [
+              "100",
+            ],
+            "type": "string",
+          },
+          "state": {
+            "enum": [
+              "open",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "state",
+          "per_page",
+          "page",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/repos/{owner}/{repo}/issues",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "reqwest",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "accept",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "user-agent": "relay-desk/0.1",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.github.com/user",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+        "user-agent": "relay-desk/0.1",
+      },
+      "headers": [
+        "authorization",
+        "accept",
+        "user-agent",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "c3c3dce4e1dc",
+      "location": {
+        "col": 9,
+        "file": "github.rs",
+        "language": "rust",
+        "line": 32,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/user",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/user",
+      "via": "wrapper:GitHub.get",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "reqwest",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "authorization",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "accept",
+          "where": "header",
+        },
+        {
+          "from": "default",
+          "name": "user-agent",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "q",
+          "origin": "param",
+          "shape": {
+            "hint": "q",
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "sort",
+          "origin": "param",
+          "shape": {
+            "hint": "sort",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/vnd.github+json",
+            "authorization": "Bearer <token>",
+            "user-agent": "relay-desk/0.1",
+            "x-sorted": "1",
+          },
+          "method": "GET",
+          "query": {
+            "q": "orbit",
+            "sort": "asc",
+          },
+          "url": "https://api.github.com/search/issues?q=orbit&sort=asc",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/vnd.github+json",
+        "authorization": null,
+        "user-agent": "relay-desk/0.1",
+        "x-sorted": "1",
+      },
+      "headers": [
+        "x-sorted",
+        "authorization",
+        "accept",
+        "user-agent",
+      ],
+      "host": "api.github.com",
+      "hostKind": "const",
+      "id": "2590f7b9fd13",
+      "location": {
+        "col": 9,
+        "file": "github.rs",
+        "language": "rust",
+        "line": 42,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/search/issues",
+      "provider": "github",
+      "query": [
+        "q",
+        "sort",
+      ],
+      "queryShape": {
+        "properties": {
+          "q": {
+            "hint": "q",
+            "type": "string",
+          },
+          "sort": {
+            "hint": "sort",
+            "type": "string",
+          },
+        },
+        "required": [
+          "q",
+          "sort",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/search/issues",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "chat_id": {
+            "hint": "chat_id",
+            "origin": "param",
+            "type": "dynamic",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "chat_id",
+          "text",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [
+        {
+          "name": "TELEGRAM_TOKEN",
+          "origin": "env",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "chat_id",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "chat_id": "t1xxaqyv",
+            "text": "Walnut ember onyx birch wander river.",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.telegram.org/bot%3CTELEGRAM_TOKEN%3E/sendMessage",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.telegram.org",
+      "hostKind": "const",
+      "id": "af6da6c929a7",
+      "location": {
+        "col": 5,
+        "file": "notify.rs",
+        "language": "rust",
+        "line": 9,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/bot{TELEGRAM_TOKEN}/sendMessage",
+      "provider": "telegram",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.telegram.org/bot{env:TELEGRAM_TOKEN}/sendMessage",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "channel": {
+            "enum": [
+              "#ops",
+            ],
+            "type": "string",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+          "channel",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "envName": "SLACK_WEBHOOK_URL",
+      "examples": [
+        {
+          "body": {
+            "channel": "#ops",
+            "text": "Haven haven mosaic cedar zenith onyx.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://hooks.slack.com/services/T000/B000/XXXX",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "hooks.slack.com",
+      "hostKind": "env",
+      "id": "da5b14a7c143",
+      "location": {
+        "col": 5,
+        "file": "notify.rs",
+        "language": "rust",
+        "line": 18,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/services/T000/B000/XXXX",
+      "provider": "slack",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:SLACK_WEBHOOK_URL}",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "Body": {
+            "type": "string",
+          },
+          "From": {
+            "enum": [
+              "+15550100",
+            ],
+            "type": "string",
+          },
+          "To": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "To",
+          "From",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "reqwest",
+      "dynamic": [
+        {
+          "name": "sid",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "To",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "Body",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": "Willow xenon sable umber orbit walnut.",
+            "From": "+15550100",
+            "To": "elena.ibarra@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/8p9g6n31/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.twilio.com",
+      "hostKind": "const",
+      "id": "aced193f619f",
+      "location": {
+        "col": 5,
+        "file": "notify.rs",
+        "language": "rust",
+        "line": 27,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/2010-04-01/Accounts/{sid}/Messages.json",
+      "provider": "twilio",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "reqwest",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://www.githubstatus.com/api/v2/status.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "www.githubstatus.com",
+      "hostKind": "literal",
+      "id": "89b34600c592",
+      "location": {
+        "col": 5,
+        "file": "notify.rs",
+        "language": "rust",
+        "line": 36,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/v2/status.json",
+      "provider": "www.githubstatus.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://www.githubstatus.com/api/v2/status.json",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 9,
+      "named": 9,
+      "unexplained": [],
+    },
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "rust": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.23.0",
+  "stats": {
+    "byClient": {
+      "reqwest": 12,
+    },
+    "byHostKind": {
+      "const": 7,
+      "env": 2,
+      "literal": 3,
+    },
+    "byLanguage": {
+      "rust": 12,
+    },
+    "byProvider": {
+      "anthropic": 1,
+      "deepseek": 1,
+      "github": 4,
+      "google-ai": 1,
+      "groq": 1,
+      "slack": 1,
+      "telegram": 1,
+      "twilio": 1,
+      "www.githubstatus.com": 1,
+    },
+    "callsFound": 12,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 7,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

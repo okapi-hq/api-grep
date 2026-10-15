@@ -14,7 +14,7 @@ import { argFor, exprText } from "./model.js";
 import { classField, lookup } from "./project.js";
 import { withSubst, type IrCtx, type Subst } from "./raw.js";
 import { classShape, constructedClass, typeShape } from "./types.js";
-import { knownConstant, staticKey } from "./values.js";
+import { constantAt, knownConstant, staticKey } from "./values.js";
 
 const MAX_DEPTH = 6;
 const GENERIC_HINT = /^(input|data|value|body|params|opts|options|args|kwargs|payload|req|res|result|item|obj|e|x|v|self|this)$/;
@@ -109,6 +109,9 @@ export function dictShape(entries: Entry[], fn: FunctionDef, ctx: IrCtx, depth: 
 function nameShape(e: Expr & { k: "name" }, fn: FunctionDef, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
   const b = lookup(e.name, fn, e.pos.offset, ctx.idx);
   if (b.kind === "value" && !b.assign.augmented) return shapeOf(b.assign.value, b.fn, ctx, depth + 1, dynamic);
+  // a library constant imported by name (Rust `use openai_api_rs::v1::common::GPT4_O`), as `knownConstant` reads a path
+  const imported = b.kind === "external" ? constantAt(b.path, ctx) : undefined;
+  if (imported !== undefined) return { shape: { type: "string", enum: [imported] }, fromLiteral: true };
   if (b.kind === "param") {
     const sub = paramValue(b.param, b.fn, ctx);
     if (sub) return shapeOf(sub.expr, sub.fn, ctx, depth + 1, dynamic);

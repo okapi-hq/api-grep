@@ -15,6 +15,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Java | supported: the same clients and registries, one index with Kotlin | tree-sitter + shared engine (the Kotlin front end) | Maven | the same as Kotlin |
 | Go | supported: `net/http` (and go-retryablehttp, fhttp), Resty, SDK registries | tree-sitter + shared engine | Go modules | `go.mod` |
 | Shell | supported: curl, wget and HTTPie command lines | tree-sitter (bash grammar), read directly | none | none |
+| Rust | supported: reqwest, ureq, awc, surf, isahc, SDK registries | tree-sitter + shared engine | crates.io (Cargo) | `Cargo.toml` (workspaces too) |
 
 ## Goals
 
@@ -22,7 +23,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   `api-grep scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
-  `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`), so the same package name in two ecosystems (`openai`) is two rows.
+  `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`, `cargo`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
   `Call` schema, provider table, example requests, curl output, secret redaction, diagnostics and SDK coverage. Only detection and resolution are language specific.
 - **SDKs differ per language.** Each language has its own registries, keyed by the package name its ecosystem uses
@@ -98,7 +99,7 @@ callers among the calls of the function's group.
 
 ### Tree-sitter languages: the IR engine
 
-Python, PHP, Kotlin, Java and Go are read without a type checker (Kotlin's, Java's and Go's declared types are kept, not checked), but they share
+Python, PHP, Kotlin, Java, Go and Rust are read without a type checker (Kotlin's, Java's, Go's and Rust's declared types are kept, not checked), but they share
 most of what a scanner needs. Each is parsed with [tree-sitter](https://tree-sitter.github.io) (WebAssembly grammars,
 no native build) and **lowered** into a small language-neutral model (`src/lang/ir/model.ts`):
 
@@ -964,6 +965,88 @@ the rest of the file is read; a file of which more than half is unread is a `par
   from a file the script does not source by a readable path (a `.env` the repository does not hold) is an env read.
 - curl's URL globbing (`[1-10]`, `{a,b}`), `--next`, `--variable` / `--expand-*` and `--config` files are not modelled.
 - Shell scripts have no package manifest: they add no `coverage.sdks` rows.
+## Rust
+
+**Detected:** reqwest, async and blocking (`reqwest::get(url)`; a `Client`'s `get` / `post` / `put` / `patch` /
+`delete` / `head` / `request(method, url)` with the steps after it, sent by `send()`), ureq 2 and 3 (the crate's and an
+agent's verbs, sent by `call()` or a `send_*` method), awc, surf (sent by `send()` or a `recv_*` method) and isahc's
+verb functions; and the SDKs in [`sdk-support.md`](sdk-support.md) (async-openai, openai-api-rs, teloxide, serenity).
+Raw HTTP calls to any provider's host (Anthropic, Gemini, OpenAI-compatible endpoints, Telegram, Slack webhooks) are
+found through those clients like any other.
+
+**Requests built in steps** (`src/lang/rust/requests.ts` over `requests.json`): a request starts with a verb call
+(`starts`), takes steps (`steps`: `header`, `bearer_auth`, `query`, `json`, `form`...) and is reported at the call
+that sends it (`sends`), the calls between them read with the engine's builder steps (`ir/steps.ts`, `fluentChains`):
+through variables, fields, the project's functions returning a builder and the branches of a `match` or an `if`. A
+request whose branches start at one verb call is one request (the headers only some branches set are optional);
+branches with different starts are alternatives. The client builder's `default_headers` and `user_agent` are the
+client's parts. A start must be the crate's (its chain rooted in `reqwest`, `ureq`...), so a `send()` on a channel or
+a `get()` on a map is not one. One-shot functions (`reqwest::get(url)`, isahc's) are a client table (`clients.json`).
+
+**Resolved:** `use` declarations (aliases, lists, `self`, globs), `crate::` / `self::` / `super::` paths, `pub use`
+re-exports, external crates named by path without a `use` (Rust 2018), `const` and `static` items, `impl` blocks
+(methods and associated constants: `Self::BASE`), struct fields (typed by the declaration, valued by the project's
+struct literals and by `self.x = v` in methods), parameters and their callers' values, closures, `match` and `if`
+values (a binding of `Some(x)` / `Ok(x)` is the matched value), `let` with types, `+`, `+=`, `push_str`. Macro
+arguments are tokens to tree-sitter: `format!`, `concat!`, `env!`, `option_env!`, `vec!` and `lazy_static!` are parsed
+again as Rust (`src/lang/rust/reparse.ts`, positions mapped back to the file), `serde_json::json!` is read from its
+tokens (`json-macro.ts`), other macros written like calls have their arguments lowered for the calls they hold
+(logging and assertion macros aside). Conversions and error handling stand for their value at lowering
+(`calls.ts`: `.clone()`, `.to_string()`, `.into()`, `?`, `.await`, `.unwrap()`, `.expect(..)`, `.map_err(..)`,
+`Arc::new(x)`, `Some(x)`, `String::from(x)`, `Url::parse(x)`, `HeaderValue::from_str(x)`), defaults are `or` values
+(`.unwrap_or(d)`, `.unwrap_or_else(|_| d)`), environment reads are `env` values (`std::env::var`, `dotenvy::var`), and
+`Lazy::new(|| v)` / `LazyLock::new(|| v)` are `v`. Struct literals are calls of their type with named arguments
+(`struct-expr.ts`); the language's `resolveCall` (`structs.ts`) reads one as the dict serde sends (a project struct by
+its `#[serde(...)]` names, an SDK's as written), async-openai's `...Args::default()...build()` builders, configs
+(`OpenAIConfig::new().with_api_base(u)`) and messages, openai-api-rs's request constructors, and a project function
+returning one struct literal (`Settings::default()`).
+
+**Modules:** a module's name is its path in its crate, dotted: the crate's name (`[lib] name`, else `[package] name`
+of the nearest `Cargo.toml`, `-` as `_`), then the directories under `src/` and the file (`mod.rs`, `lib.rs`,
+`main.rs` name their directory); `src/bin/*.rs` and `examples/*.rs` are crate roots of their own. Paths are made
+absolute while lowering (`paths.ts`), so the index resolves `crate::config::BASE_URL` and the crates of a workspace
+(`my_core::llm::Client`) like any import. An inline `mod x { ... }` is a class of its file (its constants are fields,
+its functions associated functions), so `x::API` and `crate::m::x::API` read. The language's `link` hook moves the
+methods of an `impl` written in another module than its `struct` to the declared class and gives struct fields the
+values of the project's struct literals (`link.ts`).
+
+**Manifests:** `Cargo.toml`'s `[dependencies]` and `[target.'...'.dependencies]` (dev and build dependencies aside),
+with versions; `x.workspace = true` reads the workspace's `[workspace.dependencies]`, and a renamed dependency
+(`tg = { package = "teloxide" }`) counts under its crate. Crate names are written lower case with `-`
+(`normalizeCrate`); a crate's code name is its name with `_` (`async_openai`), so `importRoots` needs no table.
+
+**Out of scope by default:** `target/`, `vendor/`, `tests/`, `benches/`, `build.rs`, and the files unit tests are
+kept in by convention (`tests.rs`, `*_tests.rs`, `*_test.rs`); `#[cfg(test)]` items and `#[test]` functions are
+skipped while lowering, and the file a `#[cfg(test)] mod x;` declares is read for its names but gives no call
+(`link.ts`). `examples/` is read, as in the other languages.
+
+**How the open issues apply:** #3 (per-file parse and internal errors; a file using syntax the grammar does not know
+yet, `&raw` as a variable or an attribute on a pattern's field, is repaired in place, `repair.ts`; a macro whose input
+does not parse is left unread), #4 (the same diagnostics as the other tree-sitter languages; parameters are typed), #5
+(`tests/fixtures/rust/**/expected.json` in the recall check, a workspace of two crates and a negative fixture checked
+by `tests/rust.test.ts`), #6 and #7 (crates.io names per provider in `providers.json`, `ecosystem: "cargo"`), #8 (env
+reads with defaults, constants, struct fields, `Lazy` statics), #37 (does not apply: parameters are typed, but a
+`Client<AzureConfig>` parameter is read from its callers), #38 (`body["k"] = v` on a `json!` value, `insert` on maps),
+#39 (callers' values).
+
+**Limitations:**
+
+- Traits are not followed: a client behind `dyn Trait`, `impl Trait` or a generic bound has no known implementation;
+  a trait's default methods are not read.
+- Macros other than those listed are not expanded: a `macro_rules!` that builds requests, and requests written inside
+  a `{ ... }` macro (`tokio::select! { ... }`), are not read.
+- Requests kept in data structures and sent by shared code (`RequestData { url, body }` built per provider, sent by
+  one function) are reported where they are sent, with what that function sees.
+- A function returning a value from several `return`s (a URL helper with a fallback) is not followed for a URL, as in
+  the other tree-sitter languages; values read from configuration files (`config.url` deserialized from TOML) are
+  unknown, `#[serde(default = "...")]` included.
+- A renamed dependency's code name (`openai = { package = "async-openai" }`, used as `openai::`) is not matched with
+  its registry. Two crates of a workspace with the same name, and a module of the project named like an external
+  crate it also uses, can be confused.
+- async-openai's `AzureConfig` deployment paths, and setters chained after a teloxide method (`.parse_mode(...)`) are
+  not read; serenity's ids come from the gateway and stay placeholders. hyper and the Anthropic and Gemini crates (none
+  dominates: `anthropic-sdk`, `misanthropy`, `clust`, `google-generative-ai-rs`, `gemini-rs` are listed in
+  `coverage.sdks` only), rig and genai (routing by model), octocrab and slack-morphism have no registry yet.
 
 ## JavaScript and HTML
 

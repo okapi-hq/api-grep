@@ -2062,6 +2062,65 @@ exports[`regression fixtures > rpc-contracts/web3-viem 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rust/clients 1`] = `
+[
+  "clients.rs:13 api.mailchimp.com GET /3.0/lists",
+  "clients.rs:15 api.mailroom.example DELETE /v2/items",
+  "clients.rs:16 openai POST /v1/responses",
+  "clients.rs:17 hooks.mailroom.example POST /notify",
+  "clients.rs:23 sendgrid POST /v3/mail/send",
+  "clients.rs:27 resend POST /emails",
+  "clients.rs:32 postmark POST /email",
+  "clients.rs:33 api.ipify.org GET /",
+]
+`;
+
+exports[`regression fixtures > rust/negative 1`] = `[]`;
+
+exports[`regression fixtures > rust/reqwest 1`] = `
+[
+  "chat.rs:35 anthropic POST /v1/messages",
+  "chat.rs:54 groq POST /openai/v1/chat/completions",
+  "chat.rs:63 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "chat.rs:76 deepseek POST /chat/completions",
+  "github.rs:18 github GET /{path}",
+  "github.rs:22 github GET /repos/{owner}/{repo}/issues",
+  "github.rs:32 github GET /user (wrapper:GitHub.get)",
+  "github.rs:42 github GET /search/issues",
+  "notify.rs:9 telegram POST /bot{TELEGRAM_TOKEN}/sendMessage",
+  "notify.rs:18 slack POST /services/T000/B000/XXXX",
+  "notify.rs:27 twilio POST /2010-04-01/Accounts/{sid}/Messages.json",
+  "notify.rs:36 www.githubstatus.com GET /api/v2/status.json",
+]
+`;
+
+exports[`regression fixtures > rust/sdk 1`] = `
+[
+  "bots.rs:8 telegram POST /bot{token}/sendMessage",
+  "bots.rs:15 telegram POST /bot{token}/sendDice",
+  "bots.rs:27 discord POST /api/v10/channels/{channel_id}/messages",
+  "bots.rs:30 discord POST /api/v10/channels/{channel_id}/messages",
+  "openai_api.rs:21 together POST /v1/chat/completions",
+  "openai.rs:17 openai POST /v1/chat/completions",
+  "openai.rs:25 openai POST /v1/embeddings",
+  "openai.rs:31 openai POST /v1/images/generations",
+  "openai.rs:44 openrouter POST /api/v1/chat/completions",
+  "openai.rs:62 deepseek POST /v1/chat/completions",
+]
+`;
+
+exports[`regression fixtures > rust/ureq 1`] = `
+[
+  "agent3.rs:6 hc-ping.com POST /{uuid}",
+  "agent3.rs:11 api.pushover.net POST /1/messages.json",
+  "agent3.rs:18 status.example-cdn.net GET /api/v1/status",
+  "embed.rs:18 mistral POST /v1/embeddings",
+  "embed.rs:29 api.voyageai.com POST /v1/embeddings",
+  "embed.rs:37 open-meteo GET /v1/forecast",
+  "embed.rs:46 api.buttondown.email POST /v1/subscribers",
+]
+`;
+
 exports[`regression fixtures > sdk/ai-sdk 1`] = `
 [
   "generate.ts:11 openai POST /v1/responses",

@@ -1,0 +1,11 @@
+[package]
+name = "support-agent"
+version = "0.3.0"
+edition = "2021"
+
+[dependencies]
+async-openai = "0.28.3"
+openai-api-rs = "6.0.8"
+teloxide = { version = "0.13", features = ["macros"] }
+serenity = { version = "0.12", default-features = false, features = ["client", "gateway", "model"] }
+tokio = { version = "1", features = ["full"] }

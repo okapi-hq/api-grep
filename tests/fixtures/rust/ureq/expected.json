@@ -1,0 +1,12 @@
+{
+  "issue": "Rust: ureq 2 and 3 requests: verb functions, agents, headers, query parameters, JSON, form and raw bodies",
+  "calls": [
+    {"file": "agent3.rs", "line": 6, "provider": "hc-ping.com"},
+    {"file": "agent3.rs", "line": 11, "provider": "api.pushover.net"},
+    {"file": "agent3.rs", "line": 18, "provider": "status.example-cdn.net"},
+    {"file": "embed.rs", "line": 18, "provider": "mistral"},
+    {"file": "embed.rs", "line": 29, "provider": "api.voyageai.com"},
+    {"file": "embed.rs", "line": 37, "provider": "open-meteo"},
+    {"file": "embed.rs", "line": 46, "provider": "api.buttondown.email"}
+  ]
+}

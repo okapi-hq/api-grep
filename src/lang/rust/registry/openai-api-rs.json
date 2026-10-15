@@ -1,0 +1,33 @@
+{
+  "$comment": "openai-api-rs: `OpenAIClient::builder().with_api_key(k).with_endpoint(url).build()?` (also the older `OpenAIClient::new(key)`, `Client::new_with_endpoint(url, key)`); `client.chat_completion(ChatCompletionRequest::new(GPT4_O.to_string(), messages))`, the request's constructor arguments and the fields set on it afterwards being the body (structs.ts), its model constants in constants.json.",
+  "package": "openai-api-rs",
+  "imports": ["openai_api_rs.v1.api.OpenAIClient", "openai_api_rs.v1.api.Client"],
+  "provider": "openai",
+  "host": "api.openai.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against openai-api-rs main, October 2026)",
+  "instance": {"names": ["builder", "new", "new_with_endpoint", "OpenAIClient", "Client"], "urlArg": {"with_endpoint": "0", "new_with_endpoint": "0"}, "build": "build"},
+  "basePath": "/v1",
+  "methods": {
+    "chat_completion": {"method":"POST","path":"/v1/chat/completions","bodyArg":0,"operationId":"createChatCompletion"},
+    "chat_completion_stream": {"method":"POST","path":"/v1/chat/completions","bodyArg":0,"operationId":"createChatCompletion"},
+    "completion": {"method":"POST","path":"/v1/completions","bodyArg":0},
+    "embedding": {"method":"POST","path":"/v1/embeddings","bodyArg":0},
+    "image_generation": {"method":"POST","path":"/v1/images/generations","bodyArg":0},
+    "image_edit": {"method":"POST","path":"/v1/images/edits","bodyArg":0,"encoding":"multipart"},
+    "image_variation": {"method":"POST","path":"/v1/images/variations","bodyArg":0,"encoding":"multipart"},
+    "audio_transcription": {"method":"POST","path":"/v1/audio/transcriptions","bodyArg":0,"encoding":"multipart"},
+    "audio_translation": {"method":"POST","path":"/v1/audio/translations","bodyArg":0,"encoding":"multipart"},
+    "audio_speech": {"method":"POST","path":"/v1/audio/speech","bodyArg":0},
+    "create_moderation": {"method":"POST","path":"/v1/moderations","bodyArg":0},
+    "file_list": {"method":"GET","path":"/v1/files"},
+    "upload_file": {"method":"POST","path":"/v1/files","bodyArg":0,"encoding":"multipart"},
+    "create_fine_tuning_job": {"method":"POST","path":"/v1/fine_tuning/jobs","bodyArg":0},
+    "create_assistant": {"method":"POST","path":"/v1/assistants","bodyArg":0},
+    "create_thread": {"method":"POST","path":"/v1/threads","bodyArg":0},
+    "create_message": {"method":"POST","path":"/v1/threads/{thread_id}/messages","bodyArg":1,"params":{"thread_id":"arg:0"}},
+    "create_run": {"method":"POST","path":"/v1/threads/{thread_id}/runs","bodyArg":1,"params":{"thread_id":"arg:0"}},
+    "create_response": {"method":"POST","path":"/v1/responses","bodyArg":0},
+    "list_models": {"method":"GET","path":"/v1/models"}
+  }
+}

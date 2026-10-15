@@ -1,0 +1,17 @@
+{
+  "issue": "Rust: reqwest requests (async and blocking): verb and request(method, url) calls, builder steps, client defaults, json!, serde structs, forms, query pairs",
+  "calls": [
+    {"file": "chat.rs", "line": 35, "provider": "anthropic"},
+    {"file": "chat.rs", "line": 54, "provider": "groq"},
+    {"file": "chat.rs", "line": 63, "provider": "google-ai"},
+    {"file": "chat.rs", "line": 76, "provider": "deepseek"},
+    {"file": "github.rs", "line": 18, "provider": "github"},
+    {"file": "github.rs", "line": 22, "provider": "github"},
+    {"file": "github.rs", "line": 32, "provider": "github"},
+    {"file": "github.rs", "line": 42, "provider": "github"},
+    {"file": "notify.rs", "line": 9, "provider": "telegram"},
+    {"file": "notify.rs", "line": 18, "provider": "slack"},
+    {"file": "notify.rs", "line": 27, "provider": "twilio"},
+    {"file": "notify.rs", "line": 36, "provider": "www.githubstatus.com"}
+  ]
+}
