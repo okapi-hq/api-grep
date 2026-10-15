@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { goLanguage } from "../../src/lang/go/index.js";
+import { normalizeGoModule } from "../../src/lang/go/manifests.js";
 import type { IrRegistryEntry } from "../../src/lang/ir/language.js";
 import { normalizeMaven } from "../../src/lang/jvm/manifests.js";
 import { kotlinLanguage } from "../../src/lang/kotlin/index.js";
@@ -10,9 +12,9 @@ import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
 const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*|model)$/;
 
-const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven };
+const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule };
 
-function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven"): void {
+function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven" | "go"): void {
   const ids = new Set(PROVIDERS.map((p) => p.id));
   const normalize = NORMALIZE[ecosystem];
   const known = new Set([...sdkPackages(ecosystem).keys()].map(normalize));
@@ -47,6 +49,19 @@ describe("tree-sitter language registries", () => {
     checkRegistry(kotlinLanguage.registry, "maven");
   });
 
+  it("go: providers exist, packages are known, params are well formed", () => {
+    // one entry per major version of a module (`github.com/openai/openai-go/v3`), each listed in providers.json
+    checkRegistry(goLanguage.registry, "go");
+    expect(goLanguage.registry.map((e) => e.package)).toContain("github.com/openai/openai-go/v3");
+  });
+
+  it("go: every module with a provider is a module path", () => {
+    for (const pkg of sdkPackages("go").keys()) {
+      expect(pkg, pkg).toMatch(/^[a-z0-9.-]+\.[a-z]+(?:\/[\w.-]+)+$/);
+      expect(goLanguage.importRoots(pkg).every((r) => !r.includes("/")), pkg).toBe(true);
+    }
+  });
+
   it("jvm: imports are classes or packages, setter rules name packages of the SDK", () => {
     for (const e of kotlinLanguage.registry) {
       for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][\w]*(?:\.[a-z][\w]*)+(?:\.[A-Z]\w*)?$/);
@@ -67,7 +82,7 @@ describe("tree-sitter language registries", () => {
   });
 
   it("every client table names an import root and known option roles", () => {
-    for (const c of [...pythonLanguage.clients, ...phpLanguage.clients]) {
+    for (const c of [...pythonLanguage.clients, ...phpLanguage.clients, ...goLanguage.clients]) {
       expect(c.imports.length > 0 || c.global).toBe(true);
       for (const role of Object.values(c.keys)) expect(role).toMatch(/^(?:url|baseUrl|method|query|headers|auth(?::(?:bearer|basic))?|body(?::(?:json|form|multipart|raw))?)$/);
     }

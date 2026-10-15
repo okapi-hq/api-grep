@@ -202,6 +202,7 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   const inScope = new Set(files);
   const modules: ModuleModel[] = [];
   for (const s of sources) modules.push(...(await lowerAll(s.source, s.all, inScope, rootDir, diag)));
+  lang.link?.(modules);
   const idx = new ProjectIndex(lang, modules);
   const scannable = modules.filter((m) => inScope.has(m.file));
   const selected = input.changed ? selectChanged(scannable, input.changed, idx) : scannable;

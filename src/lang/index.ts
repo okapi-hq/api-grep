@@ -1,4 +1,5 @@
 import type { Language } from "../report/schema.js";
+import { go } from "./go/index.js";
 import { kotlin } from "./kotlin/index.js";
 import { php } from "./php/index.js";
 import { python } from "./python/index.js";
@@ -6,7 +7,7 @@ import type { LanguageFrontEnd } from "./types.js";
 import { typescript } from "./typescript/index.js";
 
 /** Every front end the scanner runs, in report order. */
-export const LANGUAGES: LanguageFrontEnd[] = [typescript, python, php, kotlin];
+export const LANGUAGES: LanguageFrontEnd[] = [typescript, python, php, kotlin, go];
 
 export const LANGUAGE_IDS = LANGUAGES.flatMap((l) => l.ids);
 

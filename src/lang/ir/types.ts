@@ -36,9 +36,14 @@ const SCALARS: Record<string, Shape> = {
   OffsetDateTime: { type: "string", hint: "createdAt" },
   ZonedDateTime: { type: "string", hint: "createdAt" },
   LocalDate: { type: "string", hint: "date" },
+  // Go
+  ...Object.fromEntries(["int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64"].map((t) => [t, { type: "integer" }])),
+  float32: { type: "number" },
+  float64: { type: "number" },
 };
-const MAPPINGS = new Set(["dict", "Dict", "Mapping", "MutableMapping", "array", "object", "Any", "JSON", "Json", "Map", "MutableMap", "HashMap", "LinkedHashMap", "JsonObject", "JSONObject"]);
-const SEQUENCES = new Set(["list", "List", "Sequence", "tuple", "Tuple", "set", "Set", "Iterable", "MutableList", "ArrayList", "Array", "Collection", "MutableSet", "HashSet"]);
+// Go's `map[K]V` and `[]T` are lowered as `map[V]` and `[][T]`
+const MAPPINGS = new Set(["dict", "Dict", "Mapping", "MutableMapping", "array", "object", "Any", "JSON", "Json", "Map", "MutableMap", "HashMap", "LinkedHashMap", "JsonObject", "JSONObject", "map"]);
+const SEQUENCES = new Set(["list", "List", "Sequence", "tuple", "Tuple", "set", "Set", "Iterable", "MutableList", "ArrayList", "Array", "Collection", "MutableSet", "HashSet", "[]"]);
 const MAX_DEPTH = 4;
 
 const lastName = (e: Expr): string | undefined => (e.k === "name" ? e.name : e.k === "attr" ? e.name : e.k === "qname" ? e.path[e.path.length - 1] : undefined);

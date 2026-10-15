@@ -161,10 +161,48 @@ Kotlin `object`s), fields set in constructors, `+`, `String.format`, `"...".form
 under their `@SerializedName` / `@JsonProperty` names (`transient` aside). Maven `target/`, test
 source sets and `*Test.java` / `*IT.java` are out of scope.
 
+## Go
+
+Go files are read through tree-sitter into the shared engine. The files of one directory are one package: their
+types, functions and package-level `const` / `var` see each other, and a type declared in one file gets the methods
+other files declare on it. Packages of the module (`go.mod`'s `module` path) resolve through their import paths, with
+or without an alias; a method's receiver (`c` in `func (c *Client) Do()`) reads as the object, its fields typed by the
+struct declaration and given values by the struct literals of the project (`&Client{baseURL: u}` in a constructor
+function).
+
+| client | patterns |
+|---|---|
+| `net/http` | `http.Get(url)`, `http.Head(url)`, `http.Post(url, contentType, body)`, `http.PostForm(url, values)`, the same methods of a `http.Client` (`&http.Client{}`, `http.DefaultClient`, a field or parameter of type `*http.Client`); `http.NewRequest(method, url, body)` / `http.NewRequestWithContext(ctx, ...)`, reported where the request is built (any client may send it: `client.Do(req)`), with the `req.Header.Set` / `Add`, `req.SetBasicAuth` and `q := req.URL.Query(); q.Set(...)` calls that follow it in the function; method constants (`http.MethodPost`); the content type of a literal `Content-Type` header gives the body encoding |
+| go-retryablehttp, fhttp | the same as `net/http`: `retryablehttp.NewRequest(...)`, `retryablehttp.Get(url)`, the fhttp fork imported as `http` |
+| Resty (v2 and v3) | `resty.New()` with `SetBaseURL`, `SetHeader(s)`, `SetAuthToken`, `SetBasicAuth`, then `R()` with `SetHeader`, `SetBody`, `SetQueryParam(s)`, `SetFormData`, sent by `Get` / `Post` / `Put` / `Patch` / `Delete` / `Head` / `Options` / `Execute(method, url)`; also on a client kept in a variable or a field |
+
+Bodies come from `json.Marshal(x)` (`xml.Marshal` for XML) behind `bytes.NewBuffer`, `bytes.NewReader` or
+`strings.NewReader`: map literals (with keys added by `m["k"] = v`), struct literals under their fields' `json` tag
+names (a struct passed as a parameter: its declared fields, `omitempty` ones optional, unexported and `json:"-"` ones
+left out), anonymous structs, and `url.Values` built literally or with `Set` / `Add` for forms.
+
+SDK calls are detected through the Go registries (`src/lang/go/registry/`): sashabaranov/go-openai
+(`openai.NewClient(token)`, `openai.NewClientWithConfig(cfg)` with `cfg := openai.DefaultConfig(token); cfg.BaseURL =
+...` for another OpenAI-compatible provider), the official openai-go (`client.Chat.Completions.New(ctx, params)`,
+`option.WithBaseURL(u)`), anthropic-sdk-go (`client.Messages.New(ctx, params)`) and google.golang.org/genai
+(`client.Models.GenerateContent(ctx, "gemini-2.5-flash", ...)`, the model in the path; `client.Chats.Create(...)` then
+`SendMessage`) ([sdk-support.md](sdk-support.md)). Request structs are read as the JSON they send (`MaxTokens` ->
+`max_tokens`), with the fields set on their variable afterwards (`req.Stream = true`); the SDKs' value helpers
+(`openai.Int(512)`, `anthropic.String(s)`, `openai.UserMessage(m)`, `anthropic.NewUserMessage(anthropic.NewTextBlock(t))`,
+`genai.Text(p)`) as what they build, and their model constants (`openai.GPT4o`, `openai.ChatModelGPT4o`,
+`anthropic.ModelClaudeSonnet4_5`) as the model ids they stand for.
+
+Values are resolved through string literals (raw and interpreted), `+`, `fmt.Sprintf` (`%s`, `%d`, `%v`, `%q`),
+`path.Join`, `url.JoinPath`, `strings.Join` of a slice literal, `strings.TrimSuffix` / `TrimSpace`, `url.PathEscape`,
+package-level and local constants and variables (also of other files and packages), struct fields, function parameters
+(their callers' values, #39) and `os.Getenv("X")` / `os.LookupEnv("X")`. `go.mod` is read, so `coverage.sdks` lists the
+Go SDK modules a module requires (`ecosystem: "go"`, `// indirect` requirements aside). `_test.go` files, `vendor/` and
+`testdata/` are out of scope.
+
 ## How a call is resolved
 
 The pipeline is `detect → resolve → normalize → validate → emit`. Detection and resolution
-are per language (TypeScript, JavaScript and HTML scripts through the type checker; Python, PHP, Kotlin and Java
+are per language (TypeScript, JavaScript and HTML scripts through the type checker; Python, PHP, Kotlin, Java and Go
 through tree-sitter and a shared engine, see [languages.md](languages.md)); everything
 after that is shared, so a call is
 described and checked the same way whatever its language. The rules below are given for
@@ -240,6 +278,14 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   X = 1 }`) as an error; such files are repaired before they are read, without moving a position.
   Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
   processors are not run ([languages.md](languages.md#java)).
+- Go: interfaces are not followed (a client behind an interface field has no known implementation), nor are generics,
+  goroutine channels or values a function returns from several `return`s (a URL helper with a fallback). Headers set on
+  a request outside the function that built it (a helper given `req`) are not read. Resty path parameters
+  (`SetPathParam`) stay as placeholders. go-openai's Azure configuration and genai's Vertex AI backend and
+  `HTTPOptions.BaseURL` are not modelled. A struct's JSON names come from its `json` tags; a field read through a
+  struct literal whose tag renames it (`json:"base_url"`) is not found by its Go name. Package names are the import
+  path's last element (a table lists the exceptions: `tgbotapi`, `anthropic`), so a library whose package name differs
+  and is imported without an alias is not recognised.
 - HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
   event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.

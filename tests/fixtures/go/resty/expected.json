@@ -1,0 +1,8 @@
+{
+  "issue": "Go: go-resty chains, client settings and request settings",
+  "calls": [
+    {"file": "shop.go", "line": 17, "provider": "lemonsqueezy"},
+    {"file": "shop.go", "line": 22, "provider": "paddle"},
+    {"file": "shop.go", "line": 31, "provider": "mailchimp"}
+  ]
+}

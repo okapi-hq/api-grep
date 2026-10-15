@@ -88,6 +88,9 @@ importers:
       stripe:
         specifier: ^22.6.1
         version: 22.6.1(@types/node@22.20.1)
+      tree-sitter-go:
+        specifier: 0.25.0
+        version: 0.25.0
       tree-sitter-java:
         specifier: 0.23.5
         version: 0.23.5
@@ -1658,6 +1661,14 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
+  tree-sitter-go@0.25.0:
+    resolution: {integrity: sha512-APBc/Dq3xz/e35Xpkhb1blu5UgW+2E3RyGWawZSCNcbGwa7jhSQPS8KsUupuzBla8PCo8+lz9W/JDJjmfRa2tw==}
+    peerDependencies:
+      tree-sitter: ^0.25.0
+    peerDependenciesMeta:
+      tree-sitter:
+        optional: true
+
   tree-sitter-java@0.23.5:
     resolution: {integrity: sha512-Yju7oQ0Xx7GcUT01mUglPP+bYfvqjNCGdxqigTnew9nLGoII42PNVP3bHrYeMxswiCRM0yubWmN5qk+zsg0zMA==}
     peerDependencies:
@@ -3203,6 +3214,11 @@ snapshots:
       is-number: 7.0.0
 
   tree-kill@1.2.2: {}
+
+  tree-sitter-go@0.25.0:
+    dependencies:
+      node-addon-api: 8.9.2
+      node-gyp-build: 4.8.4
 
   tree-sitter-java@0.23.5:
     dependencies:

@@ -8,4 +8,5 @@ export const GRAMMARS: Record<string, string> = {
   // the maintained Kotlin grammar; the unscoped `tree-sitter-kotlin` package ships no `.wasm`
   kotlin: "@tree-sitter-grammars/tree-sitter-kotlin",
   java: "tree-sitter-java",
+  go: "tree-sitter-go",
 };

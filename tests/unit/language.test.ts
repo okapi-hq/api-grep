@@ -11,6 +11,7 @@ describe("languageOf", () => {
     expect(languageOf("app/src/main/java/Api.kt")).toBe("kotlin");
     expect(languageOf("scripts/release.main.kts")).toBe("kotlin");
     expect(languageOf("app/src/main/java/Api.java")).toBe("java");
+    expect(languageOf("internal/llm/client.go")).toBe("go");
   });
 
   it("falls back to typescript, the language the scanner parses", () => {

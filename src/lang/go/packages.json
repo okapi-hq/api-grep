@@ -1,0 +1,8 @@
+{
+  "$comment": "Package names that differ from what `packageName` (names.ts) derives from an import path (its last element without a major version or a `go-` / `-go` affix): the name an import without an alias is used under. Keyed by module path; a major version suffix (`/v5`) matches too.",
+  "names": {
+    "github.com/anthropics/anthropic-sdk-go": "anthropic",
+    "github.com/go-telegram-bot-api/telegram-bot-api": "tgbotapi",
+    "resty.dev": "resty"
+  }
+}

@@ -868,7 +868,7 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.19.0",
+  "schemaVersion": "1.20.0",
   "stats": {
     "byClient": {
       "ktor": 13,
@@ -2134,7 +2134,7 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.19.0",
+  "schemaVersion": "1.20.0",
   "stats": {
     "byClient": {
       "okhttp": 20,
@@ -2590,7 +2590,7 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.19.0",
+  "schemaVersion": "1.20.0",
   "stats": {
     "byClient": {
       "feign": 6,
@@ -3266,7 +3266,7 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.19.0",
+  "schemaVersion": "1.20.0",
   "stats": {
     "byClient": {
       "spring-rest": 7,
@@ -3603,7 +3603,7 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.19.0",
+  "schemaVersion": "1.20.0",
   "stats": {
     "byClient": {
       "java-http": 6,

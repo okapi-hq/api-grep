@@ -3,11 +3,11 @@ import { z } from "zod";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const EcosystemSchema = z
-  .enum(["npm", "pypi", "composer", "maven"])
+  .enum(["npm", "pypi", "composer", "maven", "go"])
   .meta({
     id: "Ecosystem",
     description:
-      "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml).",
+      "Package registry of an SDK: npm (package.json), pypi (requirements files, pyproject.toml, Pipfile, setup.cfg / setup.py), composer (composer.json), maven (`group:artifact` coordinates from Gradle build scripts, Gradle version catalogs and pom.xml), go (module paths from go.mod `require` directives).",
   });
 
 export const SkippedFileSchema = z

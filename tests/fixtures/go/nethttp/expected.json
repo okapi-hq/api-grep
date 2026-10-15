@@ -1,0 +1,14 @@
+{
+  "issue": "Go: net/http package functions and requests built with http.NewRequest",
+  "calls": [
+    {"file": "notify.go", "line": 23, "provider": "www.githubstatus.com"},
+    {"file": "notify.go", "line": 28, "provider": "slack"},
+    {"file": "notify.go", "line": 34, "provider": "twilio"},
+    {"file": "notify.go", "line": 42, "provider": "pagerduty"},
+    {"file": "notify.go", "line": 52, "provider": "open-meteo"},
+    {"file": "notify.go", "line": 66, "provider": "mailgun"},
+    {"file": "notify.go", "line": 74, "provider": "github"},
+    {"file": "linear.go", "line": 24, "provider": "linear"},
+    {"file": "retry.go", "line": 9, "provider": "sentry"}
+  ]
+}

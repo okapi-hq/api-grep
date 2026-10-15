@@ -118,6 +118,16 @@ describe.skipIf(!posix)("files a hostile repository links to", () => {
     expect(report.calls.map((c) => c.host)).toEqual(["inside.example"]);
   });
 
+  it("does the same for Go sources and go.mod", () => {
+    const outside = tempRepo({ "secret.go": `package main\n\nimport "net/http"\n\nfunc leak() { http.Get("https://outside.example/leak") }\n` });
+    const repo = tempRepo({ "cmd/app/main.go": `package main\n\nimport "net/http"\n\nfunc main() { http.Get("https://inside.example/ok") }\n` });
+    symlinkSync("/dev/zero", path.join(repo, "go.mod"));
+    symlinkSync(path.join(outside, "secret.go"), path.join(repo, "cmd", "app", "leak.go"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => [c.host, c.location.language])).toEqual([["inside.example", "go"]]);
+  });
+
   it("takes no env hint from a .env.example that links out of the repository", () => {
     const outside = tempRepo({ ".env": "API_URL=https://internal.corp.example\n" });
     const repo = tempRepo({ "api.ts": "export const a = () => fetch(`${process.env.API_URL}/v1/x`);\n" });

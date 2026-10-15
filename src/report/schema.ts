@@ -7,15 +7,15 @@ import { CoverageSchema, DiagnosticsSchema } from "./schema-scan.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.19.0";
+export const SCHEMA_VERSION = "1.20.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 export const LanguageSchema = z
-  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java"])
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go"])
   .meta({
     id: "Language",
     description:
-      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, and kotlin and java together (one front end, so names resolve across the two).",
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, and kotlin and java together (one front end, so names resolve across the two).",
   });
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
@@ -56,13 +56,15 @@ export const ClientSchema = z
     "node-soap",
     "zeep",
     "php-soap",
+    "net-http",
+    "resty",
     "sdk",
     "framework",
   ])
   .meta({
     id: "Client",
     description:
-      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Any language: sdk (a registry), framework (a framework helper).",
+      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Go: net-http (net/http: http.Get / Post / PostForm, a http.Client, a request built with http.NewRequest; also the fhttp fork and go-retryablehttp, which keep its API), resty (go-resty). Any language: sdk (a registry), framework (a framework helper).",
   });
 
 export const ShapeSchema: z.ZodType<Shape> = z

@@ -1,0 +1,1580 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`go: SDK registries > reads go-openai, openai-go, anthropic-sdk-go and genai calls with their models and base URLs 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              256,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "content": {
+                      "enum": [
+                        "Be brief.",
+                      ],
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "system",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "properties": {
+                    "content": {
+                      "hint": "text",
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "user",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 256,
+            "messages": [
+              {
+                "content": "Be brief.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_tokens": 256,
+            "messages": [
+              {
+                "content": "Beacon atlas tundra koala fjord garden.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "1812860ab952",
+      "location": {
+        "col": 15,
+        "file": "goopenai.go",
+        "language": "go",
+        "line": 20,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "CreateChatCompletion",
+        "package": "github.com/sashabaranov/go-openai",
+        "version": "v1.40.5",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "input": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "text-embedding-3-small",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "input",
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "input": [
+              "valley grove",
+            ],
+            "model": "text-embedding-3-small",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/embeddings",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "2c7d6179a9e8",
+      "location": {
+        "col": 12,
+        "file": "goopenai.go",
+        "language": "go",
+        "line": 36,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "text-embedding-3-small",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/embeddings",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "CreateEmbeddings",
+        "package": "github.com/sashabaranov/go-openai",
+        "version": "v1.40.5",
+      },
+      "urlTemplate": "https://api.openai.com/v1/embeddings",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "deepseek-chat",
+            ],
+            "type": "string",
+          },
+          "stream": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+          "stream",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Garden anchor estuary hollow grove horizon.",
+                "role": "user",
+              },
+            ],
+            "model": "deepseek-chat",
+            "stream": true,
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.deepseek.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.deepseek.com",
+      "hostKind": "literal",
+      "id": "b9163c4222a8",
+      "location": {
+        "col": 12,
+        "file": "goopenai.go",
+        "language": "go",
+        "line": 46,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "deepseek-chat",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "deepseek",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "CreateChatCompletionStream",
+        "package": "github.com/sashabaranov/go-openai",
+        "version": "v1.40.5",
+      },
+      "urlTemplate": "https://api.deepseek.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "model": {
+            "enum": [
+              "openai/gpt-4o",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "envName": "OPENROUTER_BASE_URL",
+      "examples": [
+        {
+          "body": {
+            "model": "openai/gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{env:OPENROUTER_BASE_URL}/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "hostKind": "env",
+      "id": "aa7f95c052c3",
+      "location": {
+        "col": 12,
+        "file": "goopenai.go",
+        "language": "go",
+        "line": 53,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "openai/gpt-4o",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/chat/completions",
+      "provider": "openrouter",
+      "query": [],
+      "sdk": {
+        "chain": "CreateChatCompletion",
+        "package": "github.com/sashabaranov/go-openai",
+        "version": "v1.40.5",
+      },
+      "urlTemplate": "{env:OPENROUTER_BASE_URL}/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              512,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "content": {
+                      "enum": [
+                        "Answer in French.",
+                      ],
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "system",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "properties": {
+                    "content": {
+                      "hint": "prompt",
+                      "type": "string",
+                    },
+                    "role": {
+                      "enum": [
+                        "user",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "role",
+                    "content",
+                  ],
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 512,
+            "messages": [
+              {
+                "content": "Answer in French.",
+                "role": "system",
+              },
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+        {
+          "body": {
+            "max_tokens": 512,
+            "messages": [
+              {
+                "content": "Prairie lagoon quiet birch falcon echo.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "alt",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "c21e32270adb",
+      "location": {
+        "col": 12,
+        "file": "official.go",
+        "language": "go",
+        "line": 15,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Chat.Completions.New",
+        "package": "github.com/openai/openai-go/v3",
+        "version": "v3.2.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "model": {
+            "enum": [
+              "grok-4",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "model": "grok-4",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.x.ai/v1/responses",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.x.ai",
+      "hostKind": "literal",
+      "id": "5215f0c4e61a",
+      "location": {
+        "col": 12,
+        "file": "official.go",
+        "language": "go",
+        "line": 25,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "grok-4",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/responses",
+      "provider": "xai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Responses.New",
+        "package": "github.com/openai/openai-go/v3",
+        "version": "v3.2.0",
+      },
+      "urlTemplate": "https://api.x.ai/v1/responses",
+    },
+    {
+      "authScheme": "apikey",
+      "body": {
+        "properties": {
+          "max_tokens": {
+            "enum": [
+              1024,
+            ],
+            "type": "integer",
+          },
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "items": {
+                    "properties": {
+                      "text": {
+                        "type": "unknown",
+                      },
+                      "type": {
+                        "type": "unknown",
+                      },
+                    },
+                    "required": [
+                      "type",
+                      "text",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "claude-sonnet-4-5",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "max_tokens",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "max_tokens": 1024,
+            "messages": [
+              {
+                "content": [
+                  {
+                    "text": "Copper nectar ember meadow nectar lagoon.",
+                    "type": "yarrow quill",
+                  },
+                ],
+                "role": "user",
+              },
+            ],
+            "model": "claude-sonnet-4-5",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "token <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.anthropic.com/v1/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.anthropic.com",
+      "hostKind": "literal",
+      "id": "e47178179798",
+      "location": {
+        "col": 12,
+        "file": "official.go",
+        "language": "go",
+        "line": 31,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "claude-sonnet-4-5",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/messages",
+      "provider": "anthropic",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Messages.New",
+        "package": "github.com/anthropics/anthropic-sdk-go",
+        "version": "v1.14.0",
+      },
+      "urlTemplate": "https://api.anthropic.com/v1/messages",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "token <token>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "generativelanguage.googleapis.com",
+      "hostKind": "literal",
+      "id": "1b8ad0a7a824",
+      "location": {
+        "col": 11,
+        "file": "official.go",
+        "language": "go",
+        "line": 44,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "path",
+        "values": [
+          "gemini-2.5-flash",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1beta/models/gemini-2.5-flash:generateContent",
+      "provider": "google-ai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Models.GenerateContent",
+        "package": "google.golang.org/genai",
+        "version": "v1.30.0",
+      },
+      "urlTemplate": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    },
+    {
+      "authScheme": "apikey",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "token <token>",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "generativelanguage.googleapis.com",
+      "hostKind": "literal",
+      "id": "7b202714eec7",
+      "location": {
+        "col": 11,
+        "file": "official.go",
+        "language": "go",
+        "line": 49,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "path",
+        "values": [
+          "gemini-2.5-pro",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1beta/models/gemini-2.5-pro:generateContent",
+      "provider": "google-ai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "Chats.Create.SendMessage",
+        "package": "google.golang.org/genai",
+        "version": "v1.30.0",
+      },
+      "urlTemplate": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+    },
+  ],
+  "coverage": {
+    "sdks": [
+      {
+        "calls": 1,
+        "declared": true,
+        "ecosystem": "go",
+        "importSites": 1,
+        "imported": true,
+        "package": "github.com/anthropics/anthropic-sdk-go",
+        "provider": "anthropic",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "go",
+        "importSites": 1,
+        "imported": true,
+        "package": "github.com/openai/openai-go/v3",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 4,
+        "declared": true,
+        "ecosystem": "go",
+        "importSites": 1,
+        "imported": true,
+        "package": "github.com/sashabaranov/go-openai",
+        "provider": "openai",
+        "status": "ok",
+        "supported": true,
+      },
+      {
+        "calls": 2,
+        "declared": true,
+        "ecosystem": "go",
+        "importSites": 1,
+        "imported": true,
+        "package": "google.golang.org/genai",
+        "provider": "google-ai",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 2,
+    "filesSeen": 2,
+    "languages": {
+      "go": {
+        "filesScanned": 2,
+        "filesSeen": 2,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.20.0",
+  "stats": {
+    "byClient": {
+      "sdk": 9,
+    },
+    "byHostKind": {
+      "env": 1,
+      "literal": 8,
+    },
+    "byLanguage": {
+      "go": 9,
+    },
+    "byProvider": {
+      "anthropic": 1,
+      "deepseek": 1,
+      "google-ai": 2,
+      "openai": 3,
+      "openrouter": 1,
+      "xai": 1,
+    },
+    "callsFound": 9,
+    "durationMs": 0,
+    "filesScanned": 2,
+    "redacted": 0,
+    "withBodyShape": 7,
+    "withDynamic": 0,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`go: a module of several packages > follows imports of the module's packages, methods declared across files and wrappers 1`] = `
+[
+  "cmd/bot/main.go:15 groq POST https://api.groq.com/openai/v1/chat/completions (wrapper:Client.Ask>Client.post)",
+  "cmd/bot/main.go:20 telegram POST https://api.telegram.org/bot{env:TELEGRAM_TOKEN}/sendMessage (wrapper:Bot.Send)",
+  "cmd/bot/main.go:23 openai POST https://api.openai.com/v1/moderations (wrapper:Moderate)",
+  "internal/llm/chat.go:29 groq POST https://api.groq.com/openai/v1{path}",
+  "internal/llm/chat.go:39 groq POST https://api.groq.com/openai/v1/chat/completions (wrapper:Client.post)",
+  "internal/llm/chat.go:57 openai POST https://api.openai.com/v1/moderations",
+  "internal/telegram/bot.go:16 telegram POST https://api.telegram.org/bot{env:TELEGRAM_TOKEN}/sendMessage",
+]
+`;
+
+exports[`go: net/http > reads package functions, requests built with http.NewRequest and the headers and query set on them 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "query": {
+            "hint": "doc",
+            "type": "string",
+          },
+        },
+        "required": [
+          "query",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "query",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "query": "timber",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.linear.app/graphql",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.linear.app",
+      "hostKind": "const",
+      "id": "ca1d6a6ea4da",
+      "location": {
+        "col": 12,
+        "file": "linear.go",
+        "language": "go",
+        "line": 24,
+      },
+      "method": "POST",
+      "operation": {
+        "dynamic": true,
+        "from": "body",
+        "name": null,
+        "protocol": "graphql",
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/graphql",
+      "provider": "linear",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.linear.app/graphql",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "net-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://www.githubstatus.com/api/v2/status.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "www.githubstatus.com",
+      "hostKind": "literal",
+      "id": "384b568e7bd8",
+      "location": {
+        "col": 9,
+        "file": "notify.go",
+        "language": "go",
+        "line": 23,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/v2/status.json",
+      "provider": "www.githubstatus.com",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://www.githubstatus.com/api/v2/status.json",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "channel": {
+            "enum": [
+              "#ops",
+            ],
+            "type": "string",
+          },
+          "text": {
+            "hint": "text",
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+          "channel",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "text",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "channel": "#ops",
+            "text": "Jasper orbit lagoon prairie raven grove.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://hooks.slack.com/services/T000/B000/XXXX",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "hooks.slack.com",
+      "hostKind": "const",
+      "id": "0544ed173a06",
+      "location": {
+        "col": 12,
+        "file": "notify.go",
+        "language": "go",
+        "line": 28,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/services/T000/B000/XXXX",
+      "provider": "slack",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://hooks.slack.com/services/T000/B000/XXXX",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "Body": {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "To": {
+            "items": {
+              "hint": "to",
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "To",
+          "Body",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "sid",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "Body": [
+              "Nimbus summit onyx mosaic amber tundra.",
+            ],
+            "To": [
+              "dario.ekwall@example.com",
+            ],
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.twilio.com/2010-04-01/Accounts/mazo0lhn/Messages.json",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.twilio.com",
+      "hostKind": "literal",
+      "id": "c99fe3cf7114",
+      "location": {
+        "col": 12,
+        "file": "notify.go",
+        "language": "go",
+        "line": 34,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/2010-04-01/Accounts/{sid}/Messages.json",
+      "provider": "twilio",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "event_action": {
+            "enum": [
+              "trigger",
+            ],
+            "type": "string",
+          },
+          "payload": {
+            "properties": {
+              "summary": {
+                "hint": "summary",
+                "type": "string",
+              },
+            },
+            "required": [
+              "summary",
+            ],
+            "type": "object",
+          },
+          "routing_key": {
+            "env": "PD_KEY",
+            "hint": "PD_KEY",
+            "type": "string",
+          },
+        },
+        "required": [
+          "routing_key",
+          "event_action",
+          "payload",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "routing_key",
+          "origin": "env",
+          "where": "body",
+        },
+        {
+          "name": "summary",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "event_action": "trigger",
+            "payload": {
+              "summary": "Haven valley canyon fjord indigo valley.",
+            },
+            "routing_key": "echo meadow",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://events.pagerduty.com/v2/enqueue",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "events.pagerduty.com",
+      "hostKind": "literal",
+      "id": "88fbe6feaf2b",
+      "location": {
+        "col": 14,
+        "file": "notify.go",
+        "language": "go",
+        "line": 42,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/enqueue",
+      "provider": "pagerduty",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://events.pagerduty.com/v2/enqueue",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "latitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lat",
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "longitude",
+          "origin": "param",
+          "shape": {
+            "hint": "lon",
+            "type": "string",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {
+            "latitude": "-37.02702",
+            "longitude": "143.96214",
+          },
+          "url": "https://api.open-meteo.com/v1/forecast?latitude=-37.02702&longitude=143.96214",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.open-meteo.com",
+      "hostKind": "literal",
+      "id": "a100967d8ba2",
+      "location": {
+        "col": 12,
+        "file": "notify.go",
+        "language": "go",
+        "line": 52,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "open-meteo",
+      "query": [
+        "latitude",
+        "longitude",
+      ],
+      "queryShape": {
+        "properties": {
+          "latitude": {
+            "hint": "lat",
+            "type": "string",
+          },
+          "longitude": {
+            "hint": "lon",
+            "type": "string",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.open-meteo.com/v1/forecast",
+    },
+    {
+      "authScheme": "basic",
+      "body": {
+        "properties": {
+          "to": {
+            "hint": "to",
+            "type": "string",
+          },
+        },
+        "required": [
+          "to",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [
+        {
+          "name": "domain",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "to",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "envName": "MAILGUN_API_BASE",
+      "examples": [
+        {
+          "body": {
+            "to": "leo.okafor@example.com",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "authorization": "Basic <base64(user:password)>",
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://{env:MAILGUN_API_BASE}/v3/sable.example.org/messages",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "hostKind": "env",
+      "id": "e1c56aac09f7",
+      "location": {
+        "col": 12,
+        "file": "notify.go",
+        "language": "go",
+        "line": 66,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v3/{domain}/messages",
+      "provider": "mailgun",
+      "query": [],
+      "urlTemplate": "{env:MAILGUN_API_BASE}/v3/{domain}/messages",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "net-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "HEAD",
+          "query": {},
+          "url": "https://api.github.com/zen",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.github.com",
+      "hostKind": "literal",
+      "id": "e65a2e6abef2",
+      "location": {
+        "col": 2,
+        "file": "notify.go",
+        "language": "go",
+        "line": 74,
+      },
+      "method": "HEAD",
+      "optionsOpaque": false,
+      "pathTemplate": "/zen",
+      "provider": "github",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.github.com/zen",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "hint": "event",
+        "type": "string",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "net-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": "Linen harbor saffron saffron river harbor.",
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+            "x-sentry-auth": "Sentry sentry_version=7",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://sentry.io/api/42/store",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "x-sentry-auth": "Sentry sentry_version=7",
+      },
+      "headers": [
+        "x-sentry-auth",
+      ],
+      "host": "sentry.io",
+      "hostKind": "literal",
+      "id": "17c006e21198",
+      "location": {
+        "col": 14,
+        "file": "retry.go",
+        "language": "go",
+        "line": 9,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/42/store",
+      "provider": "sentry",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://sentry.io/api/42/store/",
+    },
+  ],
+  "coverage": {
+    "sdks": [],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 3,
+    "filesSeen": 3,
+    "languages": {
+      "go": {
+        "filesScanned": 3,
+        "filesSeen": 3,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.20.0",
+  "stats": {
+    "byClient": {
+      "net-http": 9,
+    },
+    "byHostKind": {
+      "const": 2,
+      "env": 1,
+      "literal": 6,
+    },
+    "byLanguage": {
+      "go": 9,
+    },
+    "byProvider": {
+      "github": 1,
+      "linear": 1,
+      "mailgun": 1,
+      "open-meteo": 1,
+      "pagerduty": 1,
+      "sentry": 1,
+      "slack": 1,
+      "twilio": 1,
+      "www.githubstatus.com": 1,
+    },
+    "callsFound": 9,
+    "durationMs": 0,
+    "filesScanned": 3,
+    "redacted": 0,
+    "withBodyShape": 6,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
