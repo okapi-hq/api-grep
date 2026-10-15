@@ -7,7 +7,7 @@ import { CoverageSchema, DiagnosticsSchema, LanguageSchema } from "./schema-scan
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.23.0";
+export const SCHEMA_VERSION = "1.24.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
@@ -235,6 +235,12 @@ export const CallSchema = z
     host: z.string().optional().describe("Host, possibly with placeholders (`{project}.supabase.co`). Absent when unknown."),
     hostKind: z.enum(["literal", "const", "env", "relative", "unknown"]).describe("Where the host came from."),
     envName: z.string().optional().describe("Env var holding the base URL, when hostKind is env."),
+    hostAlternatives: z
+      .array(z.string())
+      .optional()
+      .describe(
+        "The base URL is picked at run time from a table the code writes (an object, dict or map read with a key known at run time only, the entry a search of a list returns, one of a helper's returns, an arm of a `match`): the call is reported once per candidate, each copy with its own `host`, and this lists every candidate host, in table order, on each copy. Absent when the host is not picked from a table.",
+      ),
     scheme: z.string().optional(),
     method: z.string().describe("HTTP method, upper case; `DYNAMIC` when it is not known statically."),
     pathTemplate: z.string().describe("Path with `{name}` placeholders for the dynamic segments."),

@@ -4,6 +4,7 @@ import { coverageRows, manifestDirs } from "../../coverage.js";
 import { relativePosix } from "../../files.js";
 import { sdkPackages } from "../../normalize/provider.js";
 import { limitDiagnostics } from "../../operation/limits.js";
+import { tableDiagnostics } from "../../resolve/choice.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
 import { errorText, languageFiles, leftOutFiles, readEnvHints, type LeftOut } from "../files.js";
@@ -114,7 +115,7 @@ function buildAll(raws: IrRaw[], ctx: BuildIrCtx, diag: DiagnosticsCollector): C
     try {
       const built = buildIrCall(raw, ctx);
       calls.push(...built);
-      for (const u of limitDiagnostics(built)) diag.unfollow(u);
+      for (const u of [...limitDiagnostics(built), ...tableDiagnostics(built)]) diag.unfollow(u);
     } catch (err) {
       diag.drop({ file: relativePosix(ctx.rootDir, raw.fn.module.file), line: raw.call.pos.line, reason: "internal-error", detail: errorText(err) });
     }

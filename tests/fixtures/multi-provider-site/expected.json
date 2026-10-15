@@ -1,6 +1,10 @@
 {
   "issue": "https://github.com/okapi-hq/api-grep/issues/5",
   "calls": [
-    {"file": "models.ts", "line": 11, "provider": "unknown"}
+    {"file": "models.ts", "line": 11, "provider": "openai"},
+    {"file": "models.ts", "line": 11, "provider": "groq"},
+    {"file": "models.ts", "line": 11, "provider": "mistral"},
+    {"file": "models.ts", "line": 11, "provider": "together"},
+    {"file": "models.ts", "line": 11, "provider": "deepseek"}
   ]
 }

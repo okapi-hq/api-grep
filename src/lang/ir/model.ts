@@ -43,7 +43,8 @@ export type Expr =
   | { k: "concat"; parts: Expr[] }
   /** `a or b`, `a ?? b`, `a ?: b`: the left side, else the right one. */
   | { k: "or"; left: Expr; right: Expr }
-  | { k: "cond"; then: Expr; else: Expr }
+  /** `match`: one of the arms of a Rust `match`, lowered as a chain of these, each marked (a host table, `resolve/choice.ts`). */
+  | { k: "cond"; then: Expr; else: Expr; match?: boolean }
   /** `"%s/x" % a`, `"{}/x".format(a)`, `sprintf("%s/x", $a)`. */
   | { k: "format"; style: "printf" | "brace"; template: Expr; args: Arg[] }
   /** An environment variable read (`os.getenv("X", "d")`, `getenv('X')`, `env('X', 'd')`) with its default. */

@@ -140,7 +140,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -399,7 +399,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -607,7 +607,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "fetch": 3,
@@ -789,7 +789,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -1064,7 +1064,7 @@ exports[`provider resolution > takes the provider from the env var's name 1`] = 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "fetch": 5,

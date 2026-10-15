@@ -1,5 +1,6 @@
 import type { ClientValues } from "./detect/client-cache.js";
 import type { GraphqlLimit } from "./operation/limits.js";
+import type { Choice } from "./resolve/choice.js";
 import type { CallExpression, Expression, JsxOpeningElement, JsxSelfClosingElement, NewExpression, Node, ParameterDeclaration, VariableDeclaration } from "ts-morph";
 
 /** A JSX element that sends a request as it renders (Relay's `<QueryRenderer>`). */
@@ -28,6 +29,8 @@ export interface EvalCtx {
   envHints?: Record<string, string>;
   /** Reading a caller's argument for a parameter's values (`resolve/param-values.ts`): its own parameters are not followed up. */
   callerLevel?: boolean;
+  /** Host tables (`resolve/choice.ts`): the entry each choice point reads, and the points a call's URL meets. */
+  choice?: Choice;
 }
 
 export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "node-soap" | "sdk" | "framework";

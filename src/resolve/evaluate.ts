@@ -1,11 +1,13 @@
-import { Node, SyntaxKind, type CallExpression, type ElementAccessExpression, type Expression, type PropertyAccessExpression, type VariableDeclaration } from "ts-morph";
+import { Node, SyntaxKind, type CallExpression, type Expression, type PropertyAccessExpression, type VariableDeclaration } from "ts-morph";
 import { classPropertyInitializer } from "../ast/class.js";
 import { constructedName, unwrap } from "../ast/expr.js";
 import { isFunctionLike } from "../ast/function.js";
-import { bindingElementValue, declarationsOf, getProp, paramSubstitution, propertyValue, toObjectLiteral } from "../ast/object.js";
+import { bindingElementValue, declarationsOf, foundEntry, getProp, paramSubstitution } from "../ast/object.js";
 import { identifierOrigin } from "../ast/origin.js";
 import { SCHEME_RE } from "../normalize/path.js";
 import type { DynamicOrigin, EvalCtx, Part, Shape } from "../types.js";
+import { choose } from "./choice.js";
+import { evalElementAccess, fixedValue } from "./table-read.js";
 import { astDocumentParts } from "./graphql-ast.js";
 import { documentParts, importedDocument, printedArgument } from "./graphql-source.js";
 import { libraryUrl } from "./library-urls.js";
@@ -192,22 +194,6 @@ function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] 
   return typeLiteral(u) ?? dyn(u, "unknown");
 }
 
-/** `PRESETS["openai"]` reads that entry; `HOSTS[region]` with an unknown key the first entry with a literal host. */
-function evalElementAccess(u: ElementAccessExpression, ctx: EvalCtx, depth: number): Part[] | undefined {
-  const arg = u.getArgumentExpression();
-  const key = arg && (Node.isStringLiteral(arg) || Node.isNoSubstitutionTemplateLiteral(arg)) ? arg.getLiteralValue() : undefined;
-  if (key !== undefined) {
-    const inner = getProp(u.getExpression(), key, ctx);
-    return inner ? markConst(evaluate(inner, ctx, depth + 1)) : undefined;
-  }
-  for (const member of toObjectLiteral(u.getExpression(), ctx)?.getProperties() ?? []) {
-    const value = propertyValue(member);
-    const parts = value ? evaluate(value, ctx, depth + 1) : undefined;
-    if (parts && hasStaticHost(parts)) return markConst(parts);
-  }
-  return undefined;
-}
-
 function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   const env = envName(u);
   if (env) return [{ kind: "env", name: env }];
@@ -236,6 +222,8 @@ function evalCall(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   }
   const known = libraryUrl(u);
   if (known) return [{ kind: "static", text: known }];
+  const found = foundEntry(u, ctx);
+  if (found) return markConst(evaluate(found, ctx, depth + 1));
   return helperResult(u, ctx, depth) ?? typeLiteral(u) ?? dyn(u, "call");
 }
 
@@ -256,7 +244,8 @@ function evalReplace(u: CallExpression, callee: PropertyAccessExpression, ctx: E
 
 /**
  * What a project URL helper returns, when that says more than the call itself (some static text or an env var). Of
- * several returns (`if (eu) return EU_URL; return URL;`), the first with a literal host, as for a conditional.
+ * several returns (`if (eu) return EU_URL; return URL;`), the one a host table's pick reads (`choice.ts`), else the
+ * first with a literal host, as for a conditional.
  */
 function helperResult(u: Expression, ctx: EvalCtx, depth: number): Part[] | undefined {
   const local = localReturn(u, ctx);
@@ -264,8 +253,12 @@ function helperResult(u: Expression, ctx: EvalCtx, depth: number): Part[] | unde
   const results = local.exprs
     .map((e) => evaluate(e, local.ctx, depth + 1))
     .filter((parts) => parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")));
-  return results.find(hasStaticHost) ?? results[0];
+  // given only values the code knows (`baseUrlFor("cline")`), the helper picks one return the scan cannot tell: no table
+  const args = Node.isCallExpression(u) ? u.getArguments() : [];
+  const table = args.length === 0 || !args.every((a) => Node.isExpression(a) && fixedValue(a, ctx));
+  return (table ? choose(ctx.choice, u.compilerNode, results) : undefined) ?? results.find(hasStaticHost) ?? results[0];
 }
+
 
 function evalTemplate(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   if (!Node.isTemplateExpression(u)) return [];

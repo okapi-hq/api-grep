@@ -5,6 +5,7 @@ import type { ReceiverResolver } from "../../detect/receiver.js";
 import type { Registry } from "../../detect/registry/index.js";
 import { relativePosix } from "../../files.js";
 import { limitDiagnostics } from "../../operation/limits.js";
+import { tableDiagnostics } from "../../resolve/choice.js";
 import type { Call } from "../../report/schema.js";
 import type { RawCall } from "../../types.js";
 import { expandWrappers } from "../../wrappers/detect.js";
@@ -70,7 +71,7 @@ export function buildAll(raws: RawCall[], ctx: BuildCtx, diag: DiagnosticsSink):
     try {
       const built = buildCall(raw, ctx);
       calls.push(...built);
-      for (const u of limitDiagnostics(built)) diag.unfollow(u);
+      for (const u of [...limitDiagnostics(built), ...tableDiagnostics(built)]) diag.unfollow(u);
     } catch (err) {
       diag.drop({ file: relativePosix(ctx.rootDir, raw.node.getSourceFile().getFilePath()), line: lineOf(raw.node), reason: "internal-error", detail: errorText(err) });
     }

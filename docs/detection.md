@@ -329,17 +329,43 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
   the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
   call per call site; different requests from one call site get distinct `id`s.
+- **Host tables**: a base URL picked at run time from a table the code writes is reported once per
+  candidate host, each copy with its own `host`, `provider` and `id`, and every candidate listed in
+  `hostAlternatives`. A table is an object, dict or map read with a key known at run time only
+  (``fetch(`${PROVIDERS[name].baseUrl}/models`)``, `new OpenAI({ baseURL: PROVIDERS[name].baseUrl })`,
+  `PROVIDERS[name]["base_url"]`, `PROVIDERS.get(name)`, Go `baseURLs[name]`; `Object.freeze`, `as const` and
+  `Record<...>` annotations aside), the element a search of a list returns (`LIST.find((p) => p.key === id)`,
+  `Object.values(T).find(...)`, Python `next(d for d in DEFAULTS if d.name == name)` or `[d for d in L if ...][0]`, Rust
+  `PROVIDERS.iter().find(|p| ...)`, Kotlin `PROVIDERS.first { ... }`; a list of dataclass, NamedTuple or struct
+  instances read by field), one of a helper's several returns (an env var with a default in each:
+  `process.env.GEMINI_BASE_URL ?? GEMINI_DEFAULT` / `process.env.OPENAI_BASE_URL ?? "https://..."`; a Go `switch`), or
+  an arm of a Rust `match` a method returns (`fn base_url(&self) -> &str { match self { ... } }`). The table must be
+  the value the call's URL reads: a table shown on a page, or one of paths or models, makes no call. A key the code
+  fixes (a literal, a `const`, an enum member, a wrapper's argument) reads its one entry, and a helper given only such
+  values (or a condition between them: `baseUrlFor(pass ? "a" : "b")`) is no table: it reads as before, since the
+  scan does not tell which return the value selects.
+  What the call reads elsewhere from the same entry reads that entry too: a preset pairing a URL with a model gives
+  each host its own model (`{ chat: "https://api.deepseek.com/v1", chatModel: "deepseek-chat" }`). An entry the scan
+  cannot read a host from is left out; copies that differ by model only are one call naming every model. At most 20
+  candidates: a larger table leaves the call as the scan reads it without the table (an unknown host for a table of
+  objects, the first entry with a literal host for a table of URLs) and a `host-table-limit` entry in
+  `diagnostics.unfollowed`.
 
 ## Limitations
 
 - A conditional (`prod ? A : B`) resolves to its first branch when both are static, else to the
   branch with a literal host (`cloud ? "https://api..." : selfHostedUrl`): the other value is not
-  listed. A helper with several `return`s and a variable assigned in branches read the same way.
+  listed. A variable assigned in branches reads the same way. A helper with several `return`s, a table and a Rust
+  `match` are host tables (above): one call per host.
 - Wrapper expansion stops at four wrappers; the definition-site call is still reported and
   deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
-- A table of URLs indexed by an unknown key (`HOSTS[region]`) reads as its first entry with a
-  literal host; the other hosts are not listed. A table of objects
-  (``fetch(`${PRESETS[name].baseUrl}/models`)``) gives one call with an unknown host.
+- Host tables: only the first table a call's URL reads that tells hosts apart is listed (of the first three it meets);
+  a table nested in another entry reads as before. A table built by code (a loop filling a map, `dict(zip(...))`, a
+  Python `for` returning the matching element, Rust `find_map`), read through a class registry, a factory map of
+  clients or a configuration saved and read back (a settings file, a database row), a Kotlin `when` / Java `switch`,
+  or a Rust `match` on a variant the code fixes (`Upstream::Groq.base_url()` lists every arm) is not read as one;
+  neither are entries spread from another table (`{ ...BASE }`). A helper called with values the code fixes keeps its
+  first return with a literal host (a `switch` on its argument is not evaluated).
 - `data:` / `blob:` URLs (`canvas.toDataURL()`, `URL.createObjectURL()`) and calls forwarded by
   a `window.fetch = ...` override are not requests and are not reported.
 - SDK detection only covers the packages with a registry ([sdk-support.md](sdk-support.md)).
@@ -359,7 +385,8 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   Java: DI-provided clients are followed as in Kotlin; Lombok builders and getters are read from the class's annotations, other annotation
   processors are not run ([languages.md](languages.md#java)).
 - Go: interfaces are not followed (a client behind an interface field has no known implementation), nor are generics,
-  goroutine channels or values a function returns from several `return`s (a URL helper with a fallback). Headers set on
+  goroutine channels or values a function returns from several `return`s outside a URL (a URL helper's are a host
+  table). Headers set on
   a request outside the function that built it (a helper given `req`) are not read. Resty path parameters
   (`SetPathParam`) stay as placeholders. go-openai's Azure configuration and genai's Vertex AI backend and
   `HTTPOptions.BaseURL` are not modelled. A struct's JSON names come from its `json` tags; a field read through a

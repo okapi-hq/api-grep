@@ -27,6 +27,18 @@ exports[`regression fixtures > go/nethttp 1`] = `
 ]
 `;
 
+exports[`regression fixtures > go/provider-tables 1`] = `
+[
+  "proxy.go:28 groq POST /openai/v1/chat/completions",
+  "proxy.go:28 deepseek POST /v1/chat/completions",
+  "proxy.go:32 fireworks GET /inference/v1/models",
+  "proxy.go:32 together GET /v1/models",
+  "proxy.go:32 openai GET /v1/models",
+  "proxy.go:39 groq POST /openai/v1/chat/completions",
+  "proxy.go:39 deepseek POST /v1/chat/completions",
+]
+`;
+
 exports[`regression fixtures > go/resty 1`] = `
 [
   "shop.go:17 lemonsqueezy GET /v1/products",
@@ -864,6 +876,13 @@ exports[`regression fixtures > kotlin/optional-headers 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/provider-tables 1`] = `
+[
+  "Providers.kt:16 groq GET /openai/v1/models",
+  "Providers.kt:16 mistral GET /v1/models",
+]
+`;
+
 exports[`regression fixtures > kotlin/request-starts 1`] = `
 [
   "Pages.kt:8 api.example-pages.com GET /v1/pages (wrapper:Pages.fetch)",
@@ -1080,7 +1099,11 @@ exports[`regression fixtures > kotlin/spring 1`] = `
 
 exports[`regression fixtures > multi-provider-site 1`] = `
 [
-  "models.ts:11 unknown GET /models",
+  "models.ts:11 openai GET /v1/models",
+  "models.ts:11 groq GET /openai/v1/models",
+  "models.ts:11 mistral GET /v1/models",
+  "models.ts:11 together GET /v1/models",
+  "models.ts:11 deepseek GET /models",
 ]
 `;
 
@@ -1368,6 +1391,25 @@ exports[`regression fixtures > python/models 1`] = `
 
 exports[`regression fixtures > python/negatives 1`] = `[]`;
 
+exports[`regression fixtures > python/provider-tables 1`] = `
+[
+  "defaults.py:29 groq POST /openai/v1/chat/completions",
+  "defaults.py:29 mistral POST /v1/chat/completions",
+  "defaults.py:29 together POST /v1/chat/completions",
+  "defaults.py:34 groq POST /openai/v1/chat/completions",
+  "defaults.py:34 mistral POST /v1/chat/completions",
+  "defaults.py:34 together POST /v1/chat/completions",
+  "dicts.py:10 openrouter GET /api/v1/models",
+  "dicts.py:10 api.deepinfra.com GET /v1/openai/models",
+  "dicts.py:15 openrouter POST /api/v1/embeddings",
+  "dicts.py:15 api.deepinfra.com POST /v1/openai/embeddings",
+  "helpers.py:13 groq GET /openai/v1/models",
+  "helpers.py:13 mistral GET /v1/models",
+  "helpers.py:18 unknown GET /models",
+  "unused.py:16 unknown GET /health",
+]
+`;
+
 exports[`regression fixtures > python/receiver/ambiguous 1`] = `[]`;
 
 exports[`regression fixtures > python/receiver/constructor 1`] = `
@@ -1456,6 +1498,7 @@ exports[`regression fixtures > python/resolve/helper-url 1`] = `
 exports[`regression fixtures > python/resolve/host-table 1`] = `
 [
   "mailer.py:15 api.example-mailer.com POST /v3/messages",
+  "mailer.py:15 api.eu.example-mailer.com POST /v3/messages",
   "mailer.py:18 aws POST /",
 ]
 `;
@@ -1785,6 +1828,7 @@ exports[`regression fixtures > python/wrappers/two-hop 1`] = `
 exports[`regression fixtures > resolve/branches 1`] = `
 [
   "mail.ts:7 api.eu.example-mail.com POST /api/v1/transmissions",
+  "mail.ts:7 api.example-mail.com POST /api/v1/transmissions",
   "mail.ts:11 api.example-mail.com GET /v2{path}",
   "mail.ts:21 api.example-charge.com POST /v2{path}",
   "vault.ts:11 api.example-vault.com GET /items",
@@ -1855,6 +1899,7 @@ exports[`regression fixtures > resolve/helper-url 1`] = `
 exports[`regression fixtures > resolve/host-table 1`] = `
 [
   "mailer.ts:7 api.example-mailer.com POST /v3/messages",
+  "mailer.ts:7 api.eu.example-mailer.com POST /v3/messages",
   "mailer.ts:11 api.eu.example-mailer.com POST /v3/messages",
 ]
 `;
@@ -1912,6 +1957,31 @@ exports[`regression fixtures > resolve/placeholders 1`] = `
   "hosts.ts:3 internal GET /api/items",
   "hosts.ts:4 env:REPLIT_CONNECTORS_HOSTNAME GET /api/v2/connection",
   "hosts.ts:5 unknown GET /api/v1/events",
+]
+`;
+
+exports[`regression fixtures > resolve/provider-tables 1`] = `
+[
+  "a-frozen.ts:13 mistral GET /v1/models",
+  "a-frozen.ts:13 together GET /v1/models",
+  "a-object.ts:13 openai POST /v1/chat/completions",
+  "a-object.ts:13 deepseek POST /v1/chat/completions",
+  "a-object.ts:13 groq POST /openai/v1/chat/completions",
+  "a-object.ts:19 openai POST /v1/chat/completions",
+  "a-object.ts:19 deepseek POST /v1/chat/completions",
+  "a-object.ts:19 groq POST /openai/v1/chat/completions",
+  "b-array.ts:13 groq POST /openai/v1/chat/completions",
+  "b-array.ts:13 fireworks POST /inference/v1/chat/completions",
+  "b-array.ts:13 perplexity POST /chat/completions",
+  "c-presets.ts:9 deepseek POST /v1/chat/completions",
+  "c-presets.ts:9 api.siliconflow.cn POST /v1/chat/completions",
+  "c-presets.ts:9 api.moonshot.cn POST /v1/chat/completions",
+  "f-helper.ts:9 google-ai GET /v1beta/openai/models",
+  "f-helper.ts:9 openai GET /v1/models",
+  "g-known-key.ts:17 mistral GET /v1/models",
+  "g-known-key.ts:18 groq GET /openai/v1/models",
+  "negative-unused.ts:14 unknown GET /health",
+  "over-cap.ts:56 unknown GET /status",
 ]
 `;
 
@@ -2171,6 +2241,19 @@ exports[`regression fixtures > rust/clients 1`] = `
 `;
 
 exports[`regression fixtures > rust/negative 1`] = `[]`;
+
+exports[`regression fixtures > rust/provider-tables 1`] = `
+[
+  "providers.rs:22 mistral POST /v1/chat/completions",
+  "providers.rs:22 groq POST /openai/v1/chat/completions",
+  "providers.rs:22 cerebras POST /v1/chat/completions",
+  "providers.rs:29 mistral POST /v1/chat/completions",
+  "providers.rs:29 groq POST /openai/v1/chat/completions",
+  "providers.rs:29 cerebras POST /v1/chat/completions",
+  "search.rs:13 together GET /v1/models",
+  "search.rs:13 fireworks GET /inference/v1/models",
+]
+`;
 
 exports[`regression fixtures > rust/reqwest 1`] = `
 [

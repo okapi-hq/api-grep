@@ -298,6 +298,36 @@ An SDK call made on an untyped parameter (`def ask(client, prompt): client.messa
 A call whose client neither the callers nor the manifests settle is listed in `diagnostics.unfollowed` as
 `receiver-unknown`. Details in [languages.md](languages.md#sdk-clients-passed-as-untyped-parameters-37).
 
+## Hosts picked from a table
+
+A call whose base URL the code picks at run time from a table it writes (`PROVIDERS[name].baseUrl`,
+`LIST.find((p) => p.key === id).url`, `next(d for d in DEFAULTS if d.name == name).base_url`, a helper with several
+returns, a Rust `match`; [detection.md](detection.md#how-a-call-is-resolved)) is reported once per candidate host
+(schema 1.24). Each copy has its own `host`, `hostKind`, `provider` and `id` (the place's, then `#1`, `#2`… in table
+order, as for the requests a wrapper sends from one place), and all of them carry `hostAlternatives`, every
+candidate host in table order:
+
+```yaml
+  # const preset = PRESETS[kind]; fetch(`${preset.chat}/chat/completions`, { body: JSON.stringify({ model: preset.chatModel, ... }) })
+  - id: 1d07404ef65e
+    provider: deepseek
+    host: api.deepseek.com
+    hostKind: const
+    hostAlternatives: [api.deepseek.com, api.siliconflow.cn, api.moonshot.cn]
+    model: { values: [deepseek-chat], dynamic: false, from: body }   # the model the same entry names
+  - id: 677142953cf2
+    provider: api.siliconflow.cn
+    host: api.siliconflow.cn
+    hostKind: const
+    hostAlternatives: [api.deepseek.com, api.siliconflow.cn, api.moonshot.cn]
+    model: { values: [Qwen/Qwen2.5-7B-Instruct], dynamic: false, from: body }
+```
+
+The copies are one place in the code: count `hostAlternatives` groups, not calls, to count call sites. An entry the
+scan reads no host from (a URL from user settings) is left out. A table of more than 20 entries is not listed: the
+call is reported once, as read without the table, with a `host-table-limit` entry in `diagnostics.unfollowed`
+(`"detail": "50 candidates (at most 20)"`).
+
 ## Contract
 
 The format is specified by a JSON Schema (draft-07), [`schema/report.v1.json`](../schema/report.v1.json),
@@ -371,8 +401,11 @@ union branches and booleans. Secret-looking keys and headers (`token`, `api_key`
   visited inlining fragments), `fields` (2,000 field paths), `operations` (50 operations in one request), `ast-size`,
   `ast-nodes`, `ast-nesting` (a document written as its AST: 4,000,000 characters, 200,000 values, 128 levels). One
   entry per location and bound; a document the code does not hold (a persisted query) is not one.
+  `host-table-limit` (schema 1.24) is a call whose base URL is picked from a table of more than 20 entries
+  ([Hosts picked from a table](#hosts-picked-from-a-table)): it is reported once, and `detail` gives the table's size.
 - `complete` is false when something was lost that was not asked for: a skipped file (other than
-  `--exclude` / `--include`), a dropped call, a call not followed or a GraphQL document not fully read.
+  `--exclude` / `--include`), a dropped call, a call not followed, a GraphQL document not fully read or a host table
+  too large to list.
 
 The table ends with one line: `scanned 1702/1840 files, 3 skipped, 12 calls not followed, 1 GraphQL document not fully read`.
 Skipped files and dropped calls are also printed to stderr as `warning:` lines.
@@ -468,6 +501,7 @@ pattern):
     Rust front end reports no call from them either), Vitest's in-source `if (import.meta.vitest)` blocks.
 - `explained`: named hosts that are the host of at least one call in `calls`, case and port aside; a call's host
   template (`{project}.supabase.co`) explains the hosts it matches, one with no literal domain (`{baseUrl}`) none.
+  Each copy of a call picked from a host table explains its own host.
 - `unexplained`: the others, most files first, then by host, at most 200 (`named - explained` counts them all).
   `first` is the first place the host is named by file path, then line, and `language` that file's.
 

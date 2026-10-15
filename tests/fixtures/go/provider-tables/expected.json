@@ -1,0 +1,12 @@
+{
+  "issue": "host tables: a base URL picked at run time from a table of providers",
+  "calls": [
+    {"file": "proxy.go", "line": 28, "provider": "groq"},
+    {"file": "proxy.go", "line": 28, "provider": "deepseek"},
+    {"file": "proxy.go", "line": 32, "provider": "fireworks"},
+    {"file": "proxy.go", "line": 32, "provider": "together"},
+    {"file": "proxy.go", "line": 32, "provider": "openai"},
+    {"file": "proxy.go", "line": 39, "provider": "groq"},
+    {"file": "proxy.go", "line": 39, "provider": "deepseek"}
+  ]
+}
