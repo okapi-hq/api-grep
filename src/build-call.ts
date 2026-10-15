@@ -18,6 +18,7 @@ import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
 import { unionOf, wrapShape } from "./resolve/shape-utils.js";
 import { withEdits } from "./resolve/edited-shape.js";
+import { withFieldArgs } from "./resolve/field-args.js";
 import { resolveMethod } from "./resolve/method.js";
 import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
@@ -138,8 +139,9 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
   // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
   const bodyCtx = raw.sdk?.anyHost ? { ...ctx, callerLevel: true } : ctx;
-  const body = raw.bodyAlternatives ? alternativeBodies(raw.bodyAlternatives, bodyCtx) : resolveBody(raw.bodyExpr, bodyCtx, defaultEncoding(raw, method));
+  let body = raw.bodyAlternatives ? alternativeBodies(raw.bodyAlternatives, bodyCtx) : resolveBody(raw.bodyExpr, bodyCtx, defaultEncoding(raw, method));
   if (raw.sdk?.spec.clientKwargs) body.shape = withoutClientSettings(body.shape);
+  if (raw.sdk?.spec.fieldArgs) body = withFieldArgs(body, raw.sdk.spec.fieldArgs, raw.sdk.args, bodyCtx, defaultEncoding(raw, method));
   // a record sends the properties the code set on it (`product.title = t; product.save()`)
   if (raw.record && raw.sdk?.spec.record?.body) {
     body.shape = withEdits(empty(), raw.record.decl, raw.node, (e) => shapeOf(e, ctx), body.dynamic);

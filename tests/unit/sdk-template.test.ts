@@ -38,6 +38,30 @@ describe("paths a library picks by the ids it is given (#92)", () => {
   });
 });
 
+describe("route helpers (discord.js `Routes`)", () => {
+  const put: MethodSpec = { method: "PUT", path: "/api/v10{route}", params: { route: "arg:0" }, routeHelperArg: 0 };
+  const routes = { applicationGuildCommands: "/applications/{application_id}/guilds/{guild_id}/commands" };
+  /** `rest.put(<route>)`: a helper call written as `helper(a,b)`, or a route string. */
+  const routed = (route: string): SdkSource<string> => ({
+    ...source(put, { "arg:0": route }),
+    host: "discord.com",
+    arg: (i) => (i === 0 ? route : undefined),
+    routes,
+    routeCall: (e) => {
+      const m = /^(\w+)\((.*)\)$/.exec(e);
+      return m ? { name: m[1]!, args: m[2]!.split(",") } : undefined;
+    },
+  });
+
+  it("writes the helper's path, its arguments filling the placeholders in order", () => {
+    expect(sdkTarget(routed("applicationGuildCommands(app,guild)"))).toMatchObject({ method: "PUT", url: { pathTemplate: "/api/v10/applications/app/guilds/guild/commands" } });
+  });
+
+  it("takes a route written as a string as it is", () => {
+    expect(sdkTarget(routed("/users/@me")).url.pathTemplate).toBe("/api/v10/users/@me");
+  });
+});
+
 describe("wrapShape", () => {
   const message: Shape = { type: "string" };
 

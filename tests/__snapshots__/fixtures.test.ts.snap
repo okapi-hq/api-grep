@@ -9571,15 +9571,15 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 58,
+    "filesSeen": 66,
     "languages": {
       "javascript": {
         "filesScanned": 0,
-        "filesSeen": 4,
+        "filesSeen": 6,
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 54,
+        "filesSeen": 60,
       },
     },
     "skipped": [
@@ -9608,6 +9608,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "discord-js/bot.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "discord-js/deploy.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "firebase-modular/firebase.ts",
         "reason": "excluded",
       },
@@ -9628,7 +9636,23 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "grammy/bot.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "huggingface/hf.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "lemonsqueezy/billing.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/calls.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/clients.ts",
         "reason": "excluded",
       },
       {
@@ -9752,6 +9776,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "telegraf/bot.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "telegram-node/bot.js",
+        "reason": "excluded",
+      },
+      {
         "file": "unread-base-url/clients.ts",
         "reason": "excluded",
       },
@@ -9785,7 +9817,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 50,
+      "excluded": 58,
     },
     "unfollowed": [],
   },

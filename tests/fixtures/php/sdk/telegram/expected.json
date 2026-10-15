@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "Bot.php", "line": 19, "provider": "telegram"},
+    {"file": "Bot.php", "line": 24, "provider": "telegram"},
+    {"file": "Bot.php", "line": 29, "provider": "telegram"},
+    {"file": "Bot.php", "line": 30, "provider": "telegram"},
+    {"file": "Bot.php", "line": 31, "provider": "telegram"}
+  ]
+}

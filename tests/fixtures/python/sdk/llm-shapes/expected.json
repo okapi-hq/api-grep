@@ -1,0 +1,20 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "api.py", "line": 19, "provider": "openai"},
+    {"file": "api.py", "line": 24, "provider": "openai"},
+    {"file": "api.py", "line": 29, "provider": "openai"},
+    {"file": "helpers.py", "line": 8, "provider": "anthropic"},
+    {"file": "helpers.py", "line": 12, "provider": "google-ai"},
+    {"file": "helpers.py", "line": 18, "provider": "anthropic"},
+    {"file": "helpers.py", "line": 23, "provider": "openai"},
+    {"file": "helpers.py", "line": 27, "provider": "openai"},
+    {"file": "helpers.py", "line": 32, "provider": "openai"},
+    {"file": "service.py", "line": 20, "provider": "openai"},
+    {"file": "service.py", "line": 28, "provider": "anthropic"},
+    {"file": "service.py", "line": 31, "provider": "openai"},
+    {"file": "service.py", "line": 38, "provider": "anthropic"},
+    {"file": "service.py", "line": 45, "provider": "openai"},
+    {"file": "service.py", "line": 53, "provider": "openai"}
+  ]
+}

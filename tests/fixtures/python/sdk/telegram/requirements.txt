@@ -1,0 +1,3 @@
+python-telegram-bot==21.6
+aiogram==3.13
+pyTelegramBotAPI==4.23

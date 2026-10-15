@@ -1753,16 +1753,64 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 3,
-    "filesSeen": 6,
+    "filesSeen": 23,
     "languages": {
       "python": {
         "filesScanned": 3,
-        "filesSeen": 6,
+        "filesSeen": 23,
       },
     },
     "skipped": [
       {
+        "file": "discord/bot.py",
+        "reason": "excluded",
+      },
+      {
         "file": "firebase/store.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "huggingface/infer.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-clients/a_agents.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-clients/b_fallback.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-clients/b_loop.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-clients/c_alias.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-clients/d_provider.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/api.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/clients.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/helpers.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/routing.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/service.py",
         "reason": "excluded",
       },
       {
@@ -1773,9 +1821,29 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "file": "supabase/db.py",
         "reason": "excluded",
       },
+      {
+        "file": "telegram/aio_bot.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "telegram/ptb_bot.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "telegram/tele_bot.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/agents/__init__.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "llm-shapes/agents/router.py",
+        "reason": "excluded",
+      },
     ],
     "skippedCounts": {
-      "excluded": 3,
+      "excluded": 20,
     },
     "unfollowed": [],
   },

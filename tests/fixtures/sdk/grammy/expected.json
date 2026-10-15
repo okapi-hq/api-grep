@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "bot.ts", "line": 5, "provider": "telegram"},
+    {"file": "bot.ts", "line": 7, "provider": "telegram"},
+    {"file": "bot.ts", "line": 8, "provider": "telegram"},
+    {"file": "bot.ts", "line": 11, "provider": "telegram"},
+    {"file": "bot.ts", "line": 12, "provider": "telegram"}
+  ]
+}

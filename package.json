@@ -68,6 +68,7 @@
     "gen:registry": "tsx scripts/gen-registry.ts",
     "gen:schema": "tsx scripts/gen-schema.ts",
     "gen:stripe-ports": "tsx scripts/port-stripe.ts",
+    "gen:telegram": "tsx scripts/gen-telegram.ts",
     "gen:support": "tsx scripts/gen-support.ts",
     "prepare": "husky"
   },

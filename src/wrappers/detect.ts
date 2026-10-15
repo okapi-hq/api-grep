@@ -28,7 +28,7 @@ function wrapperName(fn: FunctionLike): string {
  */
 function requestArgs(sdk: SdkMatch): Expression[] {
   const { spec } = sdk;
-  const idx = [spec.bodyArg, spec.queryArg, spec.routeArg, ...(spec.pathArgs ?? [])];
+  const idx = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.routeHelperArg, ...(spec.pathArgs ?? []), ...(spec.fieldArgs ?? []).map((f, i) => (f ? i : undefined))];
   for (const from of Object.values(spec.params ?? {})) {
     const m = /^(?:arg|ref|fn):(\d+)/.exec(from);
     if (m) idx.push(Number(m[1]));

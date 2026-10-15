@@ -22,6 +22,11 @@ export interface IrMethodSpec extends MethodSpec {
   queryKwargs?: boolean;
   /** The keyword argument holding the model of a model client or an agent (`ChatOpenAI(model=...)`). */
   modelKw?: string;
+  /**
+   * The calls of the chain (by name) whose argument 0 or `model=` is the model when the method is given none
+   * (`InferenceClient(model="...").text_generation(prompt)`).
+   */
+  modelSeg?: string[];
   /** The keyword argument holding the GraphQL document, when it is not `document` (sgqlc and ShopifyAPI: `query`). */
   documentKw?: string;
   /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */

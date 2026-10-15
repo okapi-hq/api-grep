@@ -188,7 +188,10 @@ export class ReceiverResolver {
     const entries = client && method ? this.contextEntries().get(client) : undefined;
     const key = `${client}.${method}`;
     const declared = entries ? this.declared(node.getSourceFile().getFilePath()) : undefined;
-    const entry = entries?.find((e) => !!e.methods && Object.hasOwn(e.methods, key) && [e.package, ...(e.aliases ?? [])].some((p) => declared!.has(p)));
+    const fit = entries?.filter((e) => !!e.methods && Object.hasOwn(e.methods, key) && [e.package, ...(e.aliases ?? [])].some((p) => declared!.has(p)));
+    // two libraries naming their context alike (telegraf's and grammY's `ctx.reply`): the one the file imports
+    const imports = fit && fit.length > 1 ? new Set(node.getSourceFile().getImportDeclarations().map((d) => d.getModuleSpecifierValue())) : undefined;
+    const entry = fit?.find((e) => imports?.has(e.package)) ?? fit?.[0];
     if (!entry || (names.length === 2 && builtHere(mc.root))) return undefined;
     const raw = detectSdk(node, { package: entry.package, chain: [client!, method!], viaType: true }, this.registry);
     return raw ? { ...raw, clientFrom: "manifest" } : undefined;

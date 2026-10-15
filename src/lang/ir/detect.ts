@@ -39,7 +39,16 @@ export function detectCall(call: CallExpr, fn: FunctionDef, ctx: IrCtx): { raw?:
     const raw = d(call, fn, ctx, chain);
     if (raw) return { raw, chain };
   }
-  return { raw: detectSdk(chain, call, fn, ctx) ?? detectHttp(chain, call, fn, ctx), chain };
+  return { raw: detectSdk(chain, call, fn, ctx) ?? alternativeSdk(chain, call, fn, ctx) ?? detectHttp(chain, call, fn, ctx), chain };
+}
+
+/** A factory that may return clients of several SDKs: the one whose registry has the method called. */
+function alternativeSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
+  for (const alt of chain.alternatives ?? []) {
+    const raw = detectSdk(alt, call, fn, ctx);
+    if (raw) return raw;
+  }
+  return undefined;
 }
 
 const URL_NAME = /url|uri|href|endpoint|path|link|route/i;

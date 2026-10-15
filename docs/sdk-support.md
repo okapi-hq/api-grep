@@ -8,9 +8,9 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 102 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
-| Python (PyPI) | 46 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
-| PHP (Composer) | 27 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream`, `php-soap` |
+| TypeScript / JavaScript (npm) | 108 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| Python (PyPI) | 54 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
+| PHP (Composer) | 28 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream`, `php-soap` |
 | Kotlin and Java (Maven) | 77 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
 | Go (modules) | 6 | `net-http`, `resty` |
 | Rust (crates.io) | 5 | `reqwest`, `isahc`, `ureq`, `awc`, `surf` |
@@ -62,12 +62,12 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Cerebras | **`@ai-sdk/cerebras`**, `@cerebras/cerebras_cloud_sdk` | `cerebras-cloud-sdk`, `langchain-cerebras` |  |  |  |  |
 | Cohere | `cohere-ai`, **`@ai-sdk/cohere`** | **`cohere`**, `langchain-cohere` |  | `com.cohere:cohere-java` |  |  |
 | Replicate | `replicate` | `replicate` |  |  |  |  |
-| Hugging Face | `@huggingface/inference` | `huggingface-hub`, `langchain-huggingface` |  |  |  |  |
+| Hugging Face | **`@huggingface/inference`** | **`huggingface-hub`**, `langchain-huggingface` |  |  |  |  |
 | ElevenLabs | `elevenlabs`, `@elevenlabs/elevenlabs-js` | **`elevenlabs`** |  |  |  |  |
 | Meta Graph API | `facebook-nodejs-business-sdk` | `facebook-business` | `facebook/graph-sdk`, `facebook/php-business-sdk` | `com.facebook.android:facebook-android-sdk`, `com.facebook.android:facebook-login`, `com.facebook.business.sdk:facebook-java-business-sdk` |  |  |
 | VirusTotal |  | `vt-py` |  |  |  |  |
-| Telegram | `telegraf`, `node-telegram-bot-api`, `grammy` | `python-telegram-bot`, `pyTelegramBotAPI`, `aiogram` | `irazasyed/telegram-bot-sdk`, `longman/telegram-bot`, `telegram-bot/api`, `laravel-notification-channels/telegram`, `symfony/telegram-notifier` | `org.telegram:telegrambots`, `com.github.pengrad:java-telegram-bot-api` | `github.com/go-telegram-bot-api/telegram-bot-api/v5`, `github.com/go-telegram/bot`, `gopkg.in/telebot.v3`, `gopkg.in/telebot.v4` | **`teloxide`**, **`teloxide-core`**, `frankenstein` |
-| Discord | `discord.js`, `@discordjs/rest`, `discord-oauth2` | `discord.py`, `py-cord`, `nextcord`, `disnake` | `team-reflex/discord-php`, `restcord/restcord`, `laravel-notification-channels/discord`, `symfony/discord-notifier` | `net.dv8tion:JDA`, `com.discord4j:discord4j-core`, `dev.kord:kord-core` | `github.com/bwmarrin/discordgo` | **`serenity`**, `twilight-http` |
+| Telegram | **`telegraf`**, **`node-telegram-bot-api`**, **`grammy`** | **`python-telegram-bot`**, **`pyTelegramBotAPI`**, **`aiogram`** | **`irazasyed/telegram-bot-sdk`**, `longman/telegram-bot`, `telegram-bot/api`, `laravel-notification-channels/telegram`, `symfony/telegram-notifier` | `org.telegram:telegrambots`, `com.github.pengrad:java-telegram-bot-api` | `github.com/go-telegram-bot-api/telegram-bot-api/v5`, `github.com/go-telegram/bot`, `gopkg.in/telebot.v3`, `gopkg.in/telebot.v4` | **`teloxide`**, **`teloxide-core`**, `frankenstein` |
+| Discord | **`discord.js`**, **`@discordjs/rest`**, `discord-oauth2` | **`discord.py`**, **`py-cord`**, **`nextcord`**, **`disnake`** | `team-reflex/discord-php`, `restcord/restcord`, `laravel-notification-channels/discord`, `symfony/discord-notifier` | `net.dv8tion:JDA`, `com.discord4j:discord4j-core`, `dev.kord:kord-core` | `github.com/bwmarrin/discordgo` | **`serenity`**, `twilight-http` |
 | Intercom | `intercom-client` | `python-intercom` | `intercom/intercom-php` | `io.intercom.android:intercom-sdk`, `io.intercom:intercom-java` |  |  |
 | Segment | `@segment/analytics-node` | `segment-analytics-python`, `analytics-python` | `segmentio/analytics-php` | `com.segment.analytics.kotlin:android`, `com.segment.analytics.java:analytics`, `com.segment.analytics.android:analytics` |  |  |
 | Mixpanel | `mixpanel` | `mixpanel` | `mixpanel/mixpanel-php` | `com.mixpanel.android:mixpanel-android`, `com.mixpanel:mixpanel-java` |  |  |

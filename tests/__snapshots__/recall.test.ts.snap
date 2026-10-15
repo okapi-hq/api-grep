@@ -1214,6 +1214,16 @@ exports[`regression fixtures > php/sdk/sentry 1`] = `
 ]
 `;
 
+exports[`regression fixtures > php/sdk/telegram 1`] = `
+[
+  "Bot.php:19 telegram POST /bot{token}/sendMessage",
+  "Bot.php:24 telegram POST /bot{token}/sendPhoto",
+  "Bot.php:29 telegram POST /bot{token}/setWebhook",
+  "Bot.php:30 telegram POST /bot{token}/getMe",
+  "Bot.php:31 telegram POST /bot{token}/deleteWebhook",
+]
+`;
+
 exports[`regression fixtures > php/soap 1`] = `
 [
   "Carrier.php:22 ws.example-carrier.com POST /track/v2 Rates",
@@ -1535,6 +1545,21 @@ exports[`regression fixtures > python/rpc-contracts 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/discord 1`] = `
+[
+  "bot.py:14 discord PUT /api/v10/applications/{application_id}/commands",
+  "bot.py:20 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.py:25 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "bot.py:26 discord POST /api/v10/webhooks/{application_id}/{interaction_token}",
+  "bot.py:31 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.py:36 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.py:37 discord GET /api/v10/users/{user_id}",
+  "bot.py:42 discord PUT /api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+  "bot.py:43 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.py:46 discord GET /api/v10/users/@me",
+]
+`;
+
 exports[`regression fixtures > python/sdk/firebase 1`] = `
 [
   "store.py:9 firebase GET /v1/projects/{projectId}/databases/(default)/documents/users",
@@ -1542,6 +1567,55 @@ exports[`regression fixtures > python/sdk/firebase 1`] = `
   "store.py:17 firebase POST /v1/projects/{projectId}/databases/(default)/documents/users/{uid}/posts",
   "store.py:21 firebase POST /v1/projects/{projectId}/accounts",
   "store.py:25 firebase POST /v1/projects/{projectId}/messages:send",
+]
+`;
+
+exports[`regression fixtures > python/sdk/huggingface 1`] = `
+[
+  "infer.py:8 huggingface POST /v1/chat/completions",
+  "infer.py:13 huggingface POST /v1/chat/completions",
+  "infer.py:17 huggingface POST /hf-inference/models/{model}",
+  "infer.py:21 huggingface POST /hf-inference/models/{model}",
+  "infer.py:25 huggingface GET /{repo_id}/resolve/{revision}/{filename}",
+]
+`;
+
+exports[`regression fixtures > python/sdk/llm-clients 1`] = `
+[
+  "a_agents.py:30 anthropic POST /v1/messages",
+  "a_agents.py:32 openai POST /v1/chat/completions",
+  "a_agents.py:38 anthropic POST /v1/messages (wrapper:LLMAgent.ask)",
+  "a_agents.py:38 openai POST /v1/chat/completions (wrapper:LLMAgent.ask)",
+  "b_fallback.py:9 openai POST /chat/completions",
+  "b_fallback.py:20 openai POST /chat/completions (wrapper:_test_query)",
+  "b_loop.py:13 openai POST /chat/completions",
+  "b_loop.py:20 openai POST /chat/completions (wrapper:_test_query)",
+  "b_loop.py:25 openai POST /chat/completions",
+  "b_loop.py:31 openai POST /chat/completions (wrapper:_ask_pool)",
+  "c_alias.py:36 anthropic POST /v1/messages",
+  "c_alias.py:39 anthropic POST /v1/messages",
+  "d_provider.py:26 anthropic POST /v1/messages",
+  "d_provider.py:31 openai POST /v1/chat/completions",
+]
+`;
+
+exports[`regression fixtures > python/sdk/llm-shapes 1`] = `
+[
+  "api.py:19 openai POST /v1/chat/completions",
+  "api.py:24 openai POST /v1/responses",
+  "api.py:29 openai POST /v1/embeddings",
+  "helpers.py:8 anthropic POST /v1/messages",
+  "helpers.py:12 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "helpers.py:18 anthropic POST /v1/messages",
+  "helpers.py:23 openai POST /v1/embeddings",
+  "helpers.py:27 openai POST /v1/chat/completions",
+  "helpers.py:32 openai POST /v1/chat/completions",
+  "service.py:20 openai POST /v1/chat/completions",
+  "service.py:28 anthropic POST /v1/messages",
+  "service.py:31 openai POST /v1/chat/completions",
+  "service.py:38 anthropic POST /v1/messages",
+  "service.py:45 openai POST /v1/embeddings",
+  "service.py:53 openai POST /v1/moderations",
 ]
 `;
 
@@ -1565,6 +1639,27 @@ exports[`regression fixtures > python/sdk/supabase 1`] = `
   "db.py:37 supabase POST /functions/v1/send-welcome",
   "db.py:42 supabase DELETE /rest/v1/tasks",
   "db.py:46 supabase GET /rest/v1/teams",
+]
+`;
+
+exports[`regression fixtures > python/sdk/telegram 1`] = `
+[
+  "aio_bot.py:11 telegram POST /bot{token}/sendMessage",
+  "aio_bot.py:12 telegram POST /bot{token}/sendPhoto",
+  "aio_bot.py:17 telegram POST /bot{token}/answerCallbackQuery",
+  "aio_bot.py:18 telegram POST /bot{token}/editMessageText",
+  "aio_bot.py:22 telegram POST /bot{token}/sendMessage",
+  "aio_bot.py:23 telegram POST /bot{token}/deleteMessage",
+  "ptb_bot.py:9 telegram POST /bot{token}/sendMessage",
+  "ptb_bot.py:10 telegram POST /bot{token}/sendMessage",
+  "ptb_bot.py:15 telegram POST /bot{token}/answerCallbackQuery",
+  "ptb_bot.py:16 telegram POST /bot{token}/editMessageText",
+  "ptb_bot.py:20 telegram POST /bot{token}/sendPhoto",
+  "ptb_bot.py:25 telegram POST /bot{token}/sendMessage",
+  "ptb_bot.py:31 telegram POST /bot{token}/setMyCommands",
+  "tele_bot.py:9 telegram POST /bot{token}/sendMessage",
+  "tele_bot.py:10 telegram POST /bot{token}/sendMessage",
+  "tele_bot.py:11 telegram GET /bot{token}/getMe",
 ]
 `;
 
@@ -2166,6 +2261,24 @@ exports[`regression fixtures > sdk/discord 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/discord-js 1`] = `
+[
+  "bot.js:6 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.js:7 discord PUT /api/v10/channels/{channel_id}/messages/{message_id}/reactions/👍/@me",
+  "bot.js:8 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.js:13 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "bot.js:14 discord PATCH /api/v10/webhooks/{application_id}/{interaction_token}/messages/@original",
+  "bot.js:15 discord GET /api/v10/guilds/{guild_id}/members",
+  "bot.js:20 discord GET /api/v10/channels/{channel_id}",
+  "bot.js:21 discord POST /api/v10/channels/{channel_id}/messages",
+  "bot.js:24 discord GET /api/v10/gateway/bot",
+  "deploy.ts:6 discord PUT /api/v10/applications/{application_id}/commands",
+  "deploy.ts:7 discord PUT /api/v10/applications/{application_id}/guilds/{guild_id}/commands",
+  "deploy.ts:9 discord POST /api/v10/channels/123/messages",
+  "deploy.ts:10 discord GET /api/v10/users/@me",
+]
+`;
+
 exports[`regression fixtures > sdk/firebase-modular 1`] = `
 [
   "session.ts:4 firebase POST /v1/accounts:signInWithIdp",
@@ -2186,6 +2299,24 @@ exports[`regression fixtures > sdk/gemini 1`] = `
   "genai.ts:6 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
   "genai.ts:12 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
   "legacy.ts:7 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/grammy 1`] = `
+[
+  "bot.ts:5 telegram POST /bot{token}/sendMessage",
+  "bot.ts:7 telegram POST /bot{token}/sendChatAction",
+  "bot.ts:8 telegram POST /bot{token}/setMessageReaction",
+  "bot.ts:11 telegram POST /bot{token}/sendMessage",
+  "bot.ts:12 telegram POST /bot{token}/deleteMessage",
+]
+`;
+
+exports[`regression fixtures > sdk/huggingface 1`] = `
+[
+  "hf.ts:6 huggingface POST /v1/chat/completions",
+  "hf.ts:9 huggingface POST /hf-inference/models/gpt2",
+  "hf.ts:10 huggingface POST /hf-inference/models/stabilityai/stable-diffusion-2",
 ]
 `;
 
@@ -2399,6 +2530,25 @@ exports[`regression fixtures > sdk/supabase 1`] = `
   "tasks.ts:30 supabase POST /auth/v1/token",
   "tasks.ts:33 supabase POST /storage/v1/object/avatars/{userId}/avatar.png",
   "tasks.ts:36 supabase POST /functions/v1/notify-assignee",
+]
+`;
+
+exports[`regression fixtures > sdk/telegraf 1`] = `
+[
+  "bot.ts:5 telegram POST /bot{token}/sendMessage",
+  "bot.ts:6 telegram POST /bot{token}/sendPhoto",
+  "bot.ts:8 telegram POST /bot{token}/answerCallbackQuery",
+  "bot.ts:9 telegram POST /bot{token}/sendMessage",
+  "bot.ts:13 telegram POST /bot{token}/sendMessage",
+]
+`;
+
+exports[`regression fixtures > sdk/telegram-node 1`] = `
+[
+  "bot.js:6 telegram POST /bot{token}/sendMessage",
+  "bot.js:10 telegram POST /bot{token}/sendPhoto",
+  "bot.js:13 telegram POST /bot{token}/editMessageText",
+  "bot.js:14 telegram POST /bot{token}/setWebhook",
 ]
 `;
 

@@ -20,7 +20,8 @@
   },
   "builders": [
     "with_raw_response",
-    "with_streaming_response"
+    "with_streaming_response",
+    "with_options"
   ],
   "methods": {
     "chat.completions.create": {"method": "POST", "path": "/openai/deployments/{model}/chat/completions", "params": {"model": "kw:model"}, "bodyKwargs": true},

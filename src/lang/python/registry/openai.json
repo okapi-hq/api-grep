@@ -25,7 +25,8 @@
   "basePath": "/v1",
   "builders": [
     "with_raw_response",
-    "with_streaming_response"
+    "with_streaming_response",
+    "with_options"
   ],
   "methods": {
     "chat.completions.create": {"method": "POST", "path": "/v1/chat/completions", "bodyKwargs": true, "operationId": "createChatCompletion"},

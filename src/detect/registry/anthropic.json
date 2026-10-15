@@ -23,6 +23,24 @@
     "beta.files.delete": {"method": "DELETE", "path": "/v1/files/{file_id}", "pathArgs": [0]},
     "models.list": {"method": "GET", "path": "/v1/models", "queryArg": 0},
     "models.retrieve": {"method": "GET", "path": "/v1/models/{model_id}", "pathArgs": [0]},
-    "completions.create": {"method": "POST", "path": "/v1/complete", "bodyArg": 0}
+    "completions.create": {"method": "POST", "path": "/v1/complete", "bodyArg": 0},
+    "messages.parse": { "method": "POST", "path": "/v1/messages", "bodyArg": 0 },
+    "messages.batches.delete": { "method": "DELETE", "path": "/v1/messages/batches/{message_batch_id}", "pathArgs": [0] },
+    "beta.messages.parse": { "method": "POST", "path": "/v1/messages", "bodyArg": 0 },
+    "beta.messages.batches.retrieve": { "method": "GET", "path": "/v1/messages/batches/{message_batch_id}", "pathArgs": [0] },
+    "beta.messages.batches.list": { "method": "GET", "path": "/v1/messages/batches", "queryArg": 0 },
+    "beta.messages.batches.cancel": { "method": "POST", "path": "/v1/messages/batches/{message_batch_id}/cancel", "pathArgs": [0] },
+    "beta.messages.batches.delete": { "method": "DELETE", "path": "/v1/messages/batches/{message_batch_id}", "pathArgs": [0] },
+    "beta.messages.batches.results": { "method": "GET", "path": "/v1/messages/batches/{message_batch_id}/results", "pathArgs": [0] },
+    "files.upload": { "method": "POST", "path": "/v1/files", "bodyArg": 0, "encoding": "multipart" },
+    "files.list": { "method": "GET", "path": "/v1/files", "queryArg": 0 },
+    "files.retrieveMetadata": { "method": "GET", "path": "/v1/files/{file_id}", "pathArgs": [0] },
+    "files.download": { "method": "GET", "path": "/v1/files/{file_id}/content", "pathArgs": [0] },
+    "files.delete": { "method": "DELETE", "path": "/v1/files/{file_id}", "pathArgs": [0] },
+    "beta.files.retrieveMetadata": { "method": "GET", "path": "/v1/files/{file_id}", "pathArgs": [0] },
+    "beta.files.download": { "method": "GET", "path": "/v1/files/{file_id}/content", "pathArgs": [0] },
+    "beta.models.list": { "method": "GET", "path": "/v1/models", "queryArg": 0 },
+    "beta.models.retrieve": { "method": "GET", "path": "/v1/models/{model_id}", "pathArgs": [0] },
+    "beta.messages.toolRunner": { "method": "POST", "path": "/v1/messages", "bodyArg": 0 }
   }
 }

@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "infer.py", "line": 8, "provider": "huggingface"},
+    {"file": "infer.py", "line": 13, "provider": "huggingface"},
+    {"file": "infer.py", "line": 17, "provider": "huggingface"},
+    {"file": "infer.py", "line": 21, "provider": "huggingface"},
+    {"file": "infer.py", "line": 25, "provider": "huggingface"}
+  ]
+}

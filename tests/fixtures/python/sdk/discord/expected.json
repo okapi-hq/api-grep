@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "bot.py", "line": 14, "provider": "discord"},
+    {"file": "bot.py", "line": 20, "provider": "discord"},
+    {"file": "bot.py", "line": 25, "provider": "discord"},
+    {"file": "bot.py", "line": 26, "provider": "discord"},
+    {"file": "bot.py", "line": 31, "provider": "discord"},
+    {"file": "bot.py", "line": 36, "provider": "discord"},
+    {"file": "bot.py", "line": 37, "provider": "discord"},
+    {"file": "bot.py", "line": 42, "provider": "discord"},
+    {"file": "bot.py", "line": 43, "provider": "discord"},
+    {"file": "bot.py", "line": 46, "provider": "discord"}
+  ]
+}

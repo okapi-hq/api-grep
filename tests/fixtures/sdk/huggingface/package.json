@@ -1,0 +1,1 @@
+{"name":"hf-demo","private":true,"dependencies":{"@huggingface/inference":"^4.0.0"}}

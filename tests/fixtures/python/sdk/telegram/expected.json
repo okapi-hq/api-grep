@@ -1,0 +1,21 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "aio_bot.py", "line": 11, "provider": "telegram"},
+    {"file": "aio_bot.py", "line": 12, "provider": "telegram"},
+    {"file": "aio_bot.py", "line": 17, "provider": "telegram"},
+    {"file": "aio_bot.py", "line": 18, "provider": "telegram"},
+    {"file": "aio_bot.py", "line": 22, "provider": "telegram"},
+    {"file": "aio_bot.py", "line": 23, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 9, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 10, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 15, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 16, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 20, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 25, "provider": "telegram"},
+    {"file": "ptb_bot.py", "line": 31, "provider": "telegram"},
+    {"file": "tele_bot.py", "line": 9, "provider": "telegram"},
+    {"file": "tele_bot.py", "line": 10, "provider": "telegram"},
+    {"file": "tele_bot.py", "line": 11, "provider": "telegram"}
+  ]
+}

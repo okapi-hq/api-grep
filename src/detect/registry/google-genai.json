@@ -22,6 +22,18 @@
     "files.list": {"method": "GET", "path": "/v1beta/files"},
     "files.get": {"method": "GET", "path": "/v1beta/files/{name}", "params": {"name": "arg:0.name"}},
     "files.delete": {"method": "DELETE", "path": "/v1beta/files/{name}", "params": {"name": "arg:0.name"}},
-    "caches.create": {"method": "POST", "path": "/v1beta/cachedContents", "bodyArg": 0}
+    "caches.create": {"method": "POST", "path": "/v1beta/cachedContents", "bodyArg": 0},
+    "caches.list": {"method": "GET", "path": "/v1beta/cachedContents"},
+    "caches.get": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0.name"}},
+    "caches.update": {"method": "PATCH", "path": "/v1beta/{name}", "params": {"name": "arg:0.name"}, "bodyArg": 0, "bodyProp": "config"},
+    "caches.delete": {"method": "DELETE", "path": "/v1beta/{name}", "params": {"name": "arg:0.name"}},
+    "files.download": {"method": "GET", "path": "/v1beta/files/{name}:download", "params": {"name": "arg:0.file"}},
+    "batches.create": {"method": "POST", "path": "/v1beta/models/{model}:batchGenerateContent", "params": {"model": "arg:0.model"}, "bodyArg": 0},
+    "batches.get": {"method": "GET", "path": "/v1beta/{name}", "params": {"name": "arg:0.name"}},
+    "batches.list": {"method": "GET", "path": "/v1beta/batches"},
+    "batches.cancel": {"method": "POST", "path": "/v1beta/{name}:cancel", "params": {"name": "arg:0.name"}},
+    "batches.delete": {"method": "DELETE", "path": "/v1beta/{name}", "params": {"name": "arg:0.name"}},
+    "operations.getVideosOperation": {"method": "GET", "path": "/v1beta/{name}"},
+    "operations.get": {"method": "GET", "path": "/v1beta/{name}"}
   }
 }

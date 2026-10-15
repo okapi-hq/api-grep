@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "a_agents.py", "line": 30, "provider": "anthropic"},
+    {"file": "a_agents.py", "line": 32, "provider": "openai"},
+    {"file": "a_agents.py", "line": 38, "provider": "anthropic"},
+    {"file": "a_agents.py", "line": 38, "provider": "openai"},
+    {"file": "b_fallback.py", "line": 9, "provider": "openai"},
+    {"file": "b_fallback.py", "line": 20, "provider": "openai"},
+    {"file": "b_loop.py", "line": 13, "provider": "openai"},
+    {"file": "b_loop.py", "line": 20, "provider": "openai"},
+    {"file": "b_loop.py", "line": 25, "provider": "openai"},
+    {"file": "b_loop.py", "line": 31, "provider": "openai"},
+    {"file": "c_alias.py", "line": 36, "provider": "anthropic"},
+    {"file": "c_alias.py", "line": 39, "provider": "anthropic"},
+    {"file": "d_provider.py", "line": 26, "provider": "anthropic"},
+    {"file": "d_provider.py", "line": 31, "provider": "openai"}
+  ]
+}

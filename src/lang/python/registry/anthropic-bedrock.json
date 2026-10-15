@@ -20,7 +20,8 @@
   },
   "builders": [
     "with_raw_response",
-    "with_streaming_response"
+    "with_streaming_response",
+    "with_options"
   ],
   "methods": {
     "messages.create": {"method": "POST", "path": "/model/{model}/invoke", "params": {"model": "kw:model"}, "bodyKwargs": true},

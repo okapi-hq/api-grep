@@ -21,7 +21,8 @@
   "basePath": "/v1",
   "builders": [
     "with_raw_response",
-    "with_streaming_response"
+    "with_streaming_response",
+    "with_options"
   ],
   "methods": {
     "messages.create": {"method": "POST", "path": "/v1/projects/{project_id}/locations/{region}/publishers/anthropic/models/{model}:rawPredict", "params": {"model": "kw:model"}, "bodyKwargs": true},

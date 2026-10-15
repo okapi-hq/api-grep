@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "hf.ts", "line": 6, "provider": "huggingface"},
+    {"file": "hf.ts", "line": 9, "provider": "huggingface"},
+    {"file": "hf.ts", "line": 10, "provider": "huggingface"}
+  ]
+}

@@ -33,9 +33,16 @@ export interface Chain {
   overloaded?: boolean;
   /** A call whose arguments fit several overloads: each one it may run (the chain itself is unknown). */
   overloads?: FunctionDef[];
+  /**
+   * Other values the factory the chain starts from may return (`return Anthropic() if claude else OpenAI()`), with the
+   * same members after them: an SDK call is the one whose registry has the method.
+   */
+  alternatives?: Chain[];
 }
 
 const MAX_DEPTH = 10;
+/** Values of a factory with several returns kept as alternatives: a bound on hostile input. */
+const MAX_ALTERNATIVES = 4;
 const UNKNOWN: Chain = { root: { kind: "unknown" }, segs: [] };
 
 const resolved = (c: Chain): boolean => c.root.kind === "external" || c.root.kind === "instance" || c.root.kind === "class" || c.root.kind === "module" || c.root.kind === "function";
@@ -92,12 +99,15 @@ function fieldValues(cls: ClassDef, name: string, ctx: IrCtx, depth: number): { 
   resolving.set(cls, open.add(name));
   try {
     let fallback: Chain | undefined;
+    const found: Chain[] = [];
     for (const f of classField(cls, name, ctx.idx)) {
       const c = valueChain(f.value, f.fn, ctx, depth + 1);
-      if (resolved(c)) return { resolved: c };
-      fallback ??= c;
+      if (resolved(c)) found.push(c);
+      else fallback ??= c;
+      // the first value decides unless it is a client: others of other SDKs are its alternatives
+      if (found.length >= MAX_ALTERNATIVES || (found.length === 1 && found[0]!.root.kind !== "external")) break;
     }
-    return { fallback };
+    return found.length > 0 ? { resolved: withAlternatives(found) } : { fallback };
   } finally {
     open.delete(name);
   }
@@ -133,6 +143,8 @@ function externalBase(cls: ClassDef, ctx: IrCtx): Chain | undefined {
 
 function memberOfClass(cls: ClassDef, name: string, isInstance: boolean, ctx: IrCtx, depth: number): Chain {
   const method = classMethod(cls, name, ctx.idx);
+  // `self.client` read through a `@property`: what it returns (a client it builds once)
+  if (method?.isProperty && isInstance) return factoryResult(method, { k: "call", fn: { k: "fnref", fn: method }, args: [], pos: method.pos }, method, ctx, depth);
   if (method) return { root: { kind: "function", fn: method }, segs: [] };
   const field = fieldChain(cls, name, ctx, depth);
   if (field) return field;
@@ -150,7 +162,7 @@ function member(c: Chain, name: string, ctx: IrCtx, depth: number, from?: Functi
     if (c.root.kind === "instance") return memberOfClass(c.root.cls, name, true, ctx, depth);
     if (c.root.kind === "class") return memberOfClass(c.root.cls, name, false, ctx, depth);
   }
-  return { ...c, segs: [...c.segs, { name }] };
+  return { ...c, segs: [...c.segs, { name }], ...(c.alternatives ? { alternatives: c.alternatives.map((a) => member(a, name, ctx, depth, from)) } : {}) };
 }
 
 /**
@@ -169,7 +181,8 @@ export function attach(c: Chain, call: CallExpr, fn: FunctionDef, subst: Subst |
   const last = c.segs[c.segs.length - 1];
   if (!last) return c;
   const seg: Seg = { name: last.call || last.typed ? "()" : last.name, call, fn, subst };
-  return { ...c, segs: last.call || last.typed ? [...c.segs, seg] : [...c.segs.slice(0, -1), seg] };
+  const alternatives = c.alternatives?.map((a) => attach(a, call, fn, subst));
+  return { ...c, segs: last.call || last.typed ? [...c.segs, seg] : [...c.segs.slice(0, -1), seg], ...(alternatives ? { alternatives } : {}) };
 }
 
 /** What a project function returns, when it builds a client (`def get_client(): return OpenAI(...)`). */
@@ -181,11 +194,23 @@ function factoryResult(target: FunctionDef, call: CallExpr, fn: FunctionDef, ctx
   });
   if (target.receiver) subst.set(target.receiver, { expr: receiverArg(call), fn });
   const inner = withSubst(ctx, subst);
+  const found: Chain[] = [];
   for (const ret of target.returns) {
     const c = valueChain(ret, target, inner, depth + 1);
-    if (resolved(c)) return { ...c, segs: c.segs.map((s) => (s.call && !s.subst ? { ...s, subst: inner.subst } : s)) };
+    if (resolved(c)) found.push({ ...c, segs: c.segs.map((s) => (s.call && !s.subst ? { ...s, subst: inner.subst } : s)) });
+    if (found.length >= MAX_ALTERNATIVES) break;
   }
-  return UNKNOWN;
+  return found.length === 0 ? UNKNOWN : withAlternatives(found);
+}
+
+/**
+ * The first of several values (a factory's returns, a field's assignments), the clients among the others kept as
+ * its `alternatives`: the method called on it tells which SDK's it is.
+ */
+function withAlternatives(found: Chain[]): Chain {
+  const first = found[0]!;
+  const others = first.root.kind === "external" ? found.slice(1).filter((c) => c.root.kind === "external") : [];
+  return others.length > 0 ? { ...first, alternatives: [...(first.alternatives ?? []), ...others] } : first;
 }
 
 /** Kotlin `postgrest["table"]` on a library object: its `get` operator, `postgrest.get("table")`. */
