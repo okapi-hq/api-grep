@@ -1167,6 +1167,8 @@ exports[`regression fixtures > negatives/data-uri 1`] = `[]`;
 
 exports[`regression fixtures > negatives/fetch-override 1`] = `[]`;
 
+exports[`regression fixtures > negatives/guarded-clients 1`] = `[]`;
+
 exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 
 exports[`regression fixtures > negatives/stub-throws 1`] = `[]`;
@@ -1815,6 +1817,21 @@ exports[`regression fixtures > python/sdk/telegram 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk-aws 1`] = `
+[
+  "notify.py:11 aws POST /",
+  "notify.py:12 aws POST /",
+  "notify.py:16 aws POST /",
+  "notify.py:20 aws POST /v2/email/outbound-emails",
+  "notify.py:24 aws GET /v2/email/identities/{EmailIdentity}",
+  "orders.py:9 aws POST /",
+  "orders.py:11 aws POST /",
+  "orders.py:12 aws POST /",
+  "orders.py:16 aws POST /",
+  "orders.py:30 aws POST /",
+]
+`;
+
 exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 [
   "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
@@ -2422,6 +2439,21 @@ exports[`regression fixtures > sdk/ai-sdk 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/ai-sdk-providers 1`] = `
+[
+  "route.ts:5 vercel-ai-gateway POST /v1/ai/language-model",
+  "route.ts:6 vercel-ai-gateway POST /v1/ai/language-model",
+  "route.ts:7 anthropic POST /v1/messages",
+  "route.ts:8 anthropic POST /v1/messages",
+  "route.ts:8 mistral POST /v1/chat/completions",
+  "route.ts:15 anthropic POST /v1/messages",
+  "route.ts:15 mistral POST /v1/chat/completions",
+  "route.ts:16 mistral POST /v1/chat/completions",
+  "untraced.ts:12 unknown POST /",
+  "untraced.ts:14 unknown POST /",
+]
+`;
+
 exports[`regression fixtures > sdk/anthropic 1`] = `
 [
   "claude.ts:6 anthropic POST /v1/messages",
@@ -2523,11 +2555,41 @@ exports[`regression fixtures > sdk/grammy 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/guarded-clients 1`] = `
+[
+  "copy.mjs:6 supabase GET /auth/v1/admin/users/{uid}",
+  "copy.mjs:7 supabase POST /auth/v1/admin/users",
+  "copy.mjs:11 openai POST /v1/chat/completions",
+  "copy.mjs:17 supabase GET /auth/v1/admin/users/{uid} (wrapper:moveUser)",
+  "copy.mjs:18 openai POST /v1/chat/completions (wrapper:caption)",
+  "login.html:12 supabase POST /auth/v1/otp",
+  "on-demand.ts:5 openai POST /v1/chat/completions",
+  "on-demand.ts:20 openai POST /v1/chat/completions",
+  "on-demand.ts:26 resend POST /emails",
+  "store.ts:14 supabase GET /rest/v1/beds",
+  "store.ts:19 resend POST /emails",
+  "store.ts:23 supabase GET /rest/v1/seeds",
+  "transcribe.js:15 groq POST /openai/v1/chat/completions",
+  "transcribe.js:21 groq POST /openai/v1/audio/transcriptions",
+]
+`;
+
 exports[`regression fixtures > sdk/huggingface 1`] = `
 [
   "hf.ts:6 huggingface POST /v1/chat/completions",
   "hf.ts:9 huggingface POST /hf-inference/models/gpt2",
   "hf.ts:10 huggingface POST /hf-inference/models/stabilityai/stable-diffusion-2",
+]
+`;
+
+exports[`regression fixtures > sdk/lazy-modules 1`] = `
+[
+  "subscriptions.ts:28 revenuecat GET /v1/subscribers/{app_user_id}",
+  "subscriptions.ts:31 revenuecat GET /v1/subscribers/{app_user_id}",
+  "subscriptions.ts:35 revenuecat POST /v1/receipts",
+  "telemetry.ts:35 posthog POST /e",
+  "telemetry.ts:42 sentry POST /api/{projectId}/envelope",
+  "telemetry.ts:56 sentry POST /api/{projectId}/envelope",
 ]
 `;
 
@@ -2620,6 +2682,15 @@ exports[`regression fixtures > sdk/receiver/same-client 1`] = `
   "helpers.ts:2 openai POST /v1/chat/completions",
   "jobs.ts:6 openai POST /v1/chat/completions (wrapper:summarize)",
   "jobs.ts:10 openai POST /v1/chat/completions (wrapper:summarize)",
+]
+`;
+
+exports[`regression fixtures > sdk/reexported-clients 1`] = `
+[
+  "boundary.tsx:4 sentry POST /api/{projectId}/envelope",
+  "events.ts:4 posthog POST /batch",
+  "worker.js:4 sentry POST /api/{projectId}/envelope",
+  "worker.js:8 sentry POST /api/{projectId}/envelope",
 ]
 `;
 

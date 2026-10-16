@@ -1,5 +1,5 @@
 import { Node, SyntaxKind, VariableDeclarationKind, type CallExpression, type Expression, type NewExpression, type VariableDeclaration } from "ts-morph";
-import { unwrap } from "./expr.js";
+import { guardedValue, unwrap } from "./expr.js";
 import { declarationsOf } from "./object.js";
 
 type Construction = CallExpression | NewExpression;
@@ -28,7 +28,7 @@ export function assignedConstruction(decl: VariableDeclaration): Construction | 
     for (const bin of decl.getSourceFile().getDescendantsOfKind(SyntaxKind.BinaryExpression)) {
       const left = bin.getLeft();
       if (!ASSIGNS.has(bin.getOperatorToken().getKind()) || !Node.isIdentifier(left) || left.getText() !== name) continue;
-      const right = unwrap(bin.getRight());
+      const right = guardedValue(bin.getRight());
       if ((Node.isCallExpression(right) || Node.isNewExpression(right)) && declarationsOf(left)[0] === decl) {
         found = right;
         break;

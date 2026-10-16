@@ -1,0 +1,270 @@
+{
+  "$comment": "boto3 DynamoDB: `boto3.client(\"dynamodb\")` (keyword arguments named like the API members: `TableName=`, `Item=`) and `boto3.resource(\"dynamodb\").Table(name)` (`table.put_item(Item=...)`, `table.query(...)`; the Table's name is the request's `TableName`). DynamoDB speaks the AWS JSON 1.0 protocol: every operation is a POST to `/` naming itself in the `X-Amz-Target` header (`DynamoDB_20120810.PutItem`), reported as `operationId`.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws",
+  "host": "dynamodb.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the DynamoDB API reference, 2012-08-10, under their boto3 names); resource methods from boto3 resources-1.json",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client",
+      "resource",
+      "Session.resource",
+      "session.Session.resource"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url",
+      "resource": "kw:endpoint_url",
+      "Session.resource": "kw:endpoint_url",
+      "session.Session.resource": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "dynamodb"
+      ]
+    }
+  },
+  "methods": {
+    "put_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "PutItem"
+    },
+    "get_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "GetItem"
+    },
+    "update_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UpdateItem"
+    },
+    "delete_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteItem"
+    },
+    "query": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "Query"
+    },
+    "scan": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "Scan"
+    },
+    "batch_get_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "BatchGetItem"
+    },
+    "batch_write_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "BatchWriteItem"
+    },
+    "transact_get_items": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "TransactGetItems"
+    },
+    "transact_write_items": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "TransactWriteItems"
+    },
+    "execute_statement": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ExecuteStatement"
+    },
+    "batch_execute_statement": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "BatchExecuteStatement"
+    },
+    "execute_transaction": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ExecuteTransaction"
+    },
+    "create_table": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "CreateTable"
+    },
+    "delete_table": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteTable"
+    },
+    "describe_table": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DescribeTable"
+    },
+    "update_table": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UpdateTable"
+    },
+    "list_tables": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ListTables"
+    },
+    "describe_time_to_live": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DescribeTimeToLive"
+    },
+    "update_time_to_live": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UpdateTimeToLive"
+    },
+    "create_backup": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "CreateBackup"
+    },
+    "describe_continuous_backups": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DescribeContinuousBackups"
+    },
+    "tag_resource": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "TagResource"
+    },
+    "untag_resource": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UntagResource"
+    },
+    "list_tags_of_resource": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ListTagsOfResource"
+    },
+    "describe_limits": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DescribeLimits"
+    },
+    "Table.put_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "PutItem"
+    },
+    "Table.get_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "GetItem"
+    },
+    "Table.update_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UpdateItem"
+    },
+    "Table.delete_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteItem"
+    },
+    "Table.query": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "Query"
+    },
+    "Table.scan": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "Scan"
+    },
+    "Table.load": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "DescribeTable"
+    },
+    "Table.delete": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "DeleteTable"
+    },
+    "Table.update": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UpdateTable"
+    },
+    "Table.batch_writer.put_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "BatchWriteItem"
+    },
+    "Table.batch_writer.delete_item": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "BatchWriteItem"
+    },
+    "tables.all": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "ListTables"
+    }
+  }
+}

@@ -70,6 +70,14 @@ function candidates(first: Call[], copies: Call[][]): Call[] | undefined {
 }
 
 /**
+ * The calls of a request sent to one of several places the code picks among at run time (the models an AI SDK call
+ * may get, `detect/ai-sdk.ts`): built once each, reported as a host table's candidates are.
+ */
+export function asCandidates(built: Call[][]): Call[] {
+  return candidates(built[0] ?? [], built) ?? merged(built.flat());
+}
+
+/**
  * Builds a call, then once per entry of the first host table its URL reads (of the first `MAX_POINTS` that tell hosts
  * apart): one call per candidate host, in table order, so each id is the place's with its index (`onePerRequest`).
  */

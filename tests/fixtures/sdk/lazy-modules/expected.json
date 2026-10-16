@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "subscriptions.ts", "line": 28, "provider": "revenuecat"},
+    {"file": "subscriptions.ts", "line": 31, "provider": "revenuecat"},
+    {"file": "subscriptions.ts", "line": 35, "provider": "revenuecat"},
+    {"file": "telemetry.ts", "line": 35, "provider": "posthog"},
+    {"file": "telemetry.ts", "line": 42, "provider": "sentry"},
+    {"file": "telemetry.ts", "line": 56, "provider": "sentry"}
+  ]
+}

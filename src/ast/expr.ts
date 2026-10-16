@@ -1,4 +1,4 @@
-import { Node, type Expression } from "ts-morph";
+import { Node, SyntaxKind, type Expression } from "ts-morph";
 
 /** Strips parentheses, casts, non-null assertions and awaits. */
 export function unwrap(e: Expression): Expression {
@@ -8,6 +8,34 @@ export function unwrap(e: Expression): Expression {
     else if (Node.isSatisfiesExpression(cur) || Node.isTypeAssertion(cur) || Node.isAwaitExpression(cur)) cur = cur.getExpression();
     else return cur;
   }
+}
+
+/** No value: `null`, `undefined`, `false`, `void 0`. */
+export const isNothing = (e: Expression): boolean => Node.isNullLiteral(e) || Node.isFalseLiteral(e) || (Node.isIdentifier(e) && e.getText() === "undefined") || Node.isVoidExpression(e);
+const isBuilt = (e: Expression): boolean => Node.isCallExpression(e) || Node.isNewExpression(e);
+
+/**
+ * The value a guard yields when it yields one (`unwrap` first): `key ? new Resend(key) : null`, `url && createClient(url)`,
+ * `globalThis.db ?? createClient(url)` (the other side is the same client, kept from an earlier run). The other branch
+ * is no value at all, so the client is the only thing the code can call; two built branches stay as they are.
+ */
+export function guardedValue(e: Expression): Expression {
+  let cur = unwrap(e);
+  for (let i = 0; i < 4; i++) {
+    let next: Expression | undefined;
+    if (Node.isConditionalExpression(cur)) {
+      const [a, b] = [unwrap(cur.getWhenTrue()), unwrap(cur.getWhenFalse())];
+      next = isNothing(b) ? a : isNothing(a) ? b : undefined;
+    } else if (Node.isBinaryExpression(cur)) {
+      const op = cur.getOperatorToken().getKind();
+      const right = unwrap(cur.getRight());
+      if (op === SyntaxKind.AmpersandAmpersandToken) next = right;
+      else if ((op === SyntaxKind.QuestionQuestionToken || op === SyntaxKind.BarBarToken) && isBuilt(right) && !isBuilt(unwrap(cur.getLeft()))) next = right;
+    }
+    if (!next) return cur;
+    cur = next;
+  }
+  return cur;
 }
 
 export interface Chain {

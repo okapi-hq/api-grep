@@ -1,0 +1,266 @@
+{
+  "$comment": "boto3 SNS: `boto3.client(\"sns\")` (`sns.publish(TopicArn=..., Message=...)`, `sns.publish(PhoneNumber=..., Message=...)`) and `boto3.resource(\"sns\").Topic(arn).publish(...)`. SNS speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`; the keyword arguments are the form fields.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws",
+  "host": "sns.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SNS API reference, 2010-03-31, under their boto3 names); resource methods from boto3 resources-1.json",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client",
+      "resource",
+      "Session.resource",
+      "session.Session.resource"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url",
+      "resource": "kw:endpoint_url",
+      "Session.resource": "kw:endpoint_url",
+      "session.Session.resource": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "sns"
+      ]
+    }
+  },
+  "methods": {
+    "publish": {
+      "method": "POST",
+      "path": "/?Action=Publish",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Publish"
+    },
+    "publish_batch": {
+      "method": "POST",
+      "path": "/?Action=PublishBatch",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "PublishBatch"
+    },
+    "create_topic": {
+      "method": "POST",
+      "path": "/?Action=CreateTopic",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "CreateTopic"
+    },
+    "delete_topic": {
+      "method": "POST",
+      "path": "/?Action=DeleteTopic",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "DeleteTopic"
+    },
+    "list_topics": {
+      "method": "POST",
+      "path": "/?Action=ListTopics",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListTopics"
+    },
+    "get_topic_attributes": {
+      "method": "POST",
+      "path": "/?Action=GetTopicAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetTopicAttributes"
+    },
+    "set_topic_attributes": {
+      "method": "POST",
+      "path": "/?Action=SetTopicAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SetTopicAttributes"
+    },
+    "subscribe": {
+      "method": "POST",
+      "path": "/?Action=Subscribe",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Subscribe"
+    },
+    "unsubscribe": {
+      "method": "POST",
+      "path": "/?Action=Unsubscribe",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Unsubscribe"
+    },
+    "confirm_subscription": {
+      "method": "POST",
+      "path": "/?Action=ConfirmSubscription",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ConfirmSubscription"
+    },
+    "list_subscriptions": {
+      "method": "POST",
+      "path": "/?Action=ListSubscriptions",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListSubscriptions"
+    },
+    "list_subscriptions_by_topic": {
+      "method": "POST",
+      "path": "/?Action=ListSubscriptionsByTopic",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListSubscriptionsByTopic"
+    },
+    "get_subscription_attributes": {
+      "method": "POST",
+      "path": "/?Action=GetSubscriptionAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetSubscriptionAttributes"
+    },
+    "set_subscription_attributes": {
+      "method": "POST",
+      "path": "/?Action=SetSubscriptionAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SetSubscriptionAttributes"
+    },
+    "create_platform_application": {
+      "method": "POST",
+      "path": "/?Action=CreatePlatformApplication",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "CreatePlatformApplication"
+    },
+    "create_platform_endpoint": {
+      "method": "POST",
+      "path": "/?Action=CreatePlatformEndpoint",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "CreatePlatformEndpoint"
+    },
+    "delete_endpoint": {
+      "method": "POST",
+      "path": "/?Action=DeleteEndpoint",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "DeleteEndpoint"
+    },
+    "get_endpoint_attributes": {
+      "method": "POST",
+      "path": "/?Action=GetEndpointAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetEndpointAttributes"
+    },
+    "set_endpoint_attributes": {
+      "method": "POST",
+      "path": "/?Action=SetEndpointAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SetEndpointAttributes"
+    },
+    "list_endpoints_by_platform_application": {
+      "method": "POST",
+      "path": "/?Action=ListEndpointsByPlatformApplication",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListEndpointsByPlatformApplication"
+    },
+    "check_if_phone_number_is_opted_out": {
+      "method": "POST",
+      "path": "/?Action=CheckIfPhoneNumberIsOptedOut",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "CheckIfPhoneNumberIsOptedOut"
+    },
+    "get_sms_attributes": {
+      "method": "POST",
+      "path": "/?Action=GetSMSAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetSMSAttributes"
+    },
+    "set_sms_attributes": {
+      "method": "POST",
+      "path": "/?Action=SetSMSAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SetSMSAttributes"
+    },
+    "tag_resource": {
+      "method": "POST",
+      "path": "/?Action=TagResource",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "TagResource"
+    },
+    "untag_resource": {
+      "method": "POST",
+      "path": "/?Action=UntagResource",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "UntagResource"
+    },
+    "list_tags_for_resource": {
+      "method": "POST",
+      "path": "/?Action=ListTagsForResource",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListTagsForResource"
+    },
+    "Topic.publish": {
+      "method": "POST",
+      "path": "/?Action=Publish",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Publish"
+    },
+    "Topic.subscribe": {
+      "method": "POST",
+      "path": "/?Action=Subscribe",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Subscribe"
+    },
+    "Topic.delete": {
+      "method": "POST",
+      "path": "/?Action=DeleteTopic",
+      "bodyKwargs": false,
+      "encoding": "form",
+      "operationId": "DeleteTopic"
+    },
+    "create_topic.publish": {
+      "method": "POST",
+      "path": "/?Action=Publish",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Publish"
+    },
+    "PlatformEndpoint.publish": {
+      "method": "POST",
+      "path": "/?Action=Publish",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "Publish"
+    },
+    "topics.all": {
+      "method": "POST",
+      "path": "/?Action=ListTopics",
+      "bodyKwargs": false,
+      "encoding": "form",
+      "operationId": "ListTopics"
+    }
+  }
+}

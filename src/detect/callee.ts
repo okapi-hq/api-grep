@@ -1,7 +1,8 @@
-import { Node, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { assignedConstruction } from "../ast/assigned.js";
+import { assignedModule, loadedModule } from "../ast/loaded-module.js";
 import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
-import { memberChain, unwrap, type Chain } from "../ast/expr.js";
+import { guardedValue, isNothing, memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, nestedReturnsOf, returnsOf, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
 import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/origin.js";
@@ -12,6 +13,9 @@ import { heldValue, hookValues, namedValue } from "./held.js";
 import { injectedFunctions } from "./injected-fn.js";
 import { annotatedPackage } from "./type-annotation.js";
 import { typechainContract } from "./typechain.js";
+import { sdkPackages } from "../normalize/provider.js";
+
+const NPM_SDKS = sdkPackages("npm");
 
 const MAX_DEPTH = 6;
 
@@ -44,6 +48,7 @@ export function describeCallee(call: CallExpression | NewExpression, depth = 0):
  * `axios.get(...)` after `<script src=".../axios.min.js">` is the axios package.
  */
 const SCRIPT_TAG_GLOBALS: Record<string, string> = { axios: "axios", $: "jquery", jQuery: "jquery", supabase: "@supabase/supabase-js", Sentry: "@sentry/browser", posthog: "posthog-js", ky: "ky" };
+const GLOBAL_OBJECTS = new Set(["window", "globalThis", "self"]);
 /** Platform globals a project without the DOM / Node types does not declare. */
 const PLATFORM_GLOBALS = new Set(["fetch", "XMLHttpRequest"]);
 
@@ -61,9 +66,18 @@ function requiredPackage(root: Expression): string | undefined {
   return arg && Node.isStringLiteral(arg) ? (packageFromSpecifier(arg.getLiteralValue()) ?? undefined) : undefined;
 }
 
+/** `window.supabase.createClient(...)`: a script-tag global read through the global object, when nothing declares it. */
+function windowGlobal(mc: Chain): Callee | undefined {
+  const [name, ...rest] = mc.chain;
+  if (!name || !GLOBAL_OBJECTS.has(mc.root.getText()) || !Object.hasOwn(SCRIPT_TAG_GLOBALS, name) || mc.nodes[1]?.getSymbol()) return undefined;
+  return { package: SCRIPT_TAG_GLOBALS[name], importedName: "*", chain: rest };
+}
+
 function calleeFromChain(mc: Chain, depth: number): Callee {
   if (depth > MAX_DEPTH) return { chain: mc.chain };
   const { root, chain } = mc;
+  const viaWindow = windowGlobal(mc);
+  if (viaWindow) return viaWindow;
   if (Node.isIdentifier(root)) {
     const o = identifierOrigin(root);
     if (o.kind === "package") return { package: o.package, importedName: o.importedName, chain };
@@ -83,11 +97,11 @@ function calleeFromChain(mc: Chain, depth: number): Callee {
  * value (`useMemo(() => new Client(url), deps)`) is the value itself.
  */
 function constructed(expr: Expression | undefined): CallExpression | NewExpression | undefined {
-  let u = expr ? unwrap(expr) : undefined;
+  let u = expr ? guardedValue(expr) : undefined;
   if (u && Node.isIdentifier(u)) {
     const decl = declarationsOf(u)[0];
     const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : undefined;
-    u = init ? unwrap(memoValue(init)) : undefined;
+    u = init ? guardedValue(memoValue(init)) : undefined;
     // `let client; ... client = new OpenAI()`: the construction it is given later
     if ((!u || !(Node.isCallExpression(u) || Node.isNewExpression(u))) && decl && Node.isVariableDeclaration(decl)) u = assignedConstruction(decl);
   }
@@ -111,22 +125,36 @@ function calledFunction(inner: Callee): FunctionLike | undefined {
 function factoryReturn(inner: Callee, chain: string[], depth: number): Callee | undefined {
   const fn = depth <= MAX_DEPTH ? calledFunction(inner) : undefined;
   if (!fn?.getBody?.()) return undefined;
+  // a factory returning one of several packages' clients (`await import("@vendor/bedrock-sdk")` on one path): an API
+  // SDK the providers know is preferred to a package they do not, which stays the answer when no such SDK follows
+  let unknown: Callee | undefined;
   for (const expr of nestedReturnsOf(fn)) {
-    const u = constructed(expr);
-    // `return useContext(RpcContext)` in the app's own hook (#98)
-    const hook = u ? hookCallee(u, chain, depth + 1) : undefined;
-    if (hook?.package) return hook;
-    // `let p = cache.get(k)`: a cache entry, read below
-    if (u && !hook && !(Node.isCallExpression(u) && cacheRead(u))) {
-      const c = describeCallee(u, depth + 1);
-      if (c.package || c.global) return { ...c, instance: instanceOf(u, c), chain };
-      continue;
-    }
-    const held = chain.length > 1 ? constructed(getProp(expr, chain[0]!)) : undefined;
-    const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
-    if (c?.package) return c;
+    const c = returnedCallee(expr, chain, depth);
+    if (!c) continue;
+    if (!c.package || NPM_SDKS.has(c.package)) return c;
+    unknown ??= c;
   }
-  return fn ? fromCache(returnsOf(fn), chain, depth) : undefined;
+  return unknown ?? fromCache(returnsOf(fn), chain, depth);
+}
+
+/** What one `return` of a local factory hands out, when it is a package's client. */
+function returnedCallee(expr: Expression, chain: string[], depth: number): Callee | undefined {
+  // `return Purchases` where the module holds the SDK it loaded on demand
+  const named = guardedValue(expr);
+  const module = Node.isIdentifier(named) ? loadedModuleCallee(named, chain) : undefined;
+  if (module) return module;
+  const u = constructed(expr);
+  // `return useContext(RpcContext)` in the app's own hook (#98)
+  const hook = u ? hookCallee(u, chain, depth + 1) : undefined;
+  if (hook?.package) return hook;
+  // `let p = cache.get(k)`: a cache entry, read by `fromCache`
+  if (u && !hook && !(Node.isCallExpression(u) && cacheRead(u))) {
+    const c = describeCallee(u, depth + 1);
+    return c.package || c.global ? { ...c, instance: instanceOf(u, c), chain } : undefined;
+  }
+  const held = chain.length > 1 ? constructed(getProp(expr, chain[0]!)) : undefined;
+  const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
+  return c?.package ? c : undefined;
 }
 
 const instanceOf = (u: CallExpression | NewExpression, c: Callee): InstanceInfo => ({ kind: Node.isNewExpression(u) ? "new" : "call", chain: exportedChain(c), args: u.getArguments() as Expression[] });
@@ -227,7 +255,7 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
   }
   const init = initializerOf(decl);
   if (init) {
-    const u = unwrap(init);
+    const u = guardedValue(init);
     if (Node.isArrowFunction(u) || Node.isFunctionExpression(u)) return { localDecl: u, chain };
     if (Node.isCallExpression(u) || Node.isNewExpression(u)) return instanceCallee(u, chain, depth);
     if (Node.isIdentifier(u) || Node.isPropertyAccessExpression(u)) {
@@ -241,6 +269,8 @@ function localCallee(decl: Node, mc: Chain, depth: number): Callee {
     const c = held ? instanceCallee(held, chain.slice(1), depth + 1) : undefined;
     if (c?.package) return c;
   }
+  const module = Node.isIdentifier(mc.root) && (Node.isVariableDeclaration(decl) || Node.isParameterDeclaration(decl)) ? loadedModuleCallee(mc.root, chain) : undefined;
+  if (module) return module;
   const assigned = Node.isVariableDeclaration(decl) ? assignedConstruction(decl) : undefined;
   if (assigned) return instanceCallee(assigned, chain, depth);
   const typed = typeFallback(mc, 0, decl);
@@ -272,15 +302,32 @@ function thisCallee(mc: Chain, depth: number): Callee {
   const method = cls.getMethod(propName);
   if (method) return { localDecl: method, chain: chain.slice(1) };
   const rest: Chain = { root: mc.nodes[1] ?? root, nodes: mc.nodes.slice(1), chain: chain.slice(1) };
-  if (prop?.getInitializer()) return localCallee(prop, rest, depth + 1);
+  const init = prop?.getInitializer();
+  // `private client: X | null = null`, set later in a method: the assignments below say what it holds
+  if (prop && init && !isNothing(unwrap(init))) return localCallee(prop, rest, depth + 1);
   const paramProp = parameterProperty(cls, propName);
   if (paramProp?.getInitializer()) return localCallee(paramProp, rest, depth + 1);
   // `this._stripe = null` in the constructor, `this._stripe = new Stripe(key)` in `configure()`: the one that builds
   const built = fieldAssignments(cls, propName)
-    .map(unwrap)
+    .map(guardedValue)
     .find((u) => Node.isCallExpression(u) || Node.isNewExpression(u));
   if (built && (Node.isCallExpression(built) || Node.isNewExpression(built))) return instanceCallee(built, rest.chain, depth + 1);
+  // `const sdk = loadSdk(); this.sentry = sdk`: the client the local names
+  for (const value of depth < MAX_DEPTH ? fieldAssignments(cls, propName).map(guardedValue) : []) {
+    const c = Node.isIdentifier(value) ? calleeFromChain({ root: value, nodes: [value, ...rest.nodes.slice(1)], chain: rest.chain }, depth + 1) : undefined;
+    if (c?.package) return c;
+  }
   return { ...typeFallback(mc, 1), thisRoot: true };
+}
+
+/**
+ * An SDK module loaded on demand (`ast/loaded-module.ts`): a `let` given `require("pkg").default` later in its file, the
+ * module an `import("pkg").then((mod) => ...)` callback is handed.
+ */
+function loadedModuleCallee(id: Expression, chain: string[]): Callee | undefined {
+  const decl = declarationsOf(id)[0];
+  const m = (decl && Node.isVariableDeclaration(decl) ? assignedModule(decl) : undefined) ?? loadedModule(id);
+  return m ? { package: m.package, importedName: m.importedName, chain } : undefined;
 }
 
 /**
@@ -302,7 +349,9 @@ function typeFallback(mc: Chain, startIndex: number, decl?: Node): Callee {
     const pkg = annotatedPackage(nodes[i]!);
     if (pkg) return { package: pkg, chain: mc.chain.slice(i), viaType: true };
   }
-  return { chain: mc.chain, localDecl: decl && Node.isParameterDeclaration(decl) ? undefined : decl };
+  // a parameter, or a piece of one (`({ client }) => ...`), is what the callers pass: no local value
+  const handed = decl && (Node.isParameterDeclaration(decl) || (Node.isBindingElement(decl) && !!decl.getFirstAncestorByKind(SyntaxKind.Parameter)));
+  return { chain: mc.chain, localDecl: handed ? undefined : decl };
 }
 
 /** What `mc` calls when its root stands for `value`: a caller's argument for an untyped parameter (`ask(client)`). */
