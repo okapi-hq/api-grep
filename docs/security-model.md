@@ -20,7 +20,9 @@ A scanned repository is treated as hostile input:
 - Symlinks that lead out of the scanned directory are not scanned, nor followed by the
   TypeScript checker once out of the repository root (the scanned directory when it is in no
   git repository), and `package.json`,
-  `.env.example` and `tsconfig.json` are read only when they are small regular files.
+  `.env.example` and `tsconfig.json` are read only when they are small regular files. So are the
+  JSON, YAML and TOML files the code loads by a literal path (for model names), and only inside
+  the scanned directory: an absolute path, a `~` path or one leading above it is not read.
 - The TypeScript checker reads nothing above the repository root (the nearest directory holding
   `.git`), or above the scanned directory when it is in no git repository: imports,
   `/// <reference>` paths, `node_modules` packages, `@types` and the nearest `tsconfig.json`

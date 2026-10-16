@@ -6,8 +6,12 @@ import { lowerPython } from "./lower.js";
 import { normalizePypi, pythonManifests } from "./manifests.js";
 import modules from "./modules.json" with { type: "json" };
 import { PYTHON_INJECTION } from "./depends.js";
+import { settingsFieldEnv } from "./settings.js";
+import { pythonConfigLoad } from "./config-load.js";
+import { argparseDefault } from "./argparse.js";
 import { detectUrllib } from "./urllib.js";
 import { detectZeep } from "./zeep.js";
+import { notebookPython } from "./notebook.js";
 import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "json" };
 import anthropicVertex from "./registry/anthropic-vertex.json" with { type: "json" };
 import anthropic from "./registry/anthropic.json" with { type: "json" };
@@ -138,6 +142,7 @@ export const PYTHON_EXCLUDES = [
   "**/venv/**",
   "**/site-packages/**",
   "**/__pycache__/**",
+  "**/.ipynb_checkpoints/**",
   "**/.tox/**",
   "**/.nox/**",
   "**/tests/**",
@@ -153,7 +158,8 @@ export const pythonLanguage: IrLanguage = {
   id: "python",
   ecosystem: "pypi",
   grammar: "python",
-  extensions: [".py"],
+  extensions: [".py", ".ipynb"],
+  readText: (file, text) => (file.endsWith(".ipynb") ? notebookPython(text) : { text }),
   excludes: PYTHON_EXCLUDES,
   lower: lowerPython,
   moduleVarsVisible: true,
@@ -163,6 +169,9 @@ export const pythonLanguage: IrLanguage = {
   detectors: [detectUrllib, detectZeep],
   documentOf: sgqlcDocument,
   injection: PYTHON_INJECTION,
+  fieldEnv: settingsFieldEnv,
+  resolveCall: pythonConfigLoad,
+  attrDefault: argparseDefault,
   passthrough: {
     // `gql("query ...")` (the gql package) parses a document: its value is the text
     functions: new Set(["str", "quote", "quote_plus", "unquote", "escape", "gql"]),

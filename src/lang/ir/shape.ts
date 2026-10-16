@@ -1,9 +1,10 @@
 import { isSafeKey } from "../../record-keys.js";
 import { staticText } from "../../resolve/parts.js";
 import { paramValues } from "../../resolve/param-shape.js";
-import { unionOf } from "../../resolve/shape-utils.js";
+import { alternativesOf, unionOf } from "../../resolve/shape-utils.js";
+import { asDefault } from "../../model/value-sources.js";
 import { stringShapeOf } from "../../resolve/string-template.js";
-import type { DynamicOrigin, DynamicPart, Shape } from "../../types.js";
+import { VALUE_SOURCES, type DynamicOrigin, type DynamicPart, type Shape } from "../../types.js";
 import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
 import { fluentMap } from "./fluent.js";
@@ -14,7 +15,8 @@ import { argFor, exprText } from "./model.js";
 import { classField, lookup } from "./project.js";
 import { withSubst, type IrCtx, type Subst } from "./raw.js";
 import { classShape, constructedClass, typeShape } from "./types.js";
-import { constantAt, knownConstant, staticKey } from "./values.js";
+import { recordField, type RecordField } from "./object-fields.js";
+import { constantAt, dictRead, knownConstant, staticKey } from "./values.js";
 
 /** Assignments of one field read for its shape: a bound on hostile input. */
 const MAX_FIELD_VALUES = 8;
@@ -42,7 +44,7 @@ function withHint(shape: Shape, hint: string | undefined): Shape {
 function literalShape(e: Expr, fn: FunctionDef, ctx: IrCtx): Shape | undefined {
   switch (e.k) {
     case "str":
-      return { type: "string", enum: [e.v] };
+      return { type: "string", enum: [e.v], ...(e.src ? { [VALUE_SOURCES]: new Map([[e.v, e.src]]) } : {}) };
     case "num":
       return Number.isFinite(e.v) ? { type: Number.isInteger(e.v) ? "integer" : "number", enum: [e.v] } : { type: "number" };
     case "bool":
@@ -131,7 +133,10 @@ function paramShape(p: Param, fn: FunctionDef, ctx: IrCtx, depth: number, unread
   const found = paramSources(p, fn, ctx);
   if (!found) return unread;
   // the callers' own dynamic parts belong to them, not to this request
-  const results = found.sources.map((s) => shapeOf(s.expr, s.fn, callerCtx(ctx), depth + 1, []));
+  const results = found.sources.map((s) => {
+    const r = shapeOf(s.expr, s.fn, callerCtx(ctx), depth + 1, []);
+    return s.expr === p.default ? { ...r, shape: asDefault(r.shape) } : r;
+  });
   return paramValues(results, found.unread, unread);
 }
 
@@ -152,7 +157,19 @@ function callShape(e: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number, dyna
   const cls = constructedClass(e.fn, fn, ctx);
   const shape = cls ? classShape(cls, ctx) : undefined;
   if (shape) return { shape, fromLiteral: false, origin: "call" };
-  return returnsShape(e, fn, ctx, depth) ?? { shape: { type: "dynamic", origin: "call", hint: name }, fromLiteral: false, origin: "call" };
+  return returnsShape(e, fn, ctx, depth) ?? dictReadShape(e, fn, ctx, depth, dynamic) ?? { shape: { type: "dynamic", origin: "call", hint: name }, fromLiteral: false, origin: "call" };
+}
+
+/** `cfg["model"]`, `opts.get("model", "gpt-4o")`: the entry the dict holds, else the read's default beside the unread value. */
+function dictReadShape(e: Expr, fn: FunctionDef, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult | undefined {
+  const read = dictRead(e, fn, ctx);
+  if (!read) return undefined;
+  if (read.entry) return shapeOf(read.entry.expr, read.entry.fn, ctx, depth + 1, dynamic);
+  const origin = e.k === "call" ? "call" : "unknown";
+  const fallback = read.fallback ? shapeOf(read.fallback, fn, ctx, depth + 1, dynamic).shape : undefined;
+  const unread: ShapeResult = { shape: { type: "dynamic", origin, hint: read.key }, fromLiteral: false, origin };
+  if (!fallback || fallback.type === "null") return read.known ? undefined : unread;
+  return { shape: read.known ? asDefault(fallback) : alternativesOf([unread.shape, asDefault(fallback)]), fromLiteral: false, origin };
 }
 
 /** What a function of the project returns (`model=get_model()`): every return's shape, its arguments substituted. */
@@ -163,12 +180,14 @@ function returnsShape(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
   const subst: Subst = new Map();
   for (const p of helper.params) {
     const arg = argFor(call, p);
+    // a parameter this call leaves out is its default here, not what other callers pass
     if (arg) subst.set(p, { expr: arg.value, fn });
+    else if (p.default && p.kind === "normal") subst.set(p, { expr: p.default, fn: helper });
   }
   // the returns' own dynamic parts belong to the function, not to this request
   const results = helper.returns.map((r) => shapeOf(r, helper, withSubst(ctx, subst), depth + 1, []));
   if (results.every((r) => r.shape.type === "dynamic" || r.shape.type === "unknown")) return undefined;
-  return { shape: unionOf(results.map((r) => r.shape)), fromLiteral: false, origin: "call" };
+  return { shape: alternativesOf(results.map((r) => r.shape)), fromLiteral: false, origin: "call" };
 }
 
 /** An env var read: a string from that variable, its literal default (`os.getenv("MODEL", "gpt-4o")`) as the value. */
@@ -185,18 +204,29 @@ function envShape(name: string, fallback: Expr | undefined, fn: FunctionDef, ctx
  * else what the evaluator reads (a module constant, an env var).
  */
 function attrShape(e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
-  if (e.obj.k === "name") {
-    const b = lookup(e.obj.name, fn, e.pos.offset, ctx.idx);
-    const built = b.kind === "value" && b.assign.value.k === "call" ? constructedClass(b.assign.value.fn, b.fn, ctx) : undefined;
-    const f = built ? classField(built, e.name, ctx.idx)[0] : undefined;
-    if (f) return shapeOf(f.value, f.fn, ctx, depth + 1, dynamic);
-  }
+  const record = recordField(e, fn, ctx);
+  if (record) return recordShape(record, e.name, ctx, depth, dynamic);
+  // `args.model`: a command line's value, else the parser's default
+  const lib = ctx.idx.lang.attrDefault?.(e, fn, ctx);
+  const dflt = lib ? shapeOf(lib.expr, lib.fn, ctx, depth + 1, dynamic).shape : undefined;
+  if (dflt && dflt.type !== "null") return { shape: alternativesOf([{ type: "dynamic", origin: "unknown", hint: e.name }, asDefault(dflt)]), fromLiteral: false, origin: "unknown" };
   const parts = evaluate(e, fn, ctx, depth);
   const only = parts.length === 1 ? parts[0]! : undefined;
   if (only?.kind === "env") return envString(only.name, only.fallback);
   const text = staticText(parts);
   if (text) return { shape: { type: "string", enum: [text] }, fromLiteral: false, origin: "unknown" };
   return { shape: { type: "dynamic", origin: "unknown", hint: e.name }, fromLiteral: false, origin: "unknown" };
+}
+
+/** A record's field: its value (a class default is a default), read from the env var a settings class names. */
+function recordShape(f: RecordField, name: string, ctx: IrCtx, depth: number, dynamic: DynamicPart[]): ShapeResult {
+  const r = f.value ? shapeOf(f.value.expr, f.value.fn, f.value.ctx ?? ctx, depth + 1, dynamic) : undefined;
+  const shape = r && f.isDefault ? asDefault(r.shape) : r?.shape;
+  if (!f.env) return { shape: shape!, fromLiteral: false, origin: r?.origin ?? "unknown" };
+  const env: Shape = { type: "string", hint: name, env: f.env };
+  // `model: str = "gpt-4o"` in a settings class: the env var's default
+  if (shape?.type === "string" && shape.enum?.length && !shape.env) return { shape: { ...shape, env: f.env }, fromLiteral: false, origin: "env" };
+  return { shape: shape && shape.type !== "null" ? alternativesOf([env, shape]) : env, fromLiteral: false, origin: "env" };
 }
 
 /** Values of a field set in several places (`self.model = model or "a"` in one branch, `"b"` in another): any of them. */
@@ -234,8 +264,12 @@ export function shapeOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0, dynamic
       const [a, b] = e.k === "or" ? [e.left, e.right] : [e.then, e.else];
       const l = shapeOf(a, fn, ctx, depth + 1, dynamic);
       const r = shapeOf(b, fn, ctx, depth + 1, dynamic);
-      return { shape: unionOf([l.shape, r.shape].filter((s) => s.type !== "null" || e.k === "cond")), fromLiteral: l.fromLiteral && r.fromLiteral, origin: l.origin ?? r.origin };
+      // `model or "gpt-4o"`: what the right side gives is a fallback
+      const right = e.k === "or" && !l.fromLiteral ? asDefault(r.shape) : r.shape;
+      return { shape: alternativesOf([l.shape, right].filter((s) => s.type !== "null" || e.k === "cond")), fromLiteral: l.fromLiteral && r.fromLiteral, origin: l.origin ?? r.origin };
     }
+    case "index":
+      return dictReadShape(e, fn, ctx, depth, dynamic) ?? { shape: { type: "dynamic", origin: "unknown" }, fromLiteral: false, origin: "unknown" };
     case "attr":
       if (e.obj.k === "this" && fn.cls) {
         const fields = classField(fn.cls, e.name, ctx.idx);

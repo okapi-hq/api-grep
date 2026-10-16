@@ -32,6 +32,8 @@ export class ProjectIndex {
   readonly bases = new Map<ClassDef, ClassDef[]>();
   /** Extension functions by name (Kotlin `fun S3Client.delete(...)`): members of their receiver type, not names. */
   readonly extensions = new Map<string, FunctionDef[]>();
+  /** The scanned directory: config files the code loads by a literal path are read below it only (`config-load.ts`). */
+  rootDir?: string;
 
   constructor(
     readonly lang: IrLanguage,

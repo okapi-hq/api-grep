@@ -1,17 +1,20 @@
 import { Node, SyntaxKind, type BinaryExpression, type Expression } from "ts-morph";
-import { constructedName, isUndefinedLiteral, unwrap } from "../ast/expr.js";
+import { classPropertyInitializer } from "../ast/class.js";
+import { isUndefinedLiteral, unwrap } from "../ast/expr.js";
 import { bindingElementValue, declarationsOf, importedVariable, paramSubstitution, propertyKey, propertyValue } from "../ast/object.js";
 import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from "../types.js";
 import { evaluate, staticText } from "./evaluate.js";
 import { partsOf, stringShapeOf } from "./string-template.js";
 import { xmlBody } from "./xml-shape.js";
-import { collectAppendedKeys } from "./appended.js";
 import { withEdits } from "./edited-shape.js";
 import { astDocumentParts } from "./graphql-ast.js";
 import { importedDocument, isDocumentExpression, printedArgument } from "./graphql-source.js";
 import { localReturn } from "./local-return.js";
-import { paramShape } from "./param-values.js";
-import { formStringShape, jsonToShape, unionOf } from "./shape-utils.js";
+import { givenByEveryCaller, paramShape } from "./param-values.js";
+import { keysToShape, parseJsonString, unwrapEncoding } from "./body-encoding.js";
+import { loadedValueShape } from "./config-values.js";
+import { alternativesOf, formStringShape, unionOf } from "./shape-utils.js";
+import { asDefault } from "../model/value-sources.js";
 import { isNullable, typeToShape } from "./type-shape.js";
 
 const MAX_DEPTH = 6;
@@ -145,11 +148,31 @@ export function shapeOf(expr: Expression, ctx: EvalCtx = {}, depth = 0, dynamic:
   }
   if (Node.isIdentifier(u)) return identifierShape(u, ctx, depth, dynamic);
   if (Node.isConditionalExpression(u)) return branchesShape([u.getWhenTrue(), u.getWhenFalse()], ctx, depth, dynamic);
+  const loaded = loadedValueShape(u, ctx);
+  if (loaded) return { shape: loaded, fromLiteral: false, origin: loaded.type === "string" && loaded.env ? "env" : "unknown" };
   const env = envShape(u, ctx, depth);
   if (env) return env;
-  if (isDefaultExpression(u)) return branchesShape([u.getLeft(), u.getRight()], ctx, depth, dynamic, true);
+  if (isDefaultExpression(u)) {
+    // `model ?? "gpt-4o"` where every caller gives `model`: the fallback is never what is sent
+    const nullish = u.getOperatorToken().getKind() === SyntaxKind.QuestionQuestionToken;
+    if (nullish && givenByEveryCaller(u.getLeft(), ctx)) return shapeOf(u.getLeft(), ctx, depth + 1, dynamic);
+    return branchesShape([u.getLeft(), u.getRight()], ctx, depth, dynamic, true);
+  }
   if (Node.isCallExpression(u)) return printedShape(u, ctx, depth, dynamic) ?? returnsShape(u, ctx, depth) ?? fromChecker(u, "call", u.getExpression().getText().slice(0, 40));
-  return constantShape(u, ctx, depth) ?? fromChecker(u, "unknown", u.getText().slice(0, 40));
+  return thisFieldShape(u, ctx, depth, dynamic) ?? constantShape(u, ctx, depth) ?? fromChecker(u, "unknown", u.getText().slice(0, 40));
+}
+
+/** `this.model`: what the class gives it (`this.model = opts.model ?? "gpt-4o"`; a parameter property's default is a default). */
+function thisFieldShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: DynamicPart[]): ShapeResult | undefined {
+  if (!Node.isPropertyAccessExpression(u) || !Node.isThisExpression(u.getExpression())) return undefined;
+  const init = classPropertyInitializer(u, u.getName());
+  if (!init) return undefined;
+  // `constructor(private model = "gpt-4o")`: the parameter, read as its callers' values and its default
+  const param = init.getParent();
+  const name = Node.isParameterDeclaration(param) ? param.getNameNode() : undefined;
+  const r = Node.isIdentifier(name) ? identifierShape(name, ctx, depth + 1, dynamic) : shapeOf(init, ctx, depth + 1, dynamic);
+  if (r.shape.type === "dynamic" || r.shape.type === "unknown") return undefined;
+  return { ...r, fromLiteral: false };
 }
 
 /** An env var read (`process.env.MODEL ?? "gpt-4o"`): a string from that variable, its literal default as the value. */
@@ -172,8 +195,10 @@ function isDefaultExpression(u: Expression): u is BinaryExpression {
 function branchesShape(branches: Expression[], ctx: EvalCtx, depth: number, dynamic: DynamicPart[], optionalLeft = false): ShapeResult {
   const results = branches.map((b) => shapeOf(b, ctx, depth + 1, dynamic));
   const shapes = results.map((r, i) => (optionalLeft && i === 0 && r.shape.type === "union" ? unionOf(r.shape.anyOf.filter((m) => m.type !== "null")) : r.shape));
+  // `opts.model ?? "gpt-4o"`: what the right side gives is a fallback
+  if (optionalLeft && !results[0]!.fromLiteral) shapes[1] = asDefault(shapes[1]!);
   const literal = results.every((r) => r.fromLiteral);
-  return { shape: unionOf(shapes), fromLiteral: false, origin: literal ? "unknown" : (results.find((r) => !r.fromLiteral)?.origin ?? "unknown") };
+  return { shape: alternativesOf(shapes), fromLiteral: false, origin: literal ? "unknown" : (results.find((r) => !r.fromLiteral)?.origin ?? "unknown") };
 }
 
 const isText = (s: Shape): boolean => s.type === "string" || (s.type === "union" && s.anyOf.every(isText));
@@ -200,69 +225,6 @@ function constantShape(u: Expression, ctx: EvalCtx, depth: number): ShapeResult 
   if (!Node.isPropertyAccessExpression(u) && !Node.isElementAccessExpression(u)) return undefined;
   const text = staticText(evaluate(u, ctx, depth));
   return text !== undefined && text !== "" ? { shape: { type: "string", enum: [text] }, fromLiteral: false, origin: "unknown" } : undefined;
-}
-
-function appendedKeys(varExpr: Expression): string[] {
-  return collectAppendedKeys(varExpr, ["append", "set"]);
-}
-
-function keysToShape(keys: string[]): Shape {
-  const properties: Record<string, Shape> = {};
-  for (const k of keys) properties[k] = { type: "string" };
-  return { type: "object", properties, required: keys, ...(keys.length === 0 ? { dynamicKeys: true } : {}) };
-}
-
-const FORM_STRINGIFY_RE = /^(qs|querystring|queryString)\.stringify$|^stringify$/;
-
-/** `body ? JSON.stringify(body) : undefined` → the defined branch; `x.toString()` → x. */
-function stripBodyWrappers(expr: Expression): Expression {
-  const u = unwrap(expr);
-  if (Node.isConditionalExpression(u)) {
-    const [a, b] = [unwrap(u.getWhenTrue()), unwrap(u.getWhenFalse())];
-    if (isUndefinedLiteral(b) || b.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(a);
-    if (isUndefinedLiteral(a) || a.getKind() === SyntaxKind.NullKeyword) return stripBodyWrappers(b);
-  }
-  if (Node.isCallExpression(u) && u.getArguments().length === 0) {
-    const callee = u.getExpression();
-    if (Node.isPropertyAccessExpression(callee) && callee.getName() === "toString") return stripBodyWrappers(callee.getExpression());
-  }
-  return u;
-}
-
-function unwrapEncoding(expr: Expression, ctx: EvalCtx, depth: number): { inner?: Expression; encoding: BodyEncoding; keys?: string[] } {
-  const u = stripBodyWrappers(expr);
-  if (Node.isCallExpression(u)) {
-    const callee = u.getExpression().getText().replace(/\s/g, "");
-    if (callee === "JSON.stringify") return { inner: u.getArguments()[0] as Expression | undefined, encoding: "json" };
-    if (FORM_STRINGIFY_RE.test(callee)) return { inner: u.getArguments()[0] as Expression | undefined, encoding: "form" };
-    // `new XMLSerializer().serializeToString(doc)`: an XML document built with the DOM, its text unread
-    if (callee.endsWith(".serializeToString")) return { inner: u, encoding: "xml" };
-  }
-  if (Node.isNewExpression(u)) {
-    const name = constructedName(u);
-    const arg = u.getArguments()[0] as Expression | undefined;
-    if (name === "URLSearchParams") return { inner: arg, encoding: "form", keys: appendedKeys(expr) };
-    if (name === "FormData") return { inner: undefined, encoding: "multipart", keys: appendedKeys(expr) };
-  }
-  if (Node.isIdentifier(u) && depth < 3) {
-    const decl = declarationsOf(u)[0];
-    const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : decl ? bindingElementValue(decl, ctx) : undefined;
-    if (init) {
-      const inner = unwrapEncoding(init, ctx, depth + 1);
-      if (inner.encoding !== "json" || inner.inner !== unwrap(init)) return { ...inner, keys: [...(inner.keys ?? []), ...appendedKeys(u)] };
-    }
-  }
-  return { inner: u, encoding: "json" };
-}
-
-function parseJsonString(u: Expression, ctx: EvalCtx): Shape | undefined {
-  const text = staticText(evaluate(u, ctx));
-  if (text === undefined) return undefined;
-  try {
-    return jsonToShape(JSON.parse(text));
-  } catch {
-    return undefined;
-  }
 }
 
 /** Resolves a request body expression into shape + encoding + dynamic parts. */

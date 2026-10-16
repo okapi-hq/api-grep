@@ -9,7 +9,7 @@ describe("modelOf", () => {
       required: ["model"],
       properties: { model: { type: "union" as const, anyOf: [{ type: "string" as const, enum: ["gpt-4o"], env: "CHAT_MODEL" }, { type: "dynamic" as const, origin: "param" as const, hint: "name" }] } },
     };
-    expect(modelOf({ body, pathTemplate: "/v1/chat/completions", dynamic: [] })).toEqual({ values: ["gpt-4o"], env: "CHAT_MODEL", dynamic: true, hint: "name", from: "body" });
+    expect(modelOf({ body, pathTemplate: "/v1/chat/completions", dynamic: [] })).toEqual({ values: ["gpt-4o"], env: "CHAT_MODEL", dynamic: true, hint: "name", sources: [{ value: "gpt-4o", from: "default" }], from: "body" });
   });
 
   it("prefers an explicit model to the body", () => {

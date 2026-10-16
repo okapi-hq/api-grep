@@ -165,6 +165,13 @@ function packageEnumMember(u: Expression): Part[] | undefined {
   return [{ kind: "static", text: name, viaConst: true }];
 }
 
+/** `Translator.modelTag` for `class Translator { static modelTag = "..." }` of the project. */
+function staticPropertyInitializer(u: Expression): Expression | undefined {
+  if (!Node.isPropertyAccessExpression(u) || !Node.isIdentifier(u.getExpression())) return undefined;
+  const cls = u.getExpression().getSymbol()?.getDeclarations().find((d) => Node.isClassDeclaration(d));
+  return cls && Node.isClassDeclaration(cls) ? cls.getStaticProperty(u.getName())?.asKind(SyntaxKind.PropertyDeclaration)?.getInitializer() : undefined;
+}
+
 function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] {
   const env = envName(u);
   if (env) return [{ kind: "env", name: env }];
@@ -178,6 +185,8 @@ function evalPropertyAccess(u: Expression, ctx: EvalCtx, depth: number): Part[] 
     if (init) return markConst(evaluate(init, ctx, depth + 1));
     return typeLiteral(u) ?? dyn(u, "unknown");
   }
+  const staticInit = staticPropertyInitializer(u);
+  if (staticInit) return markConst(evaluate(staticInit, ctx, depth + 1));
   if (Node.isPropertyAccessExpression(u)) {
     // the object hops (spreads, arguments) have a budget of their own: an object passed down two wrappers still resolves
     const inner = getProp(u.getExpression(), u.getName(), ctx);

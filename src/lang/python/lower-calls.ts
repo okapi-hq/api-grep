@@ -71,7 +71,9 @@ export function valueCall(callee: string | undefined, args: Arg[], st: PyState, 
   if (q !== "dataclasses.field" && q !== "pydantic.Field" && q !== "pydantic.fields.Field") return undefined;
   const factory = args.find((a) => a.name === "default_factory")?.value;
   if (factory) return { k: "call", fn: factory, args: [], pos };
-  return args.find((a) => a.name === "default")?.value;
+  // `Field("gpt-4o", description=...)`: pydantic's default is its first argument (`...` marks a required field)
+  const first = q === "dataclasses.field" ? undefined : args[0] && !args[0].name && !args[0].spread ? args[0].value : undefined;
+  return args.find((a) => a.name === "default")?.value ?? (first && !(first.k === "unknown" && first.text === "...") ? first : undefined);
 }
 
 /**

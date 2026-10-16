@@ -98,24 +98,49 @@ A call to a model API also carries `model`: the model names the code gives, read
 branches are followed, and so is a parameter of the enclosing function: the literals its callers pass and its default
 ([#39](languages.md#a-parameters-values-39)); `dynamic` says some branch could not be read. Body values and
 header values read parameters the same way; a header that can take several values lists them in
-`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`). A model read from an env var also
-carries `envExample`, the value the repository's example env file nearest the call documents for it (`.env.example`,
-`.env.sample`, `.env.template`, `.env.dist`, or one of them with a middle part such as `.env.local.example`), when it can be
-a model name and is no placeholder.
+`headerAlternatives` (`{ "x-api-version": ["2024-06-01", "2025-01-15"] }`).
+
+A model chosen at run time is often written down where the scan can follow it ([#125](https://github.com/okapi-hq/api-grep/issues/125)),
+and `values` lists those names too, `dynamic` staying true when some value is still unread:
+
+- defaults the code gives: an env var's (`os.getenv`, `os.environ.get`, `process.env.X ?? "..."`), a fallback
+  (`model or "gpt-4o"`, `opts.model ?? process.env.MODEL ?? "..."`, `d.get("model", "gpt-4o")`), a parameter's or a
+  constructor's (`def __init__(self, model="gpt-4o")`, `constructor(private model = "gpt-4o")`), a settings or record
+  class field's (pydantic and pydantic-settings, `Field("...")`, dataclasses, also built by a factory or a classmethod
+  such as `Config.from_runnable_config(c)`), a zod env schema's `.default("...")` (`schema.parse(process.env)`, t3's
+  `createEnv`), an argparse argument's `default=`;
+- the value an example env file nearest the call documents for the env var the call reads (`.env.example`,
+  `.env.sample`, `.env.template`, `.env.dist`, one of them with a middle part such as `.env.local.example`,
+  `.env-example`, `env.example`, `example.env`), also as `envExample`: an assignment, else a commented-out one
+  (`# OPENAI_MODEL=gpt-4o`) unless the file comments out several values for it; a placeholder (`your-model`,
+  `my-deployment`, `changeme`) documents nothing. A pydantic-settings field is read from its env var (its
+  `env_prefix`, upper case unless `case_sensitive`, or its `alias`);
+- the keys of a JSON, YAML or TOML file the code loads by a literal path (`yaml.safe_load(open("config.yaml"))["llm"]["model"]`,
+  `json.load(f)` after `with open("settings.json") as f`, `os.path.join(os.path.dirname(__file__), "x.toml")`,
+  `import config from "./config.json"`, `require("./config.json")`, `JSON.parse(readFileSync("x.json", "utf8"))`),
+  read from the scanned directory (next to the code, else at the scanned directory's root); a value the program fills in
+  (`${MODEL:gpt-4o}`) is no name.
+
+`sources` (schema 1.25) says where each name that is no literal of the code comes from, so a consumer can weigh a default or a
+documented value below a literal: `default`, `env_example` (with its `file`) or `config_file` (with its `file` and
+`key` path). A name the code also writes as a literal is listed as a literal.
 
 ```yaml
     model:
-      values: [gpt-4o-mini, o3]  # every name a branch can give, as the provider receives it
+      values: [gpt-4o-mini, o3, gpt-4.1]  # every name a branch can give, as the provider receives it
       env: CHAT_MODEL            # the env var that can override them
       envExample: gpt-4.1        # what the nearest .env.example gives that var
       dynamic: false             # true: some value could not be read (hint: its name)
+      sources:                   # the names that are no literal of the code (o3 is one)
+        - { value: gpt-4o-mini, from: default }
+        - { value: gpt-4.1, from: env_example, file: .env.example }
       from: body                 # argument | body | path
 ```
 
 Libraries that pick the provider from the model name (LiteLLM, LangChain's `init_chat_model`, PydanticAI,
 CrewAI, DSPy, smolagents, Mastra) are reported at the provider their first name routes to
 (`anthropic/claude-sonnet-4` to Anthropic, `gpt-4o` to OpenAI), the prefix dropped from `values`; a name
-that routes nowhere leaves the provider `unknown`.
+that routes nowhere leaves the provider `unknown`. An example env file's name routes nothing.
 
 ## Operations: JSON-RPC, GraphQL, SOAP, action APIs
 

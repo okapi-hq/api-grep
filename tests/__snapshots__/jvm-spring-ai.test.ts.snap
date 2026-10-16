@@ -38,6 +38,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],
@@ -88,6 +94,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],
@@ -236,6 +248,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.openai.embedding.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "text-embedding-3-small",
+          },
+        ],
         "values": [
           "text-embedding-3-small",
         ],
@@ -286,6 +304,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],
@@ -337,6 +361,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "CHAT_MODEL",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4.1-mini",
+          },
+        ],
         "values": [
           "gpt-4.1-mini",
         ],
@@ -389,6 +419,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.openai.image.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "dall-e-3",
+          },
+        ],
         "values": [
           "dall-e-3",
         ],
@@ -438,6 +474,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.ollama.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "qwen3:8b",
+          },
+        ],
         "values": [
           "qwen3:8b",
         ],
@@ -487,6 +529,12 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
         "dynamic": false,
         "env": "spring.ai.mistralai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "mistral-small-latest",
+          },
+        ],
         "values": [
           "mistral-small-latest",
         ],
@@ -684,6 +732,12 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
         "dynamic": false,
         "env": "spring.ai.anthropic.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-sonnet-4-5",
+          },
+        ],
         "values": [
           "claude-sonnet-4-5",
         ],
@@ -734,6 +788,12 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
         "dynamic": false,
         "env": "spring.ai.anthropic.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-sonnet-4-5",
+          },
+        ],
         "values": [
           "claude-sonnet-4-5",
         ],
@@ -833,6 +893,12 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
         "dynamic": false,
         "env": "spring.ai.anthropic.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-sonnet-4-5",
+          },
+        ],
         "values": [
           "claude-sonnet-4-5",
         ],

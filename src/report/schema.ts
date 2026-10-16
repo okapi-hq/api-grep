@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Shape } from "../types.js";
+import { ModelSchema } from "./schema-model.js";
 import { CoverageSchema, DiagnosticsSchema, LanguageSchema } from "./schema-scan.js";
 
 /**
@@ -133,24 +134,6 @@ export const DynamicPartSchema = z
     shape: ShapeSchema.optional(),
   })
   .meta({ id: "DynamicPart", description: "Part of the request the scan could not know statically." });
-
-export const ModelSchema = z
-  .object({
-    values: z
-      .array(z.string())
-      .describe("Model names the code gives, literally or as a default (an environment variable's, a function's returns, every branch of a condition)."),
-    env: z.string().optional().describe("Environment variable the model is read from; `values` holds its default in the code, if any."),
-    envExample: z
-      .string()
-      .optional()
-      .describe("The value the repository's example env file nearest the call (`.env.example`, `.env.sample`, …) gives `env`; not a value the code gives."),
-    dynamic: z.boolean().describe("Some value could not be read statically (a parameter, a call result): `values` may be incomplete."),
-    hint: z.string().optional().describe("Identifier the unread value comes from (`get_model`, `settings.model`)."),
-    from: z
-      .enum(["body", "path", "argument"])
-      .describe("Where the request carries it: a body property (`model`, `modelId`), a path segment (`/models/{model}`), or an SDK argument that is not the body (`openai(\"gpt-4o\")`)."),
-  })
-  .meta({ id: "Model", description: "The model a call names, as far as the code tells statically." });
 
 /** A selected field's arguments by name: literal values as JSON, variables as `"$name"`. */
 const GraphqlArgumentsSchema = z.record(z.string(), z.unknown());

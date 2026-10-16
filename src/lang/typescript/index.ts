@@ -47,10 +47,10 @@ function fileCounts(seen: string[], scanned: string[]): LanguageScanResult["file
   return out;
 }
 
-/** The files a project would hold: an HTML page without inline script, or that could not be read, is none. */
+/** The files a project would hold: a page or component without script, or that could not be read, is none. */
 function sourceFiles(scope: Scope): string[] {
   const unreadable = new Set(scope.unreadable.map((u) => u.path));
-  return scope.files.filter((f) => !unreadable.has(f) && (!/\.html?$/i.test(f) || !!scope.html.get(f)?.script));
+  return scope.files.filter((f) => !unreadable.has(f) && (!scope.html.has(f) || !!scope.html.get(f)?.script));
 }
 
 function textOf(scope: Scope): (file: string) => string | undefined {

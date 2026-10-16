@@ -1,6 +1,7 @@
 import { ts, type Node, type Symbol, type Type } from "ts-morph";
 import { isSafeKey } from "../record-keys.js";
-import type { Shape } from "../types.js";
+import { mergedSources } from "../model/value-sources.js";
+import { VALUE_SOURCES, type Shape } from "../types.js";
 
 const MAX_DEPTH = 5;
 const MAX_PROPS = 80;
@@ -52,7 +53,8 @@ export function mergeLiterals(shapes: Shape[]): Shape | undefined {
   const values = shapes.flatMap((s) => ("enum" in s && s.enum ? s.enum : []));
   if (values.length !== shapes.length) return { type };
   if (type === "boolean" && values.length >= 2) return { type };
-  return { type, enum: values };
+  const sources = mergedSources(shapes, values);
+  return { type, enum: values, ...(sources ? { [VALUE_SOURCES]: sources } : {}) };
 }
 
 /**

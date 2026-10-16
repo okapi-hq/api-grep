@@ -5,7 +5,7 @@ describe("models: python", () => {
   it("reads model names through env defaults, settings, function returns and branches", async () => {
     const r = await scanFixture("python/models");
     expect(r).toMatchSnapshot();
-    expect(at(r, "direct.py", 13).model).toEqual({ values: ["gpt-4.1"], env: "CHAT_MODEL", dynamic: false, from: "body" });
+    expect(at(r, "direct.py", 13).model).toEqual({ values: ["gpt-4.1"], env: "CHAT_MODEL", dynamic: false, sources: [{ value: "gpt-4.1", from: "default" }], from: "body" });
     expect(at(r, "direct.py", 17).model).toMatchObject({ values: ["gpt-4o-mini"], env: "SUMMARY_MODEL" });
     expect(at(r, "direct.py", 21).model).toMatchObject({ values: ["whisper-1"], env: "TRANSCRIBE_MODEL" });
     expect(at(r, "direct.py", 25).model).toMatchObject({ values: ["o3-mini"], env: "REASONING_MODEL" });
@@ -13,6 +13,7 @@ describe("models: python", () => {
     expect(at(r, "direct.py", 34).model).toMatchObject({ values: ["gpt-3.5-turbo"], env: "FALLBACK_MODEL", dynamic: true, hint: "name" });
     expect(at(r, "direct.py", 38).model).toEqual({ values: [], dynamic: true, hint: "model_name", from: "body" });
     expect(at(r, "direct.py", 42).model?.values).toEqual(["<redacted>"]);
+    expect(at(r, "direct.py", 42).model?.sources).toEqual([{ value: "<redacted>", from: "default" }]);
   });
 
   it("reads model clients and agents, routing libraries by model name", async () => {
@@ -41,7 +42,7 @@ describe("models: typescript", () => {
   it("reads model names through imported constants, defaults, function returns and branches", async () => {
     const r = await scanFixture("sdk/models");
     expect(r).toMatchSnapshot();
-    expect(at(r, "direct.ts", 11).model).toEqual({ values: ["gpt-4.1-mini"], env: "CHAT_MODEL", dynamic: false, from: "body" });
+    expect(at(r, "direct.ts", 11).model).toEqual({ values: ["gpt-4.1-mini"], env: "CHAT_MODEL", dynamic: false, sources: [{ value: "gpt-4.1-mini", from: "default" }], from: "body" });
     expect(at(r, "direct.ts", 12).model).toMatchObject({ values: ["text-embedding-3-large"], env: "EMBED_MODEL" });
     expect(at(r, "direct.ts", 13).model).toMatchObject({ values: ["gpt-4o"], env: "DRAFT_MODEL" });
     expect(at(r, "direct.ts", 14).model?.values).toEqual(["gpt-4o-mini", "o3"]);
@@ -66,8 +67,15 @@ describe("models: typescript", () => {
 describe("models: example env files", () => {
   it("gives a model read from a variable the value its nearest example env file documents", async () => {
     const r = await scanFixture("python/env-examples", { exclude: [] });
-    expect(at(r, "app.py", 9).model).toEqual({ values: [], env: "CHAT_MODEL", envExample: "gpt-4o-mini", dynamic: false, from: "body" });
-    expect(at(r, "app.py", 13).model).toMatchObject({ values: ["text-embedding-3-large"], env: "EMBED_MODEL", envExample: "text-embedding-3-small" });
+    expect(at(r, "app.py", 9).model).toEqual({
+      values: ["gpt-4o-mini"],
+      env: "CHAT_MODEL",
+      envExample: "gpt-4o-mini",
+      dynamic: false,
+      sources: [{ value: "gpt-4o-mini", from: "env_example", file: ".env.example" }],
+      from: "body",
+    });
+    expect(at(r, "app.py", 13).model).toMatchObject({ values: ["text-embedding-3-large", "text-embedding-3-small"], env: "EMBED_MODEL", envExample: "text-embedding-3-small" });
     expect(at(r, "service/worker.py", 9).model).toMatchObject({ env: "CHAT_MODEL", envExample: "claude-sonnet-4-5" });
     // a placeholder documents nothing
     expect(at(r, "app.py", 17).model).not.toHaveProperty("envExample");

@@ -1,0 +1,7 @@
+openai
+anthropic
+groq
+pydantic
+pydantic-settings
+pyyaml
+requests

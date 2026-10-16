@@ -41,6 +41,12 @@ export async function parserFor(name: string): Promise<Parser> {
   return parser;
 }
 
+/** The 1-based line of a tree's first ERROR or MISSING node, if any. */
+export function syntaxErrorLine(tree: Tree): number | undefined {
+  const bad = tree.rootNode.hasError ? firstError(tree.rootNode) : undefined;
+  return bad ? bad.startPosition.row + 1 : undefined;
+}
+
 /**
  * The first syntax error of a tree, as `syntax error at line N`; undefined when the file parsed cleanly. With
  * `allowHidden`, a tree whose only errors are tokens the parser inserted and hides (no ERROR or MISSING node to point

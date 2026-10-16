@@ -139,7 +139,7 @@ export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
 
 function buildOne(raw: RawCall, base: BuildCtx, choice: Choice): Call[] {
   // the URL records the host tables it reads; the rest (a model paired with the URL) reads the same entries
-  const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints, choice: { picks: choice.picks } };
+  const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints, choice: { picks: choice.picks }, rootDir: base.rootDir };
   const dynamic: DynamicPart[] = [];
   const soap = raw.soap ? soapClientCall(raw.soap, raw.node.getSourceFile().getFilePath(), base.rootDir, ctx) : undefined;
   if (raw.soap && !soap) return [];

@@ -1,0 +1,8 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/125",
+  "calls": [
+    {"file": "providers.js", "line": 12, "provider": "anthropic"},
+    {"file": "providers.js", "line": 23, "provider": "ollama"},
+    {"file": "providers.js", "line": 28, "provider": "openai"}
+  ]
+}

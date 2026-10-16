@@ -189,7 +189,14 @@ use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 [`sdk-support.md`](sdk-support.md) (OpenAI and Azure OpenAI, Anthropic and its Bedrock / Vertex clients, Google Gen AI,
 Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3 and Bedrock runtime,
 Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, python-telegram-bot, aiogram,
-pyTelegramBotAPI, discord.py and its forks, huggingface_hub).
+pyTelegramBotAPI, discord.py and its forks, huggingface_hub). Jupyter notebooks (`.ipynb`) are read as the Python of
+their code cells (`src/lang/python/notebook.ts`, through the IR's `readText` hook): each source line on the line of
+the JSON string holding it, so a call's line is its line in the notebook; shell escapes (`!pip`), line magics and
+cells of another language (`%%bash`) are left out, cells run in order so a later cell sees an earlier one's values, a
+cell that is no Python (a shell command without `!`) is left out rather than losing the notebook, and a notebook of
+another kernel reads as empty. A notebook not in nbformat's one-string-per-line layout (a `source` given as one
+string, a notebook on one line) is a `parse-error`; a call's column is its column in the cell's line, not in the JSON
+line.
 
 **Resolved:** f-strings, `+`, `%`, `.format()`, `"/".join([...])`, `urljoin`, `os.getenv("X", default)`,
 `os.environ["X"]` / `.get`, python-decouple `config()` and django-environ `env()`, module constants (also imported from
@@ -1145,7 +1152,10 @@ on a local map), #39 (callers' values).
 
 **Detected:** everything the TypeScript front end detects (fetch, axios, got, ky, node http, SDK registries, the AI
 SDK, framework helpers), plus jQuery (`$.ajax`, `$.get`, `$.getJSON`, `$.post`) and `XMLHttpRequest`
-(`open` + `setRequestHeader` + `send`); in HTML pages, inline scripts and `<form action>` submissions.
+(`open` + `setRequestHeader` + `send`); in HTML pages, inline scripts and `<form action>` submissions; in Vue, Svelte
+and Astro components (`.vue`, `.svelte`, `.astro`), the `<script>` blocks (`<script setup>`, `<script
+context="module">`) and an Astro component's `---` frontmatter, read as TypeScript at their positions in the file
+(`src/lang/html/components.ts`; `location.language` is `typescript`, and `--language typescript` reads them).
 
 **Resolved:** as in TypeScript, plus CommonJS exports (`const { BASE } = require("./config")`,
 `config.base` with `module.exports = {...}`), `require("stripe")(key)`, fields assigned in any method
@@ -1158,8 +1168,10 @@ first 8 KB, `vendor/`, `bower_components/`, `coverage/`, `.nuxt/`, `.output/`, `
 `jest.setup.*`, `vitest.config.*`, `vitest.setup.*`, `vitest.workspace.*`, `playwright.config.*`, `karma.conf.*`,
 `setupTests.*`): an SDK they import is not counted as imported in `coverage.sdks`.
 
-**Limitations:** Vue / Svelte single-file components and other template formats are not read; event-handler
-attributes (`onclick="..."`) are not; a form whose action is a template tag is skipped (its target is the app's own
+**Limitations:** the templates of components (`{#await fetch(...)}`, `@click="..."`, an Astro `{...}` expression) and
+other template formats (`.ejs`, `.hbs`) are not read; imports of a component's script resolve as a TypeScript file's
+do (SvelteKit's `$lib` only through the tsconfig paths the repository has); event-handler attributes
+(`onclick="..."`) are not; a form whose action is a template tag is skipped (its target is the app's own
 route); `{% url %}` / `url_for` values in scripts stay unknown hosts.
 
 ## Operations the URL does not name (#30)
@@ -1792,13 +1804,15 @@ no wrapper expansion substituted (the call as written in the wrapper's body), it
 The values merge as alternatives: `model.values` lists them all, a body value becomes an `enum` with every value, and
 `dynamic` is true when a caller passes something that cannot be read (that value adds the parameter's declared type or
 a dynamic shape next to the literal ones). At a caller, wrapper expansion already substitutes the argument, so each
-call site keeps its own single value.
+call site keeps its own single value. A helper's value read through a call that leaves a parameter out
+(`context.get("model")` for `def get(self, key, default=None)`) reads that parameter's default, not what other callers
+pass.
 
 - **Headers.** `headerValues` keeps one value per header: the first, or null when one value cannot be read. A header
   that can take several values also lists every literal one in `headerAlternatives` (schema 1.8.0). Credential headers
   never list values.
 - **What counts.** Literal scalars, constants, env var defaults and class attributes (`model or self.default_model`
-  merges both); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
+  merges both; the default is listed in `model.sources`, [#125](report.md#model-names)); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
   / `null` / `undefined` stand for "not given" and add no value.
 - **Callers.** Python and PHP: calls of the function or method (`self.f(...)`, `$this->f(...)`, a class call for its
   constructor) found among the project's same-named calls (`src/lang/ir/param-values.ts`). TypeScript: the checker's
@@ -1843,6 +1857,11 @@ A language whose needs go beyond the IR (a type system the engine should use, li
 Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered into one index. A language whose calls are
 command lines rather than expressions (shell) reads its syntax tree directly into the `ResolvedCall` of
 `src/assemble.ts`, without the IR (`src/lang/shell/`).
+
+Measured on 2026-10-16 over the repositories Okapi scans (primary GitHub language of each living repository, latest
+scan): Dart 29 repositories (26 with no call found; Dart is read since then, 20 of them with calls), Jupyter Notebook 9
+(7 with none; notebooks are read since then), C# 5, Ruby 3, PowerShell 3, Swift 2. Vue, Svelte and Astro components
+are read since then too.
 
 | next candidates | ecosystem | notes |
 |---|---|---|

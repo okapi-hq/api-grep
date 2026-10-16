@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/125",
+  "calls": [
+    {"file": "clients.ts", "line": 21, "provider": "anthropic"},
+    {"file": "clients.ts", "line": 30, "provider": "groq"},
+    {"file": "clients.ts", "line": 33, "provider": "groq"},
+    {"file": "clients.ts", "line": 37, "provider": "openai"},
+    {"file": "clients.ts", "line": 38, "provider": "openai"},
+    {"file": "clients.ts", "line": 39, "provider": "openai"},
+    {"file": "clients.ts", "line": 40, "provider": "openai"},
+    {"file": "clients.ts", "line": 41, "provider": "openai"},
+    {"file": "clients.ts", "line": 42, "provider": "openai"},
+    {"file": "clients.ts", "line": 43, "provider": "openai"},
+    {"file": "clients.ts", "line": 44, "provider": "openai"}
+  ]
+}

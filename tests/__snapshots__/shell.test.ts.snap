@@ -467,6 +467,12 @@ exports[`shell: curl > reads curl command lines, their variables, wrapper functi
         "dynamic": false,
         "env": "OPENAI_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],

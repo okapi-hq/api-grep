@@ -9571,7 +9571,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 66,
+    "filesSeen": 73,
     "languages": {
       "javascript": {
         "filesScanned": 0,
@@ -9579,7 +9579,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 60,
+        "filesSeen": 67,
       },
     },
     "skipped": [
@@ -9593,6 +9593,26 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "bedrock/invoke.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "caller-model/agent.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "caller-model/clients.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "caller-model/embeddings.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "caller-model/service.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "caller-model/typed-config.ts",
         "reason": "excluded",
       },
       {
@@ -9693,6 +9713,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "revenuecat/paywall.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "runtime-models/clients.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "runtime-models/env.ts",
         "reason": "excluded",
       },
       {
@@ -9817,7 +9845,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 58,
+      "excluded": 65,
     },
     "unfollowed": [],
   },

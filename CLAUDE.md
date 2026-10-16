@@ -12,8 +12,8 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust, Dart (Flutter) and shell scripts (curl, wget, HTTPie). It must stay
+(inline scripts and forms; Vue, Svelte and Astro components' scripts), Python (Jupyter notebooks too), PHP, Kotlin
+and Java (one front end and one index for both: HTTP clients, Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust, Dart (Flutter) and shell scripts (curl, wget, HTTPie). It must stay
 static: no network, no code execution, no AI.
 
 ## Commands
@@ -51,7 +51,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `bodySource`) for every language.
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
-  see `src/lang/html/`). Memory (#68): `graph.ts` groups the files that can see each other (imports either way,
+  see `src/lang/html/`; a Vue, Svelte or Astro component, a same-size TypeScript file of its `<script>` blocks and
+  Astro frontmatter, `src/lang/html/components.ts`, with `location.language` `typescript`). Memory (#68): `graph.ts`
+  groups the files that can see each other (imports either way,
   `/// <reference>`, `declare module`, globals); `batches.ts` packs groups into projects of about 16 MB of source (a
   smaller repository is one project, without the pre-pass), scanned one after the other (`batched.ts`), results
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
@@ -59,7 +61,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
 - Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust, Dart): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
-  rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
+  rest. A file of another format a grammar reads goes through the source's `readText` hook (`IrSource`): Python reads a
+  Jupyter notebook as its code cells on their notebook lines (`src/lang/python/notebook.ts`), and a cell holding a
+  syntax error is left out (`ReadText.without`) rather than the notebook. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
   values are in `src/lang/jvm/`, shared by Kotlin and Java; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
   its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit; request objects sent by a call, `requests.ts` over
@@ -92,6 +96,17 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   go to `Call.headerAlternatives`.
 - `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
   the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
+  Runtime model names (#125): a value's source rides on scalar shapes under the `VALUE_SOURCES` symbol (never in a
+  report shape; `value-sources.ts`: `default` for fallbacks, parameter and settings defaults, `config_file`), and
+  `fact.ts` lists it as `model.sources`; `alternativesOf` (`resolve/shape-utils.ts`) keeps literal and env values
+  beside a value-less string where `unionOf` would merge them away. Example env files (commented-out lines too) add
+  `env_example` names after assembly (`env-examples.ts`). Config files loaded by a literal path are read by
+  `config-files.ts` (JSON, `yaml-data.ts`, TOML): IR as a dict expression whose strings carry their source
+  (`ir/config-load.ts`, Python loaders in `python/config-load.ts` through `resolveCall`), TypeScript in
+  `resolve/config-values.ts` (JSON imports, `JSON.parse(readFileSync(...))`, zod / t3 env schemas). IR record fields
+  (`ir/object-fields.ts`) read pydantic-settings env names through the language hook `fieldEnv`
+  (`python/settings.ts`), argparse defaults through `attrDefault` (`python/argparse.ts`); dict key reads
+  (`d["k"]`, `.get(k, d)`, `.pop`) are `dictRead` in `ir/values.ts`.
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
   APIs). `assembleCalls` (`src/assemble.ts`) reads it from the resolved request through `src/operation/`, one module
   per protocol (`json-rpc.ts` reads the body shape, `graphql.ts` parses documents with the `graphql` package; an SDK
@@ -296,4 +311,5 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   constructors, Riverpod and get_it) and the supabase_flutter registry are done (`docs/languages.md#dart`, limitations
   there); Firebase and the other pub SDKs in `providers.json` have no registry yet, dart:io `HttpClient`, Chopper and
   retrofit.dart are not read.
+- Jupyter notebooks (Python's `readText`) and Vue, Svelte and Astro components (the TypeScript front end) are read.
 - Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

@@ -56,11 +56,18 @@ package too.
 | `<form action>` | a request to the action URL with its method; the named fields are the body (`multipart` / `form` from `enctype`) or, for a GET, the query; `email` / `number` / `hidden` fields are typed |
 | `<script src>` from a CDN | an import of the npm package, for the SDK coverage |
 
+Vue, Svelte and Astro components are read the same way: their `<script>` blocks and an Astro component's `---`
+frontmatter, as TypeScript, at their line and column in the component (`location.language: "typescript"`); their
+templates are not.
+
 Server-side template tags in scripts (Jinja / Django `{{ x }}`, `{% url %}`, EJS `<%= %>`, PHP
 `<?= ?>`) are read as dynamic values: `fetch("{{ api_url }}/items")` is `{api_url}/items`. Forms
 whose action is a template, an anchor or a `mailto:` are not requests.
 
 ## Python
+
+Jupyter notebooks (`.ipynb`) are read as the Python of their code cells, at their lines in the notebook file; shell
+escapes, magics and cells of another language are left out.
 
 | client | patterns |
 |---|---|
@@ -338,6 +345,14 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   and its default ([#39](languages.md#a-parameters-values-39)); anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
+- **Model names** ([#125](https://github.com/okapi-hq/api-grep/issues/125)): besides the literals, the defaults a
+  value falls back to (`x or "gpt-4o"`, `x ?? "gpt-4o"`, an env var's, a parameter's or a constructor's default,
+  `d.get("model", "gpt-4o")`, keys of a dict the code builds such as `self.args["model"]`), settings and record
+  fields (pydantic-settings with the env var each field reads, pydantic, dataclasses, also built by a factory or a
+  `cls(...)` classmethod; TypeScript `this.model` from the constructor, `static` fields, zod env schemas and t3
+  `createEnv`), argparse defaults, the example env file's value for the env var read (an assignment, else one
+  commented out), and the keys of JSON / YAML / TOML files loaded by a literal path. Each such name is listed in
+  `model.sources` ([report.md](report.md#model-names)).
 - **Provider**: from the SDK registry, else the host through
   [`src/normalize/providers.json`](../src/normalize/providers.json) (`id`, `name`, `hosts`,
   `packages`; an exact host wins over the longest matching suffix). An env URL with a literal
@@ -445,7 +460,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   caller) keeps the options of its construction; a constructor parameter is followed only when the project builds the
   class once; extension methods and enhanced enums' fields (`Env.prod.baseUrl`) are not followed
   ([languages.md](languages.md#dart)).
-- HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
-  event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
+- HTML: scripts of other template formats (`.ejs`, `.hbs`), the templates of Vue, Svelte and Astro components, and
+  JavaScript in event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.
