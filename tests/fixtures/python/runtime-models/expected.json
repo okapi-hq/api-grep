@@ -1,0 +1,31 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/125",
+  "calls": [
+    {"file": "cli.py", "line": 19, "provider": "openai"},
+    {"file": "cli.py", "line": 20, "provider": "openai"},
+    {"file": "config_files.py", "line": 18, "provider": "openai"},
+    {"file": "config_files.py", "line": 22, "provider": "openai"},
+    {"file": "config_files.py", "line": 26, "provider": "openai"},
+    {"file": "config_files.py", "line": 30, "provider": "openai"},
+    {"file": "negatives.py", "line": 18, "provider": "openai"},
+    {"file": "negatives.py", "line": 22, "provider": "openai"},
+    {"file": "negatives.py", "line": 26, "provider": "openai"},
+    {"file": "negatives.py", "line": 30, "provider": "openai"},
+    {"file": "negatives.py", "line": 35, "provider": "openai"},
+    {"file": "negatives.py", "line": 44, "provider": "openai"},
+    {"file": "negatives.py", "line": 48, "provider": "openai"},
+    {"file": "services.py", "line": 21, "provider": "openai"},
+    {"file": "services.py", "line": 31, "provider": "groq"},
+    {"file": "services.py", "line": 34, "provider": "groq"},
+    {"file": "services.py", "line": 38, "provider": "groq"},
+    {"file": "services.py", "line": 47, "provider": "anthropic"},
+    {"file": "services.py", "line": 51, "provider": "openai"},
+    {"file": "services.py", "line": 55, "provider": "openai"},
+    {"file": "services.py", "line": 60, "provider": "openai"},
+    {"file": "services.py", "line": 64, "provider": "groq"},
+    {"file": "services.py", "line": 68, "provider": "openai"},
+    {"file": "services.py", "line": 72, "provider": "anthropic"},
+    {"file": "services.py", "line": 77, "provider": "anthropic"},
+    {"file": "services.py", "line": 82, "provider": "openai"}
+  ]
+}

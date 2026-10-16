@@ -1,5 +1,6 @@
 import { isSafeKey } from "../record-keys.js";
-import type { Part, Shape } from "../types.js";
+import { mergedSources } from "../model/value-sources.js";
+import { VALUE_SOURCES, type Part, type Shape } from "../types.js";
 import { partsToTemplate } from "./parts.js";
 import { dedupe, mergeLiterals } from "./type-shape.js";
 
@@ -8,6 +9,30 @@ export function unionOf(shapes: Shape[]): Shape {
   if (items.length === 0) return { type: "unknown" };
   if (items.length === 1) return items[0]!;
   return mergeLiterals(items) ?? { type: "union", anyOf: items };
+}
+
+/** A string whose values the code tells: literals, or an env var. */
+const knownString = (s: Shape): boolean => s.type === "string" && (!!s.enum?.length || !!s.env);
+
+/**
+ * The values either side of a fallback or a condition can take (`x or "gpt-4o"`, `os.getenv("M") or "gpt-4o"`):
+ * unlike `unionOf`, strings merge only when each is literals (`"a" if x else "b"`); a string with no known value (a typed
+ * parameter) or an env var's does not swallow the literals beside it.
+ */
+export function alternativesOf(shapes: Shape[]): Shape {
+  const members = shapes.flatMap((s) => (s.type === "union" ? s.anyOf : [s]));
+  const strings = members.filter((s) => s.type === "string");
+  const others = members.filter((s) => s.type !== "string");
+  if (strings.length >= 2 && strings.every((s) => s.type === "string" && s.enum?.length && !s.env)) {
+    // every value of every side (a declared `"a" | "b"` gives two: `unionOf` would keep the type only)
+    const values = [...new Set(strings.flatMap((s) => (s.type === "string" ? (s.enum ?? []) : [])))];
+    const sources = mergedSources(strings, values);
+    const merged: Shape = { type: "string", enum: values, ...(sources ? { [VALUE_SOURCES]: sources } : {}) };
+    return others.length > 0 ? unionOf([merged, ...others]) : merged;
+  }
+  if (strings.length < 2 || !strings.some(knownString)) return unionOf(shapes);
+  const unknown = strings.find((s) => !knownString(s));
+  return { type: "union", anyOf: dedupe([...strings.filter(knownString), ...(unknown ? [unknown] : []), ...others]) };
 }
 
 const FORM_PAIR_RE = /^[\w.\-[\]]+=/;

@@ -1,3 +1,4 @@
+import { mergeModels } from "../model/fact.js";
 import type { Call, UnfollowedCall } from "../report/schema.js";
 
 /**
@@ -49,7 +50,7 @@ function merged(calls: Call[]): Call[] {
     const key = JSON.stringify({ ...c, id: undefined, model: undefined });
     const prev = out.get(key);
     if (!prev) out.set(key, c);
-    else if (c.model) out.set(key, { ...prev, model: prev.model ? { ...prev.model, values: [...new Set([...prev.model.values, ...c.model.values])], dynamic: prev.model.dynamic || c.model.dynamic } : c.model });
+    else if (c.model) out.set(key, { ...prev, model: prev.model ? mergeModels(prev.model, c.model) : c.model });
   }
   return [...out.values()];
 }

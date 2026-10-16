@@ -1714,13 +1714,15 @@ no wrapper expansion substituted (the call as written in the wrapper's body), it
 The values merge as alternatives: `model.values` lists them all, a body value becomes an `enum` with every value, and
 `dynamic` is true when a caller passes something that cannot be read (that value adds the parameter's declared type or
 a dynamic shape next to the literal ones). At a caller, wrapper expansion already substitutes the argument, so each
-call site keeps its own single value.
+call site keeps its own single value. A helper's value read through a call that leaves a parameter out
+(`context.get("model")` for `def get(self, key, default=None)`) reads that parameter's default, not what other callers
+pass.
 
 - **Headers.** `headerValues` keeps one value per header: the first, or null when one value cannot be read. A header
   that can take several values also lists every literal one in `headerAlternatives` (schema 1.8.0). Credential headers
   never list values.
 - **What counts.** Literal scalars, constants, env var defaults and class attributes (`model or self.default_model`
-  merges both); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
+  merges both; the default is listed in `model.sources`, [#125](report.md#model-names)); an object or a list a caller builds is read at that caller, not merged into the wrapper's call. `None`
   / `null` / `undefined` stand for "not given" and add no value.
 - **Callers.** Python and PHP: calls of the function or method (`self.f(...)`, `$this->f(...)`, a class call for its
   constructor) found among the project's same-named calls (`src/lang/ir/param-values.ts`). TypeScript: the checker's

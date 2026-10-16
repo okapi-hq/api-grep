@@ -59,6 +59,11 @@ export function deref(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Scoped {
     const left = deref(e.left, fn, ctx, depth + 1);
     return left.expr.k === "dict" ? left : deref(e.right, fn, ctx, depth + 1);
   }
+  // `config["llm"]`, `config.get("llm", {})`: the entry the dict holds, else the read's default
+  // the read's dict is dereferenced within this one's budget: a dict read through others is bounded as a whole
+  const read = e.k === "index" || e.k === "call" ? dictRead(e, fn, ctx, depth + 1) : undefined;
+  const value = read?.entry ?? (read?.known && read.fallback ? { expr: read.fallback, fn } : undefined);
+  if (value) return deref(value.expr, value.fn, ctx, depth + 1);
   const picked = pickedEntry(e, fn, ctx);
   return picked ? deref(picked.expr, picked.fn, ctx, depth + 1) : { expr: e, fn };
 }
@@ -97,10 +102,10 @@ export function staticKey(e: Expr | undefined, fn: FunctionDef, ctx: IrCtx): str
 }
 
 /** The dict / associative array literal an expression stands for. */
-export function dictOf(e: Expr, fn: FunctionDef, ctx: IrCtx): { entries: Entry[]; fn: FunctionDef } | undefined {
+export function dictOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): { entries: Entry[]; fn: FunctionDef } | undefined {
   const built = fluentMap(e, fn, ctx);
   if (built) return built.expr.k === "dict" ? { entries: built.expr.entries, fn: built.fn } : undefined;
-  const d = deref(e, fn, ctx);
+  const d = deref(e, fn, ctx, depth);
   const derefBuilt = d.expr !== e ? fluentMap(d.expr, d.fn, ctx) : undefined;
   if (derefBuilt) return derefBuilt.expr.k === "dict" ? { entries: derefBuilt.expr.entries, fn: derefBuilt.fn } : undefined;
   return d.expr.k === "dict" ? { entries: d.expr.entries, fn: d.fn } : undefined;
@@ -119,6 +124,51 @@ export function entryOf(dict: { entries: Entry[]; fn: FunctionDef }, key: string
     if (staticKey(en.key, dict.fn, ctx) === key) found = { expr: en.value, fn: dict.fn };
   }
   return found;
+}
+
+/** Methods that read a key of a dict with a default: Python `d.get(k, d)` / `d.pop(k, d)`, Kotlin `getOrDefault`. */
+const READS = new Set(["get", "pop", "getOrDefault"]);
+
+/** A read of one key of a dict: the entry the dict the code builds holds, else the default the read gives. */
+export interface DictRead {
+  key: string;
+  /** The value the dict holds under `key`, when the dict is one the code builds and holds it. */
+  entry?: Scoped;
+  /** The dict is one the code builds: a key it lacks is the default. */
+  known: boolean;
+  /** `d.get("model", "gpt-4o")`: what the read gives without the key. */
+  fallback?: Expr;
+}
+
+/**
+ * `cfg["model"]`, `self.args["model"]`, `options.get("model", "gpt-4o")`, `kwargs.pop("model", None)`: a read of a key
+ * written as a literal. Undefined for anything else, a key known at run time only included (a host table's pick).
+ */
+export function dictRead(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): DictRead | undefined {
+  if (depth > MAX_DEPTH) return undefined;
+  let obj: Expr;
+  let key: string | undefined;
+  let fallback: Expr | undefined;
+  if (e.k === "index") {
+    obj = e.obj;
+    key = staticKey(e.key, fn, ctx);
+  } else if (e.k === "call" && e.fn.k === "attr" && READS.has(e.fn.name) && e.args.length >= 1 && e.args.length <= 2 && e.args.every((a) => !a.name && !a.spread)) {
+    // a literal key only: `requests.get(url)` reads no dict
+    if (e.args[0]!.value.k !== "str") return undefined;
+    obj = e.fn.obj;
+    key = e.args[0]!.value.v;
+    fallback = e.args[1]?.value;
+  } else return undefined;
+  if (key === undefined) return undefined;
+  const dict = dictOf(obj, fn, ctx, depth);
+  const entry = dict ? entryOf(dict, key, ctx) : undefined;
+  return { key, known: !!dict && !orFallback(obj, fn, ctx), ...(entry ? { entry } : {}), ...(fallback ? { fallback } : {}) };
+}
+
+/** `args = args or {}`: the dict stands in for a value the caller may give, so the keys it lacks are not known. */
+function orFallback(obj: Expr, fn: FunctionDef, ctx: IrCtx): boolean {
+  const b = obj.k === "name" ? lookup(obj.name, fn, obj.pos.offset, ctx.idx) : undefined;
+  return b?.kind === "value" && b.assign.value.k === "or" && b.assign.value.left.k !== "dict";
 }
 
 /** `CONFIG["base"]`, `$config['base']`: the entry of a dict literal behind the indexed value. */

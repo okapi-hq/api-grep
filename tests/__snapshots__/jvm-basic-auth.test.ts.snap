@@ -126,7 +126,7 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -278,7 +278,7 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "okhttp": 2,

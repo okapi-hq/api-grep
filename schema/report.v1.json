@@ -742,14 +742,14 @@
           "items": {
             "type": "string"
           },
-          "description": "Model names the code gives, literally or as a default (an environment variable's, a function's returns, every branch of a condition)."
+          "description": "Model names the call can send: those the code gives, literally or as a default (an environment variable's, a parameter's, a function's returns, every branch of a condition), those of a config file it loads and the one an example env file documents for `env`; `sources` says where each that is no literal comes from."
         },
         "env": {
           "description": "Environment variable the model is read from; `values` holds its default in the code, if any.",
           "type": "string"
         },
         "envExample": {
-          "description": "The value the repository's example env file nearest the call (`.env.example`, `.env.sample`, …) gives `env`; not a value the code gives.",
+          "description": "The value the repository's example env file nearest the call (`.env.example`, `.env.sample`, …) gives `env`; also in `values`, with the source `env_example`.",
           "type": "string"
         },
         "dynamic": {
@@ -759,6 +759,13 @@
         "hint": {
           "description": "Identifier the unread value comes from (`get_model`, `settings.model`).",
           "type": "string"
+        },
+        "sources": {
+          "description": "Where the values of `values` that the code does not write as a literal come from; a value not listed is a literal the code gives.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModelSource"
+          }
         },
         "from": {
           "type": "string",
@@ -776,6 +783,37 @@
         "from"
       ],
       "description": "The model a call names, as far as the code tells statically."
+    },
+    "ModelSource": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "One of `values`."
+        },
+        "from": {
+          "type": "string",
+          "enum": [
+            "default",
+            "env_example",
+            "config_file"
+          ],
+          "description": "default: a fallback the code gives (an env var's or a parameter's default, `x or \"gpt-4o\"`, a settings field's default); env_example: the value an example env file documents for the env var the code reads; config_file: a key of a config file the code loads by a literal path."
+        },
+        "file": {
+          "description": "The example env file or config file, relative to the scanned directory, `/` separated.",
+          "type": "string"
+        },
+        "key": {
+          "description": "config_file: the value's key path in the file (`llm.model`).",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "from"
+      ],
+      "description": "Where a model name the code does not write as a literal comes from."
     },
     "ClientPart": {
       "type": "object",

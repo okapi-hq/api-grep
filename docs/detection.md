@@ -303,6 +303,14 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   and its default ([#39](languages.md#a-parameters-values-39)); anything else goes through the checker's declared type. `JSON.stringify`,
   `URLSearchParams`, `FormData`, `qs.stringify` and form-encoded template strings are
   unwrapped. `any` degrades to `dynamic`.
+- **Model names** ([#125](https://github.com/okapi-hq/api-grep/issues/125)): besides the literals, the defaults a
+  value falls back to (`x or "gpt-4o"`, `x ?? "gpt-4o"`, an env var's, a parameter's or a constructor's default,
+  `d.get("model", "gpt-4o")`, keys of a dict the code builds such as `self.args["model"]`), settings and record
+  fields (pydantic-settings with the env var each field reads, pydantic, dataclasses, also built by a factory or a
+  `cls(...)` classmethod; TypeScript `this.model` from the constructor, `static` fields, zod env schemas and t3
+  `createEnv`), argparse defaults, the example env file's value for the env var read (an assignment, else one
+  commented out), and the keys of JSON / YAML / TOML files loaded by a literal path. Each such name is listed in
+  `model.sources` ([report.md](report.md#model-names)).
 - **Provider**: from the SDK registry, else the host through
   [`src/normalize/providers.json`](../src/normalize/providers.json) (`id`, `name`, `hosts`,
   `packages`; an exact host wins over the longest matching suffix). An env URL with a literal

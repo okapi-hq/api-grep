@@ -1,0 +1,1 @@
+{ "name": "caller-model-fixture", "private": true, "dependencies": { "openai": "5.11.0" } }

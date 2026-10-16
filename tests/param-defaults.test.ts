@@ -9,8 +9,14 @@ const header = (c: Call): { value: string | null | undefined; alternatives?: str
   ...(c.headerAlternatives?.["x-api-version"] ? { alternatives: c.headerAlternatives["x-api-version"] } : {}),
 });
 
-const defaultOnly = { model: { values: ["gpt-4o-mini"], dynamic: false, from: "body" }, maxTokens: { type: "integer", enum: [1024] } };
-const withCaller = { model: { values: ["gpt-4o-mini", "o3"], dynamic: false, from: "body" }, maxTokens: { type: "integer", enum: [1024, 4096] } };
+const defaultOnly = {
+  model: { values: ["gpt-4o-mini"], dynamic: false, sources: [{ value: "gpt-4o-mini", from: "default" }], from: "body" },
+  maxTokens: { type: "integer", enum: [1024] },
+};
+const withCaller = {
+  model: { values: ["gpt-4o-mini", "o3"], dynamic: false, sources: [{ value: "gpt-4o-mini", from: "default" }], from: "body" },
+  maxTokens: { type: "integer", enum: [1024, 4096] },
+};
 
 describe("parameter values: python", () => {
   it("reads the default, the callers' literals, and marks unread arguments dynamic", async () => {
@@ -18,7 +24,7 @@ describe("parameter values: python", () => {
     expect(r).toMatchSnapshot();
     expect({ model: at(r, "assistant.py", 7).model, maxTokens: maxTokens(at(r, "assistant.py", 7)) }).toEqual(defaultOnly);
     expect({ model: at(r, "assistant.py", 11).model, maxTokens: maxTokens(at(r, "assistant.py", 11)) }).toEqual(withCaller);
-    expect(at(r, "assistant.py", 15).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", from: "body" });
+    expect(at(r, "assistant.py", 15).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", sources: [{ value: "gpt-4o-mini", from: "default" }], from: "body" });
     expect(maxTokens(at(r, "assistant.py", 15))).toEqual({ type: "union", anyOf: [{ type: "integer", enum: [1024] }, { type: "dynamic", origin: "param", hint: "max_tokens" }] });
     // a class attribute behind `model or self.default_model` joins the callers' values
     expect(at(r, "assistant.py", 32).model?.values).toEqual(["gpt-4.1-nano", "gpt-4.1"]);
@@ -34,7 +40,7 @@ describe("parameter values: php", () => {
     expect(r).toMatchSnapshot();
     expect({ model: at(r, "Assistant.php", 13).model, maxTokens: maxTokens(at(r, "Assistant.php", 13)) }).toEqual(defaultOnly);
     expect({ model: at(r, "Assistant.php", 18).model, maxTokens: maxTokens(at(r, "Assistant.php", 18)) }).toEqual(withCaller);
-    expect(at(r, "Assistant.php", 23).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", from: "body" });
+    expect(at(r, "Assistant.php", 23).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", sources: [{ value: "gpt-4o-mini", from: "default" }], from: "body" });
     expect(header(at(r, "Assistant.php", 28))).toEqual({ value: null, alternatives: ["2024-06-01", "2025-01-15"] });
   });
 });
@@ -45,7 +51,7 @@ describe("parameter values: typescript", () => {
     expect(r).toMatchSnapshot();
     expect({ model: at(r, "assistant.ts", 6).model, maxTokens: maxTokens(at(r, "assistant.ts", 6)) }).toEqual(defaultOnly);
     expect({ model: at(r, "assistant.ts", 10).model, maxTokens: maxTokens(at(r, "assistant.ts", 10)) }).toEqual(withCaller);
-    expect(at(r, "assistant.ts", 14).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", from: "body" });
+    expect(at(r, "assistant.ts", 14).model).toEqual({ values: ["gpt-4o-mini"], dynamic: true, hint: "model", sources: [{ value: "gpt-4o-mini", from: "default" }], from: "body" });
     expect(maxTokens(at(r, "assistant.ts", 14))).toEqual({ type: "union", anyOf: [{ type: "integer", enum: [1024] }, { type: "number", hint: "maxTokens" }] });
     expect(at(r, "assistant.ts", 31).model?.values).toEqual(["gpt-4.1-nano", "gpt-4.1"]);
     expect(header(at(r, "forecast.ts", 4))).toEqual({ value: "2024-06-01" });

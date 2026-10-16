@@ -84,6 +84,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "dynamic": false,
         "env": "CHAT_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4.1",
+          },
+        ],
         "values": [
           "gpt-4.1",
         ],
@@ -173,6 +179,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "dynamic": false,
         "env": "SUMMARY_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],
@@ -262,6 +274,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "dynamic": false,
         "env": "TRANSCRIBE_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "whisper-1",
+          },
+        ],
         "values": [
           "whisper-1",
         ],
@@ -377,6 +395,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "dynamic": false,
         "env": "REASONING_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "o3-mini",
+          },
+        ],
         "values": [
           "o3-mini",
         ],
@@ -428,11 +452,23 @@ exports[`models: python > reads model names through env defaults, settings, func
             "type": "array",
           },
           "model": {
-            "enum": [
-              "claude-3-haiku-20240307",
-              "claude-3-5-sonnet-20241022",
+            "anyOf": [
+              {
+                "enum": [
+                  "claude-3-haiku-20240307",
+                ],
+                "type": "string",
+              },
+              {
+                "enum": [
+                  "claude-3-5-sonnet-20241022",
+                ],
+                "env": "VISION_MODEL",
+                "hint": "VISION_MODEL",
+                "type": "string",
+              },
             ],
-            "type": "string",
+            "type": "union",
           },
         },
         "required": [
@@ -510,7 +546,14 @@ exports[`models: python > reads model names through env defaults, settings, func
       "method": "POST",
       "model": {
         "dynamic": false,
+        "env": "VISION_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-3-5-sonnet-20241022",
+          },
+        ],
         "values": [
           "claude-3-haiku-20240307",
           "claude-3-5-sonnet-20241022",
@@ -541,25 +584,20 @@ exports[`models: python > reads model names through env defaults, settings, func
           "model": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "hint": "name",
-                    "origin": "param",
-                    "type": "dynamic",
-                  },
-                  {
-                    "env": "FALLBACK_MODEL",
-                    "hint": "FALLBACK_MODEL",
-                    "type": "string",
-                  },
-                ],
-                "type": "union",
+                "env": "FALLBACK_MODEL",
+                "hint": "FALLBACK_MODEL",
+                "type": "string",
               },
               {
                 "enum": [
                   "gpt-3.5-turbo",
                 ],
                 "type": "string",
+              },
+              {
+                "hint": "name",
+                "origin": "param",
+                "type": "dynamic",
               },
             ],
             "type": "union",
@@ -634,6 +672,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "env": "FALLBACK_MODEL",
         "from": "body",
         "hint": "name",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-3.5-turbo",
+          },
+        ],
         "values": [
           "gpt-3.5-turbo",
         ],
@@ -805,6 +849,12 @@ exports[`models: python > reads model names through env defaults, settings, func
         "dynamic": false,
         "env": "PROXY_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "<redacted>",
+          },
+        ],
         "values": [
           "<redacted>",
         ],
@@ -2235,7 +2285,7 @@ exports[`models: python > reads model names through env defaults, settings, func
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "sdk": 26,
@@ -2261,7 +2311,7 @@ exports[`models: python > reads model names through env defaults, settings, func
     "callsFound": 26,
     "durationMs": 0,
     "filesScanned": 4,
-    "redacted": 3,
+    "redacted": 4,
     "withBodyShape": 20,
     "withDynamic": 11,
   },
@@ -2362,6 +2412,12 @@ exports[`models: typescript > reads model names through imported constants, defa
         "dynamic": false,
         "env": "CHAT_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4.1-mini",
+          },
+        ],
         "values": [
           "gpt-4.1-mini",
         ],
@@ -2453,6 +2509,12 @@ exports[`models: typescript > reads model names through imported constants, defa
         "dynamic": false,
         "env": "EMBED_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "text-embedding-3-large",
+          },
+        ],
         "values": [
           "text-embedding-3-large",
         ],
@@ -2539,6 +2601,12 @@ exports[`models: typescript > reads model names through imported constants, defa
         "dynamic": false,
         "env": "DRAFT_MODEL",
         "from": "body",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o",
+          },
+        ],
         "values": [
           "gpt-4o",
         ],
@@ -3656,7 +3724,7 @@ exports[`models: typescript > reads model names through imported constants, defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "sdk": 16,
