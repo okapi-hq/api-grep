@@ -12,6 +12,7 @@ const BY_EXTENSION: Record<string, Language> = {
   ".html": "html",
   ".htm": "html",
   ".py": "python",
+  ".ipynb": "python",
   ".php": "php",
   ".kt": "kotlin",
   ".kts": "kotlin",

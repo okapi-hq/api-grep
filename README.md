@@ -8,7 +8,8 @@
 
 Point api-grep at a repository and it lists the external APIs the code talks to: the provider, the method and
 path, the names and types of what each request sends, and how it authenticates. It reads TypeScript, JavaScript,
-HTML, Python, PHP, Kotlin, Java, Go, Rust and shell scripts. Nothing is executed and nothing leaves your machine.
+HTML (and Vue, Svelte and Astro components), Python (and Jupyter notebooks), PHP, Kotlin, Java, Go, Rust and shell
+scripts. Nothing is executed and nothing leaves your machine.
 
 ```sh
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/okapi-hq/api-grep scan /repo
@@ -202,8 +203,8 @@ versioned separately from the tool.
 | language | HTTP clients |
 |---|---|
 | TypeScript, JavaScript | `fetch`, axios, got, ky, Node `http`, jQuery, `XMLHttpRequest`, node-soap, the Vercel AI SDK |
-| HTML | inline `<script>` blocks and `<form>` actions |
-| Python | requests, httpx, aiohttp, urllib, urllib3, zeep |
+| HTML | inline `<script>` blocks and `<form>` actions; the scripts of Vue, Svelte and Astro components |
+| Python | requests, httpx, aiohttp, urllib, urllib3, zeep, also in Jupyter notebooks |
 | PHP | Guzzle, Laravel `Http`, Symfony HttpClient, curl, PSR-18, streams, WordPress, `SoapClient` |
 | Kotlin, Java | OkHttp, `java.net.http`, `HttpURLConnection`, Ktor, Spring `RestTemplate` / `WebClient` / `RestClient`, Feign, Retrofit, Apache HttpClient, JAX-RS, AsyncHttpClient, Unirest, Vert.x |
 | Go | `net/http` (`http.Get` / `Post` / `PostForm`, `http.NewRequest` sent by any client), go-retryablehttp, fhttp, Resty |

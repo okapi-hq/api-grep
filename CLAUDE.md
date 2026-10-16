@@ -12,8 +12,8 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 `api-grep` statically lists the outbound HTTP and SDK calls of a repository: provider, method,
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
-(inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust and shell scripts (curl, wget, HTTPie). It must stay
+(inline scripts and forms; Vue, Svelte and Astro components' scripts), Python (Jupyter notebooks too), PHP, Kotlin
+and Java (one front end and one index for both: HTTP clients, Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust and shell scripts (curl, wget, HTTPie). It must stay
 static: no network, no code execution, no AI.
 
 ## Commands
@@ -50,7 +50,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `bodySource`) for every language.
 - TypeScript, JavaScript and HTML: `src/lang/typescript/` wraps the ts-morph pipeline in `src/detect`, `src/resolve`,
   `src/wrappers` (JavaScript through `allowJs`; an HTML page becomes a same-size JavaScript file of its inline scripts,
-  see `src/lang/html/`). Memory (#68): `graph.ts` groups the files that can see each other (imports either way,
+  see `src/lang/html/`; a Vue, Svelte or Astro component, a same-size TypeScript file of its `<script>` blocks and
+  Astro frontmatter, `src/lang/html/components.ts`, with `location.language` `typescript`). Memory (#68): `graph.ts`
+  groups the files that can see each other (imports either way,
   `/// <reference>`, `declare module`, globals); `batches.ts` packs groups into projects of about 16 MB of source (a
   smaller repository is one project, without the pre-pass), scanned one after the other (`batched.ts`), results
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
@@ -58,7 +60,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
 - Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
-  rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
+  rest. A file of another format a grammar reads goes through the source's `readText` hook (`IrSource`): Python reads a
+  Jupyter notebook as its code cells on their notebook lines (`src/lang/python/notebook.ts`), and a cell holding a
+  syntax error is left out (`ReadText.without`) rather than the notebook. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
   values are in `src/lang/jvm/`, shared by Kotlin and Java; so are the JVM HTTP clients (`src/lang/jvm/http/`: OkHttp and
   its interceptors, `java.net.http`, Ktor, Spring, Feign, Retrofit; request objects sent by a call, `requests.ts` over
@@ -279,4 +283,6 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).
 - Rust: reqwest, ureq, awc, surf, isahc and the async-openai, openai-api-rs, teloxide and serenity registries are done
   (`docs/languages.md#rust`, limitations there).
-- Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.
+- Jupyter notebooks (Python's `readText`) and Vue, Svelte and Astro components (the TypeScript front end) are read.
+- Next language candidates (Dart first by production weight, Ruby, C#) and what each needs are listed at the end of
+  `docs/languages.md`.

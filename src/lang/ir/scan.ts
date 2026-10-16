@@ -8,12 +8,12 @@ import { tableDiagnostics } from "../../resolve/choice.js";
 import type { DiagnosticsCollector } from "../../report/diagnostics.js";
 import type { Call, SdkCoverage } from "../../report/schema.js";
 import { errorText, languageFiles, leftOutFiles, readEnvHints, type LeftOut } from "../files.js";
-import { parserFor, syntaxError, type Parser, type Tree } from "../tree-sitter.js";
+import { parserFor, syntaxError, syntaxErrorLine, type Parser, type Tree } from "../tree-sitter.js";
 import type { LanguageFrontEnd, LanguageScanInput, LanguageScanResult } from "../types.js";
 import { buildIrCall, type BuildIrCtx } from "./build.js";
 import { detectIn, type Candidate, type IrUnfollowed } from "./detect.js";
 import { collectHostLiterals } from "./host-literals.js";
-import { sourcesOf, type IrLanguage, type IrSource } from "./language.js";
+import { sourcesOf, type IrLanguage, type IrSource, type ReadText } from "./language.js";
 import type { ModuleModel } from "./model.js";
 import { ProjectIndex } from "./project.js";
 import { withAlternatives, type IrCtx, type IrRaw } from "./raw.js";
@@ -35,6 +35,28 @@ function parseFile(parser: Parser, lang: IrSource, text: string): { tree: Tree; 
   return { tree, problem };
 }
 
+/** A file's text as its grammar reads it: as written, or through the language's `readText` (a notebook). */
+function sourceText(lang: IrSource, file: string): ReadText | undefined {
+  const text = readFileSync(file, "utf8");
+  return lang.readText ? lang.readText(file, text) : { text };
+}
+
+/** Parts of a file left out one by one, each for a syntax error, before the file is a `parse-error`. */
+const MAX_LEFT_OUT = 20;
+
+/** Parses a file's text, leaving out the parts that hold syntax errors when its `readText` can. */
+function parseSource(parser: Parser, lang: IrSource, src: ReadText): { tree: Tree; problem?: string } {
+  let parsed = parseFile(parser, lang, src.text);
+  for (let n = 0; parsed.problem && src.without && n < MAX_LEFT_OUT; n++) {
+    const line = syntaxErrorLine(parsed.tree);
+    const next = line === undefined ? undefined : src.without(line);
+    if (next === undefined) break;
+    parsed.tree.delete();
+    parsed = parseFile(parser, lang, next);
+  }
+  return parsed;
+}
+
 /**
  * Parses and lowers every file; a file that does not parse, or makes the lowering throw, is skipped, not fatal. Files
  * outside the scanned set are still read so imports resolve through them, but their problems are not reported (nor
@@ -48,7 +70,12 @@ async function lowerAll(lang: IrSource, files: string[], scanned: Set<string>, i
     for (const file of files) {
       const rel = relativePosix(rootDir, file);
       try {
-        const { tree, problem } = parseFile(parser, lang, readFileSync(file, "utf8"));
+        const src = sourceText(lang, file);
+        if (src === undefined) {
+          if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: "not in a layout this front end reads" });
+          continue;
+        }
+        const { tree, problem } = parseSource(parser, lang, src);
         try {
           if (!problem) modules.push(Object.assign(lang.lower(tree.rootNode, file, rootDir), { language: lang.id }));
           else if (scanned.has(file)) diag.skip({ file: rel, reason: "parse-error", detail: problem });

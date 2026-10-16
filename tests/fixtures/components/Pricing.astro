@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const res = await fetch("https://api.ledgerly.dev/v2/plans", {
+  headers: { "X-Api-Key": import.meta.env.LEDGERLY_KEY },
+});
+const plans = await res.json();
+---
+
+<Layout title="Pricing">
+  {plans.map((p) => <section>{p.name}</section>)}
+</Layout>
+
+<script>
+  document.querySelector("form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await fetch("https://api.ledgerly.dev/v2/leads", { method: "POST", body: JSON.stringify({ plan: "pro" }) });
+  });
+</script>
+<script src="/analytics.js"></script>
+<script type="application/ld+json">{"@context": "https://schema.org"}</script>

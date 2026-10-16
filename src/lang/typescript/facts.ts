@@ -1,4 +1,5 @@
 import { ts } from "ts-morph";
+import { isComponent } from "../html/components.js";
 
 /** What a file tells about the files it can see: what it imports and what it adds to the global scope. */
 export interface FileFacts {
@@ -28,6 +29,7 @@ const MORE_IMPORTS = [/\bimport\s*\(\s*["'`]([^"'`\n]+)["'`]\s*\)/g, /\brequire\
 
 function scriptKindOf(file: string): ts.ScriptKind {
   if (/\.html?$/i.test(file)) return ts.ScriptKind.JS;
+  if (isComponent(file)) return ts.ScriptKind.TS;
   if (/\.jsx$/i.test(file)) return ts.ScriptKind.JSX;
   if (/\.[cm]?js$/i.test(file)) return ts.ScriptKind.JS;
   return /\.tsx$/i.test(file) ? ts.ScriptKind.TSX : ts.ScriptKind.TS;

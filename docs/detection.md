@@ -56,11 +56,18 @@ package too.
 | `<form action>` | a request to the action URL with its method; the named fields are the body (`multipart` / `form` from `enctype`) or, for a GET, the query; `email` / `number` / `hidden` fields are typed |
 | `<script src>` from a CDN | an import of the npm package, for the SDK coverage |
 
+Vue, Svelte and Astro components are read the same way: their `<script>` blocks and an Astro component's `---`
+frontmatter, as TypeScript, at their line and column in the component (`location.language: "typescript"`); their
+templates are not.
+
 Server-side template tags in scripts (Jinja / Django `{{ x }}`, `{% url %}`, EJS `<%= %>`, PHP
 `<?= ?>`) are read as dynamic values: `fetch("{{ api_url }}/items")` is `{api_url}/items`. Forms
 whose action is a template, an anchor or a `mailto:` are not requests.
 
 ## Python
+
+Jupyter notebooks (`.ipynb`) are read as the Python of their code cells, at their lines in the notebook file; shell
+escapes, magics and cells of another language are left out.
 
 | client | patterns |
 |---|---|
@@ -405,7 +412,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   crate but its code name is not matched. async-openai's `AzureConfig` deployment paths, other Anthropic and Gemini
   crates (none dominates: listed in `coverage.sdks` only) and setters chained after a teloxide method
   (`.parse_mode(...)`) are not read; path ids from the gateway (serenity's `channel_id`) stay placeholders.
-- HTML: scripts of other template formats (`.vue`, `.svelte`, `.ejs`, `.hbs`) and JavaScript in
-  event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
+- HTML: scripts of other template formats (`.ejs`, `.hbs`), the templates of Vue, Svelte and Astro components, and
+  JavaScript in event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.
 - Twilio and Octokit path parameters that come from the client instance stay as placeholders.

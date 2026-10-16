@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/132",
+  "calls": [
+    {"file": "Inbox.vue", "line": 14, "provider": "api.mailroom.dev"},
+    {"file": "Inbox.vue", "line": 21, "provider": "api.mailroom.dev"},
+    {"file": "Legacy.vue", "line": 9, "provider": "api.mailroom.dev"},
+    {"file": "Pricing.astro", "line": 4, "provider": "api.ledgerly.dev"},
+    {"file": "Pricing.astro", "line": 17, "provider": "api.ledgerly.dev"},
+    {"file": "Weather.svelte", "line": 9, "provider": "api.skyward.dev"}
+  ]
+}

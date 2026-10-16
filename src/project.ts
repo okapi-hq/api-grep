@@ -5,21 +5,25 @@ import { BoundedFileSystem } from "./bounded-fs.js";
 import { isInside, realPath, relativePosix } from "./files.js";
 import { leanResolution } from "./module-resolution.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
+import { COMPONENT_EXTENSIONS, isComponent, parseComponent } from "./lang/html/components.js";
 import { parseHtml, type HtmlDoc } from "./lang/html/extract.js";
 import { readRoot, tsconfigFor, type TsconfigChoice } from "./tsconfig.js";
 
 export { readEnvHints, type LeftOut } from "./lang/files.js";
 
-/** Languages the TypeScript checker reads: HTML through the inline scripts of a page. */
+/**
+ * Languages the TypeScript checker reads: HTML through the inline scripts of a page, and Vue, Svelte and Astro
+ * components, as TypeScript, through their scripts (`lang/html/components.ts`).
+ */
 export type CheckerLanguage = "typescript" | "javascript" | "html";
 
 export const EXTENSIONS: Record<CheckerLanguage, string[]> = {
-  typescript: [".ts", ".tsx", ".mts", ".cts"],
+  typescript: [".ts", ".tsx", ".mts", ".cts", ...COMPONENT_EXTENSIONS],
   javascript: [".js", ".jsx", ".mjs", ".cjs"],
   html: [".html", ".htm"],
 };
 
-export const TS_EXTENSIONS = EXTENSIONS.typescript;
+export const TS_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts"];
 
 const TEST_FILES = ["ts", "tsx", "js", "jsx", "mjs", "cjs"].flatMap((ext) => [`**/*.test.${ext}`, `**/*.spec.${ext}`, `**/*.e2e-spec.${ext}`]);
 
@@ -163,7 +167,8 @@ function selectFiles(project: Project, dir: string, opts: LoadOptions, exclude: 
 
 /**
  * One by one: `addSourceFilesAtPaths` reads paths as globs, so a directory named `app [beta]` matched nothing. An HTML
- * page becomes a JavaScript file of the same path holding its inline scripts, at their positions in the page.
+ * page becomes a JavaScript file of the same path holding its inline scripts, at their positions in the page; a
+ * component, a TypeScript file of its scripts.
  */
 function addFiles(project: Project, dir: string, files: string[], html: Map<string, HtmlDoc>): Unreadable[] {
   const unreadable: Unreadable[] = [];
@@ -171,7 +176,7 @@ function addFiles(project: Project, dir: string, files: string[], html: Map<stri
     try {
       const doc = html.get(f);
       if (!doc) project.addSourceFileAtPath(f);
-      else if (doc.script) project.createSourceFile(f, doc.script, { overwrite: true, scriptKind: ts.ScriptKind.JS });
+      else if (doc.script) project.createSourceFile(f, doc.script, { overwrite: true, scriptKind: isComponent(f) ? ts.ScriptKind.TS : ts.ScriptKind.JS });
     } catch (err) {
       unreadable.push(unreadableFile(dir, f, err));
     }
@@ -183,13 +188,14 @@ function unreadableFile(dir: string, f: string, err: unknown): Unreadable {
   return { path: f, file: relativePosix(dir, f), detail: (err instanceof Error ? err.message : String(err)).split("\n")[0]! };
 }
 
-/** HTML pages, read once for every batch. */
+/** HTML pages and components, read once for every batch. */
 function readPages(dir: string, files: string[]): { html: Map<string, HtmlDoc>; unreadable: Unreadable[] } {
   const html = new Map<string, HtmlDoc>();
   const unreadable: Unreadable[] = [];
-  for (const f of files.filter((p) => /\.html?$/i.test(p))) {
+  for (const f of files.filter((p) => /\.html?$/i.test(p) || isComponent(p))) {
     try {
-      html.set(f, parseHtml(readFileSync(f, "utf8")));
+      const text = readFileSync(f, "utf8");
+      html.set(f, isComponent(f) ? parseComponent(f, text) : parseHtml(text));
     } catch (err) {
       unreadable.push(unreadableFile(dir, f, err));
     }
@@ -199,8 +205,10 @@ function readPages(dir: string, files: string[]): { html: Map<string, HtmlDoc>; 
 
 /** JavaScript is read with the TypeScript checker (no type errors reported, no JavaScript from node_modules). */
 function compilerOptions(languages: CheckerLanguage[]): ts.CompilerOptions {
-  if (languages.every((l) => l === "typescript")) return {};
-  return { allowJs: true, checkJs: false, maxNodeModuleJsDepth: 0, ...(languages.includes("html") ? { allowNonTsExtensions: true } : {}) };
+  // a page or a component is a source file whose extension the checker does not know
+  const pages = languages.includes("html") || languages.includes("typescript") ? { allowNonTsExtensions: true } : {};
+  if (languages.every((l) => l === "typescript")) return pages;
+  return { allowJs: true, checkJs: false, maxNodeModuleJsDepth: 0, ...pages };
 }
 
 /** The compiler options of a scan: its tsconfig and what that extends are read inside `bound` only. */
