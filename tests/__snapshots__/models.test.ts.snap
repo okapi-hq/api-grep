@@ -3631,15 +3631,15 @@ exports[`models: typescript > reads model names through imported constants, defa
         "supported": true,
       },
       {
-        "calls": 0,
+        "calls": 3,
         "declared": true,
         "ecosystem": "npm",
         "importSites": 1,
         "imported": true,
         "package": "@mastra/core",
         "provider": "llm-router",
-        "status": "unsupported",
-        "supported": false,
+        "status": "ok",
+        "supported": true,
       },
       {
         "calls": 1,

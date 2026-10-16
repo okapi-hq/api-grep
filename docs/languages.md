@@ -16,7 +16,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Go | supported: `net/http` (and go-retryablehttp, fhttp), Resty, SDK registries | tree-sitter + shared engine | Go modules | `go.mod` |
 | Shell | supported: curl, wget and HTTPie command lines | tree-sitter (bash grammar), read directly | none | none |
 | Rust | supported: reqwest, ureq, awc, surf, isahc, SDK registries | tree-sitter + shared engine | crates.io (Cargo) | `Cargo.toml` (workspaces too) |
-| Dart | supported: package:http, Dio, supabase_flutter | tree-sitter (a grammar built from source, committed) + shared engine | pub.dev | `pubspec.yaml` |
+| Dart | supported: package:http, Dio, supabase_flutter, firebase_auth, cloud_firestore | tree-sitter (a grammar built from source, committed) + shared engine | pub.dev | `pubspec.yaml` |
 
 ## Goals
 
@@ -189,7 +189,8 @@ use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 [`sdk-support.md`](sdk-support.md) (OpenAI and Azure OpenAI, Anthropic and its Bedrock / Vertex clients, Google Gen AI,
 Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3 and Bedrock runtime,
 Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, python-telegram-bot, aiogram,
-pyTelegramBotAPI, discord.py and its forks, huggingface_hub). Jupyter notebooks (`.ipynb`) are read as the Python of
+pyTelegramBotAPI, discord.py and its forks, huggingface_hub, claude-agent-sdk, PyGithub, google-cloud-storage,
+google-cloud-secret-manager, google-api-python-client, google-auth, langchain-deepseek, langchain-google-vertexai). Jupyter notebooks (`.ipynb`) are read as the Python of
 their code cells (`src/lang/python/notebook.ts`, through the IR's `readText` hook): each source line on the line of
 the JSON string holding it, so a call's line is its line in the notebook; shell escapes (`!pip`), line magics and
 cells of another language (`%%bash`) are left out, cells run in order so a later cell sees an earlier one's values, a
@@ -872,7 +873,7 @@ nested a few thousand deep still skip their file as an `internal-error`.
 `http.Client`; requests built with `http.NewRequest` / `http.NewRequestWithContext`, with the headers, basic auth and
 query parameters the function then sets on them), go-retryablehttp and the fhttp fork (the same API), Resty v2 and v3
 (`resty.New()...R()...Post(url)`), and the SDKs in [`sdk-support.md`](sdk-support.md) (sashabaranov/go-openai,
-openai-go, anthropic-sdk-go, google.golang.org/genai). Raw HTTP calls to any provider's host (Telegram's
+openai-go, anthropic-sdk-go, google.golang.org/genai, slack-go/slack, bwmarrin/discordgo, getsentry/sentry-go). Raw HTTP calls to any provider's host (Telegram's
 `api.telegram.org/bot{token}/sendMessage`, Discord, Slack webhooks, OpenAI-compatible endpoints) are found through
 `net/http` like any other.
 
@@ -993,7 +994,8 @@ the rest of the file is read; a file of which more than half is unread is a `par
 **Detected:** reqwest, async and blocking (`reqwest::get(url)`; a `Client`'s `get` / `post` / `put` / `patch` /
 `delete` / `head` / `request(method, url)` with the steps after it, sent by `send()`), ureq 2 and 3 (the crate's and an
 agent's verbs, sent by `call()` or a `send_*` method), awc, surf (sent by `send()` or a `recv_*` method) and isahc's
-verb functions; and the SDKs in [`sdk-support.md`](sdk-support.md) (async-openai, openai-api-rs, teloxide, serenity).
+verb functions; and the SDKs in [`sdk-support.md`](sdk-support.md) (async-openai, openai-api-rs, teloxide, serenity,
+sentry).
 Raw HTTP calls to any provider's host (Anthropic, Gemini, OpenAI-compatible endpoints, Telegram, Slack webhooks) are
 found through those clients like any other.
 
@@ -1079,7 +1081,7 @@ body, fields and files the function then sets on them: `src/lang/dart/requests.t
 and `request` calls with `data:`, `queryParameters:` and `options: Options(...)`, the `BaseOptions` of its
 construction, and the options and interceptors set on it afterwards: `dio.ts`), and supabase_flutter / supabase
 (`registry/supabase-flutter.json`: tables, rpc, auth, storage, functions; the base URL of `Supabase.initialize(url:
-...)`). Raw HTTP calls to any provider's host (OpenAI, Gemini, payment APIs) are found through those clients.
+...)`), firebase_auth and cloud_firestore (`registry/firebase-auth.json`, `registry/cloud-firestore.json`). Raw HTTP calls to any provider's host (OpenAI, Gemini, payment APIs) are found through those clients.
 
 **Grammar:** the npm `tree-sitter-dart` release (1.0.0, 2023) is built for an older tree-sitter and does not load in
 web-tree-sitter 0.27, so the grammar ([UserNobody14/tree-sitter-dart](https://github.com/UserNobody14/tree-sitter-dart),
@@ -1119,7 +1121,8 @@ or a registry's imports (`supabase_flutter.Supabase`).
 dependencies have none), dev dependencies and overrides aside. Package names are lower case with `_`
 (`normalizePub`), and a package's import root is its name. `providers.json` lists pub packages for Supabase, Firebase,
 Stripe, OpenAI, Anthropic, Gemini, Sentry, RevenueCat, PostHog, Mixpanel, Google Maps, Mapbox and Algolia, so
-`coverage.sdks` lists them (`ecosystem: "pub"`), unsupported but for supabase_flutter.
+`coverage.sdks` lists them (`ecosystem: "pub"`), unsupported but for supabase_flutter, firebase_auth and cloud_firestore
+(firebase_core, firebase_messaging and google_maps_flutter send no request the code names).
 
 **Out of scope by default:** `test/`, `integration_test/`, `test_driver/`, `*_test.dart`, `.dart_tool/`,
 `.pub-cache/`, `.fvm/` and generated code (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `*.gr.dart`, `*.config.dart`,

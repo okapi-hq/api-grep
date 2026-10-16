@@ -1,0 +1,19 @@
+{
+  "$comment": "Claude Agent SDK: `query(prompt=..., options=ClaudeAgentOptions(model=...))` and `ClaudeSDKClient(options).query(prompt)` run the Claude Code CLI, which sends the conversation to the Messages API (`ANTHROPIC_BASE_URL`, Bedrock or Vertex settings of the environment aside). One call per `query`; the agent loop may send several requests. The model is `options.model`.",
+  "package": "claude-agent-sdk",
+  "imports": [
+    "claude_agent_sdk"
+  ],
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against claude-agent-sdk-python 0.1.x src/claude_agent_sdk/query.py and client.py)",
+  "instance": {
+    "names": [
+      "ClaudeSDKClient"
+    ]
+  },
+  "methods": {
+    "query": {"method": "POST", "path": "/v1/messages", "modelAt": "kw:options.model|ClaudeSDKClient:kw:options.model|ClaudeSDKClient:0.model", "operationId": "createMessage"}
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "issue": "@vercel/blob registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "avatars.ts", "line": 5, "provider": "vercel-blob"},
+    {"file": "avatars.ts", "line": 9, "provider": "vercel-blob"},
+    {"file": "avatars.ts", "line": 11, "provider": "vercel-blob"},
+    {"file": "avatars.ts", "line": 13, "provider": "vercel-blob"}
+  ]
+}

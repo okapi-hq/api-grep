@@ -302,6 +302,16 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   (`src/lang/python/lower-calls.ts`), `@property` clients, FastAPI `Depends` (`src/lang/python/depends.ts`, the
   `injection` hook) and factories returning one of several SDKs' clients (`Chain.alternatives`); TypeScript follows
   lazily assigned `let` clients (`src/ast/assigned.ts`).
+- SDKs `coverage.sdks` listed as unsupported: registries for `@notionhq/client`, `@vercel/blob`, `firebase-admin` (npm:
+  Firestore method-form references read by `src/resolve/ref-path.ts`, the `receiver` param source), `googleapis` and
+  google-api-python-client (generated from Google API discovery documents: one Python entry per API, `select` on
+  `build(name)`, keys ending in `.execute`, the IR fields `bodyAt` / `modelAt`), `google-auth-library` and google-auth
+  (token requests of clients whose kind tells the endpoint only), `@google-cloud/vertexai`, the Claude Agent SDK (npm and
+  PyPI), PyGithub, google-cloud-storage, google-cloud-secret-manager (`|` in `params`), langchain-deepseek,
+  langchain-google-vertexai, slack-go, discordgo, sentry-go, the sentry crate, firebase_auth and cloud_firestore (Dart);
+  `@mastra/core` agents count in coverage (`AI_SDK_AGENTS`). Left unsupported on purpose: botocore (exceptions and
+  config; its clients are boto3's), azure-identity (the token endpoint depends on the credential chain), `@ngrok/ngrok`
+  (a tunnel, no HTTP API call), firebase_core, firebase_messaging, google_maps_flutter.
 - Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
   are done (`docs/languages.md#go`, limitations there).
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).

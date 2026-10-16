@@ -1,0 +1,15 @@
+{
+  "issue": "Go: slack-go/slack, bwmarrin/discordgo and getsentry/sentry-go registries",
+  "calls": [
+    {"file": "alerts.go", "line": 22, "provider": "slack"},
+    {"file": "alerts.go", "line": 24, "provider": "sentry"},
+    {"file": "alerts.go", "line": 30, "provider": "slack"},
+    {"file": "alerts.go", "line": 35, "provider": "slack"},
+    {"file": "alerts.go", "line": 43, "provider": "slack"},
+    {"file": "alerts.go", "line": 48, "provider": "sentry"},
+    {"file": "alerts.go", "line": 50, "provider": "sentry"},
+    {"file": "discord.go", "line": 20, "provider": "discord"},
+    {"file": "discord.go", "line": 25, "provider": "discord"},
+    {"file": "discord.go", "line": 30, "provider": "discord"}
+  ]
+}

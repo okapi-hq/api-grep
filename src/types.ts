@@ -173,7 +173,7 @@ export interface MethodSpec {
   params?: Record<string, string>;
   /**
    * A model client or an agent built here (`new ChatOpenAI({ model })`, `Agent("openai:gpt-4o")`): where its model is
-   * when it is not a body property, argument N (Python adds a keyword) or a property of it.
+   * when it is not a body property, argument N (Python adds a keyword) or a property of it (`options.model`: dotted).
    */
   modelArg?: number;
   modelProp?: string;

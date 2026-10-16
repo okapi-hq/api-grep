@@ -14,7 +14,9 @@ import { pythonLanguage } from "../../src/lang/python/index.js";
 import { normalizePypi } from "../../src/lang/python/manifests.js";
 import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
-const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*|model)$/;
+const ONE_SOURCE = String.raw`(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|model`;
+// one source, or several tried in turn (`kw:request.name|arg:0`)
+const SOURCE_RE = new RegExp(`^(?:${ONE_SOURCE})(?:\\|(?:${ONE_SOURCE}))*$|^(?:arg|kw)(?:\\|\\w+)*$`);
 
 const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule, cargo: normalizeCrate, pub: normalizePub };
 

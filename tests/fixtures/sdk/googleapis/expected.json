@@ -1,0 +1,10 @@
+{
+  "issue": "googleapis registry (Google APIs generated from their discovery documents)",
+  "calls": [
+    {"file": "sheets.ts", "line": 7, "provider": "google"},
+    {"file": "sheets.ts", "line": 12, "provider": "google"},
+    {"file": "sheets.ts", "line": 16, "provider": "google"},
+    {"file": "sheets.ts", "line": 19, "provider": "google"},
+    {"file": "sheets.ts", "line": 22, "provider": "google"}
+  ]
+}

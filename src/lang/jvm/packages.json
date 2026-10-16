@@ -22,7 +22,7 @@
     "com.datadoghq:dd-sdk-android-logs": ["com.datadog.android.log"],
     "com.datadoghq:dd-sdk-android-rum": ["com.datadog.android.rum"],
     "com.discord4j:discord4j-core": ["discord4j.core"],
-    "com.facebook.android:facebook-android-sdk": ["com.facebook"],
+    "com.facebook.android:facebook-android-sdk": ["com.facebook.share", "com.facebook.appevents", "com.facebook.gamingservices"],
     "com.facebook.android:facebook-login": ["com.facebook.login"],
     "com.facebook.business.sdk:facebook-java-business-sdk": ["com.facebook.ads.sdk"],
     "com.github.pengrad:java-telegram-bot-api": ["com.pengrad.telegrambot"],
@@ -109,9 +109,10 @@
     "software.amazon.awssdk:sns": ["software.amazon.awssdk.services.sns"],
     "software.amazon.awssdk:sqs": ["software.amazon.awssdk.services.sqs"]
   },
-  "$declaredOnlyComment": "Roots shared with artifacts of the same group that are not SDKs of providers.json (Android Firebase's `com.google.firebase.FirebaseApp`, `remoteconfig`, `analytics`): they count for the artifact only where the manifests declare it. Spring AI's interfaces (`ChatClient`, `EmbeddingModel`) count for the model starter or module the manifests declare.",
+  "$declaredOnlyComment": "Roots shared with artifacts of the same group that are not SDKs of providers.json (Android Firebase's `com.google.firebase.FirebaseApp`, `remoteconfig`, `analytics`): they count for the artifact only where the manifests declare it. Spring AI's interfaces (`ChatClient`, `EmbeddingModel`) count for the model starter or module the manifests declare. The Facebook SDK's `com.facebook` is also React Native's (`com.facebook.react`, `com.facebook.soloader`).",
   "declaredOnly": {
     "com.google.firebase:firebase-admin": ["com.google.firebase"],
+    "com.facebook.android:facebook-android-sdk": ["com.facebook"],
     "org.springframework.ai:spring-ai-anthropic": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
     "org.springframework.ai:spring-ai-anthropic-spring-boot-starter": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],
     "org.springframework.ai:spring-ai-azure-openai": ["org.springframework.ai.chat", "org.springframework.ai.embedding", "org.springframework.ai.image", "org.springframework.ai.audio"],

@@ -1,0 +1,8 @@
+{
+  "issue": "google-auth registry: refresh of service account and user credentials, ID token verification (default credentials are picked at run time: not listed)",
+  "calls": [
+    {"file": "creds.py", "line": 12, "provider": "google"},
+    {"file": "creds.py", "line": 18, "provider": "google"},
+    {"file": "creds.py", "line": 23, "provider": "google"}
+  ]
+}

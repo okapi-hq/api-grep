@@ -1,0 +1,8 @@
+{
+  "issue": "google-auth-library registry: token requests of JWT and OAuth2Client (GoogleAuth's credentials are picked at run time: not listed)",
+  "calls": [
+    {"file": "tokens.ts", "line": 10, "provider": "google"},
+    {"file": "tokens.ts", "line": 16, "provider": "google"},
+    {"file": "tokens.ts", "line": 19, "provider": "google"}
+  ]
+}

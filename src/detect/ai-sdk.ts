@@ -20,8 +20,11 @@ const PROVIDERS = new Map<string, AiSdkProvider>((data.providers as unknown as A
 const GATEWAY = data.gateway as unknown as AiSdkProvider;
 const MAX_DEPTH = 4;
 
-/** Packages whose models the AI SDK detector reads (they count as supported in the coverage report). */
-export const AI_SDK_PACKAGES = new Set(PROVIDERS.keys());
+/** Packages whose models or agents the AI SDK detector reads (they count as supported in the coverage report). */
+export const AI_SDK_PACKAGES = new Set([...PROVIDERS.keys(), ...AGENTS.keys()]);
+
+/** Agent libraries (`@mastra/core`) -> their agent constructors: a call with that `sdk.chain` in a file importing it is theirs too. */
+export const AI_SDK_AGENTS: ReadonlyMap<string, string[]> = AGENTS;
 
 interface Model {
   entry: AiSdkProvider;

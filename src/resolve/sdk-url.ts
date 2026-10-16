@@ -22,13 +22,18 @@ function recordProperty(decl: VariableDeclaration, use: Node, key: string): Expr
 }
 
 /**
- * `params` sources: `arg:N`, `instance:N` (the builder's arguments), `ref:N` (Firebase reference), `fn:N` (Convex
+ * `params` sources: `arg:N`, `instance:N` (the builder's arguments), `ref:N` (Firebase reference), `receiver` (the reference the method is called on), `fn:N` (Convex
  * function), `record:name` (a property set on the record the method is called on); `.prop` reads a property.
  */
 function paramOf(raw: RawCall, source: string, ctx: EvalCtx): { expr?: Expression; parts?: Part[] } | undefined {
   const sdk = raw.sdk!;
   const own = /^record:(\w+)$/.exec(source);
   if (own) return { expr: raw.record ? (recordProperty(raw.record.decl, raw.node, own[1]!) ?? getProp(raw.record.found, own[1]!)) : undefined };
+  // the reference the method is called on (firebase-admin `db.collection("users").doc(id).get()`)
+  if (source === "receiver") {
+    const callee = Node.isCallExpression(raw.node) ? unwrap(raw.node.getExpression()) : undefined;
+    return callee && Node.isPropertyAccessExpression(callee) ? { parts: refParts(callee.getExpression(), ctx) } : {};
+  }
   const m = /^(arg|instance|ref|fn):(\d+)(?:\.(\w+))?$/.exec(source);
   if (!m) return undefined;
   const args = m[1] === "instance" ? (sdk.instanceArgs ?? []) : sdk.args;
