@@ -263,6 +263,16 @@ export interface Manifests {
   bom?(file: string, pkg: string, rootDir: string): string | undefined;
 }
 
+/** A file's text as `IrSource.readText` gives it. */
+export interface ReadText {
+  text: string;
+  /**
+   * The text once the part holding a 1-based line is left out too (a notebook's cell that is no Python: a shell command
+   * without `!`), so one bad part does not lose the file; `undefined` when no part holds it.
+   */
+  without?: (line: number) => string | undefined;
+}
+
 /** One source language of a front end: its grammar, its files and how a file lowers into the model. */
 export interface IrSource {
   id: Language;
@@ -279,6 +289,11 @@ export interface IrSource {
    */
   repair?: (text: string) => string;
   extensions: string[];
+  /**
+   * The source of a file of another format the grammar reads (a notebook's code cells), every line where the file has
+   * it; `undefined` when the file cannot be read that way (a `parse-error`). Files without it are read as written.
+   */
+  readText?: (file: string, text: string) => ReadText | undefined;
   /** Out of scope by default: tests, virtualenvs, vendored code, build output. */
   excludes: string[];
   lower(root: SyntaxNode, file: string, rootDir: string): ModuleModel;

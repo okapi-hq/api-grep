@@ -12,7 +12,7 @@ interface ModState extends PyState {
 
 /** `app/services/billing.py` -> `app.services.billing`; a package's `__init__.py` is the package. */
 export function moduleName(file: string, rootDir: string): { name: string; isPackage: boolean } {
-  const rel = path.relative(rootDir, file).split(path.sep).join("/").replace(/\.pyi?$/, "");
+  const rel = path.relative(rootDir, file).split(path.sep).join("/").replace(/\.(pyi?|ipynb)$/, "");
   const isPackage = rel === "__init__" || rel.endsWith("/__init__");
   const name = (isPackage ? rel.replace(/\/?__init__$/, "") : rel).split("/").filter(Boolean).join(".");
   return { name, isPackage };

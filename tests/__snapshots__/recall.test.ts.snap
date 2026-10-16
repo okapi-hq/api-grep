@@ -11,6 +11,17 @@ exports[`regression fixtures > action-api 1`] = `
 ]
 `;
 
+exports[`regression fixtures > components 1`] = `
+[
+  "Inbox.vue:14 api.mailroom.dev GET /v1/inbox",
+  "Inbox.vue:21 api.mailroom.dev POST /v1/messages/{id}/read",
+  "Legacy.vue:9 api.mailroom.dev PUT /v1/settings",
+  "Pricing.astro:4 api.ledgerly.dev GET /v2/plans",
+  "Pricing.astro:17 api.ledgerly.dev POST /v2/leads",
+  "Weather.svelte:9 api.skyward.dev GET /v3/forecast",
+]
+`;
+
 exports[`regression fixtures > go/negative 1`] = `[]`;
 
 exports[`regression fixtures > go/nethttp 1`] = `
@@ -1411,6 +1422,15 @@ exports[`regression fixtures > python/models 1`] = `
 `;
 
 exports[`regression fixtures > python/negatives 1`] = `[]`;
+
+exports[`regression fixtures > python/notebooks 1`] = `
+[
+  "digest.ipynb:54 api.tracker-hub.dev GET /v2/teams/{team}/releases",
+  "digest.ipynb:70 api.tracker-hub.dev GET /v2/teams/platform/releases (wrapper:releases)",
+  "digest.ipynb:71 openai POST /v1/chat/completions",
+  "digest.ipynb:116 api.tracker-hub.dev POST /v2/digests",
+]
+`;
 
 exports[`regression fixtures > python/provider-tables 1`] = `
 [

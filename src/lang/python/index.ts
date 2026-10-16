@@ -11,6 +11,7 @@ import { pythonConfigLoad } from "./config-load.js";
 import { argparseDefault } from "./argparse.js";
 import { detectUrllib } from "./urllib.js";
 import { detectZeep } from "./zeep.js";
+import { notebookPython } from "./notebook.js";
 import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "json" };
 import anthropicVertex from "./registry/anthropic-vertex.json" with { type: "json" };
 import anthropic from "./registry/anthropic.json" with { type: "json" };
@@ -141,6 +142,7 @@ export const PYTHON_EXCLUDES = [
   "**/venv/**",
   "**/site-packages/**",
   "**/__pycache__/**",
+  "**/.ipynb_checkpoints/**",
   "**/.tox/**",
   "**/.nox/**",
   "**/tests/**",
@@ -156,7 +158,8 @@ export const pythonLanguage: IrLanguage = {
   id: "python",
   ecosystem: "pypi",
   grammar: "python",
-  extensions: [".py"],
+  extensions: [".py", ".ipynb"],
+  readText: (file, text) => (file.endsWith(".ipynb") ? notebookPython(text) : { text }),
   excludes: PYTHON_EXCLUDES,
   lower: lowerPython,
   moduleVarsVisible: true,

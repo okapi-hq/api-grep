@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/132",
+  "skipped": ["compact.ipynb"],
+  "calls": [
+    {"file": "digest.ipynb", "line": 54, "provider": "api.tracker-hub.dev"},
+    {"file": "digest.ipynb", "line": 70, "provider": "api.tracker-hub.dev"},
+    {"file": "digest.ipynb", "line": 71, "provider": "openai"},
+    {"file": "digest.ipynb", "line": 116, "provider": "api.tracker-hub.dev"}
+  ]
+}

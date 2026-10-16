@@ -46,7 +46,7 @@ export function attributes(tag: string): Map<string, string> {
 const blank = (s: string): string => s.replace(/[^\r\n]/g, " ");
 
 /** `<!-- ... -->` hides what it contains, outside scripts (`<script><!-- code //--></script>` is old-style code). */
-function withoutComments(text: string): string {
+export function withoutComments(text: string): string {
   let out = "";
   let i = 0;
   while (i < text.length) {
