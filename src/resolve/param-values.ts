@@ -1,4 +1,5 @@
 import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression, type ParameterDeclaration } from "ts-morph";
+import { asDefault } from "../model/value-sources.js";
 import { isUndefinedLiteral, unwrap } from "../ast/expr.js";
 import { declarationsOf, paramSubstitution, toObjectLiteral } from "../ast/object.js";
 import type { EvalCtx, Part } from "../types.js";
@@ -83,6 +84,10 @@ function valueFor(decl: Node, param: ParameterDeclaration, arg: Expression | und
 interface Sources {
   sources: Expression[];
   unread: boolean;
+  /** The parameter's default among `sources`. */
+  fallback?: Expression;
+  /** Some caller leaves it out or passes `undefined` / `null`, or nothing calls the function. */
+  omitted: boolean;
 }
 
 function paramSources(decl: Node, ctx: EvalCtx): Sources | undefined {
@@ -91,7 +96,7 @@ function paramSources(decl: Node, ctx: EvalCtx): Sources | undefined {
   if (ctx.callerLevel || !param || param.isRestParameter() || !fn || Node.isIndexSignatureDeclaration(fn)) return undefined;
   const callers = callersOf(fn);
   const index = fn.getParameters().filter((p) => p.getName() !== "this").indexOf(param);
-  const out: Sources = { sources: [], unread: callers.unread || callers.calls.length > MAX_CALLERS };
+  const out: Sources = { sources: [], unread: callers.unread || callers.calls.length > MAX_CALLERS, omitted: callers.calls.length === 0 };
   let omitted = callers.calls.length === 0;
   for (const call of callers.calls.slice(0, MAX_CALLERS)) {
     const args = call.getArguments().slice(0, index + 1);
@@ -101,21 +106,50 @@ function paramSources(decl: Node, ctx: EvalCtx): Sources | undefined {
       const v = valueFor(decl, param, args[index] as Expression);
       if (v === "unread") out.unread = true;
       else if (v) out.sources.push(v);
+      else out.omitted = true;
     }
   }
+  if (omitted) out.omitted = true;
   const dflt = omitted ? valueFor(decl, param, undefined) : undefined;
-  if (dflt && dflt !== "unread") out.sources.unshift(dflt);
+  if (dflt && dflt !== "unread") {
+    out.sources.unshift(dflt);
+    out.fallback = dflt;
+  }
   return out.sources.length > 0 || out.unread ? out : undefined;
 }
 
+/**
+ * `model ?? "gpt-4o"` where `model` is a parameter every caller gives a value its type says is never `null` /
+ * `undefined`: the fallback never runs, so its default is no value the request can send.
+ */
+export function givenByEveryCaller(value: Expression, ctx: EvalCtx): boolean {
+  const u = unwrap(value);
+  const decl = Node.isIdentifier(u) ? declarationsOf(u)[0] : undefined;
+  const sub = decl ? paramSubstitution(decl, ctx) : undefined;
+  if (!decl || !sub?.isParam || sub.expr) return false;
+  // without strict null checks a type never says `undefined`: nothing tells the fallback is dead
+  const opts = u.getProject().getCompilerOptions();
+  if (!(opts.strictNullChecks ?? opts.strict)) return false;
+  const found = paramSources(decl, ctx);
+  if (!found || found.unread || found.omitted || found.sources.length === 0) return false;
+  return found.sources.every((e) => {
+    const t = e.getType();
+    return !t.isNullable() && !t.isUndefined() && !t.isNull() && !t.isAny() && !t.isUnknown();
+  });
+}
+
 /** The context a caller's argument is read in: no substitutions, and its parameters stay parameters. */
-const callerCtx = (ctx: EvalCtx): EvalCtx => ({ ...(ctx.envHints ? { envHints: ctx.envHints } : {}), callerLevel: true });
+const callerCtx = (ctx: EvalCtx): EvalCtx => ({ ...(ctx.envHints ? { envHints: ctx.envHints } : {}), ...(ctx.rootDir ? { rootDir: ctx.rootDir } : {}), callerLevel: true });
 
 /** A parameter nobody substituted, as the shape of the values its callers pass and its default. */
 export function paramShape(decl: Node, ctx: EvalCtx, shapeOf: (e: Expression, ctx: EvalCtx) => ValueShape, unread: ValueShape): ValueShape {
   const found = paramSources(decl, ctx);
   if (!found) return unread;
-  return paramValues(found.sources.map((e) => shapeOf(e, callerCtx(ctx))), found.unread, unread);
+  const shapes = found.sources.map((e) => {
+    const r = shapeOf(e, callerCtx(ctx));
+    return e === found.fallback ? { ...r, shape: asDefault(r.shape) } : r;
+  });
+  return paramValues(shapes, found.unread, unread);
 }
 
 /** A header value that is a parameter: what each source evaluates to, `undefined` for one that cannot be read. */

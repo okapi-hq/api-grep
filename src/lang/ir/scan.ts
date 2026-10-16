@@ -212,6 +212,7 @@ async function scanIr(lang: IrLanguage, input: LanguageScanInput): Promise<Langu
   for (const s of sources) modules.push(...(await lowerAll(s.source, s.all, inScope, input)));
   lang.link?.(modules);
   const idx = new ProjectIndex(lang, modules);
+  idx.rootDir = rootDir;
   const scannable = modules.filter((m) => inScope.has(m.file));
   const selected = input.changed ? selectChanged(scannable, input.changed, idx) : scannable;
   if (!input.changed) for (const l of sources.flatMap((s) => s.leftOut)) diag.skip(l);

@@ -45,6 +45,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.azure.openai.chat.options.deployment-name",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "notes-gpt-4o",
+          },
+        ],
         "values": [
           "notes-gpt-4o",
         ],
@@ -102,6 +108,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "EMBEDDING_DEPLOYMENT",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "notes-embed",
+          },
+        ],
         "values": [
           "notes-embed",
         ],
@@ -156,6 +168,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.bedrock.converse.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "anthropic.claude-3-5-haiku-20241022-v1:0",
+          },
+        ],
         "values": [
           "anthropic.claude-3-5-haiku-20241022-v1:0",
         ],
@@ -210,6 +228,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.bedrock.converse.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "anthropic.claude-3-5-haiku-20241022-v1:0",
+          },
+        ],
         "values": [
           "anthropic.claude-3-5-haiku-20241022-v1:0",
         ],
@@ -401,6 +425,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.anthropic.chat.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-haiku-4-5",
+          },
+        ],
         "values": [
           "claude-haiku-4-5",
         ],
@@ -451,6 +481,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.deepseek.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "deepseek-chat",
+          },
+        ],
         "values": [
           "deepseek-chat",
         ],
@@ -506,6 +542,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.google.genai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gemini-2.5-flash",
+          },
+        ],
         "values": [
           "gemini-2.5-flash",
         ],
@@ -555,6 +597,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.anthropic.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "claude-sonnet-4-5",
+          },
+        ],
         "values": [
           "claude-sonnet-4-5",
         ],
@@ -605,6 +653,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4.1-mini",
+          },
+        ],
         "values": [
           "gpt-4.1-mini",
         ],
@@ -696,6 +750,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.ollama.chat.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "qwen3:14b",
+          },
+        ],
         "values": [
           "qwen3:14b",
         ],
@@ -746,6 +806,12 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4.1-mini",
+          },
+        ],
         "values": [
           "gpt-4.1-mini",
         ],
@@ -875,7 +941,7 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "sdk": 15,
@@ -947,6 +1013,12 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
         "dynamic": false,
         "env": "spring.ai.openai.chat.options.model",
         "from": "argument",
+        "sources": [
+          {
+            "from": "default",
+            "value": "gpt-4o-mini",
+          },
+        ],
         "values": [
           "gpt-4o-mini",
         ],
@@ -1056,7 +1128,7 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.24.0",
+  "schemaVersion": "1.25.0",
   "stats": {
     "byClient": {
       "sdk": 2,

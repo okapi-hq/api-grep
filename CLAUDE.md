@@ -91,6 +91,17 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   go to `Call.headerAlternatives`.
 - `src/model/`: the `model` fact of a call (`fact.ts`: argument, body or path) and the routing of libraries that pick
   the provider from the model name (`route.ts`, registries with `routeByModel`, provider `llm-router` until routed).
+  Runtime model names (#125): a value's source rides on scalar shapes under the `VALUE_SOURCES` symbol (never in a
+  report shape; `value-sources.ts`: `default` for fallbacks, parameter and settings defaults, `config_file`), and
+  `fact.ts` lists it as `model.sources`; `alternativesOf` (`resolve/shape-utils.ts`) keeps literal and env values
+  beside a value-less string where `unionOf` would merge them away. Example env files (commented-out lines too) add
+  `env_example` names after assembly (`env-examples.ts`). Config files loaded by a literal path are read by
+  `config-files.ts` (JSON, `yaml-data.ts`, TOML): IR as a dict expression whose strings carry their source
+  (`ir/config-load.ts`, Python loaders in `python/config-load.ts` through `resolveCall`), TypeScript in
+  `resolve/config-values.ts` (JSON imports, `JSON.parse(readFileSync(...))`, zod / t3 env schemas). IR record fields
+  (`ir/object-fields.ts`) read pydantic-settings env names through the language hook `fieldEnv`
+  (`python/settings.ts`), argparse defaults through `attrDefault` (`python/argparse.ts`); dict key reads
+  (`d["k"]`, `.get(k, d)`, `.pop`) are `dictRead` in `ir/values.ts`.
 - `Call.operation` (#30): the operation of protocols that name it outside the URL (JSON-RPC, GraphQL, SOAP, action
   APIs). `assembleCalls` (`src/assemble.ts`) reads it from the resolved request through `src/operation/`, one module
   per protocol (`json-rpc.ts` reads the body shape, `graphql.ts` parses documents with the `graphql` package; an SDK

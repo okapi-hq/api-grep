@@ -1,0 +1,12 @@
+{
+  "name": "runtime-models-fixture",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.60.0",
+    "@t3-oss/env-core": "0.13.8",
+    "groq-sdk": "0.30.0",
+    "openai": "5.11.0",
+    "yaml": "2.8.1",
+    "zod": "3.25.76"
+  }
+}

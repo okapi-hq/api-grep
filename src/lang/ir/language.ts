@@ -337,6 +337,10 @@ export interface IrLanguage extends IrSource {
    * `create<Api>()`): the value's members are that class's methods, so their callers are known.
    */
   instanceOf?: (call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number) => ClassDef | undefined;
+  /** The env var a field of a settings class is read from (pydantic-settings' `BaseSettings`): `object-fields.ts`. */
+  fieldEnv?: (cls: ClassDef, name: string, ctx: IrCtx) => string | undefined;
+  /** The default a library object's attribute gets (argparse: `args.model` is `add_argument("--model", default=...)`). */
+  attrDefault?: (e: Expr & { k: "attr" }, fn: FunctionDef, ctx: IrCtx) => Scoped | undefined;
   /**
    * GraphQL documents a library builds as objects (sgqlc's `Operation`): the text the object at `arg` sends, and the
    * bound past which its selections were not read (#55).

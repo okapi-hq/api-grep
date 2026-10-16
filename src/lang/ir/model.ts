@@ -5,6 +5,7 @@
  */
 
 import type { Language } from "../../report/schema.js";
+import type { ValueSource } from "../../types.js";
 
 export interface Pos {
   /** 1-based line and column, like the TypeScript report. */
@@ -33,7 +34,8 @@ export interface Entry {
 }
 
 export type Expr =
-  | { k: "str"; v: string }
+  /** `src`: a value read from a config file the code loads (`config-load.ts`), not written in the code. */
+  | { k: "str"; v: string; src?: ValueSource }
   | { k: "num"; v: number }
   | { k: "bool"; v: boolean }
   | { k: "null" }
@@ -211,6 +213,8 @@ export interface ClassDef {
   classAnnotations?: Annotation[];
   /** Annotations of fields declared in the class body (JVM: `@Inject lateinit var client: OkHttpClient`). */
   fieldAnnotations?: Map<string, Annotation[]>;
+  /** The name a field is read under when its declaration gives one (pydantic `Field(alias="OPENAI_MODEL")`). */
+  fieldAliases?: Map<string, string>;
 }
 
 export interface ImportRef {

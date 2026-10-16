@@ -636,6 +636,14 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > javascript/runtime-models 1`] = `
+[
+  "providers.js:12 anthropic POST /v1/messages",
+  "providers.js:23 ollama POST /v1/chat/completions",
+  "providers.js:28 openai POST /v1/embeddings",
+]
+`;
+
 exports[`regression fixtures > javascript/soap-client 1`] = `
 [
   "carrier.js:8 ws.example-carrier.com POST /track.svc Track",
@@ -1294,6 +1302,19 @@ exports[`regression fixtures > php/wrappers/two-hop 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/generated-client 1`] = `
+[
+  "http_client.py:16 unknown DYNAMIC /{path}",
+  "http_client.py:32 unknown DYNAMIC /{path}",
+  "notes.py:10 unknown GET /v1/notes/{to_jsonable} (wrapper:HttpClient.request)",
+  "notes.py:13 unknown DELETE /v1/notes/{to_jsonable} (wrapper:HttpClient.request)",
+  "notes.py:16 unknown GET /v1/notes (wrapper:HttpClient.request)",
+  "notes.py:19 unknown POST /v1/notes (wrapper:HttpClient.request)",
+  "notes.py:27 unknown GET /v1/notes/{to_jsonable} (wrapper:AsyncHttpClient.request)",
+  "notes.py:30 unknown GET /v1/notes (wrapper:AsyncHttpClient.request)",
+]
+`;
+
 exports[`regression fixtures > python/graphql 1`] = `
 [
   "tracker.py:22 api.example-tracker.dev POST /graphql ListTickets",
@@ -1585,6 +1606,37 @@ exports[`regression fixtures > python/rpc-contracts 1`] = `
   "vault.py:34 eth.example-node.io POST / eth_blockNumber",
   "vault.py:38 infura POST /v3/{INFURA_KEY} eth_chainId",
   "vault.py:43 unknown POST / eth_gasPrice",
+]
+`;
+
+exports[`regression fixtures > python/runtime-models 1`] = `
+[
+  "cli.py:19 openai POST /v1/chat/completions",
+  "cli.py:20 openai POST /v1/chat/completions",
+  "config_files.py:18 openai POST /v1/chat/completions",
+  "config_files.py:22 openai POST /v1/embeddings",
+  "config_files.py:26 openai POST /v1/chat/completions",
+  "config_files.py:30 openai POST /v1/chat/completions",
+  "negatives.py:18 openai POST /v1/chat/completions",
+  "negatives.py:22 openai POST /v1/chat/completions",
+  "negatives.py:26 openai POST /v1/chat/completions",
+  "negatives.py:30 openai POST /v1/chat/completions",
+  "negatives.py:35 openai POST /v1/chat/completions",
+  "negatives.py:44 openai POST /v1/chat/completions",
+  "negatives.py:48 openai POST /v1/chat/completions",
+  "services.py:21 openai POST /v1/chat/completions",
+  "services.py:31 groq POST /openai/v1/chat/completions",
+  "services.py:34 groq POST /openai/v1/chat/completions",
+  "services.py:38 groq POST /openai/v1/chat/completions",
+  "services.py:47 anthropic POST /v1/messages",
+  "services.py:51 openai POST /v1/chat/completions",
+  "services.py:55 openai POST /v1/chat/completions",
+  "services.py:60 openai POST /v1/embeddings",
+  "services.py:64 groq POST /openai/v1/chat/completions",
+  "services.py:68 openai POST /v1/chat/completions",
+  "services.py:72 anthropic POST /v1/messages",
+  "services.py:77 anthropic POST /v1/messages",
+  "services.py:82 openai POST /v1/chat/completions",
 ]
 `;
 
@@ -2329,6 +2381,25 @@ exports[`regression fixtures > sdk/bedrock 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/caller-model 1`] = `
+[
+  "agent.ts:13 openai POST /v1/chat/completions (wrapper:OpenAIService.generateText)",
+  "agent.ts:17 openai POST /v1/chat/completions (wrapper:OtherService.generateText)",
+  "agent.ts:21 openai POST /v1/chat/completions (wrapper:Agent.start>OpenAIService.generateText)",
+  "agent.ts:25 openai POST /v1/chat/completions (wrapper:Agent.chat>Agent.start>OpenAIService.generateText)",
+  "agent.ts:26 openai POST /v1/chat/completions (wrapper:Agent.startOther>OtherService.generateText)",
+  "agent.ts:29 openai POST /v1/responses (wrapper:Summarizer.summarize)",
+  "clients.ts:9 anthropic POST /v1/messages",
+  "clients.ts:17 openai POST /v1/chat/completions",
+  "embeddings.ts:20 openai POST /v1/embeddings",
+  "embeddings.ts:28 openai POST /v1/embeddings",
+  "service.ts:8 openai POST /v1/chat/completions",
+  "service.ts:20 openai POST /v1/chat/completions",
+  "service.ts:29 openai POST /v1/responses",
+  "typed-config.ts:23 openai POST /v1/embeddings",
+]
+`;
+
 exports[`regression fixtures > sdk/convex 1`] = `
 [
   "app.tsx:8 convex POST /api/run/tasks/list",
@@ -2507,6 +2578,22 @@ exports[`regression fixtures > sdk/revenuecat 1`] = `
   "paywall.ts:4 revenuecat GET /v1/subscribers/{app_user_id}/offerings",
   "paywall.ts:8 revenuecat POST /v1/receipts",
   "paywall.ts:10 revenuecat GET /v1/subscribers/{app_user_id}",
+]
+`;
+
+exports[`regression fixtures > sdk/runtime-models 1`] = `
+[
+  "clients.ts:21 anthropic POST /v1/messages",
+  "clients.ts:30 groq POST /openai/v1/chat/completions",
+  "clients.ts:33 groq POST /openai/v1/chat/completions",
+  "clients.ts:37 openai POST /v1/chat/completions",
+  "clients.ts:38 openai POST /v1/embeddings",
+  "clients.ts:39 openai POST /v1/responses",
+  "clients.ts:40 openai POST /v1/responses",
+  "clients.ts:41 openai POST /v1/chat/completions",
+  "clients.ts:42 openai POST /v1/chat/completions",
+  "clients.ts:43 openai POST /v1/chat/completions",
+  "clients.ts:44 openai POST /v1/chat/completions",
 ]
 `;
 

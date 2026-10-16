@@ -6,6 +6,9 @@ import { lowerPython } from "./lower.js";
 import { normalizePypi, pythonManifests } from "./manifests.js";
 import modules from "./modules.json" with { type: "json" };
 import { PYTHON_INJECTION } from "./depends.js";
+import { settingsFieldEnv } from "./settings.js";
+import { pythonConfigLoad } from "./config-load.js";
+import { argparseDefault } from "./argparse.js";
 import { detectUrllib } from "./urllib.js";
 import { detectZeep } from "./zeep.js";
 import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "json" };
@@ -163,6 +166,9 @@ export const pythonLanguage: IrLanguage = {
   detectors: [detectUrllib, detectZeep],
   documentOf: sgqlcDocument,
   injection: PYTHON_INJECTION,
+  fieldEnv: settingsFieldEnv,
+  resolveCall: pythonConfigLoad,
+  attrDefault: argparseDefault,
   passthrough: {
     // `gql("query ...")` (the gql package) parses a document: its value is the text
     functions: new Set(["str", "quote", "quote_plus", "unquote", "escape", "gql"]),

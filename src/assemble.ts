@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { modelOf, type ModelFact } from "./model/fact.js";
+import { mapModelValues, modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { isAnyHost, resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
 import { operationsOf } from "./operation/index.js";
@@ -88,7 +88,7 @@ function modelFact(r: ResolvedCall): ModelFact | undefined {
 
 /** A routed call's model names as the provider receives them: `anthropic/claude-sonnet-4` is `claude-sonnet-4`. */
 function unprefixed(model: ModelFact): ModelFact {
-  return { ...model, values: [...new Set(model.values.map((v) => splitModel(v).model))] };
+  return mapModelValues(model, (v) => splitModel(v).model);
 }
 
 /**

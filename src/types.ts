@@ -31,6 +31,8 @@ export interface EvalCtx {
   callerLevel?: boolean;
   /** Host tables (`resolve/choice.ts`): the entry each choice point reads, and the points a call's URL meets. */
   choice?: Choice;
+  /** The scanned directory: config files the code loads by a literal path are read below it only (`config-values.ts`). */
+  rootDir?: string;
 }
 
 export type ClientKind = "fetch" | "axios" | "got" | "ky" | "node-http" | "jquery" | "xhr" | "node-soap" | "sdk" | "framework";
@@ -396,10 +398,29 @@ export interface SdkMatch {
   anyHost?: boolean;
 }
 
+/** Where a value the code can send comes from when it is no literal of its own (`model/value-sources.ts`). */
+export interface ValueSource {
+  from: "default" | "config_file";
+  /** A config file's path, relative to the scanned directory, `/` separated. */
+  file?: string;
+  /** The value's key path in that file (`llm.model`). */
+  key?: string;
+}
+
+/** A scalar shape's values that come from a `ValueSource`: a symbol, so that no report shape ever carries it. */
+export const VALUE_SOURCES: unique symbol = Symbol("valueSources");
+
 export type Shape =
   | { type: "object"; properties: Record<string, Shape>; required: string[]; dynamicKeys?: boolean; fromType?: string }
   | { type: "array"; items: Shape; fromType?: string }
-  | { type: "string" | "number" | "integer" | "boolean" | "null"; enum?: (string | number | boolean)[]; fromType?: string; hint?: string; env?: string }
+  | {
+      type: "string" | "number" | "integer" | "boolean" | "null";
+      enum?: (string | number | boolean)[];
+      fromType?: string;
+      hint?: string;
+      env?: string;
+      [VALUE_SOURCES]?: ReadonlyMap<string | number | boolean, ValueSource>;
+    }
   | { type: "union"; anyOf: Shape[]; fromType?: string }
   | { type: "dynamic"; origin: DynamicOrigin; hint?: string }
   | { type: "unknown" };

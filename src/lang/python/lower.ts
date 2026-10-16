@@ -51,8 +51,23 @@ function addField(cls: ClassDef, name: string, value: Expr, fn: FunctionDef): vo
   cls.fields.set(name, [...(cls.fields.get(name) ?? []), { value, fn }]);
 }
 
-function classAttribute(cls: ClassDef, name: string, value: Expr | undefined, annotation: { type?: Expr; optional: boolean }, st: PyState): void {
+/** `Field(default, alias="OPENAI_MODEL")`: the name pydantic reads the field under (`validation_alias`, v1 `env`). */
+function fieldAlias(valueNode: SyntaxNode | undefined): string | undefined {
+  const callee = valueNode?.type === "call" ? field(valueNode, "function")?.text : undefined;
+  if (callee !== "Field" && callee !== "pydantic.Field") return undefined;
+  for (const a of named(field(valueNode!, "arguments") ?? valueNode!)) {
+    const key = a.type === "keyword_argument" ? field(a, "name")?.text : undefined;
+    const v = key && ["alias", "validation_alias", "env"].includes(key) ? field(a, "value") : undefined;
+    const text = v?.type === "string" ? /^(['"])([A-Za-z_][\w.-]{0,127})\1$/.exec(v.text)?.[2] : undefined;
+    if (text) return text;
+  }
+  return undefined;
+}
+
+function classAttribute(cls: ClassDef, name: string, value: Expr | undefined, annotation: { type?: Expr; optional: boolean }, st: PyState, valueNode?: SyntaxNode): void {
   if (value) addField(cls, name, value, st.fn);
+  const alias = fieldAlias(valueNode);
+  if (alias) (cls.fieldAliases ??= new Map()).set(name, alias);
   if (!annotation.type) return;
   cls.fieldTypes.set(name, annotation.type);
   cls.annotations.push({ name, type: annotation.type, optional: annotation.optional || !!value });
@@ -93,7 +108,7 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
   if (!left || (value && lowerEdit(n, left, value, st)) || (augmented && field(n, "operator")?.text !== "+=")) return;
   if (left.type === "identifier") {
     const annotation = lowerType(field(n, "type"), st);
-    if (cls) classAttribute(cls, left.text, value, annotation, st);
+    if (cls) classAttribute(cls, left.text, value, annotation, st, valueNode);
     if (value) st.fn.assigns.push({ target: left.text, value, offset: n.endIndex, ...(augmented ? { augmented } : {}), ...(annotation.type ? { type: annotation.type } : {}) });
     return;
   }
@@ -117,12 +132,13 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
   }
 }
 
-function lowerClass(n: SyntaxNode, st: ModState): void {
-  const name = field(n, "name")!.text;
+function lowerClass(n: SyntaxNode, st: ModState, outer?: ClassDef): void {
+  const name = outer ? `${outer.name}.${field(n, "name")!.text}` : field(n, "name")!.text;
   const cls: ClassDef = { name, qname: st.mod.name ? `${st.mod.name}.${name}` : name, bases: [], methods: new Map(), fields: new Map(), fieldTypes: new Map(), annotations: [], module: st.mod };
   const supers = field(n, "superclasses");
   cls.bases = supers ? named(supers).filter((c) => c.type !== "keyword_argument" && c.type !== "comment").map((c) => lowerExpr(c, st)) : [];
-  if (st.fn === st.mod.top) st.mod.classes.set(name, cls);
+  if (outer) st.mod.classes.set(name, cls);
+  else if (st.fn === st.mod.top) st.mod.classes.set(name, cls);
   else st.fn.assigns.push({ target: name, value: { k: "unknown", text: name }, offset: n.startIndex });
   const body = field(n, "body");
   for (const c of body ? named(body) : []) {
@@ -132,6 +148,9 @@ function lowerClass(n: SyntaxNode, st: ModState): void {
       cls.methods.set(fn.name, fn);
     } else if (c.type === "expression_statement") {
       for (const e of named(c)) if (e.type === "assignment") lowerAssignment(e, st, cls);
+    } else if (def?.type === "class_definition" && field(def, "name")?.text === "Config" && st.fn === st.mod.top) {
+      // pydantic v1's settings (`class Config: env_prefix = "APP_"`), as the class `Outer.Config`
+      lowerClass(def, st, cls);
     }
   }
 }

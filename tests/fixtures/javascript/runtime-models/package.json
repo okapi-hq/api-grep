@@ -1,0 +1,8 @@
+{
+  "name": "runtime-models-js-fixture",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.60.0",
+    "openai": "5.11.0"
+  }
+}
