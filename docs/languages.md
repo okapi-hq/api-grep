@@ -1176,15 +1176,17 @@ route); `{% url %}` / `url_for` values in scripts stay unknown hosts.
 
 ## Operations the URL does not name (#30)
 
-JSON-RPC, GraphQL, SOAP and action-style APIs (AWS Query, Flickr) send every operation to one URL and name it in the
+JSON-RPC, GraphQL, SOAP, action-style APIs (AWS Query, Flickr) and MCP send every operation to one URL and name it in the
 body, a header or a query parameter. A call to one of them carries `operation`, the same for every language and
 protocol (`Operation` in `src/report/schema.ts`):
 
 ```ts
 operation?: {
-  protocol: "json-rpc" | "graphql" | "soap" | "action";
-  /** getTransaction, GetOrder (the root fields of an anonymous GraphQL operation), Track, DescribeInstances */
+  protocol: "json-rpc" | "graphql" | "soap" | "action" | "mcp";
+  /** getTransaction, GetOrder (the root fields of an anonymous GraphQL operation), Track, DescribeInstances, tools/call */
   name: string | null;
+  /** MCP only (1.27): the tool, prompt or resource URI the method names: "forecast", "notes://{id}" */
+  target?: string;
   /** GraphQL only */
   type?: "query" | "mutation" | "subscription";
   /** GraphQL only: selected field paths from the root, aliases resolved, fragments inlined: ["order.id", "order.customer.email"] */
@@ -1228,12 +1230,23 @@ operation?: {
   language gets them from what it already resolves; a front end that knows better sets `ResolvedCall.operation`
   itself and is kept as it is. SDK calls are left out (their registry names the endpoint), except a method whose
   registry entry names the argument holding a GraphQL document (`documentArg`), and a JSON-RPC client library's
-  method, whose front end sets the RPC method it sends (`rpc` / `rpcArg`, #52).
+  method, whose front end sets the RPC method it sends (`rpc` / `rpcArg`, #52), and an MCP client's method (`mcp`,
+  `targetArg`: `src/operation/mcp.ts`).
+- **MCP.** An MCP client's request is its own protocol rather than `json-rpc`, although the wire format is JSON-RPC:
+  the method names (`tools/call`) are the protocol's, the server is any host, and a consumer filters MCP calls by
+  `protocol` alone. The tool a `tools/call` runs is `target`, not `name`: `name` stays the method for every MCP call,
+  so grouping by `operation.name` groups like requests, and `target` says what each one runs. `arguments` stays
+  GraphQL's. `connect` / `initialize()` is reported (`initialize`): it is where the transport, and so the server URL,
+  is most often known. Servers are not reported (their tools receive requests), nor are stdio, WebSocket and
+  in-memory clients: a stdio server is a local process with no HTTP request between the two (its own outbound calls are
+  found by scanning it), and reporting it would mix local processes into the outbound inventory. A client whose
+  transport the scan cannot read (given as a parameter) is reported with the host `{mcpServer}`: it may be HTTP.
 
 | protocol | issue | status |
 |---|---|---|
 | JSON-RPC (body `method`) | #34 | done: envelope, batch, helpers, branches, computed names (TypeScript, JavaScript, Python, PHP; Kotlin once its HTTP clients land, #32); client libraries (#52): `@solana/web3.js`, `@solana/kit`, viem, ethers, web3.js (TypeScript, JavaScript), web3.py and solana-py (Python); contract objects (ethers, web3.js, viem, web3.py), web3.py properties, ethers vendor providers and `@solana/spl-token` (#78); cached and context clients, wagmi, `useConnection()`, TypeChain factories, `connect` / `attach`, typed contracts and JSON ABIs (#85); app React contexts, context objects as untyped parameters, injected factories, memoized and ConnectKit wagmi configs, Python dict caches (#98) |
 | GraphQL (document: type, name, fields) | #35 | done: documents in bodies, `?query=`, batches, persisted queries, `gql` tags, `.graphql` imports, Octokit (TypeScript, JavaScript, Python, PHP); client libraries (#54): Apollo Client, urql, graphql-request (TypeScript, JavaScript) and `gql` (Python); codegen AST documents and `print()` (#56, TypeScript, JavaScript); Relay and Shopify's clients (TypeScript, JavaScript), `sgqlc` and ShopifyAPI (Python, #67); Hydrogen, Relay containers, `QueryRenderer` and `loadQuery` (TypeScript, JavaScript), `sgqlc` helpers and endpoint parameters (Python, #83); the Hydrogen cart, `useQueryLoader` and Relay fragment refetch and pagination hooks (TypeScript, JavaScript, #92); `useQueryLoader` variables, Hydrogen 2026.4 cart methods and the 2026.10 storefront client and cart query (TypeScript, JavaScript, #102); bound diagnostics (#55, `diagnostics.unfollowed` `graphql-limit`); literal arguments of selected fields (#56, every language) |
+| MCP (client method, `target`) | - | done (1.27): `@modelcontextprotocol/sdk` `Client` over Streamable HTTP and SSE (TypeScript, JavaScript), the Python SDK's `ClientSession` over `streamablehttp_client` / `sse_client` and FastMCP's `Client` (Python); stdio, WebSocket and in-memory clients and servers not reported; not yet: the Kotlin / Java SDK, AI SDK `experimental_createMCPClient`, OpenAI Agents `MCPServerStreamableHttp`, LangChain `MultiServerMCPClient`, MCP servers handed to a model API (`mcp_servers` of Anthropic's or OpenAI's API, which the provider connects to, not the code) |
 | SOAP (`SOAPAction`, `soap:Body`), action-style (`Action=`, `method=`) | #36 | done for requests the code builds (TypeScript, JavaScript, Python, PHP), XML bodies as `xml`; SOAP client libraries (#58): PHP `SoapClient`, zeep (Python), node-soap (TypeScript, JavaScript); JAX-WS / Spring-WS not yet |
 
 ### JSON-RPC (#34)

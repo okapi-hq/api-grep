@@ -914,7 +914,7 @@ exports[`go: SDK registries > reads go-openai, openai-go, anthropic-sdk-go and g
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.26.0",
+  "schemaVersion": "1.27.0",
   "stats": {
     "byClient": {
       "sdk": 9,
@@ -1553,7 +1553,7 @@ exports[`go: net/http > reads package functions, requests built with http.NewReq
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.26.0",
+  "schemaVersion": "1.27.0",
   "stats": {
     "byClient": {
       "net-http": 9,

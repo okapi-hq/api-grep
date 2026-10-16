@@ -1427,6 +1427,23 @@ exports[`regression fixtures > python/json-rpc 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/mcp 1`] = `
+[
+  "fast_client.py:7 mcp POST /mcp tools/call",
+  "fast_client.py:13 mcp POST /mcp prompts/list",
+  "fast_client.py:14 mcp POST /mcp prompts/get",
+  "session.py:15 mcp POST /mcp initialize",
+  "session.py:16 mcp POST /mcp tools/list",
+  "session.py:17 mcp POST /mcp tools/call",
+  "session.py:24 mcp POST /sse initialize",
+  "session.py:25 mcp POST /sse resources/read",
+  "session.py:37 mcp POST / initialize",
+  "session.py:40 mcp POST / tools/call",
+]
+`;
+
+exports[`regression fixtures > python/mcp-not-http 1`] = `[]`;
+
 exports[`regression fixtures > python/models 1`] = `
 [
   "direct.py:13 openai POST /v1/chat/completions",
@@ -2541,10 +2558,26 @@ exports[`regression fixtures > sdk/lemonsqueezy 1`] = `
 
 exports[`regression fixtures > sdk/mcp 1`] = `
 [
-  "tools.ts:9 mcp POST /mcp",
-  "tools.ts:10 mcp POST /mcp",
+  "consumer.ts:5 mcp POST / tools/list",
+  "consumer.ts:5 mcp POST / prompts/list",
+  "consumer.ts:5 mcp POST / resources/list",
+  "gateway.ts:13 mcp POST /mcp initialize",
+  "gateway.ts:15 mcp POST /mcp initialize",
+  "gateway.ts:20 mcp POST /mcp tools/call",
+  "gateway.ts:24 mcp POST /mcp tools/call",
+  "gateway.ts:28 mcp POST /mcp resources/read",
+  "gateway.ts:32 mcp POST /mcp prompts/get",
+  "tools.ts:8 mcp POST /mcp initialize",
+  "tools.ts:9 mcp POST /mcp tools/list",
+  "tools.ts:10 mcp POST /mcp tools/call",
+  "vendor.ts:10 linear POST /mcp initialize",
+  "vendor.ts:11 linear POST /mcp tools/call",
+  "vendor.ts:17 mcp POST / initialize",
+  "vendor.ts:18 mcp POST / tools/list",
 ]
 `;
+
+exports[`regression fixtures > sdk/mcp-not-http 1`] = `[]`;
 
 exports[`regression fixtures > sdk/models 1`] = `
 [

@@ -1,0 +1,34 @@
+{
+  "$comment": "FastMCP's client: `Client(transport)` takes a server URL (`Client(\"https://.../mcp\")`), an HTTP transport (`StreamableHttpTransport(url, headers=...)`, `SSETransport`), or a local server: a script path or a stdio transport (a process) or a `FastMCP` instance (in memory), which send no HTTP request and are not reported. `FastMCP` servers receive requests: none of their methods is listed. `operation` is the MCP method, `operation.target` the tool, prompt or resource named.",
+  "package": "fastmcp",
+  "imports": ["fastmcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against fastmcp 2.12)",
+  "instance": { "names": ["Client"] },
+  "endpoint": {
+    "clients": {
+      "Client": { "transport": "kw:transport|0", "urlTransport": true }
+    },
+    "transports": {
+      "StreamableHttpTransport": { "url": "kw:url|0", "headers": "kw:headers" },
+      "SSETransport": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["FastMCP", "FastMCPTransport", "StdioTransport", "PythonStdioTransport", "NodeStdioTransport", "UvStdioTransport", "UvxStdioTransport", "NpxStdioTransport", "FastMCPStdioTransport"]
+  },
+  "methods": {
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "call_tool_mcp": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "list_tools_mcp": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "list_resources": { "method": "POST", "path": "", "mcp": "resources/list" },
+    "list_resource_templates": { "method": "POST", "path": "", "mcp": "resources/templates/list" },
+    "read_resource": { "method": "POST", "path": "", "mcp": "resources/read", "targetArg": "kw:uri|0" },
+    "list_prompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "get_prompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "complete": { "method": "POST", "path": "", "mcp": "completion/complete" },
+    "set_logging_level": { "method": "POST", "path": "", "mcp": "logging/setLevel" },
+    "ping": { "method": "POST", "path": "", "mcp": "ping" }
+  }
+}

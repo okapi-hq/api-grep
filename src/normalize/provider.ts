@@ -15,15 +15,16 @@ export interface ProviderInfo {
   operationParam?: string;
   /**
    * Client libraries of a protocol rather than of one API (GraphQL clients): a call through them has the provider its
-   * URL names, and no env var name stands for this id.
+   * URL names, and no env var name stands for this id. `known` (MCP clients): the provider of a known service the URL
+   * names (a vendor's MCP endpoint), else this id.
    */
-  anyHost?: boolean;
+  anyHost?: boolean | "known";
 }
 
 /** How `provider` was found: an SDK registry, the host, or (weakest) the name of the env var holding the URL. */
 export type ProviderSource = "sdk" | "host" | "env-name";
 
-export const PROVIDERS: ProviderInfo[] = data.providers;
+export const PROVIDERS = data.providers as ProviderInfo[];
 
 /** Known API SDK packages of an ecosystem -> provider id (the first provider listing a package wins). */
 export function sdkPackages(ecosystem: Ecosystem): Map<string, string> {
@@ -39,6 +40,13 @@ const ANY_HOST = new Set(PROVIDERS.filter((p) => p.anyHost).map((p) => p.id));
 /** A protocol's client libraries (GraphQL): the call's provider is the one its URL names, not this id. */
 export function isAnyHost(provider: string): boolean {
   return ANY_HOST.has(provider);
+}
+
+const KEEPS_ID = new Set(PROVIDERS.filter((p) => p.anyHost === "known").map((p) => p.id));
+
+/** A protocol's client libraries whose calls keep this id unless the URL names a known service (MCP). */
+export function keepsIdOnUnknownHost(provider: string): boolean {
+  return KEEPS_ID.has(provider);
 }
 
 /** The parameter an action-style provider names the operation with, if it declares one. */

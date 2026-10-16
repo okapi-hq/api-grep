@@ -989,7 +989,7 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.26.0",
+  "schemaVersion": "1.27.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -2110,7 +2110,7 @@ exports[`rust: reqwest > reads verb and request(method, url) calls, builder step
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.26.0",
+  "schemaVersion": "1.27.0",
   "stats": {
     "byClient": {
       "reqwest": 12,

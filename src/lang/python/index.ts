@@ -28,6 +28,8 @@ import googleGenerativeai from "./registry/google-generativeai.json" with { type
 import groq from "./registry/groq.json" with { type: "json" };
 import { sgqlcDocument } from "./sgqlc.js";
 import gql from "./registry/gql.json" with { type: "json" };
+import mcp from "./registry/mcp.json" with { type: "json" };
+import fastmcp from "./registry/fastmcp.json" with { type: "json" };
 import sgqlc from "./registry/sgqlc.json" with { type: "json" };
 import shopify from "./registry/shopify.json" with { type: "json" };
 import solana from "./registry/solana.json" with { type: "json" };
@@ -116,6 +118,8 @@ export const PYTHON_REGISTRY = [
   ollama,
   gql,
   sgqlc,
+  mcp,
+  fastmcp,
   shopify,
   web3,
   solana,

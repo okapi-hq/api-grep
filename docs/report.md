@@ -142,10 +142,10 @@ CrewAI, DSPy, smolagents, Mastra) are reported at the provider their first name 
 (`anthropic/claude-sonnet-4` to Anthropic, `gpt-4o` to OpenAI), the prefix dropped from `values`; a name
 that routes nowhere leaves the provider `unknown`. An example env file's name routes nothing.
 
-## Operations: JSON-RPC, GraphQL, SOAP, action APIs
+## Operations: JSON-RPC, GraphQL, SOAP, action APIs, MCP
 
 A call to an API that names the operation outside the URL (JSON-RPC, GraphQL, SOAP, action-style APIs such as
-AWS Query) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
+AWS Query, MCP) carries `operation`, and its `id` includes `operation.name`: two operations sent to one URL are two
 calls. JSON-RPC is recognized in every language: a JSON body with `jsonrpc` and a `method` (or a 1.0-style
 `method`, `params` and `id`) gives `protocol: json-rpc` with the method as `name`, also through a helper that builds
 the envelope (`rpc("getBalance", [address])`). GraphQL is recognized from the document a request sends (`query` in
@@ -159,16 +159,18 @@ under a credential name (`password`, `apiKey`) is `<redacted>`; a path that alia
 has a list of them; absent when no selected field has any. A persisted query is named by its `operationName`. SOAP is recognized from a `SOAPAction` header, a SOAP 1.2 content type or an `Envelope` body:
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
-(`Action` for AWS Query, `method` for Flickr): `protocol: action`.
+(`Action` for AWS Query, `method` for Flickr): `protocol: action`. An MCP client's request to an MCP server is
+`protocol: mcp` (schema 1.27), see [MCP clients](#mcp-clients).
 
 ```yaml
     operation:
-      protocol: graphql          # json-rpc | graphql | soap | action
+      protocol: graphql          # json-rpc | graphql | soap | action | mcp
       name: GetOrder             # null when no part of it is known
       type: query                # GraphQL only: query | mutation | subscription
       fields: [order.customer.email, order.id]   # GraphQL only: selected leaf paths, sorted, aliases resolved, fragments inlined
       arguments:                 # GraphQL only, when a selected field has some: by field path, sorted
         order: { id: $id }       # literals as JSON values (`first: 10`, `sortKey: CREATED_AT`), variables as "$name"
+      # target: forecast         # MCP only: the tool, prompt or resource URI the method names
       dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
       from: document             # body | header | query | document
 ```
@@ -178,6 +180,33 @@ operations together (a JSON-RPC or GraphQL batch array) gives one call per opera
 `batch: true`; so does a GraphQL document of several operations with no `operationName` picking one (without
 `batch`). `operationId` is unrelated: the OpenAPI id of an SDK method. The reasons are in
 [languages.md](languages.md#operations-the-url-does-not-name-30).
+
+### MCP clients
+
+An MCP (Model Context Protocol) client sends JSON-RPC to the one URL of the server its transport points at (schema
+1.27). Covered: `@modelcontextprotocol/sdk`'s `Client` (`client.connect(transport)`, `callTool`, `listTools`,
+`listResources`, `listResourceTemplates`, `readResource`, `subscribeResource`, `listPrompts`, `getPrompt`, `complete`,
+`setLoggingLevel`), the Python SDK's `ClientSession` (`initialize`, `call_tool`, `list_tools`, `read_resource`,
+`get_prompt`, ...) and FastMCP's `Client`. Each is a `POST` to the server URL with `operation: { protocol: mcp, name:
+tools/call, target: forecast, from: body }`: `name` is the MCP method (`initialize` for `connect` / `initialize()`,
+`tools/list`, `tools/call`, `resources/read`, `prompts/get`, ...), `target` what it names on the server (the tool of
+`tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; absent when the code passes a value the
+scan cannot read), and the body the tool's or prompt's `arguments`.
+
+The URL and headers are the HTTP transport's: `new StreamableHTTPClientTransport(new URL(url), { requestInit: { headers
+} })` or `SSEClientTransport`, the one the same client (`client`, `this.client`) is connected with in the file, else the
+file's own transports (a Streamable HTTP transport with an SSE fallback to the same URL is one server; transports to
+several URLs leave the host `unknown`); Python's `streamablehttp_client(url, headers=...)` / `sse_client` whose streams
+the session is built from (`async with ... as (read, write, _)`, also through `AsyncExitStack.enter_async_context`);
+FastMCP's `Client("https://...")` or `Client(StreamableHttpTransport(url, headers=...))`. A client given its server
+elsewhere (`describe(client: Client)`) has the host `{mcpServer}`. The provider is the known service the URL names (a
+vendor's MCP endpoint such as `mcp.linear.app` is `linear`), else `mcp`, whatever the host.
+
+Not reported: MCP servers (`McpServer`, `Server`, `FastMCP`: their tools receive requests), and clients that send no
+HTTP request: a stdio transport (`StdioClientTransport`, `stdio_client`, a FastMCP script path or stdio transport: a
+local process whose own calls are found by scanning its code), a WebSocket transport, an in-memory pair
+(`InMemoryTransport`, `Client(server)`). `client.connect(transport)` is reported only when its transport reads as HTTP.
+An SSE server announces the URL it takes requests at: the call keeps the stream's URL, whose host is the server's.
 
 ### SOAP clients
 

@@ -129,6 +129,11 @@ function lowerAssignment(n: SyntaxNode, st: PyState, cls?: ClassDef): void {
     named(left).forEach((t, i) => {
       if (t.type === "identifier" && value.items[i]) st.fn.assigns.push({ target: t.text, value: value.items[i], offset: n.endIndex });
     });
+  } else if ((left.type === "pattern_list" || left.type === "tuple_pattern") && value.k === "name") {
+    // `read, write = transport`: the items of a value held by a name (an MCP transport's streams)
+    named(left).forEach((t, i) => {
+      if (t.type === "identifier") st.fn.assigns.push({ target: t.text, value: { k: "index", obj: value, key: { k: "num", v: i } }, offset: n.endIndex });
+    });
   }
 }
 
@@ -183,6 +188,8 @@ function lowerImport(n: SyntaxNode, st: ModState): void {
 }
 
 /** `with httpx.Client() as client:` binds `client` to the client. */
+const TUPLES = new Set(["tuple", "tuple_pattern", "pattern_list", "list", "list_pattern"]);
+
 function lowerWith(n: SyntaxNode, st: ModState): void {
   for (const clause of named(n).filter((c) => c.type === "with_clause")) {
     for (const item of named(clause)) {
@@ -192,6 +199,12 @@ function lowerWith(n: SyntaxNode, st: ModState): void {
         const v = lowerExpr(named(value)[0]!, st);
         const name = target ? named(target)[0] : undefined;
         if (name?.type === "identifier") st.fn.assigns.push({ target: name.text, value: v, offset: item.endIndex });
+        // `as (read, write, _)`: each name is an item of what the context gives (an MCP transport's streams)
+        else if (name && TUPLES.has(name.type)) {
+          named(name).forEach((t, i) => {
+            if (t.type === "identifier") st.fn.assigns.push({ target: t.text, value: { k: "index", obj: v, key: { k: "num", v: i } }, offset: item.endIndex });
+          });
+        }
       } else if (value) lowerExpr(value, st);
     }
   }

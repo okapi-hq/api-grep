@@ -76,6 +76,12 @@ export function valueCall(callee: string | undefined, args: Arg[], st: PyState, 
   return args.find((a) => a.name === "default")?.value ?? (first && !(first.k === "unknown" && first.text === "...") ? first : undefined);
 }
 
+/** `await stack.enter_async_context(cm)` gives what `async with cm as v` binds (an MCP transport's streams, a session). */
+export function enteredContext(fn: Expr, args: Arg[]): Expr | undefined {
+  if (fn.k !== "attr" || (fn.name !== "enter_async_context" && fn.name !== "enter_context")) return undefined;
+  return args.length === 1 && !args[0]!.name && !args[0]!.spread ? args[0]!.value : undefined;
+}
+
 /**
  * `executor.submit(fn, *args, **kw)` (`concurrent.futures`) runs `fn` with those arguments later: that call too, kept
  * beside the `submit` call itself (a project's own `submit` method stays a call of its own).

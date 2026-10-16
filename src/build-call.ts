@@ -5,6 +5,7 @@ import { relativePosix } from "./files.js";
 import { languageOf } from "./language.js";
 import { at } from "./detect/endpoint.js";
 import { rpcClientOperation } from "./operation/json-rpc.js";
+import { mcpOperation } from "./operation/mcp.js";
 import type { Call, Operation } from "./report/schema.js";
 import { resolveBody, shapeOf, type BodyResult } from "./resolve/body.js";
 import { evaluate } from "./resolve/evaluate.js";
@@ -112,9 +113,13 @@ function documentOf(sdk: RawCall["sdk"], ctx: EvalCtx): Shape | undefined {
   return { type: "object", properties, required: [] };
 }
 
-/** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */
+/** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it; an MCP client's method. */
 function rpcOperation(sdk: RawCall["sdk"], ctx: EvalCtx): Operation | undefined {
-  if (!sdk || (sdk.spec.rpc === undefined && sdk.spec.rpcArg === undefined)) return undefined;
+  if (!sdk) return undefined;
+  const target = sdk.spec.targetArg !== undefined ? at(sdk.args, sdk.spec.targetArg) : undefined;
+  const mcp = mcpOperation(sdk.spec, target ? shapeOf(target, ctx).shape : undefined);
+  if (mcp) return mcp;
+  if (sdk.spec.rpc === undefined && sdk.spec.rpcArg === undefined) return undefined;
   const arg = sdk.spec.rpcArg !== undefined ? at(sdk.args, sdk.spec.rpcArg) : undefined;
   return rpcClientOperation(sdk.spec, arg ? shapeOf(arg, ctx).shape : undefined);
 }
