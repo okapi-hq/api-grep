@@ -107,7 +107,7 @@
     "tree-sitter-rust": "0.24.0",
     "tsup": "^8.4.0",
     "tsx": "^4.23.15",
-    "typescript": "^5.8.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.1",
     "vitest": "^4.1.11"
   },
