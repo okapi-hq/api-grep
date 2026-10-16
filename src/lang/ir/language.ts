@@ -119,9 +119,10 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   /**
    * The host comes from a configuration call made once elsewhere (`PostHog.setup(PostHogConfig(key, host = h))`):
    * the calls by the end of their name, the position of the config argument (`-1`: the last), and where the config's
-   * constructor takes the host (`kw:host|1`). See `setup.ts`.
+   * constructor takes the host (`kw:host|1`); without `arg`, where the setup call itself does (Dart's
+   * `Supabase.initialize(url: u, anonKey: k)`). See `setup.ts`.
    */
-  setupUrl?: { calls: string[]; arg: number; host: string };
+  setupUrl?: { calls: string[]; arg?: number; host: string };
   /** A model client a framework configures from the build and its properties (Spring AI): see `ConfiguredClient`. */
   configured?: ConfiguredClient;
   methods: Record<string, IrMethodSpec>;
@@ -213,6 +214,8 @@ export interface ClientSpec {
   /** Fluent calls before the request (`Http::withToken($t)->asForm()->post(...)`). */
   modifiers?: Record<string, ClientModifier>;
   keys: Record<string, OptionRole>;
+  /** Options holding more options, read after the call's own (Dio's `options: Options(headers: h, method: m)`). */
+  nested?: string[];
 }
 
 /**

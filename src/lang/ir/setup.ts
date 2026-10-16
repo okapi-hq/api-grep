@@ -27,8 +27,8 @@ function find(entry: IrRegistryEntry, ctx: IrCtx): Scoped | undefined {
         const path = dottedPath(call.fn);
         if (!path || !spec.calls.some((c) => endsWith(path, c))) continue;
         const positional = call.args.filter((a) => !a.name && !a.spread);
-        const arg = positional[spec.arg < 0 ? positional.length + spec.arg : spec.arg];
-        const config = arg ? deref(arg.value, fn, ctx) : undefined;
+        const arg = spec.arg === undefined ? undefined : positional[spec.arg < 0 ? positional.length + spec.arg : spec.arg];
+        const config = spec.arg === undefined ? { expr: call, fn } : arg ? deref(arg.value, fn, ctx) : undefined;
         if (config?.expr.k !== "call") continue;
         const host = argAt({ name: "config", call: config.expr, fn: config.fn }, spec.host, ctx);
         if (host) found.push(host);

@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/134",
+  "calls": [
+    {"file": "api_client.dart", "line": 15, "provider": "api.parcelhub.example"},
+    {"file": "api_client.dart", "line": 17, "provider": "api.parcelhub.example"},
+    {"file": "api_client.dart", "line": 20, "provider": "api.parcelhub.example"},
+    {"file": "api_client.dart", "line": 27, "provider": "api.parcelhub.example"},
+    {"file": "courier_service.dart", "line": 23, "provider": "couriers.parcelhub.example"},
+    {"file": "courier_service.dart", "line": 26, "provider": "couriers.parcelhub.example"},
+    {"file": "locators.dart", "line": 15, "provider": "depots.parcelhub.example"},
+    {"file": "locators.dart", "line": 27, "provider": "routes.parcelhub.example"},
+    {"file": "uploads.dart", "line": 7, "provider": "files.parcelhub.example"},
+    {"file": "uploads.dart", "line": 12, "provider": "status.parcelhub.example"}
+  ]
+}

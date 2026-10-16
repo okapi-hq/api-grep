@@ -13,7 +13,7 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms), Python, PHP, Kotlin and Java (one front end and one index for both: HTTP clients,
-Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust and shell scripts (curl, wget, HTTPie). It must stay
+Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust, Dart (Flutter) and shell scripts (curl, wget, HTTPie). It must stay
 static: no network, no code execution, no AI.
 
 ## Commands
@@ -33,6 +33,7 @@ pnpm gen:schema              # regenerate schema/report.v1.json after a report s
 pnpm gen:support             # regenerate docs/sdk-support.md after a registry / providers.json change
 pnpm gen:stripe-ports        # regenerate ported Stripe registries from src/detect/registry/stripe.json
 pnpm gen:telegram            # regenerate the Telegram registries (every language) from scripts/telegram/
+pnpm gen:dart-grammar        # rebuild src/lang/dart/tree-sitter-dart.wasm from the grammar's pinned commit (no npm release loads)
 docker build --build-arg API_GREP_COMMIT=$(git rev-parse --short=12 HEAD) -t api-grep .   # the image (serve by default)
 ```
 
@@ -56,7 +57,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
   instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
   without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
-- Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
+- Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust, Dart): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A language is mostly data: `clients.json`, `registry/*.json`, manifests, `index.ts`. Grammars are listed in
   `src/lang/grammars.ts`. JVM manifests (Gradle, version catalogs, `pom.xml`), Maven package roots and `BuildConfig`
@@ -190,8 +191,21 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   that sends them (`requests.ts` over `requests.json`, the engine's `fluentChains`); `resolveCall` (`structs.ts`) reads
   struct literals by their serde names and async-openai / openai-api-rs request builders. Registries give paths as the
   code writes them (`async_openai`); `Cargo.toml` (workspaces too) feeds coverage under `ecosystem: "cargo"`.
+- Dart (`src/lang/dart/`): the grammar is built from source at a pinned commit and committed
+  (`src/lang/dart/tree-sitter-dart.wasm`, `BUILT_GRAMMARS` in `src/lang/grammars.ts`, `pnpm gen:dart-grammar`; the build
+  copies it to `dist/grammars/`). A library's name is its package (`name:` of the nearest `pubspec.yaml`) and its path
+  under `lib/` (`harbor_app.services.api`, as `package:` imports name it). The grammar writes `a.b(c)` as a primary and
+  sibling `selector`s, and cascades as `cascade_section`s: `lower-expr.ts` folds such runs into the IR. Imports without
+  a prefix, `export`s and parts are resolved by the `link` hook (`link.ts`) into explicit imports of each name a
+  project library exports; a package outside the project is its pub name (`dio`), its classes in `wildcardTypes`.
+  package:http and Dio are tables (`clients.json`, Dio's `options: Options(...)` through `ClientSpec.nested`); request
+  objects (`http.Request`, `MultipartRequest`) are `requests.ts`; Dio options and interceptors set after construction
+  are `dio.ts` (deep member sets in `DEEP_SETS`); `resolveCall` (`resolve.ts`) reads `BaseOptions` / `Options` as
+  dicts, `Uri.https(...)` as a URL, a helper returning one map; the `injection` hook (`inject.ts`) gives a constructor
+  parameter the argument of the class's one construction, Riverpod reads and get_it lookups their value.
+  `pubspec.yaml` feeds coverage under `ecosystem: "pub"`.
 - `src/normalize/providers.json`: provider ids, hosts, and SDK packages per ecosystem (`npm`, `pypi`, `composer`, `maven`,
-  `go` as module paths, `cargo` as crates.io names).
+  `go` as module paths, `cargo` as crates.io names, `pub` as pub.dev names).
 - `src/server/`: `api-grep serve`. `app.ts` routes and authenticates (`API_GREP_TOKEN`), one scan at a time. Each
   request runs two children through `child.ts` (own process group, deadline, minimal env, no git): the hidden
   `unpack` command (`unpack.ts` over `archive.ts`: files and directories only, limits, strict) and `scan --json`
@@ -203,8 +217,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`). The recall check scans a fixture without its
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, Rust under `tests/fixtures/rust/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`, Rust under `tests/fixtures/rust/`, Dart under `tests/fixtures/dart/`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -218,7 +231,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   kept inside, so a report does not depend on the checkout location (#112). Keys from the code go through
   `isSafeKey()`, and anything printed goes through `printable()`.
 - Registries: TypeScript in `src/detect/registry/`, Python in `src/lang/python/registry/`, PHP in
-  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/`, Go in `src/lang/go/registry/`, Rust in `src/lang/rust/registry/` (format: `IrRegistryEntry` in
+  `src/lang/php/registry/`, Kotlin and Java (JVM) in `src/lang/jvm/registry/`, Go in `src/lang/go/registry/`, Rust in `src/lang/rust/registry/`, Dart in `src/lang/dart/registry/` (format: `IrRegistryEntry` in
   `src/lang/ir/language.ts`; the JVM Stripe registry comes from `pnpm gen:stripe-ports`). A new registry package must be listed under its provider's `packages.<ecosystem>` in
   `providers.json` (a unit test checks it); then run `pnpm gen:support`.
 - Python module names that differ from their PyPI name go in `src/lang/python/modules.json`; PHP namespaces per
@@ -279,4 +292,8 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).
 - Rust: reqwest, ureq, awc, surf, isahc and the async-openai, openai-api-rs, teloxide and serenity registries are done
   (`docs/languages.md#rust`, limitations there).
+- Dart: package:http (functions, clients, `Request` / `MultipartRequest`), Dio (options, interceptors, instances from
+  constructors, Riverpod and get_it) and the supabase_flutter registry are done (`docs/languages.md#dart`, limitations
+  there); Firebase and the other pub SDKs in `providers.json` have no registry yet, dart:io `HttpClient`, Chopper and
+  retrofit.dart are not read.
 - Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

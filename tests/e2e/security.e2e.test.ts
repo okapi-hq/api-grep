@@ -179,6 +179,20 @@ describe.skipIf(!posix)("Rust files a hostile repository links to", () => {
   });
 });
 
+describe.skipIf(!posix)("Dart files a hostile repository links to", () => {
+  it("does the same for Dart sources, their imports and pubspec.yaml", () => {
+    const outside = tempRepo({ "secret.dart": `import 'package:http/http.dart' as http;\nvoid leak() => http.get(Uri.parse('https://outside.example/leak'));\n` });
+    const repo = tempRepo({
+      "lib/main.dart": `import 'package:http/http.dart' as http;\nimport 'leak.dart';\nimport '../../../../../../../etc/passwd.dart';\nvoid main() => http.get(Uri.parse('https://inside.example/ok'));\n`,
+    });
+    symlinkSync("/dev/zero", path.join(repo, "pubspec.yaml"));
+    symlinkSync(path.join(outside, "secret.dart"), path.join(repo, "lib", "leak.dart"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(report.calls.map((c) => [c.host, c.location.language])).toEqual([["inside.example", "dart"]]);
+  });
+});
+
 describe.skipIf(!posix)("WSDL files a hostile repository links to (#58)", () => {
   it("reads no WSDL that links out of the repository or to a device", () => {
     const outside = tempRepo({ "x.wsdl": `<definitions><soap:address location="https://internal.corp.example/soap"/></definitions>` });

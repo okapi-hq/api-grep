@@ -8,7 +8,7 @@ import { calleeChain } from "./chain.js";
 import { evaluate } from "./evaluate.js";
 import { fluentMap } from "./fluent.js";
 import type { OptionRole, Scoped } from "./language.js";
-import type { Expr, FunctionDef } from "./model.js";
+import { dottedPath, type Expr, type FunctionDef } from "./model.js";
 import type { IrCtx } from "./raw.js";
 import { paramAlternatives } from "./param-values.js";
 import { shapeOf } from "./shape.js";
@@ -29,7 +29,9 @@ function unwrapSerializer(s: Scoped, ctx: IrCtx, depth = 0): { inner: Scoped; en
     return unwrapSerializer({ expr: d.expr.fn.obj, fn: d.fn }, ctx, depth + 1);
   }
   const name = d.expr.k === "call" ? calleeName(d.expr) : undefined;
-  const qualified = d.expr.k === "call" && d.expr.fn.k === "attr" && d.expr.fn.obj.k === "name" ? `${d.expr.fn.obj.name}.${d.expr.fn.name}` : name;
+  // the owner and the method (`json.dumps`, also through a prefix: Dart's `d.FormData.fromMap`)
+  const path = d.expr.k === "call" && d.expr.fn.k === "attr" ? dottedPath(d.expr.fn) : undefined;
+  const qualified = path ? path.slice(-2).join(".") : name;
   const enc = qualified ? (ctx.idx.lang.serializers[qualified] ?? (name ? ctx.idx.lang.serializers[name] : undefined)) : undefined;
   const arg = d.expr.k === "call" ? d.expr.args[0] : undefined;
   if (enc && arg && !arg.name) return { inner: { expr: arg.value, fn: d.fn }, encoding: enc };

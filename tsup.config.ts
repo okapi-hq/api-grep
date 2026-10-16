@@ -2,7 +2,7 @@ import { copyFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { defineConfig } from "tsup";
-import { GRAMMARS } from "./src/lang/grammars.js";
+import { BUILT_GRAMMARS, GRAMMARS } from "./src/lang/grammars.js";
 
 export default defineConfig({
   entry: ["src/cli.ts", "src/index.ts"],
@@ -19,6 +19,12 @@ export default defineConfig({
     for (const [name, pkg] of Object.entries(GRAMMARS)) {
       const file = `tree-sitter-${name}.wasm`;
       copyFileSync(require.resolve(`${pkg}/${file}`), path.join("dist/grammars", file));
+    }
+    // grammars built from source and committed (`pnpm gen:dart-grammar`), with their license
+    for (const [name, rel] of Object.entries(BUILT_GRAMMARS)) {
+      const file = path.join("src/lang", rel);
+      copyFileSync(file, path.join("dist/grammars", `tree-sitter-${name}.wasm`));
+      copyFileSync(file.replace(/\.wasm$/, ".LICENSE"), path.join("dist/grammars", `tree-sitter-${name}.LICENSE`));
     }
   },
 });

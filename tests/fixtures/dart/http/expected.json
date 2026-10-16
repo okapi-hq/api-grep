@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/134",
+  "calls": [
+    {"file": "auth.dart", "line": 9, "provider": "api.tideplanner.example"},
+    {"file": "auth.dart", "line": 19, "provider": "api.tideplanner.example"},
+    {"file": "auth.dart", "line": 26, "provider": "api.tideplanner.example"},
+    {"file": "chat.dart", "line": 11, "provider": "openai"},
+    {"file": "logbook_store.dart", "line": 15, "provider": "supabase"},
+    {"file": "logbook_store.dart", "line": 19, "provider": "supabase"},
+    {"file": "logbook_store.dart", "line": 23, "provider": "supabase"},
+    {"file": "logbook_store.dart", "line": 27, "provider": "supabase"},
+    {"file": "logbook_store.dart", "line": 30, "provider": "supabase"},
+    {"file": "uploads.dart", "line": 8, "provider": "api.tideplanner.example"},
+    {"file": "uploads.dart", "line": 17, "provider": "api.tideplanner.example"},
+    {"file": "weather.dart", "line": 7, "provider": "marine.example-weather.org"},
+    {"file": "weather.dart", "line": 13, "provider": "charts.tideplanner.example"},
+    {"file": "weather.dart", "line": 15, "provider": "charts.tideplanner.example"}
+  ]
+}

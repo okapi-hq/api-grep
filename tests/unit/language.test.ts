@@ -15,6 +15,7 @@ describe("languageOf", () => {
     expect(languageOf("scripts/deploy.sh")).toBe("shell");
     expect(languageOf("hooks/notify.zsh")).toBe("shell");
     expect(languageOf("src/llm/client.rs")).toBe("rust");
+    expect(languageOf("lib/services/api.dart")).toBe("dart");
   });
 
   it("falls back to typescript, the language the scanner parses", () => {
