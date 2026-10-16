@@ -2285,7 +2285,7 @@ exports[`models: python > reads model names through env defaults, settings, func
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "sdk": 26,
@@ -3724,7 +3724,7 @@ exports[`models: typescript > reads model names through imported constants, defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "sdk": 16,
