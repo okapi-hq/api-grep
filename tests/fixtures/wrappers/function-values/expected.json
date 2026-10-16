@@ -1,0 +1,13 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "hooks.ts", "line": 15, "provider": "api.ledgerly-demo.io"},
+    {"file": "hooks.ts", "line": 20, "provider": "api.ledgerly-demo.io"},
+    {"file": "hooks.ts", "line": 25, "provider": "api.ledgerly-demo.io"},
+    {"file": "factories.ts", "line": 8, "provider": "hooks.parcelpost-demo.io"},
+    {"file": "factories.ts", "line": 15, "provider": "api.meterly-demo.io"},
+    {"file": "factories.ts", "line": 20, "provider": "ping.meterly-demo.io"},
+    {"file": "factories.ts", "line": 38, "provider": "leases.lockbox-demo.io"},
+    {"file": "inherited.ts", "line": 15, "provider": "api.quotely-demo.io"}
+  ]
+}

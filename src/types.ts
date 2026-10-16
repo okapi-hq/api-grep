@@ -58,6 +58,8 @@ export interface Callee {
   rootInstance?: InstanceInfo;
   /** The client came from a cache a helper fills (`getProvider(chainId)`, #85): every construction it may hold. */
   cached?: ClientValues;
+  /** The function `localDecl` is was made by a factory (`const send = makeSender(base)`): its parameters, as called. */
+  closure?: Subst;
 }
 
 export interface RawCall {

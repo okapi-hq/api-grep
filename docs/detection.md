@@ -16,7 +16,7 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | fetch | global `fetch`, `node-fetch`, `undici.fetch`, `cross-fetch`, `fetch(new Request(...))` |
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
-| node http | `https.request(opts)`, `https.get(url)` |
+| node http | `https.request(opts)`, `https.get(url)`, `https.request(url, opts, cb)` (also with `url` an untyped parameter followed by an options object) |
 | SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@modelcontextprotocol/sdk`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`, GraphQL and REST; Hydrogen's context clients); messaging bots: node-telegram-bot-api, telegraf and grammY (also the handler context, `ctx.reply(...)`), discord.js (the client's managers, the `interaction`, `message` and `channel` events hand over, REST `Routes`); `@huggingface/inference`; JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `@solana/wallet-adapter-react`, `viem`, `wagmi`, `ethers`, `web3` (endpoint from the client or its HTTP transport, the wagmi config or the `<ConnectionProvider>`) |
 | AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway; also through `wrapLanguageModel` / `experimental_wrapLanguageModel`, the app's `customProvider({ languageModels })` read with `languageModel(name)`, a local helper's returns, a `let` given its model in branches, a helper's returned options spread into the call); a model picked at run time among several providers is one call per provider, as a host table's candidates (`hostAlternatives`); a branch that names no provider at all (a test double) is left out; a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
@@ -38,7 +38,9 @@ global read through `window` (`window.supabase.createClient(...)`) and typed
 parameters (`stripe: Stripe`, `ctx.db` with `db: SupabaseClient`);
 without the package's types installed, the written annotation is traced to its import. Imports resolve with the
 path aliases of the file's own package in a monorepo: a file whose nearest `tsconfig.json` / `jsconfig.json` is not
-the scan's reads that one's `paths` and `baseUrl` (`apps/api`'s `@/*` is `apps/api/src/*`, `apps/web`'s its own).
+the scan's reads that one's `paths` and `baseUrl` (`apps/api`'s `@/*` is `apps/api/src/*`, `apps/web`'s its own); a
+solution config of `references` only (`{ "files": [], "references": [...] }`) reads the aliases its referenced configs
+agree on.
 
 Builder SDKs report one call per request: `supabase.from("tasks").select().eq("id", id).single()`
 is a `GET /rest/v1/tasks` at the start of the chain (filters and `.single()` are not extra calls),
@@ -377,7 +379,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `api-grep providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (up to four deep): a local function or method whose body performs an HTTP call *and*
+- **Wrappers** (up to six deep in TypeScript and JavaScript, four in the other languages): a local function or method whose body performs an HTTP call *and*
   whose parameters flow into its request (URL, method, query, body; for an SDK call, the
   arguments its registry reads) is treated as a client. Calls to it are reported at the call
   site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
@@ -389,6 +391,20 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
   the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
   call per call site; different requests from one call site get distinct `id`s.
+  A wrapper is also a function the code pins down without naming it (`src/detect/fn-value.ts`): a member of what the
+  app's hook or factory returns (`const { fetchWithAuth } = useApi()`, `api.fetchWithAuth(url)`, through `useCallback`
+  / `useMemo`), a method of an object literal, an arrow a factory returns (`const send = makeSender(base)`: the
+  factory's parameters read as its call passes them), a method a class inherits from a base class of the project, and
+  an arrow whose body is the request (`(path) => fetch(base + path)`). Calling a factory is not calling what it
+  returns: `makeSender(base)` itself sends nothing. When several functions fit (a factory returning one of two, a
+  `let` given another), none is followed.
+- **Fetch functions passed down** (`src/detect/passed-fn.ts`): a fetch-named callee that is a parameter
+  (`fetchImpl(url)`), a member of one (`deps.fetchUpstream(url)`, `{ dbFetch }` destructured), or a field the
+  constructor sets from one (`this.fetchFn = opts.fetchFn`) is what the enclosing function's callers pass, one level
+  up, or the parameter's default for a caller that passes nothing: the global `fetch` makes it a fetch call, a
+  function of the project a wrapper call. Callers whose argument cannot be read are not counted; when two pass
+  different functions the call stays `injected-fetch`. A fetch-named value whose checker type is the platform's
+  `typeof fetch` (`const f = resolveFetch(custom)`) is a fetch call too.
 - **Host tables**: a base URL picked at run time from a table the code writes is reported once per
   candidate host, each copy with its own `host`, `provider` and `id`, and every candidate listed in
   `hostAlternatives`. A table is an object, dict or map read with a key known at run time only
@@ -417,8 +433,9 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   branch with a literal host (`cloud ? "https://api..." : selfHostedUrl`): the other value is not
   listed. A variable assigned in branches reads the same way. A helper with several `return`s, a table and a Rust
   `match` are host tables (above): one call per host.
-- Wrapper expansion stops at four wrappers; the definition-site call is still reported and
-  deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
+- Wrapper expansion stops at six wrappers (four in the languages read with tree-sitter); the definition-site call is
+  still reported and deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`). A wrapper that calls
+  several others keeps the requests of the first three it reaches.
 - Host tables: only the first table a call's URL reads that tells hosts apart is listed (of the first three it meets);
   a table nested in another entry reads as before. A table built by code (a loop filling a map, `dict(zip(...))`, a
   Python `for` returning the matching element, Rust `find_map`), read through a class registry, a factory map of

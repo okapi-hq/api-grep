@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/4",
+  "calls": [
+    {"file": "callers.ts", "line": 7, "provider": "status.uptimer-demo.io"},
+    {"file": "callers.ts", "line": 16, "provider": "rows.tabular-demo.io"},
+    {"file": "callers.ts", "line": 36, "provider": "jobs.pollster-demo.io"},
+    {"file": "callers.ts", "line": 48, "provider": "models.catalogue-demo.io"}
+  ]
+}

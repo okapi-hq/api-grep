@@ -1,9 +1,13 @@
 import path from "node:path";
-import { Project, type ts } from "ts-morph";
+import { Project, ts } from "ts-morph";
 import { BoundedFileSystem } from "./bounded-fs.js";
-import { isConfigFile } from "./files.js";
+import { isConfigFile, readConfigFile } from "./files.js";
 
 const CONFIG_NAMES = ["tsconfig.json", "jsconfig.json"];
+/** Referenced configs read per solution config: a bound on hostile input. */
+const MAX_REFERENCES = 16;
+
+type Aliases = Pick<ts.CompilerOptions, "paths" | "baseUrl" | "pathsBasePath">;
 
 /**
  * Path aliases of the packages of a monorepo. A scan reads one tsconfig, the one nearest the scanned directory, but each
@@ -55,16 +59,49 @@ export class NestedAliases {
   }
 
   private read(config: string): ts.CompilerOptions | null {
+    const own = this.aliasesOf(config) ?? this.referencedAliases(config);
+    return own ? { ...this.base, ...own } : null;
+  }
+
+  private aliasesOf(config: string): Aliases | undefined {
     try {
       const fileSystem = new BoundedFileSystem(this.bound);
       const own = new Project({ fileSystem, tsConfigFilePath: config, skipAddingFilesFromTsConfig: true }).getCompilerOptions();
-      if (!own.paths && own.baseUrl === undefined) return null;
-      return { ...this.base, paths: own.paths, baseUrl: own.baseUrl, pathsBasePath: own.pathsBasePath };
+      if (!own.paths && own.baseUrl === undefined) return undefined;
+      return { paths: own.paths, baseUrl: own.baseUrl, pathsBasePath: own.pathsBasePath };
     } catch {
       // an unreadable tsconfig adds nothing: the scan's options still resolve relative imports
-      return null;
+      return undefined;
     }
   }
+
+  /**
+   * A solution config (`{ "files": [], "references": [{ "path": "./tsconfig.app.json" }] }`, Vite's layout): the alias
+   * map its referenced configs agree on, none when two differ.
+   */
+  private referencedAliases(config: string): Aliases | undefined {
+    const found: Aliases[] = [];
+    for (const ref of referencesOf(config, this.bound).slice(0, MAX_REFERENCES)) {
+      const a = this.aliasesOf(ref);
+      if (a) found.push(a);
+    }
+    const first = found[0];
+    const key = (a: Aliases): string => JSON.stringify([a.paths, a.baseUrl, a.pathsBasePath]);
+    return first && found.every((a) => key(a) === key(first)) ? first : undefined;
+  }
+}
+
+/** The configs a tsconfig's `references` name (a directory stands for its tsconfig.json), inside `bound`. */
+function referencesOf(config: string, bound: string): string[] {
+  const text = readConfigFile(config, bound);
+  const json = text === undefined ? undefined : (ts.parseConfigFileTextToJson(config, text).config as { references?: { path?: unknown }[] } | undefined);
+  const refs = Array.isArray(json?.references) ? json.references : [];
+  return refs.flatMap((r) => {
+    if (typeof r?.path !== "string") return [];
+    const p = path.resolve(path.dirname(config), r.path);
+    const file = p.endsWith(".json") ? p : path.join(p, "tsconfig.json");
+    return isWithin(bound, file) && isConfigFile(file) ? [file] : [];
+  });
 }
 
 function isWithin(root: string, p: string): boolean {
