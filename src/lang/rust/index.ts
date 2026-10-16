@@ -4,7 +4,7 @@ import { irLanguage } from "../ir/scan.js";
 import clients from "./clients.json" with { type: "json" };
 import constants from "./constants.json" with { type: "json" };
 import { linkRust } from "./link.js";
-import { lowerRust } from "./lower.js";
+import { lowerRust, rustTestCode } from "./lower.js";
 import { cargoManifests, normalizeCrate } from "./manifests.js";
 import { repairRust } from "./repair.js";
 import { detectRustRequest } from "./requests.js";
@@ -35,6 +35,7 @@ export const rustLanguage: IrLanguage = {
   repair: repairRust,
   excludes: RUST_EXCLUDES,
   lower: lowerRust,
+  testCode: rustTestCode,
   // an `impl` of a type declared in another module, and struct literals giving a type's fields their values
   link: linkRust,
   moduleVarsVisible: true,
