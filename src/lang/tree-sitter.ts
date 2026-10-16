@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Language, Parser, type Node, type Tree } from "web-tree-sitter";
-import { GRAMMARS } from "./grammars.js";
+import { BUILT_GRAMMARS, GRAMMARS } from "./grammars.js";
 
 export type { Node as SyntaxNode, Parser, Tree } from "web-tree-sitter";
 
@@ -12,8 +12,9 @@ const grammars = new Map<string, Promise<Language>>();
 
 /**
  * Grammar `.wasm` files: copied next to the bundle by the build (`dist/grammars/`), else read from the grammar's dev
- * dependency (tests, `pnpm dev`). The grammar packages are never runtime dependencies: they build native bindings on
- * install, and only their WebAssembly is used.
+ * dependency (tests, `pnpm dev`), or from the source tree for a grammar built and committed (`BUILT_GRAMMARS`). The
+ * grammar packages are never runtime dependencies: they build native bindings on install, and only their WebAssembly
+ * is used.
  */
 function grammarPath(name: string): string {
   const file = `tree-sitter-${name}.wasm`;
@@ -21,6 +22,8 @@ function grammarPath(name: string): string {
   for (const dir of [path.join(here, "grammars"), path.join(here, "..", "grammars")]) {
     if (existsSync(path.join(dir, file))) return path.join(dir, file);
   }
+  const built = BUILT_GRAMMARS[name];
+  if (built) return path.join(here, built);
   return createRequire(import.meta.url).resolve(`${GRAMMARS[name] ?? `tree-sitter-${name}`}/${file}`);
 }
 

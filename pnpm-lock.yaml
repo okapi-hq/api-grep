@@ -91,6 +91,9 @@ importers:
       tree-sitter-bash:
         specifier: 0.25.1
         version: 0.25.1
+      tree-sitter-cli:
+        specifier: 0.27.0
+        version: 0.27.0
       tree-sitter-go:
         specifier: 0.25.0
         version: 0.25.0
@@ -1675,6 +1678,11 @@ packages:
       tree-sitter:
         optional: true
 
+  tree-sitter-cli@0.27.0:
+    resolution: {integrity: sha512-E42kR0og1mFlZBxPj7K4fBXCTjxPTGe19U9RXGWNq0FQKzXOxIp8bhCYFMKhddiVZUsJwW35MYGU9Q1oVYtpbA==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+
   tree-sitter-go@0.25.0:
     resolution: {integrity: sha512-APBc/Dq3xz/e35Xpkhb1blu5UgW+2E3RyGWawZSCNcbGwa7jhSQPS8KsUupuzBla8PCo8+lz9W/JDJjmfRa2tw==}
     peerDependencies:
@@ -3241,6 +3249,8 @@ snapshots:
     dependencies:
       node-addon-api: 8.9.2
       node-gyp-build: 4.8.4
+
+  tree-sitter-cli@0.27.0: {}
 
   tree-sitter-go@0.25.0:
     dependencies:

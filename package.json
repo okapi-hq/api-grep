@@ -70,6 +70,7 @@
     "gen:stripe-ports": "tsx scripts/port-stripe.ts",
     "gen:telegram": "tsx scripts/gen-telegram.ts",
     "gen:support": "tsx scripts/gen-support.ts",
+    "gen:dart-grammar": "tsx scripts/gen-dart-grammar.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -100,6 +101,7 @@
     "openapi-types": "^12.1.3",
     "stripe": "^22.6.1",
     "tree-sitter-bash": "0.25.1",
+    "tree-sitter-cli": "0.27.0",
     "tree-sitter-go": "0.25.0",
     "tree-sitter-java": "0.23.5",
     "tree-sitter-php": "0.24.2",

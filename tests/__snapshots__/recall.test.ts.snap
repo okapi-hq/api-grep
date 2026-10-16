@@ -22,6 +22,43 @@ exports[`regression fixtures > components 1`] = `
 ]
 `;
 
+exports[`regression fixtures > dart/dio 1`] = `
+[
+  "api_client.dart:15 api.parcelhub.example GET /v1/parcels/{code}",
+  "api_client.dart:17 api.parcelhub.example POST /v1/parcels",
+  "api_client.dart:20 api.parcelhub.example PATCH /v1/parcels/{code}",
+  "api_client.dart:27 api.parcelhub.example DELETE /v1/parcels/{code}",
+  "courier_service.dart:23 couriers.parcelhub.example GET /api/couriers",
+  "courier_service.dart:26 couriers.parcelhub.example POST /api/assignments",
+  "locators.dart:15 depots.parcelhub.example GET /api/depots",
+  "locators.dart:27 routes.parcelhub.example POST /optimize",
+  "uploads.dart:7 files.parcelhub.example POST /upload",
+  "uploads.dart:12 status.parcelhub.example HEAD /health",
+]
+`;
+
+exports[`regression fixtures > dart/http 1`] = `
+[
+  "auth.dart:9 api.tideplanner.example POST /v2/auth/sign-in",
+  "auth.dart:19 api.tideplanner.example POST /v2/auth/register",
+  "auth.dart:26 api.tideplanner.example GET /v2/me",
+  "chat.dart:11 openai POST /v1/chat/completions",
+  "logbook_store.dart:15 supabase GET /rest/v1/logbook_entries",
+  "logbook_store.dart:19 supabase POST /rest/v1/logbook_entries",
+  "logbook_store.dart:23 supabase POST /auth/v1/token",
+  "logbook_store.dart:27 supabase POST /storage/v1/object/logbook-photos/{path}",
+  "logbook_store.dart:30 supabase POST /rest/v1/rpc/tide_stats",
+  "uploads.dart:8 api.tideplanner.example POST /v2/logbooks",
+  "uploads.dart:17 api.tideplanner.example PUT /v2/incidents",
+  "weather.dart:7 marine.example-weather.org GET /v1/forecast",
+  "weather.dart:11 charts.tideplanner.example GET /{path}",
+  "weather.dart:13 charts.tideplanner.example GET /stations (wrapper:ChartsApi._get)",
+  "weather.dart:15 charts.tideplanner.example GET /stations/{id} (wrapper:ChartsApi._get)",
+]
+`;
+
+exports[`regression fixtures > dart/negative 1`] = `[]`;
+
 exports[`regression fixtures > go/negative 1`] = `[]`;
 
 exports[`regression fixtures > go/nethttp 1`] = `

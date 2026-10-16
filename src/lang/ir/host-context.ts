@@ -75,6 +75,16 @@ const SHAPES: Partial<Record<Language, Shapes>> = {
     assigns: ["let_declaration", "const_item", "static_item"],
     boundaries: ["function_item", "closure_expression", "impl_item", "mod_item", "source_file", "block"],
   },
+  // a call is a primary and sibling selectors, with no node of its own: keys and variables only
+  dart: {
+    calls: [],
+    args: [],
+    pairs: ["pair"],
+    containers: ["set_or_map_literal"],
+    through: ["argument", "parenthesized_expression", "list_literal", "if_null_expression", "conditional_expression"],
+    assigns: ["initialized_variable_definition"],
+    boundaries: ["function_body", "function_expression_body", "class_body", "program", "block"],
+  },
 };
 
 const MAX_DEPTH = 12;

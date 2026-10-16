@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { dartLanguage } from "../../src/lang/dart/index.js";
+import { normalizePub } from "../../src/lang/dart/manifests.js";
 import { goLanguage } from "../../src/lang/go/index.js";
 import { normalizeGoModule } from "../../src/lang/go/manifests.js";
 import { rustLanguage } from "../../src/lang/rust/index.js";
@@ -14,9 +16,9 @@ import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
 const SOURCE_RE = /^(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|(?:arg|kw)(?:\|\w+)*|model)$/;
 
-const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule, cargo: normalizeCrate };
+const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule, cargo: normalizeCrate, pub: normalizePub };
 
-function checkRegistry(entries: IrRegistryEntry[], ecosystem: "pypi" | "composer" | "maven" | "go" | "cargo"): void {
+function checkRegistry(entries: IrRegistryEntry[], ecosystem: keyof typeof NORMALIZE): void {
   const ids = new Set(PROVIDERS.map((p) => p.id));
   const normalize = NORMALIZE[ecosystem];
   const known = new Set([...sdkPackages(ecosystem).keys()].map(normalize));
@@ -68,6 +70,14 @@ describe("tree-sitter language registries", () => {
     checkRegistry(rustLanguage.registry, "cargo");
     for (const e of rustLanguage.registry) for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*(?:\.[A-Z]\w*)?$/);
     for (const pkg of sdkPackages("cargo").keys()) expect(pkg, pkg).toMatch(/^[a-z][a-z0-9-]*$/);
+  });
+});
+
+describe("dart registries", () => {
+  it("dart: providers exist, packages are pub.dev names, imports are a package and its classes", () => {
+    checkRegistry(dartLanguage.registry, "pub");
+    for (const e of dartLanguage.registry) for (const i of e.imports) expect(i, e.package).toMatch(/^[a-z][a-z0-9_]*(?:\.[A-Z]\w*)?$/);
+    for (const pkg of sdkPackages("pub").keys()) expect(pkg, pkg).toMatch(/^[a-z][a-z0-9_]*$/);
   });
 
   it("jvm: imports are classes or packages, setter rules name packages of the SDK", () => {

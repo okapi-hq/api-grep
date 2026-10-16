@@ -283,6 +283,41 @@ dev and build dependencies aside), so `coverage.sdks` lists the crates a crate d
 `target/`, `vendor/`, `tests/`, `benches/`, `build.rs`, `tests.rs` / `*_tests.rs` / `*_test.rs`, `#[cfg(test)]`
 modules (inline, or the file a `#[cfg(test)] mod x;` declares) and `#[test]` functions are out of scope.
 
+## Dart
+
+Dart files (Flutter apps and packages) are read through tree-sitter into the shared engine. A library's name is its
+package's name (`name:` of the nearest `pubspec.yaml`) and its path under `lib/` (`lib/services/api.dart` is
+`<package>.services.api`, which `package:<package>/services/api.dart` names); relative imports name the file they point
+to. An import with a prefix (`as http`) makes the prefix a name of the file; one without makes every name the library
+exports a name of the file: its top-level declarations, its parts' (`part` / `part of`) and those of the libraries it
+`export`s, `show` and `hide` included. Inside a class, a bare name that is a member reads as `this.name`.
+
+| client | patterns |
+|---|---|
+| dart-http (package:http) | `http.get(uri, headers: h)`, `post` / `put` / `patch` / `delete` with `body:` (a `Map` is a form, a string is read as JSON, a form or raw text, `jsonEncode(map)` / `json.encode(map)` is JSON), `head`, `read`, `readBytes`; the same without a prefix (`import 'package:http/http.dart';`), and a `Client()` / `IOClient(...)` / `RetryClient(...)`'s methods; `http.Request('PUT', uri)` and `http.MultipartRequest('POST', uri)` reported where they are built, with what the function then sets on them (`request.headers['k'] = v`, `headers.addAll(map)`, `body`, `bodyFields`, `fields['k'] = v`, `files.add(MultipartFile.fromPath('file', p))`) |
+| dio | a `Dio` instance's `get` / `post` / `put` / `patch` / `delete` / `head` / `download`, their `*Uri` forms and `request(path, options: Options(method: m))`; `data:` (JSON, `FormData.fromMap(map)` multipart), `queryParameters:`, `options: Options(headers: h)`; the instance's `Dio(BaseOptions(baseUrl: u, headers: h))`, and what the class or function sets on it after building it: `dio.options.baseUrl = u`, `dio.options.headers['k'] = v`, `dio.options = BaseOptions(...)`, and the headers its interceptors add (`InterceptorsWrapper(onRequest: (options, handler) { options.headers['k'] = v; })` or an `Interceptor` class's `onRequest`, listed in `clientParts`, optional when set in a branch) |
+
+SDK calls are detected through the Dart registries (`src/lang/dart/registry/`): supabase_flutter and supabase
+(`Supabase.instance.client`, a `SupabaseClient` field or parameter, `SupabaseClient(url, key)`; `from('t').select()` /
+`insert` / `update` / `upsert` / `delete`, `rpc('fn', params: p)`, `auth.signInWithPassword(email:, password:)` and the
+other auth calls, `storage.from('bucket').upload(...)`, `functions.invoke('fn', body: b)`; the base URL is the `url:` of
+the project's `Supabase.initialize(...)`) ([sdk-support.md](sdk-support.md)).
+
+Values are resolved through string literals (interpolation `$x` / `${a.b}`, raw and multi-line strings, adjacent
+strings, which Dart concatenates), `+`, `??`, conditionals, `const` and `final` values (top level, `static` members of
+classes, getters returning a value: `static String get baseUrl => '$host/api'`), constructors' `this.x` parameters and
+initializer lists, `Uri.parse(s)`, `Uri.https(host, path, query)` / `Uri.http(...)` / `Uri(scheme:, host:, path:,
+queryParameters:)` and `uri.replace(queryParameters: q)` (the query written into the URL), environment reads
+(`String.fromEnvironment('X', defaultValue: 'd')`, flutter_dotenv's `dotenv.env['X']` and `dotenv.get('X', fallback:
+'d')`, `Platform.environment['X']`), a project helper returning one map (`headers: await _headers()`), function
+parameters (their callers' values, #39), and the values a Dart app hands its objects: a constructor's parameter given
+at the class's one construction in the project, a Riverpod provider read (`ref.watch(dioProvider)` is what
+`Provider((ref) => Dio(...))` returns) and a get_it lookup (`getIt<Dio>()` is what the one
+`registerLazySingleton<Dio>(() => Dio(...))` builds). `pubspec.yaml` is read (`dependencies`, with versions; dev
+dependencies and overrides aside), so `coverage.sdks` lists the packages an app depends on (`ecosystem: "pub"`).
+`test/`, `integration_test/`, `test_driver/`, `*_test.dart`, `.dart_tool/` and generated code (`*.g.dart`,
+`*.freezed.dart`, `*.mocks.dart`, `*.gr.dart`, `*.config.dart`, plugin registrants) are out of scope.
+
 ## How a call is resolved
 
 The pipeline is `detect → resolve → normalize → validate → emit`. Detection and resolution
@@ -420,6 +455,11 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   crate but its code name is not matched. async-openai's `AzureConfig` deployment paths, other Anthropic and Gemini
   crates (none dominates: listed in `coverage.sdks` only) and setters chained after a teloxide method
   (`.parse_mode(...)`) are not read; path ids from the gateway (serenity's `channel_id`) stay placeholders.
+- Dart: dart:io's `HttpClient`, `GetConnect`, Chopper and retrofit.dart services (their generated `*.g.dart` code is
+  out of scope) are not read; a Dio instance configured outside its class or function (passed in and changed by the
+  caller) keeps the options of its construction; a constructor parameter is followed only when the project builds the
+  class once; extension methods and enhanced enums' fields (`Env.prod.baseUrl`) are not followed
+  ([languages.md](languages.md#dart)).
 - HTML: scripts of other template formats (`.ejs`, `.hbs`), the templates of Vue, Svelte and Astro components, and
   JavaScript in event-handler attributes (`onclick="fetch(...)"`) are not read; classic scripts of one page share
   globals, scripts of different pages do not.

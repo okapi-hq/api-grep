@@ -16,6 +16,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Go | supported: `net/http` (and go-retryablehttp, fhttp), Resty, SDK registries | tree-sitter + shared engine | Go modules | `go.mod` |
 | Shell | supported: curl, wget and HTTPie command lines | tree-sitter (bash grammar), read directly | none | none |
 | Rust | supported: reqwest, ureq, awc, surf, isahc, SDK registries | tree-sitter + shared engine | crates.io (Cargo) | `Cargo.toml` (workspaces too) |
+| Dart | supported: package:http, Dio, supabase_flutter | tree-sitter (a grammar built from source, committed) + shared engine | pub.dev | `pubspec.yaml` |
 
 ## Goals
 
@@ -23,7 +24,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
   `api-grep scan` reads every supported language it finds (or the ones given with `--language`) and writes one report.
 - **Say where each call comes from.** Every call carries `location.language`; `stats.byLanguage` counts calls per
   language, `diagnostics.languages` counts files seen and scanned per language, and each `coverage.sdks` row names its
-  `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`, `cargo`), so the same package name in two ecosystems (`openai`) is two rows.
+  `ecosystem` (`npm`, `pypi`, `composer`, `maven`, `go`, `cargo`, `pub`), so the same package name in two ecosystems (`openai`) is two rows.
 - **Same report, same rules.** A call found in Python is described exactly like one found in TypeScript: the same
   `Call` schema, provider table, example requests, curl output, secret redaction, diagnostics and SDK coverage. Only detection and resolution are language specific.
 - **SDKs differ per language.** Each language has its own registries, keyed by the package name its ecosystem uses
@@ -1070,6 +1071,83 @@ reads with defaults, constants, struct fields, `Lazy` statics), #37 (does not ap
   dominates: `anthropic-sdk`, `misanthropy`, `clust`, `google-generative-ai-rs`, `gemini-rs` are listed in
   `coverage.sdks` only), rig and genai (routing by model), octocrab and slack-morphism have no registry yet.
 
+## Dart
+
+**Detected:** package:http (`http.get` / `post` / `put` / `patch` / `delete` / `head` / `read`, prefixed or not, a
+`Client`'s methods; `http.Request` and `http.MultipartRequest` reported where they are built, with the headers,
+body, fields and files the function then sets on them: `src/lang/dart/requests.ts`), Dio (an instance's verb, `*Uri`
+and `request` calls with `data:`, `queryParameters:` and `options: Options(...)`, the `BaseOptions` of its
+construction, and the options and interceptors set on it afterwards: `dio.ts`), and supabase_flutter / supabase
+(`registry/supabase-flutter.json`: tables, rpc, auth, storage, functions; the base URL of `Supabase.initialize(url:
+...)`). Raw HTTP calls to any provider's host (OpenAI, Gemini, payment APIs) are found through those clients.
+
+**Grammar:** the npm `tree-sitter-dart` release (1.0.0, 2023) is built for an older tree-sitter and does not load in
+web-tree-sitter 0.27, so the grammar ([UserNobody14/tree-sitter-dart](https://github.com/UserNobody14/tree-sitter-dart),
+MIT) is built from its source at a pinned commit by `pnpm gen:dart-grammar` (`scripts/gen-dart-grammar.ts`: a shallow
+fetch of the commit, then `tree-sitter build --wasm` with the `tree-sitter-cli` dev dependency, which pins the wasi-sdk
+and binaryen it compiles with, so the same commit gives the same bytes; no Docker or emscripten needed). The result,
+`src/lang/dart/tree-sitter-dart.wasm`, and the grammar's license are committed; `BUILT_GRAMMARS` in
+`src/lang/grammars.ts` names it, the build copies it to `dist/grammars/` with the others, and from source it is read
+where it is. To move to a newer grammar, change `DART_GRAMMAR_COMMIT` in the script and run it.
+
+**Lowering:** the grammar writes a postfix chain flat: `a.b(c)[d]` is the primary `a` followed by sibling `selector`
+nodes, and a cascade (`a..b()..c = v`) by `cascade_section` siblings. `lower-expr.ts` reads a container's named
+children as runs (a primary and the selectors after it) and folds each into the IR (`attr`, `call`, `index`); a
+cascade's sections are calls and member sets on the receiver, its value the receiver. Top-level declarations are
+siblings too (`function_signature` then `function_body`, a type then a declaration list), read in order
+(`lower.ts`). Strings keep their text between the quote, escape and substitution nodes (`literals.ts`: raw, multi-line
+and adjacent strings). Classes (`lower-class.ts`): the unnamed constructor is `<init>` (its `this.x` parameters and
+initializer list set fields; field initializers run there too), a named constructor or factory a static method
+returning an instance, a getter a method read as a property whose return is also a field value; `extends` and `with`
+give the bases. A bare name that is a member of the class reads as `this.name`. Environment reads and `Uri.parse` are
+values at lowering (`calls.ts`); the language's `resolveCall` (`resolve.ts`) reads Dio's `BaseOptions(...)` /
+`Options(...)` as dicts, `Uri.https(host, path, query)` and `Uri(...)` as the URL they make (the query map written into
+it), and a project helper returning one map. The `injection` hook (`inject.ts`) gives a constructor's parameter the
+argument of the class's one construction in the project, a Riverpod read (`ref.watch(p)`) what `Provider((ref) =>
+...)` returns, and a get_it lookup (`getIt<T>()`) what the one `register*<T>(...)` of that type builds.
+
+**Libraries:** a library's name is its package's (`name:` of the nearest `pubspec.yaml`) and its path under `lib/`, as
+`package:` imports name it; a file outside `lib/` keeps its directory, marked (`<package>.@bin.tool`); relative
+imports name the file they point to. Imports with a prefix are names of the file. Imports without one, exports and
+parts are resolved by the `link` hook once every file is lowered (`link.ts`): a library exports its declarations, its
+parts' and what it `export`s (`show` / `hide` applied), and each such name of a project library becomes an explicit
+import of the importing file, so a lookup never searches every import. A package outside the project is named by its
+package (`package:dio/dio.dart` is `dio`): its classes are reached through `wildcardTypes` (`dio.Dio`, `http.Client`)
+or a registry's imports (`supabase_flutter.Supabase`).
+
+**Manifests:** `pubspec.yaml`'s `dependencies` with their versions (a map's `version:`; `sdk:`, `path:` and `git:`
+dependencies have none), dev dependencies and overrides aside. Package names are lower case with `_`
+(`normalizePub`), and a package's import root is its name. `providers.json` lists pub packages for Supabase, Firebase,
+Stripe, OpenAI, Anthropic, Gemini, Sentry, RevenueCat, PostHog, Mixpanel, Google Maps, Mapbox and Algolia, so
+`coverage.sdks` lists them (`ecosystem: "pub"`), unsupported but for supabase_flutter.
+
+**Out of scope by default:** `test/`, `integration_test/`, `test_driver/`, `*_test.dart`, `.dart_tool/`,
+`.pub-cache/`, `.fvm/` and generated code (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `*.gr.dart`, `*.config.dart`,
+`generated_plugin_registrant.dart`).
+
+**How the open issues apply:** #3 (per-file parse and internal errors), #4 (the same diagnostics as the other
+tree-sitter languages; parameters are typed), #5 (`tests/fixtures/dart/{http,dio,negative}/expected.json` in the
+recall check; a package with `lib/`, a barrel library, parts, a second package and out-of-scope files checked by
+`tests/dart.test.ts`), #6 and #7 (pub packages per provider in `providers.json`, `ecosystem: "pub"`), #8 (environment
+reads with defaults, constants, static members, getters), #37 (does not apply: parameters are typed), #38 (`m['k'] = v`
+on a local map), #39 (callers' values).
+
+**Limitations:**
+
+- dart:io's `HttpClient` (`getUrl` / `postUrl`, then `request.close()`), `GetConnect`, Chopper services and
+  retrofit.dart's annotated interfaces are not read (their generated `*.g.dart` code is out of scope).
+- A Dio instance's options are read from the class or function that holds it: options or interceptors set by a caller
+  on an instance passed in, or through a getter of another object, are not.
+- A constructor parameter is followed only when the project builds the class once; a function's parameters read
+  their callers' literal values only (#39), as in the other tree-sitter languages.
+- Extension methods (`extension X on Dio`), enhanced enums' fields (`Env.prod.baseUrl`), records, patterns and
+  `switch` statements' bodies as values are not followed; a `switch` expression reads as a host table, like a Rust
+  `match`.
+- Riverpod code generation (`@riverpod` functions, whose providers are in `*.g.dart`) and injectable's generated
+  registrations are not read; a get_it registration is matched by its type argument or the class it builds.
+- Firebase, Stripe and the other pub SDKs listed in `providers.json` have no registry yet: `coverage.sdks` lists them
+  as `unsupported`.
+
 ## JavaScript and HTML
 
 **Detected:** everything the TypeScript front end detects (fetch, axios, got, ky, node http, SDK registries, the AI
@@ -1762,7 +1840,8 @@ pass.
 ## Adding a language
 
 1. Add the tree-sitter grammar as a dev dependency and to `GRAMMARS` in `src/lang/grammars.ts` (only its `.wasm` ships;
-   the build copies it next to the bundle).
+   the build copies it next to the bundle). A grammar with no npm release that loads in web-tree-sitter 0.27 is built
+   from its source and committed, listed in `BUILT_GRAMMARS` (Dart: `pnpm gen:dart-grammar`).
 2. Create `src/lang/<language>/`: the lowering into `src/lang/ir/model.ts`, `clients.json`, `registry/*.json`,
    manifests, and an `IrLanguage` in `index.ts`; register `irLanguage(...)` in `src/lang/index.ts`.
 3. Add the language id to `LanguageSchema` (and its extensions to `src/language.ts`), its HTTP clients to
@@ -1780,11 +1859,11 @@ command lines rather than expressions (shell) reads its syntax tree directly int
 `src/assemble.ts`, without the IR (`src/lang/shell/`).
 
 Measured on 2026-10-16 over the repositories Okapi scans (primary GitHub language of each living repository, latest
-scan): Dart 29 repositories (26 with no call found, since Dart is not read), Jupyter Notebook 9 (7 with none; notebooks
-are read since then), C# 5, Ruby 3, PowerShell 3, Swift 2. Vue, Svelte and Astro components are read since then too.
+scan): Dart 29 repositories (26 with no call found; Dart is read since then, 20 of them with calls), Jupyter Notebook 9
+(7 with none; notebooks are read since then), C# 5, Ruby 3, PowerShell 3, Swift 2. Vue, Svelte and Astro components
+are read since then too.
 
 | next candidates | ecosystem | notes |
 |---|---|---|
-| Dart | pub (`pubspec.yaml`) | Flutter apps: `package:http` (14 of the 29 repositories), Dio (6), Firebase, supabase_flutter; the npm `tree-sitter-dart` wasm is too old for web-tree-sitter 0.27 |
 | Ruby | RubyGems (`Gemfile`) | `Net::HTTP`, `Faraday`, `HTTParty`; SDKs are mostly module-level (`Stripe::Customer.create`) |
 | C# | NuGet | `HttpClient`, RestSharp, typed SDK clients |

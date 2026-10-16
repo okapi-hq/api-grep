@@ -1,0 +1,5 @@
+name: notes_shared
+publish_to: none
+
+environment:
+  sdk: ^3.5.0

@@ -1,0 +1,45 @@
+{
+  "$comment": "Dart HTTP clients (`ClientSpec` in src/lang/ir/language.ts; `imports` are pub package names, which is how a `package:` import outside the project is named). package:http: its verb functions (`http.get(uri, headers: h)`, `http.post(uri, body: b)`, a Map body being a form) and a Client's methods. Dio: an instance's verb, `*Uri` and `request` calls; the base URL and headers of `Dio(BaseOptions(...))` and the `options: Options(...)` of a call (`nested`) are read as dicts (resolve.ts).",
+  "clients": [
+    {
+      "client": "dart-http",
+      "imports": ["http"],
+      "instances": { "names": ["Client", "IOClient", "BrowserClient", "RetryClient"] },
+      "functions": {
+        "get": { "method": "GET" },
+        "head": { "method": "HEAD" },
+        "read": { "method": "GET" },
+        "readBytes": { "method": "GET" },
+        "delete": { "method": "DELETE" },
+        "post": { "method": "POST" },
+        "put": { "method": "PUT" },
+        "patch": { "method": "PATCH" }
+      },
+      "keys": { "headers": "headers", "body": "body:form" }
+    },
+    {
+      "client": "dio",
+      "imports": ["dio"],
+      "instances": { "names": ["Dio", "DioForNative", "DioForBrowser"], "optionsArg": 0 },
+      "nested": ["options"],
+      "functions": {
+        "get": { "method": "GET" },
+        "head": { "method": "HEAD" },
+        "delete": { "method": "DELETE" },
+        "post": { "method": "POST" },
+        "put": { "method": "PUT" },
+        "patch": { "method": "PATCH" },
+        "download": { "method": "GET" },
+        "getUri": { "method": "GET" },
+        "headUri": { "method": "HEAD" },
+        "deleteUri": { "method": "DELETE" },
+        "postUri": { "method": "POST" },
+        "putUri": { "method": "PUT" },
+        "patchUri": { "method": "PATCH" },
+        "request": {},
+        "requestUri": {}
+      },
+      "keys": { "baseUrl": "baseUrl", "method": "method", "data": "body:json", "queryParameters": "query", "headers": "headers" }
+    }
+  ]
+}

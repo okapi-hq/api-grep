@@ -1,0 +1,17 @@
+name: field_notes
+description: An invented Flutter app laid out as a package, for the api-grep fixtures.
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ">=1.1.0 <2.0.0"
+  notes_shared:
+    path: packages/shared
+  supabase_flutter: ^2.8.0
+
+dev_dependencies:
+  build_runner: ^2.4.0

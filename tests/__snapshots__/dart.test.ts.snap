@@ -1,0 +1,1747 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dart: Dio > reads BaseOptions, per-call Options, FormData, and the options and interceptors set after the instance is built 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dio",
+      "dynamic": [
+        {
+          "name": "code",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {
+            "lang": "en",
+          },
+          "url": "https://api.parcelhub.example/v1/parcels/VAY6N3?lang=en",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.parcelhub.example",
+      "hostKind": "literal",
+      "id": "0fc1b5811cc2",
+      "location": {
+        "col": 51,
+        "file": "api_client.dart",
+        "language": "dart",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/parcels/{code}",
+      "provider": "api.parcelhub.example",
+      "query": [
+        "lang",
+      ],
+      "queryShape": {
+        "properties": {
+          "lang": {
+            "enum": [
+              "en",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "lang",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://api.parcelhub.example/v1/parcels/{code}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "dynamicKeys": true,
+        "properties": {},
+        "required": [],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "type",
+      "client": "dio",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {},
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.parcelhub.example/v1/parcels",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.parcelhub.example",
+      "hostKind": "literal",
+      "id": "af267884efd4",
+      "location": {
+        "col": 68,
+        "file": "api_client.dart",
+        "language": "dart",
+        "line": 17,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/parcels",
+      "provider": "api.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.parcelhub.example/v1/parcels",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "reason": {
+            "hint": "reason",
+            "type": "string",
+          },
+          "status": {
+            "enum": [
+              "cancelled",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "status",
+          "reason",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dio",
+      "dynamic": [
+        {
+          "name": "code",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+        {
+          "name": "reason",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "reason": "Jasper horizon fable valley falcon walnut.",
+            "status": "cancelled",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+            "x-request-source": "app",
+          },
+          "method": "PATCH",
+          "query": {},
+          "url": "https://api.parcelhub.example/v1/parcels/QK8BFE",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+        "x-request-source": "app",
+      },
+      "headers": [
+        "x-request-source",
+        "authorization",
+        "accept",
+      ],
+      "host": "api.parcelhub.example",
+      "hostKind": "literal",
+      "id": "263b299fcdc6",
+      "location": {
+        "col": 11,
+        "file": "api_client.dart",
+        "language": "dart",
+        "line": 20,
+      },
+      "method": "PATCH",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/parcels/{code}",
+      "provider": "api.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.parcelhub.example/v1/parcels/{code}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dio",
+      "dynamic": [
+        {
+          "name": "code",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer <token>",
+          },
+          "method": "DELETE",
+          "query": {},
+          "url": "https://api.parcelhub.example/v1/parcels/0JRZG3",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+        "accept",
+      ],
+      "host": "api.parcelhub.example",
+      "hostKind": "literal",
+      "id": "ff55f29c6c3b",
+      "location": {
+        "col": 39,
+        "file": "api_client.dart",
+        "language": "dart",
+        "line": 27,
+      },
+      "method": "DELETE",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/parcels/{code}",
+      "provider": "api.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.parcelhub.example/v1/parcels/{code}",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dio",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "accept-language",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-device",
+          "where": "header",
+        },
+      ],
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "accept-language": "en",
+            "authorization": "Bearer <token>",
+            "x-device": "handheld",
+          },
+          "method": "GET",
+          "query": {
+            "active": "true",
+          },
+          "url": "https://couriers.parcelhub.example/api/couriers?active=true",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept-language": "en",
+        "authorization": null,
+        "x-device": "handheld",
+      },
+      "headers": [
+        "accept-language",
+        "authorization",
+        "x-device",
+      ],
+      "host": "couriers.parcelhub.example",
+      "hostKind": "literal",
+      "id": "b640145662be",
+      "location": {
+        "col": 43,
+        "file": "courier_service.dart",
+        "language": "dart",
+        "line": 23,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/couriers",
+      "provider": "couriers.parcelhub.example",
+      "query": [
+        "active",
+      ],
+      "queryShape": {
+        "properties": {
+          "active": {
+            "enum": [
+              true,
+            ],
+            "type": "boolean",
+          },
+        },
+        "required": [
+          "active",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://couriers.parcelhub.example/api/couriers",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "courier": {
+            "hint": "courier",
+            "type": "string",
+          },
+          "parcel": {
+            "hint": "parcel",
+            "type": "string",
+          },
+        },
+        "required": [
+          "parcel",
+          "courier",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dio",
+      "clientParts": [
+        {
+          "from": "default",
+          "name": "accept-language",
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "authorization",
+          "optional": true,
+          "where": "header",
+        },
+        {
+          "from": "interceptor",
+          "name": "x-device",
+          "where": "header",
+        },
+      ],
+      "dynamic": [
+        {
+          "name": "parcel",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "courier",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "courier": "nimbus inlet",
+            "parcel": "indigo quiet",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept-language": "en",
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+            "x-device": "handheld",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://couriers.parcelhub.example/api/assignments",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept-language": "en",
+        "authorization": null,
+        "x-device": "handheld",
+      },
+      "headers": [
+        "accept-language",
+        "authorization",
+        "x-device",
+      ],
+      "host": "couriers.parcelhub.example",
+      "hostKind": "literal",
+      "id": "65d079ab1e6a",
+      "location": {
+        "col": 12,
+        "file": "courier_service.dart",
+        "language": "dart",
+        "line": 26,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/assignments",
+      "provider": "couriers.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://couriers.parcelhub.example/api/assignments",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dio",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://depots.parcelhub.example/api/depots",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "depots.parcelhub.example",
+      "hostKind": "literal",
+      "id": "766b470b25a7",
+      "location": {
+        "col": 41,
+        "file": "locators.dart",
+        "language": "dart",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/api/depots",
+      "provider": "depots.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://depots.parcelhub.example/api/depots",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "stops": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "stops",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dio",
+      "dynamic": [
+        {
+          "name": "stops",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "stops": [
+              "grove onyx",
+            ],
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://routes.parcelhub.example/optimize",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "routes.parcelhub.example",
+      "hostKind": "literal",
+      "id": "0de22f935d29",
+      "location": {
+        "col": 9,
+        "file": "locators.dart",
+        "language": "dart",
+        "line": 27,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/optimize",
+      "provider": "routes.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://routes.parcelhub.example/optimize",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "file": {
+            "hint": "fromFile",
+            "origin": "call",
+            "type": "dynamic",
+          },
+          "kind": {
+            "enum": [
+              "label",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "file",
+          "kind",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "dio",
+      "dynamic": [
+        {
+          "name": "file",
+          "origin": "call",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "file": "harbor/compass.pdf",
+            "kind": "label",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://files.parcelhub.example/upload",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "files.parcelhub.example",
+      "hostKind": "literal",
+      "id": "5d1118d8690d",
+      "location": {
+        "col": 9,
+        "file": "uploads.dart",
+        "language": "dart",
+        "line": 7,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/upload",
+      "provider": "files.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://files.parcelhub.example/upload",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dio",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "HEAD",
+          "query": {},
+          "url": "https://status.parcelhub.example/health",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "status.parcelhub.example",
+      "hostKind": "literal",
+      "id": "91f1dc10449f",
+      "location": {
+        "col": 9,
+        "file": "uploads.dart",
+        "language": "dart",
+        "line": 12,
+      },
+      "method": "HEAD",
+      "optionsOpaque": false,
+      "pathTemplate": "/health",
+      "provider": "status.parcelhub.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://status.parcelhub.example/health",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 0,
+      "named": 0,
+      "unexplained": [],
+    },
+    "sdks": [
+      {
+        "calls": 0,
+        "declared": true,
+        "ecosystem": "pub",
+        "importSites": 0,
+        "imported": false,
+        "package": "firebase_core",
+        "provider": "firebase",
+        "status": "declared-not-imported",
+        "supported": false,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 4,
+    "filesSeen": 4,
+    "languages": {
+      "dart": {
+        "filesScanned": 4,
+        "filesSeen": 4,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.25.0",
+  "stats": {
+    "byClient": {
+      "dio": 10,
+    },
+    "byHostKind": {
+      "literal": 10,
+    },
+    "byLanguage": {
+      "dart": 10,
+    },
+    "byProvider": {
+      "api.parcelhub.example": 4,
+      "couriers.parcelhub.example": 2,
+      "depots.parcelhub.example": 1,
+      "files.parcelhub.example": 1,
+      "routes.parcelhub.example": 1,
+      "status.parcelhub.example": 1,
+    },
+    "callsFound": 10,
+    "durationMs": 0,
+    "filesScanned": 4,
+    "redacted": 0,
+    "withBodyShape": 5,
+    "withDynamic": 6,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;
+
+exports[`dart: package:http > reads verb functions, a Client's methods, request objects, Uri.https URLs, env reads and wrappers 1`] = `
+{
+  "$schema": "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json",
+  "calls": [
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "password": {
+            "hint": "password",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "password",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "kira.moreau@example.com",
+            "password": "<password>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.tideplanner.example/v2/auth/sign-in",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "accept": "application/json",
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+        "accept",
+      ],
+      "host": "api.tideplanner.example",
+      "hostKind": "const",
+      "id": "2e04ed60e9d1",
+      "location": {
+        "col": 28,
+        "file": "auth.dart",
+        "language": "dart",
+        "line": 9,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/auth/sign-in",
+      "provider": "api.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tideplanner.example/v2/auth/sign-in",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "name": {
+            "hint": "name",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "email",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "form",
+      "bodySource": "literal",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "name",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "nils.ekwall@example.com",
+            "name": "Harbor Umber",
+          },
+          "bodyEncoding": "form",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.tideplanner.example/v2/auth/register",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.tideplanner.example",
+      "hostKind": "const",
+      "id": "00a5b6274381",
+      "location": {
+        "col": 11,
+        "file": "auth.dart",
+        "language": "dart",
+        "line": 19,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/auth/register",
+      "provider": "api.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tideplanner.example/v2/auth/register",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dart-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://api.tideplanner.example/v2/me",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.tideplanner.example",
+      "hostKind": "const",
+      "id": "23247da76a9a",
+      "location": {
+        "col": 12,
+        "file": "auth.dart",
+        "language": "dart",
+        "line": 26,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/me",
+      "provider": "api.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tideplanner.example/v2/me",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "properties": {
+                "content": {
+                  "hint": "text",
+                  "type": "string",
+                },
+                "role": {
+                  "enum": [
+                    "user",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "role",
+                "content",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "gpt-4o-mini",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dart-http",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              {
+                "content": "Koala dune delta quill valley xenon.",
+                "role": "user",
+              },
+            ],
+            "model": "gpt-4o-mini",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+        "content-type": "application/json",
+      },
+      "headers": [
+        "authorization",
+        "content-type",
+      ],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "a584e72d6c50",
+      "location": {
+        "col": 21,
+        "file": "chat.dart",
+        "language": "dart",
+        "line": 11,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "gpt-4o-mini",
+        ],
+      },
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "authorization": "Bearer <token>",
+          },
+          "method": "GET",
+          "query": {},
+          "url": "https://tideplanner-demo.supabase.co/rest/v1/logbook_entries",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tideplanner-demo.supabase.co",
+      "hostKind": "literal",
+      "id": "9f24e50a5736",
+      "location": {
+        "col": 12,
+        "file": "logbook_store.dart",
+        "language": "dart",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/rest/v1/logbook_entries",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "from.select",
+        "package": "supabase_flutter",
+        "version": "^2.5.0",
+      },
+      "urlTemplate": "https://tideplanner-demo.supabase.co/rest/v1/logbook_entries",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "harbor": {
+            "hint": "harbor",
+            "type": "string",
+          },
+          "note": {
+            "hint": "note",
+            "type": "string",
+          },
+        },
+        "required": [
+          "harbor",
+          "note",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "harbor",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "note",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "harbor": "canyon ultra",
+            "note": "Harbor quartz inlet juniper linen koala.",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://tideplanner-demo.supabase.co/rest/v1/logbook_entries",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tideplanner-demo.supabase.co",
+      "hostKind": "literal",
+      "id": "7d9fb7a9405e",
+      "location": {
+        "col": 11,
+        "file": "logbook_store.dart",
+        "language": "dart",
+        "line": 19,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/rest/v1/logbook_entries",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "from.insert",
+        "package": "supabase_flutter",
+        "version": "^2.5.0",
+      },
+      "urlTemplate": "https://tideplanner-demo.supabase.co/rest/v1/logbook_entries",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "email": {
+            "hint": "email",
+            "type": "string",
+          },
+          "password": {
+            "hint": "password",
+            "type": "string",
+          },
+        },
+        "required": [
+          "email",
+          "password",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "email",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "password",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "email": "ada.moreau@example.com",
+            "password": "<password>",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {
+            "grant_type": "password",
+          },
+          "url": "https://tideplanner-demo.supabase.co/auth/v1/token?grant_type=password",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tideplanner-demo.supabase.co",
+      "hostKind": "literal",
+      "id": "c2049754b13e",
+      "location": {
+        "col": 11,
+        "file": "logbook_store.dart",
+        "language": "dart",
+        "line": 23,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/auth/v1/token",
+      "provider": "supabase",
+      "query": [
+        "grant_type",
+      ],
+      "queryShape": {
+        "properties": {
+          "grant_type": {
+            "enum": [
+              "password",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "grant_type",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "sdk": {
+        "chain": "auth.signInWithPassword",
+        "package": "supabase_flutter",
+        "version": "^2.5.0",
+      },
+      "urlTemplate": "https://tideplanner-demo.supabase.co/auth/v1/token?grant_type=password",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "items": {
+          "type": "unknown",
+        },
+        "type": "array",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "examples": [
+        {
+          "body": [
+            "Horizon quiet haven river beacon maple.",
+          ],
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://tideplanner-demo.supabase.co/storage/v1/object/logbook-photos/grove/xenon",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tideplanner-demo.supabase.co",
+      "hostKind": "literal",
+      "id": "963291fc8c97",
+      "location": {
+        "col": 11,
+        "file": "logbook_store.dart",
+        "language": "dart",
+        "line": 27,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/storage/v1/object/logbook-photos/{path}",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "storage.from.uploadBinary",
+        "package": "supabase_flutter",
+        "version": "^2.5.0",
+      },
+      "urlTemplate": "https://tideplanner-demo.supabase.co/storage/v1/object/logbook-photos/{path}",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "harbor_name": {
+            "hint": "harbor",
+            "type": "string",
+          },
+        },
+        "required": [
+          "harbor_name",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "harbor_name",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "harbor_name": "lantern glacier",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://tideplanner-demo.supabase.co/rest/v1/rpc/tide_stats",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "tideplanner-demo.supabase.co",
+      "hostKind": "literal",
+      "id": "50397e0a5331",
+      "location": {
+        "col": 47,
+        "file": "logbook_store.dart",
+        "language": "dart",
+        "line": 30,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/rest/v1/rpc/tide_stats",
+      "provider": "supabase",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "rpc",
+        "package": "supabase_flutter",
+        "version": "^2.5.0",
+      },
+      "urlTemplate": "https://tideplanner-demo.supabase.co/rest/v1/rpc/tide_stats",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "harbor": {
+            "hint": "harbor",
+            "type": "string",
+          },
+          "logbook": {
+            "origin": "unknown",
+            "type": "dynamic",
+          },
+        },
+        "required": [
+          "harbor",
+          "logbook",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "multipart",
+      "bodySource": "literal",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "harbor",
+          "origin": "param",
+          "where": "body",
+        },
+        {
+          "name": "logbook",
+          "origin": "unknown",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "harbor": "grove dune",
+            "logbook": "island xenon",
+          },
+          "bodyEncoding": "multipart",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "multipart/form-data",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.tideplanner.example/v2/logbooks",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "authorization": null,
+      },
+      "headers": [
+        "authorization",
+      ],
+      "host": "api.tideplanner.example",
+      "hostKind": "const",
+      "id": "610bf1fdde19",
+      "location": {
+        "col": 19,
+        "file": "uploads.dart",
+        "language": "dart",
+        "line": 8,
+      },
+      "method": "POST",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/logbooks",
+      "provider": "api.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tideplanner.example/v2/logbooks",
+    },
+    {
+      "authScheme": "none",
+      "body": {
+        "properties": {
+          "kind": {
+            "hint": "kind",
+            "type": "string",
+          },
+        },
+        "required": [
+          "kind",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "kind",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "kind": "haven timber",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "content-type": "application/json",
+          },
+          "method": "PUT",
+          "query": {},
+          "url": "https://api.tideplanner.example/v2/incidents",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "content-type": "application/json",
+      },
+      "headers": [
+        "content-type",
+      ],
+      "host": "api.tideplanner.example",
+      "hostKind": "const",
+      "id": "87d50a2d4eda",
+      "location": {
+        "col": 13,
+        "file": "uploads.dart",
+        "language": "dart",
+        "line": 17,
+      },
+      "method": "PUT",
+      "optionsOpaque": false,
+      "pathTemplate": "/v2/incidents",
+      "provider": "api.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "https://api.tideplanner.example/v2/incidents",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "harbor",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "query",
+        },
+        {
+          "name": "days",
+          "origin": "param",
+          "shape": {
+            "type": "integer",
+          },
+          "where": "query",
+        },
+      ],
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {
+            "user-agent": "tide-planner",
+          },
+          "method": "GET",
+          "query": {
+            "days": "454",
+            "harbor": "xenon velvet",
+          },
+          "url": "https://marine.example-weather.org/v1/forecast?harbor=xenon%20velvet&days=454",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {
+        "user-agent": "tide-planner",
+      },
+      "headers": [
+        "user-agent",
+      ],
+      "host": "marine.example-weather.org",
+      "hostKind": "const",
+      "id": "8315d163d206",
+      "location": {
+        "col": 10,
+        "file": "weather.dart",
+        "language": "dart",
+        "line": 7,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/forecast",
+      "provider": "marine.example-weather.org",
+      "query": [
+        "harbor",
+        "days",
+      ],
+      "queryShape": {
+        "properties": {
+          "days": {
+            "type": "integer",
+          },
+          "harbor": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "harbor",
+          "days",
+        ],
+        "type": "object",
+      },
+      "scheme": "https",
+      "urlTemplate": "https://marine.example-weather.org/v1/forecast?harbor={harbor}&days={days}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "path",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "envName": "CHARTS_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://charts.tideplanner.example/harbor/copper",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "charts.tideplanner.example",
+      "hostKind": "env",
+      "id": "44ac213cdd66",
+      "location": {
+        "col": 41,
+        "file": "weather.dart",
+        "language": "dart",
+        "line": 11,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/{path}",
+      "provider": "charts.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:CHARTS_URL}{path}",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dart-http",
+      "dynamic": [],
+      "envName": "CHARTS_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://charts.tideplanner.example/stations",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "charts.tideplanner.example",
+      "hostKind": "env",
+      "id": "a33ff5a4dece",
+      "location": {
+        "col": 34,
+        "file": "weather.dart",
+        "language": "dart",
+        "line": 13,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/stations",
+      "provider": "charts.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:CHARTS_URL}/stations",
+      "via": "wrapper:ChartsApi._get",
+    },
+    {
+      "authScheme": "none",
+      "bodyEncoding": "none",
+      "bodySource": "none",
+      "client": "dart-http",
+      "dynamic": [
+        {
+          "name": "id",
+          "origin": "param",
+          "shape": {
+            "type": "string",
+          },
+          "where": "path",
+        },
+      ],
+      "envName": "CHARTS_URL",
+      "examples": [
+        {
+          "bodyEncoding": "none",
+          "headers": {},
+          "method": "GET",
+          "query": {},
+          "url": "https://charts.tideplanner.example/stations/ft2k28bv",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "charts.tideplanner.example",
+      "hostKind": "env",
+      "id": "61e83914d8c7",
+      "location": {
+        "col": 42,
+        "file": "weather.dart",
+        "language": "dart",
+        "line": 15,
+      },
+      "method": "GET",
+      "optionsOpaque": false,
+      "pathTemplate": "/stations/{id}",
+      "provider": "charts.tideplanner.example",
+      "query": [],
+      "scheme": "https",
+      "urlTemplate": "{env:CHARTS_URL}/stations/{id}",
+      "via": "wrapper:ChartsApi._get",
+    },
+  ],
+  "coverage": {
+    "hosts": {
+      "explained": 2,
+      "named": 2,
+      "unexplained": [],
+    },
+    "sdks": [
+      {
+        "calls": 5,
+        "declared": true,
+        "ecosystem": "pub",
+        "importSites": 1,
+        "imported": true,
+        "package": "supabase_flutter",
+        "provider": "supabase",
+        "status": "ok",
+        "supported": true,
+      },
+    ],
+  },
+  "diagnostics": {
+    "complete": true,
+    "droppedCalls": [],
+    "filesScanned": 6,
+    "filesSeen": 6,
+    "languages": {
+      "dart": {
+        "filesScanned": 6,
+        "filesSeen": 6,
+      },
+    },
+    "skipped": [],
+    "skippedCounts": {},
+    "unfollowed": [],
+  },
+  "schemaVersion": "1.25.0",
+  "stats": {
+    "byClient": {
+      "dart-http": 10,
+      "sdk": 5,
+    },
+    "byHostKind": {
+      "const": 6,
+      "env": 3,
+      "literal": 6,
+    },
+    "byLanguage": {
+      "dart": 15,
+    },
+    "byProvider": {
+      "api.tideplanner.example": 5,
+      "charts.tideplanner.example": 3,
+      "marine.example-weather.org": 1,
+      "openai": 1,
+      "supabase": 5,
+    },
+    "callsFound": 15,
+    "durationMs": 0,
+    "filesScanned": 6,
+    "redacted": 0,
+    "withBodyShape": 9,
+    "withDynamic": 11,
+  },
+  "tool": "api-grep",
+  "version": "<version>",
+}
+`;

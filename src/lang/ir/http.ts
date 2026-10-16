@@ -35,7 +35,21 @@ function middleOf(spec: ClientSpec, middle: Seg[]): Shape | undefined {
 function optionsOf(spec: ClientSpec, seg: Seg, optionsArg: number | undefined, ctx: IrCtx): Options {
   if (!seg.call || !seg.fn) return { get: () => undefined, values: () => [], opaque: false };
   if (optionsArg !== undefined) return arrayOptions(argOf(seg, optionsArg), ctx);
-  return kwargOptions(seg.call, seg.fn, ctx);
+  return withNested(spec, kwargOptions(seg.call, seg.fn, ctx), ctx);
+}
+
+/** A call's options and those of the options it holds (`spec.nested`): its own first. */
+function withNested(spec: ClientSpec, opts: Options, ctx: IrCtx): Options {
+  const inner = (spec.nested ?? []).flatMap((k) => {
+    const v = opts.get(k);
+    return v ? [arrayOptions(v, ctx)] : [];
+  });
+  if (inner.length === 0) return opts;
+  return {
+    get: (k) => opts.get(k) ?? inner.map((o) => o.get(k)).find((v) => !!v),
+    values: () => [...opts.values(), ...inner.flatMap((o) => o.values())],
+    opaque: opts.opaque || inner.some((o) => o.opaque),
+  };
 }
 
 /** A client constructor's options: the first array from `optionsArg` on (`createForBaseUri($url, [...])`). */

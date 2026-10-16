@@ -1,5 +1,6 @@
 import { AI_SDK_PACKAGES } from "../src/detect/ai-sdk.js";
 import { defaultRegistry } from "../src/detect/registry/index.js";
+import { dartLanguage } from "../src/lang/dart/index.js";
 import { goLanguage } from "../src/lang/go/index.js";
 import type { IrLanguage } from "../src/lang/ir/language.js";
 import { kotlinLanguage } from "../src/lang/kotlin/index.js";
@@ -56,6 +57,7 @@ export const COLUMNS: Column[] = [
   irColumn("Kotlin and Java (Maven)", kotlinLanguage),
   irColumn("Go (modules)", goLanguage),
   irColumn("Rust (crates.io)", rustLanguage),
+  irColumn("Dart (pub.dev)", dartLanguage),
 ];
 
 function cell(col: Column, packages: string[] | undefined): string {
