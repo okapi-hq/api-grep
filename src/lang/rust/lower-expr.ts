@@ -99,7 +99,7 @@ function lowerMatch(n: SyntaxNode, st: RustState): Expr {
     if (v) values.push(v.type === "block" ? hooks!.block(v, st) : lowerExpr(v, st));
   }
   if (values.length === 0) return { k: "unknown", text: "match", pos: posOf(n) };
-  return values.reduceRight((acc, v) => ({ k: "cond", then: v, else: acc }));
+  return values.reduceRight((acc, v) => ({ k: "cond", then: v, else: acc, match: true }));
 }
 
 function lowerIdentifier(n: SyntaxNode, st: RustState): Expr {

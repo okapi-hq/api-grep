@@ -875,7 +875,7 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "sdk": 15,
@@ -1056,7 +1056,7 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.23.0",
+  "schemaVersion": "1.24.0",
   "stats": {
     "byClient": {
       "sdk": 2,

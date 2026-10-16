@@ -1,5 +1,7 @@
-import { Node, type Expression, type ObjectLiteralExpression, type VariableDeclaration } from "ts-morph";
+import { Node, type ArrayLiteralExpression, type CallExpression, type ElementAccessExpression, type Expression, type ObjectLiteralExpression, type VariableDeclaration } from "ts-morph";
 import { isSafeKey } from "../record-keys.js";
+import { choose } from "../resolve/choice.js";
+import { knownValue } from "../resolve/table-read.js";
 import type { EvalCtx } from "../types.js";
 import { unwrap } from "./expr.js";
 import { memoValue } from "./react.js";
@@ -97,6 +99,8 @@ export function toObjectLiteral(expr: Expression | undefined, ctx: EvalCtx = {},
   // `useMemo(() => ({ ... }), deps)` hands out the object as it is (#98)
   const memo = Node.isCallExpression(u) ? memoValue(u) : u;
   if (memo !== u) return toObjectLiteral(memo, ctx, depth + 1);
+  if (Node.isCallExpression(u)) return toObjectLiteral(frozenArg(u) ?? foundEntry(u, ctx, depth), ctx, depth + 1);
+  if (Node.isElementAccessExpression(u)) return toObjectLiteral(tableEntry(u, ctx, depth), ctx, depth + 1);
   if (Node.isPropertyAccessExpression(u)) return toObjectLiteral(getProp(u.getExpression(), u.getName(), ctx, depth + 1), ctx, depth + 1);
   if (Node.isIdentifier(u)) {
     for (const decl of declarationsOf(u)) {
@@ -142,4 +146,60 @@ export function getProp(obj: Expression | undefined, name: string, ctx: EvalCtx 
     if (value) return value;
   }
   return undefined;
+}
+
+/** `Object.freeze(x)`: `x`, as it is. */
+function frozenArg(u: CallExpression): Expression | undefined {
+  if (u.getExpression().getText().replace(/\s/g, "") !== "Object.freeze") return undefined;
+  const arg = u.getArguments()[0];
+  return arg && Node.isExpression(arg) ? arg : undefined;
+}
+
+/** The array literal an expression stands for, through constants (imported ones too), properties and `Object.freeze`. */
+export function toArrayLiteral(expr: Expression | undefined, ctx: EvalCtx = {}, depth = 0): ArrayLiteralExpression | undefined {
+  if (!expr || depth > MAX_DEPTH) return undefined;
+  const u = unwrap(expr);
+  if (Node.isArrayLiteralExpression(u)) return u;
+  if (Node.isCallExpression(u)) return toArrayLiteral(frozenArg(u), ctx, depth + 1);
+  if (Node.isPropertyAccessExpression(u)) return toArrayLiteral(getProp(u.getExpression(), u.getName(), ctx, depth + 1), ctx, depth + 1);
+  if (!Node.isIdentifier(u)) return undefined;
+  const decl = declarationsOf(u).find((d) => Node.isVariableDeclaration(d));
+  return toArrayLiteral(decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : importedVariable(u)?.getInitializer(), ctx, depth + 1);
+}
+
+/** The entries of a table: an object literal's property values, or an array literal's elements (spreads aside). */
+export function tableEntries(expr: Expression, ctx: EvalCtx = {}, depth = 0): Expression[] {
+  const values = valuesOf(expr);
+  const obj = toObjectLiteral(values ?? expr, ctx, depth);
+  if (obj) return obj.getProperties().flatMap((m) => (Node.isPropertyAssignment(m) || Node.isShorthandPropertyAssignment(m) ? [propertyValue(m)!] : []));
+  const list = values ? undefined : toArrayLiteral(expr, ctx, depth);
+  return (list?.getElements() ?? []).filter((e) => !Node.isSpreadElement(e) && !Node.isOmittedExpression(e));
+}
+
+/** `Object.values(T)`: `T`. */
+function valuesOf(expr: Expression): Expression | undefined {
+  const u = unwrap(expr);
+  if (!Node.isCallExpression(u) || u.getExpression().getText().replace(/\s/g, "") !== "Object.values") return undefined;
+  const arg = u.getArguments()[0];
+  return arg && Node.isExpression(arg) ? arg : undefined;
+}
+
+/**
+ * `PRESETS["openai"]`: that entry. `PRESETS[name]`, a key known at run time only: the entry a host table's pick reads
+ * (`resolve/choice.ts`), none without one.
+ */
+export function tableEntry(u: ElementAccessExpression, ctx: EvalCtx = {}, depth = 0): Expression | undefined {
+  const arg = u.getArgumentExpression();
+  const key = arg ? knownValue(arg, ctx) : undefined;
+  if (key !== undefined) return getProp(u.getExpression(), key, ctx, depth + 1);
+  return choose(ctx.choice, u.compilerNode, tableEntries(u.getExpression(), ctx, depth + 1));
+}
+
+const SEARCHES = new Set(["find", "findLast"]);
+
+/** `LIST.find((p) => p.key === id)`, `Object.values(T).find(...)`: the element a host table's pick reads, none without one. */
+export function foundEntry(u: CallExpression, ctx: EvalCtx = {}, depth = 0): Expression | undefined {
+  const callee = unwrap(u.getExpression());
+  if (!Node.isPropertyAccessExpression(callee) || !SEARCHES.has(callee.getName())) return undefined;
+  return choose(ctx.choice, u.compilerNode, tableEntries(callee.getExpression(), ctx, depth + 1));
 }

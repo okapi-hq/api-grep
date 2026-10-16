@@ -1,4 +1,5 @@
 import type { ClientFrom, ClientKind } from "../../report/schema.js";
+import type { Choice } from "../../resolve/choice.js";
 import type { AuthScheme, BodyEncoding } from "../../types.js";
 import type { IrMethodSpec, IrRegistryEntry, OptionRole, Scoped } from "./language.js";
 import type { CallExpr, ClassDef, FunctionDef, Param } from "./model.js";
@@ -19,6 +20,8 @@ export interface IrCtx {
   callerLevel?: boolean;
   /** The scanned directory: configuration files the code does not name are read below it only. */
   rootDir?: string;
+  /** Host tables (`resolve/choice.ts`): the entry each choice point reads, and the points a call's URL meets. */
+  choice?: Choice;
 }
 
 /** The context for code running on an object of class `cls`. */

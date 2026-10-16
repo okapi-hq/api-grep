@@ -1,0 +1,25 @@
+{
+  "issue": "host tables: a base URL picked at run time from a table of providers",
+  "calls": [
+    {"file": "a-frozen.ts", "line": 13, "provider": "mistral"},
+    {"file": "a-frozen.ts", "line": 13, "provider": "together"},
+    {"file": "a-object.ts", "line": 13, "provider": "openai"},
+    {"file": "a-object.ts", "line": 13, "provider": "deepseek"},
+    {"file": "a-object.ts", "line": 13, "provider": "groq"},
+    {"file": "a-object.ts", "line": 19, "provider": "openai"},
+    {"file": "a-object.ts", "line": 19, "provider": "deepseek"},
+    {"file": "a-object.ts", "line": 19, "provider": "groq"},
+    {"file": "b-array.ts", "line": 13, "provider": "groq"},
+    {"file": "b-array.ts", "line": 13, "provider": "fireworks"},
+    {"file": "b-array.ts", "line": 13, "provider": "perplexity"},
+    {"file": "c-presets.ts", "line": 9, "provider": "deepseek"},
+    {"file": "c-presets.ts", "line": 9, "provider": "api.siliconflow.cn"},
+    {"file": "c-presets.ts", "line": 9, "provider": "api.moonshot.cn"},
+    {"file": "f-helper.ts", "line": 9, "provider": "google-ai"},
+    {"file": "f-helper.ts", "line": 9, "provider": "openai"},
+    {"file": "g-known-key.ts", "line": 17, "provider": "mistral"},
+    {"file": "g-known-key.ts", "line": 18, "provider": "groq"},
+    {"file": "negative-unused.ts", "line": 14, "provider": "unknown"},
+    {"file": "over-cap.ts", "line": 56, "provider": "unknown"}
+  ]
+}

@@ -154,6 +154,14 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   headers and query the function then sets; `net/http` functions and Resty are tables (`clients.json`; Resty's
   `SetBody` / `SetQueryParam` are the `ClientModifier` fields `bodyArg` / `queryArgs`). Model and method constants are
   `constants.json` (`openai.GPT4o`), extracted from the SDKs' sources.
+- Host tables (`src/resolve/choice.ts`): a base URL picked at run time from a table the code writes (`PROVIDERS[name]`,
+  `LIST.find(...)`, Python `next(d for d in L if ...)` lowered as `L[?]`, a helper's several returns, a Rust `match`
+  lowered as `cond`s marked `match`, Rust / Kotlin list searches) is a choice point of both evaluators (`ctx.choice`: `ast/object.ts` and
+  `resolve/evaluate.ts`, `ir/values.ts` and `ir/evaluate.ts`). `withCandidates` builds a call once recording the
+  points its URL meets, then once per entry of the first that tells hosts apart (the whole call, so a model the same
+  entry names follows), one call per candidate host with `hostAlternatives`; over 20 entries, a `host-table-limit`
+  diagnostic. Without a pick, every point reads as before. A key or helper argument the code fixes is no table
+  (`resolve/table-read.ts` `knownValue` / `fixedValue`, IR `fixed`): facts only, never a best guess.
 - `coverage.hosts` (`src/hosts/`): the API-looking hosts in the string literals of the scanned files (each front end
   hands its literals over: `src/lang/typescript/host-literals.ts` walks the TypeScript AST, `src/lang/ir/host-literals.ts`
   the tree-sitter string nodes while lowering), compared with the calls' hosts; the filter is `api-host.ts` (paths

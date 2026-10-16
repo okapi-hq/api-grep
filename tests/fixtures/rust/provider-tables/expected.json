@@ -1,0 +1,13 @@
+{
+  "issue": "host tables: a base URL picked at run time from a table of providers",
+  "calls": [
+    {"file": "providers.rs", "line": 22, "provider": "mistral"},
+    {"file": "providers.rs", "line": 22, "provider": "groq"},
+    {"file": "providers.rs", "line": 22, "provider": "cerebras"},
+    {"file": "providers.rs", "line": 29, "provider": "mistral"},
+    {"file": "providers.rs", "line": 29, "provider": "groq"},
+    {"file": "providers.rs", "line": 29, "provider": "cerebras"},
+    {"file": "search.rs", "line": 13, "provider": "together"},
+    {"file": "search.rs", "line": 13, "provider": "fireworks"}
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "issue": "host tables: a base URL picked at run time from a table of providers",
+  "calls": [
+    {"file": "Providers.kt", "line": 16, "provider": "groq"},
+    {"file": "Providers.kt", "line": 16, "provider": "mistral"}
+  ]
+}

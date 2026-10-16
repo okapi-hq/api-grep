@@ -8,7 +8,8 @@ import { argFor, dottedPath, type Arg, type CallExpr, type Expr, type FunctionDe
 import { bindingOfPath, classField, lookup, moduleMember, receiverClass, type Binding } from "./project.js";
 import { withSelf, withSubst, type IrCtx, type Subst } from "./raw.js";
 import { scalarShape } from "./types.js";
-import { constantAt, dictOf, dictValue, knownConstant } from "./values.js";
+import { choose } from "../../resolve/choice.js";
+import { constantAt, deref, dictOf, dictValue, knownConstant, pickedEntry } from "./values.js";
 
 /** Steps followed to resolve one value (a name's value, a wrapper argument, a field): enough for four wrappers. */
 const MAX_DEPTH = 10;
@@ -150,6 +151,24 @@ function tableGuess(e: Expr & { k: "index" }, fn: FunctionDef, ctx: IrCtx, depth
   return undefined;
 }
 
+/** The arms of a Rust `match`, in order. */
+function arms(e: Expr & { k: "cond" }): Expr[] {
+  const out: Expr[] = [];
+  let cur: Expr = e;
+  while (cur.k === "cond" && cur.match) {
+    out.push(cur.then);
+    cur = cur.else;
+  }
+  return [...out, cur];
+}
+
+/** `c ? a : b`: the best static guess (`pickBranch`); a `match`'s arm a host table's pick reads (`resolve/choice.ts`). */
+function evalCond(e: Expr & { k: "cond" }, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
+  const arm = e.match ? choose(ctx.choice, e, arms(e)) : undefined;
+  if (arm) return markConst(evaluate(arm, fn, ctx, depth + 1));
+  return pickBranch(evaluate(e.then, fn, ctx, depth + 1), evaluate(e.else, fn, ctx, depth + 1)) ?? dyn(e, "unknown");
+}
+
 /** `a or "https://host"`: an env var on the left wins (it can override) and keeps the literal right side as its default. */
 function evalDefault(left: Expr, right: Expr, fn: FunctionDef, ctx: IrCtx, depth: number): Part[] {
   const l = evaluate(left, fn, ctx, depth + 1);
@@ -177,7 +196,7 @@ export function evaluate(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Part[
     case "or":
       return evalDefault(e.left, e.right, fn, ctx, depth);
     case "cond":
-      return pickBranch(evaluate(e.then, fn, ctx, depth + 1), evaluate(e.else, fn, ctx, depth + 1)) ?? dyn(e, "unknown");
+      return evalCond(e, fn, ctx, depth);
     case "format":
       return evalFormat(e, fn, ctx, depth);
     case "env": {
@@ -189,7 +208,7 @@ export function evaluate(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Part[
     case "attr":
       return evalAttr(e, fn, ctx, depth);
     case "index": {
-      const v = dictValue(e, fn, ctx);
+      const v = dictValue(e, fn, ctx) ?? pickedEntry(e, fn, ctx);
       return v ? markConst(evaluate(v.expr, v.fn, ctx, depth + 1)) : (tableGuess(e, fn, ctx, depth) ?? dyn(e, "unknown"));
     }
     case "call":
@@ -274,7 +293,8 @@ function helperResult(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
   const target = calleeChain(call, fn, ctx);
   if (target.root.kind !== "function" || target.segs.length > 0) return undefined;
   const helper = target.root.fn;
-  if (helper.returns.length !== 1) return undefined;
+  // several returns (`if eu: return EU_URL` / `return URL`, a `switch`): the one a host table's pick reads, none without
+  if (helper.returns.length !== 1 && !ctx.choice?.seen && !ctx.choice?.picks.has(call)) return undefined;
   const subst: Subst = new Map();
   for (const p of helper.params) {
     const arg = argFor(call, p);
@@ -282,6 +302,17 @@ function helperResult(call: CallExpr, fn: FunctionDef, ctx: IrCtx, depth: number
   }
   // `$this->getEndpoint()`: the helper runs on the same object, whose class may override what it reads
   const self = call.fn.k === "attr" && call.fn.obj.k === "this" ? receiverClass(fn, ctx.self, ctx.idx) : undefined;
-  const parts = evaluate(helper.returns[0]!, helper, withSelf(withSubst(ctx, subst), self), depth + 1);
-  return parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")) ? parts : undefined;
+  const results = helper.returns
+    .map((r) => evaluate(r, helper, withSelf(withSubst(ctx, subst), self), depth + 1))
+    .filter((parts) => parts.some((p) => p.kind === "env" || (p.kind === "static" && p.text !== "")));
+  if (helper.returns.length === 1) return results[0];
+  // given only values the code knows (`base_url_for("cline")`), the helper picks one return the scan cannot tell: no table
+  return call.args.every((a) => fixed(a.value, fn, ctx)) && call.args.length > 0 ? undefined : choose(ctx.choice, call, results);
+}
+
+/** A value from a set the code fixes: a literal (through names, constants and a wrapper's arguments) or a condition between such. */
+function fixed(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): boolean {
+  const d = deref(e, fn, ctx);
+  if (d.expr.k === "cond" && depth < 4) return fixed(d.expr.then, d.fn, ctx, depth + 1) && fixed(d.expr.else, d.fn, ctx, depth + 1);
+  return d.expr.k === "str" || d.expr.k === "num" || d.expr.k === "bool" || d.expr.k === "null";
 }

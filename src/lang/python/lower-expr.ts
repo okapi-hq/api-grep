@@ -110,6 +110,9 @@ function dotted(e: Expr): string | undefined {
 function lowerCall(n: SyntaxNode, st: PyState): Expr {
   const fnNode = field(n, "function");
   const fn = fnNode ? lowerExpr(fnNode, st) : ({ k: "unknown", text: "" } as Expr);
+  // `next(d for d in DEFAULTS if ...)`, before the arguments are lowered (their calls are recorded once)
+  const found = fn.k === "name" && fn.name === "next" ? searched(firstArgument(field(n, "arguments")), st) : undefined;
+  if (found) return found;
   const args = lowerArgs(field(n, "arguments"), st);
   const callee = dotted(fn);
   const env = callee ? envCall(callee, args, st) : undefined;
@@ -141,11 +144,35 @@ function lowerAttribute(n: SyntaxNode, st: PyState): Expr {
 function lowerSubscript(n: SyntaxNode, st: PyState): Expr {
   const value = field(n, "value");
   const sub = field(n, "subscript");
+  // `[d for d in DEFAULTS if d.name == name][0]`: an element of the list searched
+  const found = value?.type === "list_comprehension" && sub?.type === "integer" ? searched(value, st) : undefined;
+  if (found) return found;
   const obj = value ? lowerExpr(value, st) : ({ k: "unknown", text: "" } as Expr);
   const key = sub ? lowerExpr(sub, st) : ({ k: "unknown", text: "" } as Expr);
   const base = dotted(obj);
   if ((base === "os.environ" || base === "environ") && key.k === "str") return { k: "env", name: key.v };
   return { k: "index", obj, key };
+}
+
+/** `next(...)`'s generator: the call's only argument, or its first one. */
+function firstArgument(args: SyntaxNode | undefined): SyntaxNode | undefined {
+  if (args?.type === "generator_expression") return args;
+  return args ? named(args).find((c) => c.type !== "comment") : undefined;
+}
+
+/**
+ * `next(d for d in DEFAULTS if d.name == name)`: the element of `DEFAULTS` a search picks, as an index known at run
+ * time only (`DEFAULTS[?]`), the host table the engine reads (`resolve/choice.ts`). The search's calls are recorded.
+ */
+function searched(n: SyntaxNode | undefined, st: PyState): Expr | undefined {
+  if (n?.type !== "generator_expression" && n?.type !== "list_comprehension") return undefined;
+  const body = field(n, "body");
+  const loop = named(n).find((c) => c.type === "for_in_clause");
+  const [variable, list] = loop ? [field(loop, "left"), field(loop, "right")] : [];
+  if (!body || body.type !== "identifier" || body.text !== variable?.text || !list) return undefined;
+  const obj = lowerExpr(list, st);
+  for (const c of named(n)) if (c.type === "if_clause") lowerOther(c, st);
+  return { k: "index", obj, key: { k: "unknown", text: n.text.slice(0, 80), pos: posOf(n) } };
 }
 
 function lowerBinary(n: SyntaxNode, st: PyState): Expr {

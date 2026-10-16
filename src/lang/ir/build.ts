@@ -14,6 +14,7 @@ import { argAt, argOf, propOf } from "./args.js";
 import { evaluate } from "./evaluate.js";
 import type { Scoped } from "./language.js";
 import { resolvePairs } from "./pairs.js";
+import { withCandidates, type Choice } from "../../resolve/choice.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { recordAttribute } from "./record.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
@@ -162,15 +163,24 @@ function rpcOperation(raw: IrRaw, ctx: IrCtx): Operation | undefined {
   return rpcClientOperation(m.spec, arg ? shapeOf(arg.expr, arg.fn, ctx).shape : undefined);
 }
 
-/** Resolves a detected call into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
+/**
+ * Resolves a detected call into the report's Call records: one per operation it sends (a JSON-RPC batch), or one; one
+ * per candidate host when its base URL is picked from a host table (`resolve/choice.ts`).
+ */
 export function buildIrCall(raw: IrRaw, base: BuildIrCtx): Call[] {
-  const ctx = withSelf(withSubst(base, raw.subst), raw.self);
+  return withCandidates((choice) => buildOne(raw, base, choice));
+}
+
+function buildOne(raw: IrRaw, base: BuildIrCtx, choice: Choice): Call[] {
+  // the URL records the host tables it reads; the rest (a model paired with the URL) reads the same entries
+  const ctx: IrCtx = { ...withSelf(withSubst(base, raw.subst), raw.self), choice: { picks: choice.picks } };
+  const urlCtx: IrCtx = { ...ctx, choice };
   const dynamic: DynamicPart[] = [];
-  const target = raw.sdk ? sdkTarget(sdkSource(raw, ctx)) : undefined;
+  const target = raw.sdk ? sdkTarget(sdkSource(raw, urlCtx)) : undefined;
   const method = target ? (sdkMethod(raw, ctx, dynamic) ?? target.method) : resolveMethod(raw, ctx, dynamic);
   const soap = raw.soap ? irSoapTarget(raw.soap, raw.fn.module.file, ctx, base.rootDir) : undefined;
   // an SDK call to a URL the client was built with (`WebhookClient(url).send(...)`) goes there
-  const url = soap ? soap.url : target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, ctx, raw.urlJoin);
+  const url = soap ? soap.url : target && !raw.url ? target.url : resolveUrl(raw.url, raw.sdk ? undefined : raw.baseUrl, urlCtx, raw.urlJoin);
   dynamic.push(...url.dynamic);
   // GraphQL variables: the callers of the function they are written in are not searched (as in TypeScript)
   const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), raw.sdk?.entry.endpoint ? { ...ctx, callerLevel: true } : ctx);

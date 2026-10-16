@@ -42,9 +42,9 @@ export const UnfollowedCallSchema = z
     file: z.string(),
     line: z.number(),
     reason: z
-      .enum(["injected-fetch", "injected-client", "wrapper-depth", "receiver-unknown", "graphql-limit"])
+      .enum(["injected-fetch", "injected-client", "wrapper-depth", "receiver-unknown", "graphql-limit", "host-table-limit"])
       .describe(
-        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have. graphql-limit: a call whose GraphQL document was read past a bound; it is reported with the name and type the document's header gives, and without `operation.fields` (past `operations`, without a name).",
+        "injected-fetch: a fetch function received from outside (`this.fetchFn(url)`). injected-client: an HTTP client object received without a type that names it (`self.session.post(url)`). wrapper-depth: a call site more than four wrappers away from its HTTP call. receiver-unknown: an SDK method called on an untyped parameter (`client.messages.create(...)`) that no caller in the repository passes a known client to, and that several or none of the SDKs the manifests declare have. graphql-limit: a call whose GraphQL document was read past a bound; it is reported with the name and type the document's header gives, and without `operation.fields` (past `operations`, without a name). host-table-limit: a call whose base URL is picked from a table of more than 20 entries; it is reported once, as the scan reads it without the table (often with an unknown host).",
       ),
     expr: z.string().optional().describe("The callee expression, for injected-fetch, injected-client and receiver-unknown."),
     via: z.string().optional().describe("The wrapper called, for wrapper-depth."),
@@ -52,7 +52,7 @@ export const UnfollowedCallSchema = z
       .string()
       .optional()
       .describe(
-        "For graphql-limit, the bound reached: document-size (over 100,000 characters), document-parts (built from over 1,000 parts), tokens (over 50,000 parser tokens), depth (selection sets over 32 deep), fragment-expansion (over 20,000 selection sets visited inlining fragments), fields (over 2,000 field paths), operations (over 50 operations in one request), ast-size, ast-nodes, ast-nesting (a document written as its AST over 4,000,000 characters, 200,000 values or 128 levels of nesting).",
+        "For host-table-limit, the table's size (`50 candidates (at most 20)`). For graphql-limit, the bound reached: document-size (over 100,000 characters), document-parts (built from over 1,000 parts), tokens (over 50,000 parser tokens), depth (selection sets over 32 deep), fragment-expansion (over 20,000 selection sets visited inlining fragments), fields (over 2,000 field paths), operations (over 50 operations in one request), ast-size, ast-nodes, ast-nesting (a document written as its AST over 4,000,000 characters, 200,000 values or 128 levels of nesting).",
       ),
   })
   .meta({ id: "UnfollowedCall", description: "A call site the scan saw but could not follow to a request, or a call whose GraphQL document it could not fully read." });

@@ -1,0 +1,19 @@
+{
+  "issue": "host tables: a base URL picked at run time from a table of providers",
+  "calls": [
+    {"file": "defaults.py", "line": 29, "provider": "groq"},
+    {"file": "defaults.py", "line": 29, "provider": "mistral"},
+    {"file": "defaults.py", "line": 29, "provider": "together"},
+    {"file": "defaults.py", "line": 34, "provider": "groq"},
+    {"file": "defaults.py", "line": 34, "provider": "mistral"},
+    {"file": "defaults.py", "line": 34, "provider": "together"},
+    {"file": "dicts.py", "line": 10, "provider": "openrouter"},
+    {"file": "dicts.py", "line": 10, "provider": "api.deepinfra.com"},
+    {"file": "dicts.py", "line": 15, "provider": "openrouter"},
+    {"file": "dicts.py", "line": 15, "provider": "api.deepinfra.com"},
+    {"file": "helpers.py", "line": 13, "provider": "groq"},
+    {"file": "helpers.py", "line": 13, "provider": "mistral"},
+    {"file": "helpers.py", "line": 18, "provider": "unknown"},
+    {"file": "unused.py", "line": 16, "provider": "unknown"}
+  ]
+}

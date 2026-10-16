@@ -24,6 +24,7 @@ import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
 import { soapClientCall } from "./resolve/soap-client.js";
 import { withoutClientSettings } from "./model/client-settings.js";
+import { withCandidates, type Choice } from "./resolve/choice.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
@@ -128,13 +129,21 @@ function alternativeBodies(exprs: Expression[], ctx: EvalCtx): BodyResult {
   return { shape: unionOf(each.flatMap((b) => (b.shape ? [b.shape] : []))), encoding: "json", dynamic, fromLiteral: each.every((b) => b.fromLiteral) };
 }
 
-/** Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one. */
+/**
+ * Resolves a RawCall into the report's Call records: one per operation it sends (a JSON-RPC batch), or one; one per
+ * candidate host when its base URL is picked from a host table (`resolve/choice.ts`).
+ */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
-  const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints };
+  return withCandidates((choice) => buildOne(raw, base, choice));
+}
+
+function buildOne(raw: RawCall, base: BuildCtx, choice: Choice): Call[] {
+  // the URL records the host tables it reads; the rest (a model paired with the URL) reads the same entries
+  const ctx: EvalCtx = { subst: raw.subst ?? base.subst, envHints: base.envHints, choice: { picks: choice.picks } };
   const dynamic: DynamicPart[] = [];
   const soap = raw.soap ? soapClientCall(raw.soap, raw.node.getSourceFile().getFilePath(), base.rootDir, ctx) : undefined;
   if (raw.soap && !soap) return [];
-  const { url, method } = soap ? { url: soap.url, method: "POST" } : resolveTarget(raw, ctx, dynamic);
+  const { url, method } = soap ? { url: soap.url, method: "POST" } : resolveTarget(raw, { ...ctx, choice }, dynamic);
   dynamic.push(...url.dynamic);
   // a GraphQL client's body is the operation's variables, values of the app: the callers of the hook or helper they
   // are written in are not searched for them, a reference search per function that the scan of a large app pays for
