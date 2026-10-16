@@ -232,7 +232,7 @@ exports[`jvm: header and query names from constants (#61) > reads Java static fi
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "feign": 1,
@@ -561,7 +561,7 @@ exports[`jvm: header and query names from constants (#61) > reads Kotlin const v
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "feign": 1,

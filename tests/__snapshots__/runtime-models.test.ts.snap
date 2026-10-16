@@ -2626,7 +2626,7 @@ exports[`runtime models: python > reads settings classes, dataclass configuratio
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -4183,7 +4183,7 @@ exports[`runtime models: typescript and javascript > never gives a default every
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -5447,7 +5447,7 @@ exports[`runtime models: typescript and javascript > reads env schemas, config f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.25.0",
+  "schemaVersion": "1.26.0",
   "stats": {
     "byClient": {
       "sdk": 11,
