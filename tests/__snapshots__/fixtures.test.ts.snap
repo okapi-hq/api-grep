@@ -9579,7 +9579,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 89,
+    "filesSeen": 97,
     "languages": {
       "html": {
         "filesScanned": 0,
@@ -9591,7 +9591,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 78,
+        "filesSeen": 86,
       },
     },
     "skipped": [
@@ -9644,6 +9644,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "claude-agent/triage.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/app.tsx",
         "reason": "excluded",
       },
@@ -9664,6 +9668,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "firebase-admin/server.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "firebase-admin/storage.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "firebase-modular/firebase.ts",
         "reason": "excluded",
       },
@@ -9681,6 +9693,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "gemini/legacy.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "google-auth/tokens.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "googleapis/sheets.ts",
         "reason": "excluded",
       },
       {
@@ -9745,6 +9765,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "models/frameworks.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "notion/journal.ts",
         "reason": "excluded",
       },
       {
@@ -9892,6 +9916,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "vercel-blob/avatars.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "vertexai/summarize.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/_generated/api.ts",
         "reason": "excluded",
       },
@@ -9921,7 +9953,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 81,
+      "excluded": 89,
     },
     "unfollowed": [],
   },

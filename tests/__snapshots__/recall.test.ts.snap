@@ -37,6 +37,18 @@ exports[`regression fixtures > dart/dio 1`] = `
 ]
 `;
 
+exports[`regression fixtures > dart/firebase 1`] = `
+[
+  "journal.dart:16 firebase POST /v1/accounts:signInWithPassword",
+  "journal.dart:19 firebase POST /v1/accounts:sendOobCode",
+  "journal.dart:22 firebase POST /v1/accounts:sendOobCode",
+  "journal.dart:25 firebase GET /v1/projects/{projectId}/databases/(default)/documents/plants/{id}",
+  "journal.dart:27 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/plants/{id}",
+  "journal.dart:30 firebase POST /v1/projects/{projectId}/databases/(default)/documents/notes",
+  "journal.dart:34 firebase GET /v1/projects/{projectId}/databases/(default)/documents/notes",
+]
+`;
+
 exports[`regression fixtures > dart/http 1`] = `
 [
   "auth.dart:9 api.tideplanner.example POST /v2/auth/sign-in",
@@ -106,6 +118,21 @@ exports[`regression fixtures > go/sdk 1`] = `
   "official.go:31 anthropic POST /v1/messages",
   "official.go:44 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
   "official.go:49 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+]
+`;
+
+exports[`regression fixtures > go/sdk-more 1`] = `
+[
+  "alerts.go:22 slack POST /api/chat.postMessage",
+  "alerts.go:24 sentry POST /api/{projectId}/envelope",
+  "alerts.go:30 slack POST /api/chat.update",
+  "alerts.go:35 slack POST /api/users.info",
+  "alerts.go:43 slack POST /",
+  "alerts.go:48 sentry POST /api/{projectId}/envelope",
+  "alerts.go:50 sentry POST /api/{projectId}/envelope",
+  "discord.go:20 discord POST /api/v9/channels/{channelID}/messages",
+  "discord.go:25 discord POST /api/v9/channels/{channelID}/messages",
+  "discord.go:30 discord PUT /api/v9/guilds/{guildID}/members/{userID}/roles/1200000000000000001",
 ]
 `;
 
@@ -1709,6 +1736,14 @@ exports[`regression fixtures > python/runtime-models 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/claude-agent 1`] = `
+[
+  "reviewer.py:7 anthropic POST /v1/messages",
+  "reviewer.py:15 anthropic POST /v1/messages",
+  "reviewer.py:21 anthropic POST /v1/messages",
+]
+`;
+
 exports[`regression fixtures > python/sdk/discord 1`] = `
 [
   "bot.py:14 discord PUT /api/v10/applications/{application_id}/commands",
@@ -1734,6 +1769,36 @@ exports[`regression fixtures > python/sdk/firebase 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/google-auth 1`] = `
+[
+  "creds.py:12 google POST /token",
+  "creds.py:18 google POST /token",
+  "creds.py:23 google GET /oauth2/v1/certs",
+]
+`;
+
+exports[`regression fixtures > python/sdk/google-cloud 1`] = `
+[
+  "assets.py:11 google POST /upload/storage/v1/b/acme-reports/o",
+  "assets.py:15 google GET /download/storage/v1/b/acme-reports/o/reports/{report_id}.json",
+  "assets.py:19 google GET /storage/v1/b/acme-reports/o",
+  "assets.py:23 google GET /storage/v1/b/acme-reports",
+  "assets.py:23 google DELETE /storage/v1/b/acme-reports/o/reports/{report_id}.json",
+  "assets.py:31 google GET /v1/projects/{project}/secrets/partner-api-key/versions/latest:access",
+  "assets.py:35 google GET /v1/projects/acme/secrets/signing-key/versions/3:access",
+]
+`;
+
+exports[`regression fixtures > python/sdk/googleapiclient 1`] = `
+[
+  "agenda.py:11 google POST /calendar/v3/calendars/primary/events",
+  "agenda.py:17 google GET /calendar/v3/calendars/primary/events",
+  "agenda.py:21 google GET /customsearch/v1",
+  "agenda.py:26 google PUT /androidpublisher/v3/applications/{packageName}/edits/{editId}/tracks/production",
+  "agenda.py:27 google POST /androidpublisher/v3/applications/{packageName}/edits/{editId}:commit",
+]
+`;
+
 exports[`regression fixtures > python/sdk/huggingface 1`] = `
 [
   "infer.py:8 huggingface POST /v1/chat/completions",
@@ -1741,6 +1806,15 @@ exports[`regression fixtures > python/sdk/huggingface 1`] = `
   "infer.py:17 huggingface POST /hf-inference/models/{model}",
   "infer.py:21 huggingface POST /hf-inference/models/{model}",
   "infer.py:25 huggingface GET /{repo_id}/resolve/{revision}/{filename}",
+]
+`;
+
+exports[`regression fixtures > python/sdk/langchain-more 1`] = `
+[
+  "chains.py:6 deepseek POST /v1/chat/completions",
+  "chains.py:8 deepseek POST /v1/chat/completions",
+  "chains.py:10 google-vertex POST /v1/projects/acme-research/locations/europe-west1/publishers/google/models/gemini-2.5-flash:generateContent",
+  "chains.py:12 google-vertex POST /v1/projects/acme-research/locations/europe-west1/publishers/google/models/text-embedding-005:predict",
 ]
 `;
 
@@ -1780,6 +1854,21 @@ exports[`regression fixtures > python/sdk/llm-shapes 1`] = `
   "service.py:38 anthropic POST /v1/messages",
   "service.py:45 openai POST /v1/embeddings",
   "service.py:53 openai POST /v1/moderations",
+]
+`;
+
+exports[`regression fixtures > python/sdk/pygithub 1`] = `
+[
+  "release_bot.py:9 github GET /repos/acme/widgets",
+  "release_bot.py:10 github POST /repos/acme/widgets/issues",
+  "release_bot.py:14 github GET /repos/acme/widgets",
+  "release_bot.py:14 github GET /repos/acme/widgets/issues/{number}",
+  "release_bot.py:15 github POST /repos/acme/widgets/issues/{number}/comments",
+  "release_bot.py:19 github GET /repos/acme/widgets",
+  "release_bot.py:19 github GET /repos/acme/widgets/contents/CHANGELOG.md",
+  "release_bot.py:23 github GET /repos/acme/widgets",
+  "release_bot.py:23 github GET /repos/acme/widgets/pulls",
+  "release_bot.py:27 github GET /user",
 ]
 `;
 
@@ -2423,6 +2512,14 @@ exports[`regression fixtures > rust/sdk 1`] = `
 ]
 `;
 
+exports[`regression fixtures > rust/sentry 1`] = `
+[
+  "worker.rs:13 sentry POST /api/{projectId}/envelope",
+  "worker.rs:14 sentry POST /api/{projectId}/envelope",
+  "worker.rs:16 sentry POST /api/{projectId}/envelope",
+]
+`;
+
 exports[`regression fixtures > rust/ureq 1`] = `
 [
   "agent3.rs:6 hc-ping.com POST /{uuid}",
@@ -2499,6 +2596,13 @@ exports[`regression fixtures > sdk/caller-model 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/claude-agent 1`] = `
+[
+  "triage.ts:4 anthropic POST /v1/messages",
+  "triage.ts:12 anthropic POST /v1/messages",
+]
+`;
+
 exports[`regression fixtures > sdk/convex 1`] = `
 [
   "app.tsx:8 convex POST /api/run/tasks/list",
@@ -2532,6 +2636,24 @@ exports[`regression fixtures > sdk/discord-js 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/firebase-admin 1`] = `
+[
+  "server.ts:10 firebase GET /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "server.ts:16 firebase POST /v1/projects/{projectId}/databases/(default)/documents/orders",
+  "server.ts:19 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/profiles/{uid}",
+  "server.ts:21 firebase GET /v1/projects/{projectId}/databases/(default)/documents/orders",
+  "server.ts:23 firebase POST /v1/projects/{projectId}/accounts:lookup",
+  "server.ts:25 firebase POST /v1/projects/{projectId}/accounts:update",
+  "server.ts:27 firebase POST /v1/projects/{projectId}/messages:send",
+  "server.ts:29 firebase POST /v1/projects/{projectId}/messages:send",
+  "storage.ts:5 firebase POST /upload/storage/v1/b/{bucket}/o",
+  "storage.ts:7 firebase DELETE /storage/v1/b/{bucket}/o/img/{name}",
+  "storage.ts:9 firebase PUT /rooms/{id}/state.json",
+  "storage.ts:11 firebase GET /rooms.json",
+  "storage.ts:17 firebase POST /v1/projects/{projectId}/databases/(default)/documents:commit",
+]
+`;
+
 exports[`regression fixtures > sdk/firebase-modular 1`] = `
 [
   "session.ts:4 firebase POST /v1/accounts:signInWithIdp",
@@ -2552,6 +2674,24 @@ exports[`regression fixtures > sdk/gemini 1`] = `
   "genai.ts:6 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
   "genai.ts:12 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
   "legacy.ts:7 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/google-auth 1`] = `
+[
+  "tokens.ts:10 google POST /token",
+  "tokens.ts:16 google POST /token",
+  "tokens.ts:19 google GET /oauth2/v1/certs",
+]
+`;
+
+exports[`regression fixtures > sdk/googleapis 1`] = `
+[
+  "sheets.ts:7 google GET /v4/spreadsheets/{spreadsheetId}/values/Budget!A1:D20",
+  "sheets.ts:12 google POST /v4/spreadsheets/{spreadsheetId}/values/Log!A1:append",
+  "sheets.ts:16 google GET /drive/v3/files",
+  "sheets.ts:19 google GET /v1/documents/{documentId}",
+  "sheets.ts:22 google POST /token",
 ]
 `;
 
@@ -2636,6 +2776,16 @@ exports[`regression fixtures > sdk/models 1`] = `
   "frameworks.ts:15 openai POST /v1/responses",
   "frameworks.ts:16 openai POST /v1/responses",
   "frameworks.ts:17 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/notion 1`] = `
+[
+  "journal.ts:6 notion POST /v1/pages",
+  "journal.ts:9 notion GET /v1/pages/{page_id}",
+  "journal.ts:11 notion POST /v1/data_sources/{data_source_id}/query",
+  "journal.ts:13 notion GET /v1/blocks/{block_id}/children",
+  "journal.ts:15 notion POST /v1/search",
 ]
 `;
 
@@ -2857,6 +3007,22 @@ exports[`regression fixtures > sdk/telegram-node 1`] = `
   "bot.js:10 telegram POST /bot{token}/sendPhoto",
   "bot.js:13 telegram POST /bot{token}/editMessageText",
   "bot.js:14 telegram POST /bot{token}/setWebhook",
+]
+`;
+
+exports[`regression fixtures > sdk/vercel-blob 1`] = `
+[
+  "avatars.ts:5 vercel-blob PUT /api/blob",
+  "avatars.ts:9 vercel-blob POST /api/blob/delete",
+  "avatars.ts:11 vercel-blob GET /api/blob",
+  "avatars.ts:13 vercel-blob PUT /api/blob",
+]
+`;
+
+exports[`regression fixtures > sdk/vertexai 1`] = `
+[
+  "summarize.ts:7 google-vertex POST /v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-flash:generateContent",
+  "summarize.ts:13 google-vertex POST /v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-pro:streamGenerateContent",
 ]
 `;
 

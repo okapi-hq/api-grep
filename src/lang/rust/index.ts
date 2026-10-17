@@ -13,8 +13,9 @@ import asyncOpenai from "./registry/async-openai.json" with { type: "json" };
 import openaiApiRs from "./registry/openai-api-rs.json" with { type: "json" };
 import serenity from "./registry/serenity.json" with { type: "json" };
 import teloxide from "./registry/teloxide.json" with { type: "json" };
+import sentry from "./registry/sentry.json" with { type: "json" };
 
-export const RUST_REGISTRY = [asyncOpenai, openaiApiRs, teloxide, serenity] as unknown as IrRegistryEntry[];
+export const RUST_REGISTRY = [asyncOpenai, openaiApiRs, teloxide, serenity, sentry] as unknown as IrRegistryEntry[];
 
 /**
  * Build output, vendored crates, integration tests, benchmarks, build scripts and the files unit tests are kept in by

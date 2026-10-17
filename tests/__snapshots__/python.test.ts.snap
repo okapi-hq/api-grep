@@ -1814,14 +1814,18 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 3,
-    "filesSeen": 23,
+    "filesSeen": 29,
     "languages": {
       "python": {
         "filesScanned": 3,
-        "filesSeen": 23,
+        "filesSeen": 29,
       },
     },
     "skipped": [
+      {
+        "file": "claude-agent/reviewer.py",
+        "reason": "excluded",
+      },
       {
         "file": "discord/bot.py",
         "reason": "excluded",
@@ -1831,7 +1835,23 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "google-auth/creds.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "google-cloud/assets.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "googleapiclient/agenda.py",
+        "reason": "excluded",
+      },
+      {
         "file": "huggingface/infer.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "langchain-more/chains.py",
         "reason": "excluded",
       },
       {
@@ -1875,6 +1895,10 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "pygithub/release_bot.py",
+        "reason": "excluded",
+      },
+      {
         "file": "sentry/errors.py",
         "reason": "excluded",
       },
@@ -1904,7 +1928,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       },
     ],
     "skippedCounts": {
-      "excluded": 20,
+      "excluded": 26,
     },
     "unfollowed": [],
   },

@@ -1,0 +1,23 @@
+{
+  "$comment": "cloud_firestore (FlutterFire): `FirebaseFirestore.instance.collection('users').doc(id).get()`; `instance`, `collection`, `doc` and the query methods narrow the request (`{path}` joins the arguments of `collection` and `doc`). `snapshots()` listens to the same path. The platform SDKs speak gRPC; the REST paths are listed, as in the JVM and Python Firestore registries.",
+  "package": "cloud_firestore",
+  "imports": ["cloud_firestore.FirebaseFirestore"],
+  "provider": "firebase",
+  "host": "firestore.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (cloud_firestore 5.x method names, paths of the JVM Firestore registry)",
+  "instance": { "names": ["FirebaseFirestore", "instanceFor"] },
+  "inlinePathLiterals": true,
+  "builders": ["instance", "collection", "doc", "collectionGroup", "where", "orderBy", "limit", "limitToLast", "startAt", "startAfter", "startAtDocument", "startAfterDocument", "endAt", "endBefore", "endAtDocument", "endBeforeDocument", "withConverter"],
+  "methods": {
+    "get": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}},
+    "snapshots": {"method": "GET", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}},
+    "set": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}, "bodyArg": 0},
+    "update": {"method": "PATCH", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}, "bodyArg": 0},
+    "add": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}, "bodyArg": 0},
+    "delete": {"method": "DELETE", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}", "params": {"path": "chain:collection,doc"}},
+    "count.get": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents/{path}:runAggregationQuery", "params": {"path": "chain:collection,doc"}},
+    "batch.commit": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:commit"},
+    "runTransaction": {"method": "POST", "path": "/v1/projects/{projectId}/databases/(default)/documents:commit"}
+  }
+}

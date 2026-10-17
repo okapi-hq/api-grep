@@ -117,6 +117,9 @@ describe("jvm manifests", () => {
     // the group's root is shared with Android Firebase: firebase-admin's only where it is declared
     expect(jvmImportRoots("com.google.firebase:firebase-admin")).not.toContain("com.google.firebase");
     expect(jvmImportRoots("com.google.firebase:firebase-admin", true)).toContain("com.google.firebase");
+    // `com.facebook` is also React Native's (`com.facebook.react`): the Facebook SDK's only where it is declared
+    expect(jvmImportRoots("com.facebook.android:facebook-android-sdk")).not.toContain("com.facebook");
+    expect(jvmImportRoots("com.facebook.android:facebook-android-sdk", true)).toContain("com.facebook");
   });
 
   it("reads hostile manifests in linear time", () => {

@@ -1,6 +1,7 @@
+import path from "node:path";
 import { Node, SyntaxKind, type SourceFile } from "ts-morph";
 import { coverageRows, manifestDirs } from "../../coverage.js";
-import { AI_SDK_PACKAGES } from "../../detect/ai-sdk.js";
+import { AI_SDK_AGENTS, AI_SDK_PACKAGES } from "../../detect/ai-sdk.js";
 import { packageFromSpecifier, specifierOf } from "../../ast/origin.js";
 import type { Registry } from "../../detect/registry/index.js";
 import { sdkPackages } from "../../normalize/provider.js";
@@ -66,5 +67,17 @@ export function importsCoverage(rootDir: string, files: Map<string, Set<string>>
   for (const p of pages) imports.set(p.file, new Set([...(imports.get(p.file) ?? []), ...p.packages]));
   for (const pkgs of imports.values()) for (const pkg of pkgs) if (known.has(pkg)) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   const supported = (pkg: string): boolean => !!registry.byPackage(pkg) || AI_SDK_PACKAGES.has(pkg);
-  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, [...imports.keys()], packageJsons), sites, calls, supported }) };
+  const extraCalls = agentCalls(rootDir, imports, calls);
+  return { sdks: coverageRows({ ecosystem: "npm", known, declared: declaredPackages(rootDir, [...imports.keys()], packageJsons), sites, calls, supported, extraCalls }) };
+}
+
+/** Requests of agent libraries' agents (`new Agent({ model: openai("gpt-4o") })`): the call's `sdk` names the model's package. */
+function agentCalls(rootDir: string, imports: Map<string, Set<string>>, calls: Call[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const c of calls) {
+    if (!c.sdk) continue;
+    const pkgs = imports.get(path.resolve(rootDir, c.location.file));
+    for (const [pkg, ctors] of AI_SDK_AGENTS) if (pkg !== c.sdk.package && ctors.includes(c.sdk.chain) && pkgs?.has(pkg)) out.set(pkg, (out.get(pkg) ?? 0) + 1);
+  }
+  return out;
 }

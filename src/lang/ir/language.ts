@@ -28,6 +28,13 @@ export interface IrMethodSpec extends MethodSpec {
    * (`InferenceClient(model="...").text_generation(prompt)`).
    */
   modelSeg?: string[];
+  /**
+   * Where the model is when it is a key of an options argument (`argAt` places: `kw:options.model`); `Seg:` first
+   * reads that call of the chain instead of the method (Claude Agent SDK `ClaudeSDKClient(options).query(prompt)`).
+   */
+  modelAt?: string;
+  /** Where the body is, as `modelAt` (`insert:kw:body`: the `body=` of an earlier call of the chain). */
+  bodyAt?: string;
   /** The keyword argument holding the GraphQL document, when it is not `document` (sgqlc and ShopifyAPI: `query`). */
   documentKw?: string;
   /** Keyword arguments that set the client's base URL (`base_url`, `api_base`), the first given wins. */

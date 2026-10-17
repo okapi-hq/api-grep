@@ -1,0 +1,30 @@
+{
+  "$comment": "google-auth: token requests the code makes itself on credentials whose kind tells the endpoint. Service account and user credentials (`service_account.Credentials.from_service_account_file(...)`, `google.oauth2.credentials.Credentials.from_authorized_user_file(...)`) ask Google's OAuth 2.0 token endpoint on `refresh(Request())`; `id_token.verify_oauth2_token` / `verify_token` / `verify_firebase_token` fetch Google's public certificates. Credentials from `google.auth.default()` are picked at run time (a metadata server, a key file): their refresh is not listed, nor are the refreshes other clients make implicitly.",
+  "package": "google-auth",
+  "imports": [
+    "google.oauth2",
+    "google.auth"
+  ],
+  "provider": "google",
+  "host": "oauth2.googleapis.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against google-auth-library-python 2.x google/oauth2/service_account.py, credentials.py, _client.py, id_token.py)",
+  "instance": {
+    "names": [
+      "service_account.Credentials",
+      "service_account.Credentials.from_service_account_file",
+      "service_account.Credentials.from_service_account_info",
+      "credentials.Credentials",
+      "credentials.Credentials.from_authorized_user_file",
+      "credentials.Credentials.from_authorized_user_info"
+    ]
+  },
+  "methods": {
+    "refresh": {"method": "POST", "path": "/token", "encoding": "form"},
+    "with_scopes.refresh": {"method": "POST", "path": "/token", "encoding": "form"},
+    "with_subject.refresh": {"method": "POST", "path": "/token", "encoding": "form"},
+    "id_token.verify_oauth2_token": {"method": "GET", "path": "/oauth2/v1/certs", "host": "www.googleapis.com"},
+    "id_token.verify_token": {"method": "GET", "path": "/oauth2/v1/certs", "host": "www.googleapis.com"},
+    "id_token.verify_firebase_token": {"method": "GET", "path": "/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com", "host": "www.googleapis.com"}
+  }
+}

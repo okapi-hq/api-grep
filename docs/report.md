@@ -459,14 +459,15 @@ and of `pom.xml` (test scope aside), as `group:artifact` (package roots that dif
 dependencies aside), as crates.io names, a crate counting for the paths under its code name (`async_openai`):
 
 ```json
-{ "package": "@notionhq/client", "ecosystem": "npm", "provider": "notion", "supported": false,
+{ "package": "@getbrevo/brevo", "ecosystem": "npm", "provider": "brevo", "supported": false,
   "declared": true, "imported": true, "importSites": 41, "calls": 0, "status": "unsupported" }
 ```
 
 `ok` (registry and calls), `unsupported` (imported, no registry: its calls are missed),
 `imported-no-calls` (registry but no call: a wrapper, or a detection bug), `declared-not-imported`
-(probably unused). The table prints one `⚠` line per `unsupported` and `imported-no-calls`
-package. `--changed-since` scans have no coverage section.
+(probably unused). An agent library's requests (`new Agent({ model: openai("gpt-4o") })` of `@mastra/core`) count for
+it and for the package of its model, which the call's `sdk.package` names. The table prints one `⚠` line per
+`unsupported` and `imported-no-calls` package. `--changed-since` scans have no coverage section.
 
 ## Host coverage
 

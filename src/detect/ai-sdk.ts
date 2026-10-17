@@ -6,8 +6,11 @@ import data from "./registry/ai-sdk.json" with { type: "json" };
 
 const FUNCTIONS = new Set(data.functions);
 const AGENTS = new Map<string, string[]>(Object.entries(data.agents));
-/** Packages whose models the AI SDK detector reads (they count as supported in the coverage report). */
-export const AI_SDK_PACKAGES = new Set(PROVIDERS.keys());
+/** Packages whose models or agents the AI SDK detector reads (they count as supported in the coverage report). */
+export const AI_SDK_PACKAGES = new Set([...PROVIDERS.keys(), ...AGENTS.keys()]);
+
+/** Agent libraries (`@mastra/core`) -> their agent constructors: a call with that `sdk.chain` in a file importing it is theirs too. */
+export const AI_SDK_AGENTS: ReadonlyMap<string, string[]> = AGENTS;
 
 const UNKNOWN: AiSdkProvider = { ...GATEWAY, provider: "unknown", host: "{provider}", paths: { "": "/" } };
 

@@ -1,0 +1,8 @@
+[package]
+name = "ingest-worker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sentry = "0.42"
+anyhow = "1"

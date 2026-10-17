@@ -1,0 +1,24 @@
+{
+  "$comment": "langchain-deepseek: `ChatDeepSeek(model=...)` sends OpenAI-compatible chat requests to DeepSeek (`api_base` defaults to `https://api.deepseek.com/v1`).",
+  "package": "langchain-deepseek",
+  "imports": [
+    "langchain_deepseek"
+  ],
+  "provider": "deepseek",
+  "host": "api.deepseek.com",
+  "auth": "bearer",
+  "basePath": "/v1",
+  "generatedFrom": "manual (langchain-deepseek: ChatDeepSeek)",
+  "methods": {
+    "ChatDeepSeek": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "api_base",
+        "base_url"
+      ]
+    }
+  }
+}

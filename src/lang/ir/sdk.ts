@@ -194,6 +194,7 @@ function bodyOf(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, ctx: IrCtx): Sco
     return dict ? { expr: dict, fn } : undefined;
   }
   if (spec.argFields) return argFieldsBody(m, spec.argFields, fn);
+  if (spec.bodyAt) return placeAt(m, spec.bodyAt, ctx);
   if (spec.bodySelf) return { expr: call, fn };
   // a record sends the attributes it is built with and those set on it (`product.title = t; product.save()`, #92, #102)
   if (spec.record?.body) return recordBody(m, ctx);
@@ -235,11 +236,37 @@ function instanceUrl(m: IrSdkMatch): Scoped | undefined {
  */
 function readsArgs(spec: IrMethodSpec): boolean {
   const positions = [spec.bodyArg, spec.queryArg, spec.routeArg, spec.urlFromInstanceArg, spec.urlArg, spec.modelArg, spec.documentArg, ...(spec.pathArgs ?? [])];
-  return positions.some((i) => i !== undefined) || !!spec.argFields || !!spec.fieldArgs || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || Object.keys(spec.params ?? {}).length > 0;
+  return positions.some((i) => i !== undefined) || !!spec.argFields || !!spec.fieldArgs || !!spec.bodyKw || !!spec.bodyKwargs || !!spec.queryKwargs || !!spec.modelKw || !!spec.modelAt || !!spec.bodyAt || Object.keys(spec.params ?? {}).length > 0;
+}
+
+/**
+ * `modelAt` / `bodyAt`: a place of the method's arguments, or of the chain call it names (`ClaudeSDKClient:kw:options.model`,
+ * `insert:kw:body` of `service.events().insert(body=e).execute()`); `|` tries each.
+ */
+function placeAt(m: IrSdkMatch, where: string, ctx: IrCtx): Scoped | undefined {
+  for (const place of where.split("|")) {
+    const named = /^([A-Za-z_]\w*):(.+)$/.exec(place);
+    const segName = named && named[1] !== "kw" ? named[1] : undefined;
+    const seg = segName ? [...m.segs].reverse().find((s) => !!s.call && s.name === segName) : m.method;
+    const at = segName ? named![2]! : place;
+    const hit = seg ? (argAt(seg, at, ctx) ?? optionsKeyword(seg, at, ctx)) : undefined;
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
+/** `kw:options.model` when the options are an object built with keywords (`ClaudeAgentOptions(model="...")`). */
+function optionsKeyword(seg: Seg, at: string, ctx: IrCtx): Scoped | undefined {
+  const m = /^(?:kw:(\w+)|(\d+))\.(\w+)$/.exec(at);
+  const arg = m ? argOf(seg, m[2] !== undefined ? Number(m[2]) : undefined, m[1]) : undefined;
+  const built = arg ? deref(arg.expr, arg.fn, ctx) : undefined;
+  const kw = built?.expr.k === "call" ? built.expr.args.find((a) => a.name === m![3]) : undefined;
+  return kw ? { expr: kw.value, fn: built!.fn } : undefined;
 }
 
 /** The model the method is given, else the one the client was built with (`modelSeg`). */
-function modelOf(m: IrSdkMatch): Scoped | undefined {
+function modelOf(m: IrSdkMatch, ctx: IrCtx): Scoped | undefined {
+  if (m.spec.modelAt) return placeAt(m, m.spec.modelAt, ctx);
   const own = m.spec.modelArg !== undefined || m.spec.modelKw ? argOf(m.method, m.spec.modelArg, m.spec.modelKw) : undefined;
   const seg = !own && m.spec.modelSeg ? [...m.segs.slice(0, -1)].reverse().find((s) => !!s.call && m.spec.modelSeg!.includes(s.name)) : undefined;
   return own ?? (seg ? argOf(seg, 0, "model") : undefined);
@@ -279,7 +306,7 @@ export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: Ir
       baseUrl: baseUrl ?? setupBaseUrl(entry, ctx),
       headers,
       inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
-      model: modelOf(m),
+      model: modelOf(m, ctx),
     };
     const refined = ctx.idx.lang.refineSdk ? ctx.idx.lang.refineSdk(raw, chain, ctx) : raw;
     if (refined) return refined;

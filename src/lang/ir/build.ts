@@ -78,8 +78,13 @@ function methodOf(method: Scoped, ctx: IrCtx, dynamic: DynamicPart[]): string {
   return "DYNAMIC";
 }
 
-/** `params` sources: `arg:N` (or the keyword named like the placeholder), `kw:name`, `instance:N`, `seg:name:N`, `chain:a,b`. */
+/** `params` sources: `arg:N` (or the keyword named like the placeholder), `kw:name`, `instance:N`, `seg:name:N`, `chain:a,b`; `|` tries each. */
 function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { expr?: Scoped; parts?: Part[] } | undefined {
+  // `kw:request.name|kw:name`: the first that gives a value (Google Cloud clients take a request dict or keywords)
+  if (source.includes("|")) {
+    const tried = source.split("|").map((s) => sdkParam(m, s, name, ctx));
+    return tried.find((t) => t?.expr || t?.parts) ?? tried.find((t) => t);
+  }
   const before = m.segs.slice(0, -1);
   const chain = /^chain:([\w,]+)$/.exec(source);
   if (chain) {

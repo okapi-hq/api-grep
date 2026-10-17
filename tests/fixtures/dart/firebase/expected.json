@@ -1,0 +1,12 @@
+{
+  "issue": "Dart: firebase_auth and cloud_firestore registries (firebase_core and firebase_messaging send nothing the code names)",
+  "calls": [
+    {"file": "journal.dart", "line": 16, "provider": "firebase"},
+    {"file": "journal.dart", "line": 19, "provider": "firebase"},
+    {"file": "journal.dart", "line": 22, "provider": "firebase"},
+    {"file": "journal.dart", "line": 25, "provider": "firebase"},
+    {"file": "journal.dart", "line": 27, "provider": "firebase"},
+    {"file": "journal.dart", "line": 30, "provider": "firebase"},
+    {"file": "journal.dart", "line": 34, "provider": "firebase"}
+  ]
+}

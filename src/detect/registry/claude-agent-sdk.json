@@ -1,0 +1,12 @@
+{
+  "$comment": "Claude Agent SDK (TypeScript): `query({ prompt, options: { model } })` runs the Claude Code CLI, which sends the conversation to the Messages API (`ANTHROPIC_BASE_URL`, Bedrock or Vertex settings of the environment aside). One call per `query`; the agent loop may send several requests. `unstable_v2_prompt(prompt, { model })` does the same.",
+  "package": "@anthropic-ai/claude-agent-sdk",
+  "provider": "anthropic",
+  "host": "api.anthropic.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @anthropic-ai/claude-agent-sdk 0.1.x sdk.d.ts)",
+  "methods": {
+    "query": {"method": "POST", "path": "/v1/messages", "modelArg": 0, "modelProp": "options.model", "operationId": "createMessage"},
+    "unstable_v2_prompt": {"method": "POST", "path": "/v1/messages", "modelArg": 1, "modelProp": "model", "operationId": "createMessage"}
+  }
+}

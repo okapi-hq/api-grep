@@ -15,6 +15,8 @@ export interface CoverageInput {
   calls: Call[];
   /** A registry exists for the package, so its calls can be listed. */
   supported: (pkg: string) => boolean;
+  /** Calls a package makes whose `sdk` names another (an agent library's, `sdk.package` being its model's provider). */
+  extraCalls?: Map<string, number>;
 }
 
 function statusOf(s: Omit<SdkCoverage, "status">): SdkCoverage["status"] {
@@ -30,6 +32,7 @@ function statusOf(s: Omit<SdkCoverage, "status">): SdkCoverage["status"] {
 export function coverageRows(input: CoverageInput): SdkCoverage[] {
   const callCounts = new Map<string, number>();
   for (const c of input.calls) if (c.sdk) callCounts.set(c.sdk.package, (callCounts.get(c.sdk.package) ?? 0) + 1);
+  for (const [pkg, n] of input.extraCalls ?? []) callCounts.set(pkg, (callCounts.get(pkg) ?? 0) + n);
   const sites = [...input.sites.keys()].filter((p) => input.known.has(p));
   const packages = new Set([...[...input.declared].filter((p) => input.known.has(p)), ...sites]);
   return [...packages].sort().map((pkg) => {

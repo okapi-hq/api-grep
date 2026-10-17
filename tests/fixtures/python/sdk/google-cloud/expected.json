@@ -1,0 +1,11 @@
+{
+  "issue": "google-cloud-storage and google-cloud-secret-manager registries",
+  "calls": [
+    {"file": "assets.py", "line": 11, "provider": "google"},
+    {"file": "assets.py", "line": 15, "provider": "google"},
+    {"file": "assets.py", "line": 19, "provider": "google"},
+    {"file": "assets.py", "line": 23, "provider": "google"},
+    {"file": "assets.py", "line": 31, "provider": "google"},
+    {"file": "assets.py", "line": 35, "provider": "google"}
+  ]
+}
