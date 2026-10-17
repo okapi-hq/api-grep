@@ -1864,10 +1864,10 @@ Kotlin) is an `IrSource` in that language's `alsoReads`, so both are lowered int
 command lines rather than expressions (shell) reads its syntax tree directly into the `ResolvedCall` of
 `src/assemble.ts`, without the IR (`src/lang/shell/`).
 
-Measured on 2026-10-16 over the repositories Okapi scans (primary GitHub language of each living repository, latest
-scan): Dart 29 repositories (26 with no call found; Dart is read since then, 20 of them with calls), Jupyter Notebook 9
-(7 with none; notebooks are read since then), C# 5, Ruby 3, PowerShell 3, Swift 2. Vue, Svelte and Astro components
-are read since then too.
+Measured on 2026-10-16 over a set of active production repositories (primary GitHub language of each, latest scan): Dart
+29 repositories (26 with no call found; Dart is read since then, 20 of them with calls), Jupyter Notebook 9 (7 with
+none; notebooks are read since then), C# 5, Ruby 3, PowerShell 3, Swift 2. Vue, Svelte and Astro components are read
+since then too.
 
 | next candidates | ecosystem | notes |
 |---|---|---|
