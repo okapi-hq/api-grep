@@ -208,6 +208,48 @@ local process whose own calls are found by scanning its code), a WebSocket trans
 (`InMemoryTransport`, `Client(server)`). `client.connect(transport)` is reported only when its transport reads as HTTP.
 An SSE server announces the URL it takes requests at: the call keeps the stream's URL, whose host is the server's.
 
+#### MCP servers of agent frameworks
+
+Agent frameworks connect to the MCP servers they are configured with. Each HTTP server is a call of its own at the place
+the configuration is given (`initialize`), and at each method of the client that talks to the servers (`tools/list`,
+`tools/call` with its `target`): a client configured with two HTTP servers gives two calls at each place, one per
+server URL, with the headers of that server's configuration.
+
+| framework | TypeScript / JavaScript | Python |
+|---|---|---|
+| Vercel AI SDK | `experimental_createMCPClient` / `createMCPClient({ transport: { type: "sse" \| "http", url, headers } })` or an MCP SDK transport; `client.tools()` | - |
+| OpenAI Agents | `new MCPServerStreamableHttp({ url, requestInit })`, `MCPServerSSE`; `listTools()`, `callTool()` | `MCPServerStreamableHttp(params={"url": ..., "headers": ...})`, `MCPServerSse`; `list_tools()`, `call_tool()` |
+| LangChain | `new MultiServerMCPClient({ mcpServers: { name: { url, transport, headers } } })`; `getTools()` | `MultiServerMCPClient({"name": {"url": ..., "transport": ...}})`, `get_tools()`; `load_mcp_tools(session)` over an MCP SDK session |
+| Claude Agent SDK | `query({ options: { mcpServers: { name: { type: "http" \| "sse", url, headers } } } })` | `ClaudeAgentOptions(mcp_servers={...})` |
+| Mastra | `new MCPClient({ servers: { name: { url, requestInit } } })`, `MCPConfiguration`; `getTools()`, `getToolsets()` | - |
+| CrewAI | - | `MCPServerAdapter({"url": ..., "transport": ...})` or a list; `Agent(mcps=["https://...", MCPServerHTTP(...)])` |
+| PydanticAI | - | `MCPServerStreamableHTTP(url, headers=...)`, `MCPServerSSE`, `MCPServerHTTP`; `list_tools()`, `call_tool()` |
+| Google ADK | - | `MCPToolset` / `McpToolset(connection_params=StreamableHTTPConnectionParams(...) \| SseConnectionParams \| SseServerParams)`; `get_tools()` |
+| smolagents | - | `MCPClient({"url": ..., "transport": ...})` or a list, `ToolCollection.from_mcp({...})`; `get_tools()` |
+| LlamaIndex | - | `BasicMCPClient("https://...", headers=...)`; `list_tools()`, `call_tool()`, `McpToolSpec(client=...).to_tool_list_async()`, `aget_tools_from_mcp_url(url)` |
+| AutoGen | - | `McpWorkbench(StreamableHttpServerParams(url=..., headers=...) \| SseServerParams(...))`; `list_tools()`, `call_tool()`, `mcp_server_tools(params)` |
+
+The Claude Agent SDK does not connect itself: `query` starts the Claude Code process, which connects to the servers of
+the configuration the app gives it. That is still a connection the app makes, to servers its code names, so it is
+reported where the options name the servers (the `query` call in TypeScript, beside its model request; the
+`ClaudeAgentOptions(...)` construction in Python). CrewAI's `Agent(mcps=[...])` is reported at the agent, beside its
+model request.
+
+Not reported, as for the MCP SDKs:
+
+- servers run as a local process (a `command`, a `stdio` transport, `MCPServerStdio`, `StdioServerParameters`, a
+  `BasicMCPClient` command that is no URL) and in-process servers (the Claude Agent SDK's `type: "sdk"` servers from
+  `createSdkMcpServer`);
+- a configuration the scan cannot read (loaded from a file, built in a loop, given as a parameter), and a client given
+  as a parameter, when the framework's clients may run local servers: it may hold local servers only. An HTTP-only
+  client given as a parameter (`MCPServerStreamableHttp`) is a call to `{mcpServer}`. LangChain's
+  `client.session(name)` picks its server by name at run time: not followed;
+- CrewAI's `crewai-amp:` references, servers of CrewAI's catalog;
+- MCP servers a model provider connects to on its side: OpenAI's `HostedMCPTool` / `hostedMcpTool` and the Responses
+  API's `{"type": "mcp", "server_url": ...}` tools, the Anthropic Messages API's `mcp_servers=[{"type": "url", ...}]`.
+  They are part of the request to the model provider (its body), and the connection to the MCP server is the
+  provider's, not the app's.
+
 ### SOAP clients
 
 SOAP client libraries ([#58](https://github.com/okapi-hq/api-grep/issues/58)) build the envelope from a WSDL, so the

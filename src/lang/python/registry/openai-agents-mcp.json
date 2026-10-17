@@ -1,0 +1,26 @@
+{
+  "$comment": "OpenAI Agents SDK MCP servers: `MCPServerStreamableHttp(params={\"url\": ..., \"headers\": ...})` and `MCPServerSse` connect to that server (`async with` or `connect()`); `list_tools()` and `call_tool(name, arguments)` send those methods. `MCPServerStdio` runs a local process, and `HostedMCPTool` is a server OpenAI connects to on its side: neither is reported. The agent's model requests are `openai-agents.json`'s.",
+  "package": "openai-agents",
+  "imports": ["agents.mcp.server", "agents.mcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against openai-agents 0.3 src/agents/mcp/server.py)",
+  "instance": { "names": ["MCPServerStreamableHttp", "MCPServerSse"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPServerStreamableHttp": { "url": "kw:params.url|0.url", "headers": "kw:params.headers|0.headers" },
+      "MCPServerSse": { "url": "kw:params.url|0.url", "headers": "kw:params.headers|0.headers" }
+    },
+    "nonHttp": ["MCPServerStdio"]
+  },
+  "methods": {
+    "MCPServerStreamableHttp": { "method": "POST", "path": "", "mcp": "initialize" },
+    "MCPServerSse": { "method": "POST", "path": "", "mcp": "initialize" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:tool_name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "list_prompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "get_prompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" }
+  }
+}

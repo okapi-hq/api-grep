@@ -2,10 +2,11 @@ import type { Chain } from "./chain.js";
 import { argAt, argOf, kwargsDict, propOf } from "./args.js";
 import type { IrMethodSpec, IrRegistryEntry, Scoped } from "./language.js";
 import type { CallExpr, Entry, Expr, FunctionDef } from "./model.js";
-import type { IrCtx, IrRaw, IrSdkMatch, Seg } from "./raw.js";
+import { withAlternatives, type IrCtx, type IrRaw, type IrSdkMatch, type Seg } from "./raw.js";
 import { deref, staticKey } from "./values.js";
 import { lambdaValue } from "./builders.js";
-import { irEndpoint } from "./endpoint.js";
+import { irEndpoint, type IrEndpoint } from "./endpoint.js";
+import { mcpServers } from "./mcp-servers.js";
 import { recordBody } from "./record.js";
 import { setupBaseUrl } from "./setup.js";
 
@@ -280,36 +281,56 @@ function otherPackage(entry: IrRegistryEntry, fn: FunctionDef, ctx: IrCtx): bool
   return entry.sameClassesAs.some(has) && ![entry.package, ...(entry.aliases ?? [])].some(has);
 }
 
-/** An SDK call: a chain from a registry's import root to one of its methods. */
+/**
+ * An SDK call: a chain from a registry's import root to one of its methods. After the first registry that reads it,
+ * the agent frameworks' MCP registries add the servers the same call connects to (CrewAI's `Agent(mcps=[...])`), as
+ * other requests of the call.
+ */
 export function detectSdk(chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw | undefined {
   if (chain.root.kind !== "external" || chain.segs[chain.segs.length - 1]?.call !== call) return undefined;
+  const found: IrRaw[] = [];
   for (const entry of ctx.idx.lang.registry) {
+    if (found.length > 0 && !entry.endpoint?.agent) continue;
     const m = matchEntry(entry, chain.segs, ctx);
     // a property read matches a property entry, a call a method: `w3.eth.get_balance` handed over is no request
     if (!m || !!m.spec.property !== !!call.property || otherPackage(entry, fn, ctx)) continue;
-    const body = bodyOf(m, call, fn, ctx);
-    const query = m.spec.queryKwargs ? (m.spec.fieldArgs ? fieldArgsDict(m, call) : kwargsDict(call, pathKwargs(m))) : undefined;
-    const endpoint = entry.endpoint ? irEndpoint(m, ctx) : undefined;
-    if (endpoint === null) continue;
-    const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
-    const headers = [endpoint?.headers, m.spec.headersArg !== undefined ? argOf(m.method, m.spec.headersArg, "headers") : undefined].filter((h): h is Scoped => !!h);
-    const args = m.segs.flatMap((s) => (s.call && s.fn ? s.call.args.map((a) => ({ expr: a.value, fn: s.fn! })) : []));
-    const raw: IrRaw = {
-      call,
-      fn,
-      client: "sdk",
-      sdk: m,
-      url: instanceUrl(m),
-      body,
-      query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
-      // a host set once at startup (`PostHog.setup(...)`) is not an input of the call: it is not a wrapper parameter
-      baseUrl: baseUrl ?? setupBaseUrl(entry, ctx),
-      headers,
-      inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
-      model: modelOf(m, ctx),
-    };
-    const refined = ctx.idx.lang.refineSdk ? ctx.idx.lang.refineSdk(raw, chain, ctx) : raw;
-    if (refined) return refined;
+    found.push(...entryRaws(m, chain, call, fn, ctx));
   }
-  return undefined;
+  const [first, ...rest] = found.flatMap(withAlternatives);
+  return first && rest.length > 0 ? { ...first, alternatives: rest } : first;
+}
+
+/** The calls a matched method makes: one, or one per HTTP server of an agent framework's MCP client (none without one). */
+function entryRaws(m: IrSdkMatch, chain: Chain, call: CallExpr, fn: FunctionDef, ctx: IrCtx): IrRaw[] {
+  const entry = m.entry;
+  const servers = entry.endpoint?.agent ? mcpServers(m, ctx) : undefined;
+  const endpoint = servers ? undefined : entry.endpoint ? irEndpoint(m, ctx) : undefined;
+  if (endpoint === null) return [];
+  return (servers ?? [endpoint]).flatMap((ep) => {
+    const raw = sdkRaw(m, call, fn, ep, ctx);
+    const refined = ctx.idx.lang.refineSdk ? ctx.idx.lang.refineSdk(raw, chain, ctx) : raw;
+    return refined ? [refined] : [];
+  });
+}
+
+function sdkRaw(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, endpoint: IrEndpoint | undefined, ctx: IrCtx): IrRaw {
+  const body = bodyOf(m, call, fn, ctx);
+  const query = m.spec.queryKwargs ? (m.spec.fieldArgs ? fieldArgsDict(m, call) : kwargsDict(call, pathKwargs(m))) : undefined;
+  const baseUrl = endpoint ? endpoint.url : codeBaseUrl(m, ctx);
+  const headers = [endpoint?.headers, m.spec.headersArg !== undefined ? argOf(m.method, m.spec.headersArg, "headers") : undefined].filter((h): h is Scoped => !!h);
+  const args = m.segs.flatMap((s) => (s.call && s.fn ? s.call.args.map((a) => ({ expr: a.value, fn: s.fn! })) : []));
+  return {
+    call,
+    fn,
+    client: "sdk",
+    sdk: m,
+    url: instanceUrl(m),
+    body,
+    query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
+    // a host set once at startup (`PostHog.setup(...)`) is not an input of the call: it is not a wrapper parameter
+    baseUrl: baseUrl ?? setupBaseUrl(m.entry, ctx),
+    headers,
+    inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
+    model: modelOf(m, ctx),
+  };
 }

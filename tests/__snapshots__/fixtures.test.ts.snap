@@ -9579,7 +9579,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 102,
+    "filesSeen": 108,
     "languages": {
       "html": {
         "filesScanned": 0,
@@ -9591,7 +9591,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 91,
+        "filesSeen": 97,
       },
     },
     "skipped": [
@@ -9765,6 +9765,30 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "mcp/vendor.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents/ai-sdk.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents/claude-agent.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents/langchain.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents/mastra.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents/openai-agents.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mcp-agents-local/local.ts",
         "reason": "excluded",
       },
       {
@@ -9973,7 +9997,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 94,
+      "excluded": 100,
     },
     "unfollowed": [],
   },

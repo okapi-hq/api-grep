@@ -1,0 +1,22 @@
+{
+  "$comment": "LangChain MCP adapters: `new MultiServerMCPClient({ mcpServers: { name: { url, transport, headers } } })` (or the servers at the top level, as older releases took them) connects to each server; `getTools()` lists the tools of each. A server with a `command` or the `stdio` transport runs a local process and is not reported. `operation` is the MCP method.",
+  "package": "@langchain/mcp-adapters",
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against @langchain/mcp-adapters 0.6)",
+  "callersOnly": true,
+  "instance": {"names": ["MultiServerMCPClient"]},
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MultiServerMCPClient": {"servers": {"at": "0.mcpServers|0", "named": true, "url": "url", "headers": "headers", "transport": {"key": "transport", "http": ["http", "sse", "streamable_http", "streamable-http"]}, "local": ["command"]}}
+    }
+  },
+  "commands": {
+    "MultiServerMCPClient": {"method": "POST", "path": "", "mcp": "initialize"}
+  },
+  "methods": {
+    "getTools": {"method": "POST", "path": "", "mcp": "tools/list"}
+  }
+}

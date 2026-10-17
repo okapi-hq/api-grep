@@ -1,0 +1,32 @@
+{
+  "$comment": "LlamaIndex MCP tools: `BasicMCPClient(\"https://.../mcp\", headers=...)` connects to that server (a command that is no URL runs a local process and is not reported); `list_tools()`, `call_tool(name, arguments)`, and `McpToolSpec(client=...).to_tool_list_async()` or `aget_tools_from_mcp_url(url)` send those methods. `operation` is the MCP method.",
+  "package": "llama-index-tools-mcp",
+  "imports": ["llama_index.tools.mcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against llama-index-tools-mcp 0.4)",
+  "instance": { "names": ["BasicMCPClient", "McpToolSpec"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "BasicMCPClient": { "headers": "kw:headers", "servers": { "at": "kw:command_or_url|0" } },
+      "McpToolSpec": { "servers": { "at": "kw:client|0" } },
+      "get_tools_from_mcp_url": { "servers": { "at": "kw:command_or_url|0" } },
+      "aget_tools_from_mcp_url": { "servers": { "at": "kw:command_or_url|0" } }
+    }
+  },
+  "methods": {
+    "BasicMCPClient": { "method": "POST", "path": "", "mcp": "initialize" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:tool_name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "list_resources": { "method": "POST", "path": "", "mcp": "resources/list" },
+    "read_resource": { "method": "POST", "path": "", "mcp": "resources/read", "targetArg": "kw:resource_uri|0" },
+    "list_prompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "get_prompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "kw:prompt_name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "to_tool_list": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "to_tool_list_async": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "get_tools_from_mcp_url": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "aget_tools_from_mcp_url": { "method": "POST", "path": "", "mcp": "tools/list" }
+  }
+}

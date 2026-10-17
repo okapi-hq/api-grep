@@ -1,0 +1,27 @@
+{
+  "$comment": "smolagents MCP clients: `MCPClient({\"url\": ..., \"transport\": \"streamable-http\" | \"sse\"})` (or a list of those) and `ToolCollection.from_mcp({...}, trust_remote_code=True)` connect to each server; `get_tools()` lists its tools. `StdioServerParameters` runs a local process and is not reported. The agent's model requests are `smolagents.json`'s.",
+  "package": "smolagents",
+  "imports": ["smolagents.mcp_client", "smolagents"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against smolagents 1.21 mcp_client.py, tools.py)",
+  "instance": { "names": ["MCPClient"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPClient": {
+        "servers": { "at": "kw:server_parameters|0", "url": "url", "headers": "headers", "transport": { "key": "transport", "http": ["streamable-http", "streamable_http", "sse"] }, "local": ["command"] }
+      },
+      "from_mcp": {
+        "servers": { "at": "kw:server_parameters|0", "url": "url", "headers": "headers", "transport": { "key": "transport", "http": ["streamable-http", "streamable_http", "sse"] }, "local": ["command"] }
+      }
+    },
+    "nonHttp": ["StdioServerParameters"]
+  },
+  "methods": {
+    "MCPClient": { "method": "POST", "path": "", "mcp": "initialize" },
+    "ToolCollection.from_mcp": { "method": "POST", "path": "", "mcp": "initialize" },
+    "get_tools": { "method": "POST", "path": "", "mcp": "tools/list" }
+  }
+}

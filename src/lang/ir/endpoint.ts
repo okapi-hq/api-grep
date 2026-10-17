@@ -60,8 +60,8 @@ function pickedByKey(e: IrEndpoint, ctx: IrCtx): boolean {
 
 type Spec = NonNullable<IrSdkMatch["entry"]["endpoint"]>;
 
-function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, ctx: IrCtx): IrEndpoint | null {
-  const own = read(seg, client, ctx);
+export function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, ctx: IrCtx): IrEndpoint | null {
+  const own = readEndpoint(seg, client, ctx);
   if (own.url) return own;
   const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
   if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
@@ -69,7 +69,7 @@ function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, c
   if (given !== undefined) return given && { url: given };
   const transports = spec.transports ?? {};
   const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
-  return t ? read(t, transports[t.name]!, ctx) : {};
+  return t ? readEndpoint(t, transports[t.name]!, ctx) : {};
 }
 
 /**
@@ -77,7 +77,7 @@ function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, c
  * a local script run over stdio (`null`), a string built in code or read from the environment a URL; undefined for a
  * value that is no string (a transport object, a server instance).
  */
-function givenUrl(s: Scoped, ctx: IrCtx): Scoped | null | undefined {
+export function givenUrl(s: Scoped, ctx: IrCtx): Scoped | null | undefined {
   const d = deref(s.expr, s.fn, ctx);
   const e = d.expr;
   if (e.k === "str") return /^https?:\/\//i.test(e.v) ? s : null;
@@ -86,14 +86,14 @@ function givenUrl(s: Scoped, ctx: IrCtx): Scoped | null | undefined {
   return first || e.k === "env" || e.k === "format" ? s : undefined;
 }
 
-/** Two endpoints with the same URL:the same literal or variable, written in the same scope; an unknown one agrees with nothing. */
+/** Two endpoints with the same URL: the same literal or variable, written in the same scope; an unknown one agrees with nothing. */
 function sameUrl(a: IrEndpoint, b: IrEndpoint, ctx: IrCtx): boolean {
   if (!a.url || !b.url) return false;
   const [x, y] = [deref(a.url.expr, a.url.fn, ctx), deref(b.url.expr, b.url.fn, ctx)];
   return (x.fn === y.fn || x.expr.k === "str") && sameExpr(x.expr, y.expr);
 }
 
-function read(seg: Seg, source: EndpointSource, ctx: IrCtx): IrEndpoint {
+export function readEndpoint(seg: Seg, source: EndpointSource, ctx: IrCtx): IrEndpoint {
   const url = source.url ? argAt(seg, source.url, ctx) : undefined;
   return url ? { url, headers: source.headers ? argAt(seg, source.headers, ctx) : undefined } : {};
 }

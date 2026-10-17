@@ -61,30 +61,43 @@ import googleapis from "./googleapis.json" with { type: "json" };
 import googleAuthLibrary from "./google-auth-library.json" with { type: "json" };
 import notion from "./notion.json" with { type: "json" };
 import vercelBlob from "./vercel-blob.json" with { type: "json" };
+import aiSdkMcp from "./ai-sdk-mcp.json" with { type: "json" };
+import openaiAgentsMcp from "./openai-agents-mcp.json" with { type: "json" };
+import langchainMcpAdapters from "./langchain-mcp-adapters.json" with { type: "json" };
+import claudeAgentSdkMcp from "./claude-agent-sdk-mcp.json" with { type: "json" };
+import mastraMcp from "./mastra-mcp.json" with { type: "json" };
 
+/**
+ * The registries by package. A package may have several, of different providers (`@openai/agents`: the agent's model
+ * requests, and the MCP servers it connects to): the first is the package's, the others add the calls they read.
+ */
 export class Registry {
-  private byPkg = new Map<string, RegistryEntry>();
+  private byPkg = new Map<string, RegistryEntry[]>();
   readonly frameworks: FrameworkEntry[];
 
   constructor(entries: RegistryEntry[], frameworkEntries: FrameworkEntry[] = []) {
-    for (const e of entries) this.add(e);
+    for (const e of entries) this.add(e, true);
     this.frameworks = frameworkEntries;
   }
 
-  add(e: RegistryEntry): void {
-    this.byPkg.set(e.package, e);
-    for (const a of e.aliases ?? []) this.byPkg.set(a, e);
+  /** `after`: beside the package's registries already listed; otherwise in their place (a test's own registry). */
+  add(e: RegistryEntry, after = false): void {
+    for (const p of [e.package, ...(e.aliases ?? [])]) this.byPkg.set(p, after ? [...(this.byPkg.get(p) ?? []), e] : [e]);
   }
 
   /** Exact package first, then a scope wildcard alias (`@sentry/*`). */
   byPackage(pkg: string | undefined): RegistryEntry | undefined {
-    if (!pkg) return undefined;
+    return this.allByPackage(pkg)[0];
+  }
+
+  allByPackage(pkg: string | undefined): RegistryEntry[] {
+    if (!pkg) return [];
     const scope = pkg.startsWith("@") ? pkg.split("/")[0] : undefined;
-    return this.byPkg.get(pkg) ?? (scope ? this.byPkg.get(`${scope}/*`) : undefined);
+    return this.byPkg.get(pkg) ?? (scope ? this.byPkg.get(`${scope}/*`) : undefined) ?? [];
   }
 
   entries(): RegistryEntry[] {
-    return [...new Set(this.byPkg.values())];
+    return [...new Set([...this.byPkg.values()].flat())];
   }
 }
 
@@ -104,5 +117,7 @@ export function defaultRegistry(): Registry {
   entries.push(nodeTelegramBotApi, telegraf, grammy, discordJs);
   // productivity, storage, Google Cloud and agent SDKs
   entries.push(notion, vercelBlob, firebaseAdmin, googleCloudVertexai, claudeAgentSdk, googleapis, googleAuthLibrary);
+  // the MCP servers agent frameworks connect to, after the framework's own registry when it has one
+  entries.push(aiSdkMcp, openaiAgentsMcp, langchainMcpAdapters, claudeAgentSdkMcp, mastraMcp);
   return new Registry(entries as RegistryEntry[], frameworks.frameworks as FrameworkEntry[]);
 }

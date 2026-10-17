@@ -157,7 +157,12 @@ arguments filling the placeholders), and `callersOnly` keeps a registry of commo
    [`viem.json`](src/detect/registry/viem.json). A contract object's functions are keys with `*` for the function's
    name (`getContract.read.*`), with `runnerArg` naming where the contract's construction takes its client. A client
    that a config or a context provider hands out names it in `endpoint.clients` (`config`: wagmi's `usePublicClient()`;
-   `component`: `useConnection()` under `<ConnectionProvider>`), as in [`wagmi.json`](src/detect/registry/wagmi.json). AI SDK model factories live in
+   `component`: `useConnection()` under `<ConnectionProvider>`), as in [`wagmi.json`](src/detect/registry/wagmi.json).
+   An agent framework's MCP client is a registry of the `mcp` provider with `endpoint.agent`: each client says where
+   its `servers` are (`at`, `named` for a dict by name, the `url`, `headers`, `transport` and `local` keys of a
+   configuration) or gives the one server's `url`, and methods name the MCP method (`mcp`), as in
+   [`langchain-mcp-adapters.json`](src/detect/registry/langchain-mcp-adapters.json). A package that already has a
+   registry of another provider gets a second one (`openai-agents-mcp.json`), listed after it. AI SDK model factories live in
    [`src/detect/registry/ai-sdk.json`](src/detect/registry/ai-sdk.json). See `MethodSpec` and `RegistryEntry` in [`src/types.ts`](src/types.ts)
    for every field.
 2. Register it in `defaultRegistry()` in [`src/detect/registry/index.ts`](src/detect/registry/index.ts).

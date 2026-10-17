@@ -1,0 +1,28 @@
+{
+  "$comment": "AutoGen MCP tools: `McpWorkbench(server_params=StreamableHttpServerParams(url=..., headers=...))` (or `SseServerParams`) connects to that server; `list_tools()`, `call_tool(name, arguments)` and `mcp_server_tools(params)` send those methods. `StdioServerParams` runs a local process and is not reported. The model clients' requests are `autogen-ext.json`'s.",
+  "package": "autogen-ext",
+  "imports": ["autogen_ext.tools.mcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against autogen-ext 0.7 tools/mcp)",
+  "instance": { "names": ["McpWorkbench"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "McpWorkbench": { "servers": { "at": "kw:server_params|0" } },
+      "mcp_server_tools": { "servers": { "at": "kw:server_params|0" } }
+    },
+    "transports": {
+      "StreamableHttpServerParams": { "url": "kw:url|0", "headers": "kw:headers" },
+      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["StdioServerParams"]
+  },
+  "methods": {
+    "McpWorkbench": { "method": "POST", "path": "", "mcp": "initialize" },
+    "mcp_server_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" }
+  }
+}

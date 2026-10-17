@@ -1,0 +1,27 @@
+{
+  "$comment": "PydanticAI MCP servers: `MCPServerStreamableHTTP(url, headers=...)`, `MCPServerSSE` and the older `MCPServerHTTP` connect to that server (as an agent's toolset); `list_tools()` and `call_tool(name, args)` send those methods. `MCPServerStdio` runs a local process and is not reported. The agent's model requests are `pydantic-ai.json`'s.",
+  "package": "pydantic-ai",
+  "imports": ["pydantic_ai.mcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against pydantic-ai 1.0 pydantic_ai/mcp.py)",
+  "instance": { "names": ["MCPServerStreamableHTTP", "MCPServerSSE", "MCPServerHTTP"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPServerStreamableHTTP": { "url": "kw:url|0", "headers": "kw:headers" },
+      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers" },
+      "MCPServerHTTP": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["MCPServerStdio"]
+  },
+  "methods": {
+    "MCPServerStreamableHTTP": { "method": "POST", "path": "", "mcp": "initialize" },
+    "MCPServerSSE": { "method": "POST", "path": "", "mcp": "initialize" },
+    "MCPServerHTTP": { "method": "POST", "path": "", "mcp": "initialize" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "tool_args" },
+    "direct_call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "args" }
+  }
+}

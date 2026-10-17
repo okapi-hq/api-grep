@@ -5,6 +5,7 @@ import { declarationsOf, getProp } from "../ast/object.js";
 import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint, type Endpoint } from "./endpoint.js";
 import { mcpEndpoint } from "./mcp-endpoint.js";
+import { mcpServerEndpoints } from "./mcp-servers.js";
 import { contractCall } from "./rpc-contract.js";
 import { rpcEndpoint } from "./rpc-endpoint.js";
 import { keepsSender, withSenderArgs } from "./sender.js";
@@ -141,6 +142,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.modelArg !== undefined) raw.modelExpr = (spec.modelProp?.split(".") ?? []).reduce<Expression | undefined>((e, key) => getProp(e, key), args[spec.modelArg]);
   const record = spec.record && Node.isCallExpression(node) ? recordOf(node, reg) : undefined;
   if (record) raw.record = record;
+  if (reg.endpoint?.agent) return withServers(raw, mcpServerEndpoints(node, key, callee, reg));
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
   const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg);
   if (base) raw.baseUrlExpr = base;
@@ -163,6 +165,12 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
   return raw;
 }
 
+/** An agent framework's MCP call: one per HTTP server of its client, none when it has none. */
+function withServers(raw: RawCall, servers: Endpoint[]): RawCall | null {
+  const each = servers.map((ep): RawCall => ({ ...raw, baseUrlExpr: ep.url, instanceHeadersExpr: ep.headers }));
+  return each.length > 1 ? { ...each[0]!, also: each.slice(1) } : (each[0] ?? null);
+}
+
 /**
  * A GraphQL client's method is called on the client, not on what another method returns: the Observable of
  * `client.watchQuery(...)` has a `subscribe` too, and it sends nothing more.
@@ -172,9 +180,17 @@ function onClient(callee: Callee, reg: RegistryEntry): boolean {
   return (reg.instance?.names ?? []).includes(callee.instance.chain.at(-1) ?? "default");
 }
 
+/**
+ * A call of a registry's package. A package with several registries (`@openai/agents`: its model requests and its MCP
+ * servers) gives the calls of each: the first, the others in `also`.
+ */
 export function detectSdk(node: CallExpression | NewExpression, callee: Callee, registry: Registry): RawCall | null {
-  const reg = registry.byPackage(callee.package);
-  if (!reg) return null;
+  const raws = registry.allByPackage(callee.package).flatMap((reg) => detectWith(node, callee, reg) ?? []);
+  if (raws.length < 2) return raws[0] ?? null;
+  return { ...raws[0]!, also: [...(raws[0]!.also ?? []), ...raws.slice(1)] };
+}
+
+function detectWith(node: CallExpression | NewExpression, callee: Callee, reg: RegistryEntry): RawCall | null {
   if (Node.isNewExpression(node)) {
     const name = exportedChain(callee).join(".");
     // own keys only: `toString` or `constructor` on a client is not a registry method
@@ -182,7 +198,7 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
   // a contract object's function (#78), before its name is read as one of the client's own methods
-  const contract = reg.endpoint?.nonHttp && !reg.endpoint.connect ? contractCall(node, callee, reg) : undefined;
+  const contract = reg.endpoint?.nonHttp && !reg.endpoint.connect && !reg.endpoint.agent ? contractCall(node, callee, reg) : undefined;
   if (contract !== undefined) return contract && buildRaw(node, reg, contract.key, contract.spec, callee, contract.endpoint);
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {

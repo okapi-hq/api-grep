@@ -1,0 +1,18 @@
+{
+  "$comment": "Claude Agent SDK MCP servers: `query({ prompt, options: { mcpServers: { name: { type: \"http\" | \"sse\", url, headers } } } })`. The app does not connect itself: the Claude Code process `query` starts does, with the configuration the app gives, so each HTTP server is still an outbound connection of the app. Servers with a `command` (stdio) or of type `sdk` (`createSdkMcpServer`, in process) send no HTTP request and are not reported. The model requests of `query` are `claude-agent-sdk.json`'s.",
+  "package": "@anthropic-ai/claude-agent-sdk",
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against @anthropic-ai/claude-agent-sdk 0.1.x sdk.d.ts: McpServerConfig)",
+  "callersOnly": true,
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "query": {"servers": {"at": "0.options.mcpServers", "named": true, "url": "url", "headers": "headers", "transport": {"key": "type", "http": ["http", "sse"]}, "local": ["command"]}}
+    }
+  },
+  "methods": {
+    "query": {"method": "POST", "path": "", "mcp": "initialize"}
+  }
+}
