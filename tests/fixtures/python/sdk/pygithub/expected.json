@@ -1,0 +1,12 @@
+{
+  "issue": "PyGithub registry: repositories, issues, pulls and contents read through the object chain",
+  "calls": [
+    {"file": "release_bot.py", "line": 9, "provider": "github"},
+    {"file": "release_bot.py", "line": 10, "provider": "github"},
+    {"file": "release_bot.py", "line": 14, "provider": "github"},
+    {"file": "release_bot.py", "line": 15, "provider": "github"},
+    {"file": "release_bot.py", "line": 19, "provider": "github"},
+    {"file": "release_bot.py", "line": 23, "provider": "github"},
+    {"file": "release_bot.py", "line": 27, "provider": "github"}
+  ]
+}

@@ -16,9 +16,9 @@ not scanned, nor are `.ts` files that are not TypeScript (Qt translations, video
 | fetch | global `fetch`, `node-fetch`, `undici.fetch`, `cross-fetch`, `fetch(new Request(...))` |
 | axios | `axios.<verb>()`, `axios(cfg)`, `axios.request(cfg)`, instances from `axios.create({ baseURL })`, aliased and `require`d imports |
 | got / ky | `got(url, opts)`, `got.<verb>()`, `got.extend({ prefixUrl })`, `ky.create({ prefixUrl })`, `json` / `form` / `body` / `searchParams` |
-| node http | `https.request(opts)`, `https.get(url)` |
-| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `@sentry/*`; GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`, GraphQL and REST; Hydrogen's context clients); messaging bots: node-telegram-bot-api, telegraf and grammY (also the handler context, `ctx.reply(...)`), discord.js (the client's managers, the `interaction`, `message` and `channel` events hand over, REST `Routes`); `@huggingface/inference`; JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `@solana/wallet-adapter-react`, `viem`, `wagmi`, `ethers`, `web3` (endpoint from the client or its HTTP transport, the wagmi config or the `<ConnectionProvider>`); MCP clients `@modelcontextprotocol/sdk` (`Client`: server URL and headers from the Streamable HTTP or SSE transport it is connected with; stdio, WebSocket and in-memory clients and servers are not calls) |
-| AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway); a model the scan cannot trace is still a call, with provider `unknown` |
+| node http | `https.request(opts)`, `https.get(url)`, `https.request(url, opts, cb)` (also with `url` an untyped parameter followed by an options object) |
+| SDKs | registry-driven: `stripe`, `openai` (also pointed elsewhere by `baseURL`), `@anthropic-ai/sdk`, `@google/genai`, `@google/generative-ai`, `@aws-sdk/client-bedrock-runtime`, `@octokit/rest`, `@slack/web-api`, `twilio`, `resend`, `@lemonsqueezy/lemonsqueezy.js`, RevenueCat (`react-native-purchases`, `@revenuecat/purchases-js`), `posthog-js`, `posthog-node`, `convex`, `@aws-sdk/client-s3`, `aws-sdk` v2, `@supabase/supabase-js` (and `@supabase/ssr`), `firebase` modular (Firestore, Auth, Storage), `firebase-admin` (Firestore references and queries, `collection("x").doc(id).get()` with the path its builders join, Auth, Cloud Messaging, Realtime Database, Cloud Storage), `@sentry/*`, `@notionhq/client`, `@vercel/blob`, `googleapis` (Sheets, Drive, Docs, Slides, Gmail, Calendar, Tasks, People, YouTube, Custom Search, Android Publisher, Search Console, Analytics Data, generated from their discovery documents), `google-auth-library` (the token requests of `JWT` and `OAuth2Client`), `@google-cloud/vertexai`, `@anthropic-ai/claude-agent-sdk` (`query({ prompt, options: { model } })`: the Messages API requests of the Claude Code CLI it runs); GraphQL clients `@apollo/client`, `urql`, `graphql-request` (endpoint from the client or its link), Relay (`react-relay`, `relay-runtime`: endpoint from the `fetch` of its network layer), Shopify (`@shopify/shopify-api` and its app packages, `@shopify/admin-api-client`, `@shopify/storefront-api-client`, `shopify-api-node`, GraphQL and REST; Hydrogen's context clients); messaging bots: node-telegram-bot-api, telegraf and grammY (also the handler context, `ctx.reply(...)`), discord.js (the client's managers, the `interaction`, `message` and `channel` events hand over, REST `Routes`); `@huggingface/inference`; JSON-RPC clients `@solana/web3.js`, `@solana/kit`, `@solana/wallet-adapter-react`, `viem`, `wagmi`, `ethers`, `web3` (endpoint from the client or its HTTP transport, the wagmi config or the `<ConnectionProvider>`); MCP clients `@modelcontextprotocol/sdk` (`Client`: server URL and headers from the Streamable HTTP or SSE transport it is connected with; stdio, WebSocket and in-memory clients and servers are not calls) |
+| AI SDK | `generateText` / `streamText` / `generateObject` / `streamObject` / `embed` / ... from `ai`: the provider, host and path come from the model (`openai("gpt-4o")`, `anthropic(...)`, `google(...)`, `vertex(...)`, `openrouter(...)`, `createOpenAI({ baseURL })(...)`, a `"provider/model"` string for the AI Gateway; also through `wrapLanguageModel` / `experimental_wrapLanguageModel`, the app's `customProvider({ languageModels })` read with `languageModel(name)`, a local helper's returns, a `let` given its model in branches, a helper's returned options spread into the call); a model picked at run time among several providers is one call per provider, as a host table's candidates (`hostAlternatives`); a branch that names no provider at all (a test double) is left out; a model the scan cannot trace is still a call, with provider `unknown` |
 | jQuery | `$.ajax({ url, type, data, contentType, headers })`, `$.ajax(url, settings)`, `$.get` / `$.getJSON(url, data)` (data as query), `$.post(url, data)` (form body, JSON with `contentType`) |
 | XMLHttpRequest | `xhr.open(method, url)`, `setRequestHeader(...)`, reported at `xhr.send(body)` |
 | frameworks | options-object helpers: n8n `this.helpers.httpRequest` / `request` / `*WithAuthentication.call(this, cred, options)`, activepieces `httpClient.sendRequest`, ai-sdk `postJsonToApi` / `postToApi` / `postFormDataToApi` / `getFromApi` |
@@ -27,8 +27,20 @@ Callees are identified by declaration through the type checker, never by name: a
 `fetch` is ignored and `import http from "axios"` is still axios. SDK instances are followed
 through `new Stripe()`, exported instances in other files, class properties (`this.stripe`),
 local factories (also lazy singletons: `let client; ... client ??= new OpenAI(); return client`, the construction
-a `let` declared without a value is given in its file) and typed parameters (`stripe: Stripe`, `ctx.db` with `db: SupabaseClient`);
-without the package's types installed, the written annotation is traced to its import.
+a `let` declared without a value is given in its file), clients built behind a guard (`key ? new Resend(key) : null`,
+`url && createClient(url, k)`, `globalThis.db ?? createClient(url, k)`: the other side is no client, or the same one kept
+from an earlier run; two built branches are not picked), an SDK a project module hands on under its own name
+(`export { Sentry }` after `import * as Sentry from "@sentry/react"`, `module.exports = Sentry` after
+`require("@sentry/node")`), a module loaded on demand (`const { OpenAI } = await import("openai")`; a `let` given
+`require("pkg").default` later in its file or the module an `import("pkg").then((mod) => ...)` callback receives, when
+every module assigned to it is one package's; a class field declared `= null` and set by a method), a script-tag
+global read through `window` (`window.supabase.createClient(...)`) and typed
+parameters (`stripe: Stripe`, `ctx.db` with `db: SupabaseClient`);
+without the package's types installed, the written annotation is traced to its import. Imports resolve with the
+path aliases of the file's own package in a monorepo: a file whose nearest `tsconfig.json` / `jsconfig.json` is not
+the scan's reads that one's `paths` and `baseUrl` (`apps/api`'s `@/*` is `apps/api/src/*`, `apps/web`'s its own); a
+solution config of `references` only (`{ "files": [], "references": [...] }`) reads the aliases its referenced configs
+agree on.
 
 Builder SDKs report one call per request: `supabase.from("tasks").select().eq("id", id).single()`
 is a `GET /rest/v1/tasks` at the start of the chain (filters and `.single()` are not extra calls),
@@ -77,7 +89,7 @@ escapes, magics and cells of another language are left out.
 | httpx | module functions, `request`, `stream`, `Client` / `AsyncClient` with `base_url` and `headers`, also through `async with` |
 | aiohttp | `ClientSession(base_url)` and its verbs, `request(method, url)` |
 | urllib | `urllib.request.urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))` (POST when there is data), `urllib3.PoolManager().request(...)` |
-| SDKs | registry-driven, see [sdk-support.md](sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime), Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, huggingface_hub (`InferenceClient`, Hub downloads); Telegram bots (python-telegram-bot with `context.bot` and `update.message.reply_text`, aiogram with `message.answer`, pyTelegramBotAPI), discord.py and its forks (`interaction.response.send_message`, `message.channel.send`, `tree.sync()`); the GraphQL clients `gql` (endpoint from its transport) and `sgqlc` (endpoint from its `HTTPEndpoint`, documents built with `Operation` read), ShopifyAPI (`GraphQL().execute` and the REST resources, `shopify.Product.find()`); the JSON-RPC clients web3.py and solana-py (endpoint from the provider or client); the MCP clients of the `mcp` SDK (`ClientSession` over the streams of `streamablehttp_client` / `sse_client`, also through `AsyncExitStack.enter_async_context`) and FastMCP (`Client(url)`, `Client(StreamableHttpTransport(url, headers=...))`); stdio and in-memory clients and servers are not calls |
+| SDKs | registry-driven, see [sdk-support.md](sdk-support.md): OpenAI (also Azure, and other services through `base_url`), Anthropic (also Bedrock and Vertex clients), Google Gen AI, Google Generative AI, Stripe (`StripeClient` and the classic `stripe.Customer.create`), Supabase, Firebase Admin, Firestore, Sentry, boto3 (S3, Bedrock runtime, DynamoDB, SES, SES v2, SQS, SNS; clients and resources), google-cloud-storage, google-cloud-secret-manager, google-api-python-client (`build("calendar", "v3").events().insert(...).execute()`, the APIs of the npm `googleapis` registry), google-auth (`refresh` of service account and user credentials, ID token verification), PyGithub (`g.get_repo(name).get_issue(n).create_comment(body)`), claude-agent-sdk (`query(prompt=..., options=ClaudeAgentOptions(model=...))`, `ClaudeSDKClient`), langchain-deepseek, langchain-google-vertexai, Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, huggingface_hub (`InferenceClient`, Hub downloads); Telegram bots (python-telegram-bot with `context.bot` and `update.message.reply_text`, aiogram with `message.answer`, pyTelegramBotAPI), discord.py and its forks (`interaction.response.send_message`, `message.channel.send`, `tree.sync()`); the GraphQL clients `gql` (endpoint from its transport) and `sgqlc` (endpoint from its `HTTPEndpoint`, documents built with `Operation` read), ShopifyAPI (`GraphQL().execute` and the REST resources, `shopify.Product.find()`); the JSON-RPC clients web3.py and solana-py (endpoint from the provider or client); the MCP clients of the `mcp` SDK (`ClientSession` over the streams of `streamablehttp_client` / `sse_client`, also through `AsyncExitStack.enter_async_context`) and FastMCP (`Client(url)`, `Client(StreamableHttpTransport(url, headers=...))`); stdio and in-memory clients and servers are not calls |
 
 Python keyword arguments are SDK bodies (`client.chat.completions.create(model=..., messages=...)`).
 Clients are followed through module variables and imports, `self.client = OpenAI()` in any method,
@@ -198,9 +210,12 @@ left out), anonymous structs, and `url.Values` built literally or with `Set` / `
 SDK calls are detected through the Go registries (`src/lang/go/registry/`): sashabaranov/go-openai
 (`openai.NewClient(token)`, `openai.NewClientWithConfig(cfg)` with `cfg := openai.DefaultConfig(token); cfg.BaseURL =
 ...` for another OpenAI-compatible provider), the official openai-go (`client.Chat.Completions.New(ctx, params)`,
-`option.WithBaseURL(u)`), anthropic-sdk-go (`client.Messages.New(ctx, params)`) and google.golang.org/genai
+`option.WithBaseURL(u)`), anthropic-sdk-go (`client.Messages.New(ctx, params)`), google.golang.org/genai
 (`client.Models.GenerateContent(ctx, "gemini-2.5-flash", ...)`, the model in the path; `client.Chats.Create(...)` then
-`SendMessage`) ([sdk-support.md](sdk-support.md)). Request structs are read as the JSON they send (`MaxTokens` ->
+`SendMessage`), slack-go/slack (`slack.New(token).PostMessage(channelID, opts...)` and the other Web API methods with
+their `...Context` variants, `slack.PostWebhook(url, msg)`), bwmarrin/discordgo (`s.ChannelMessageSend(channelID,
+text)` and the other REST calls of a `*discordgo.Session`, `/api/v9`) and getsentry/sentry-go (`sentry.CaptureException`,
+`CaptureMessage`, `CaptureEvent`, `Recover`, also on a hub) ([sdk-support.md](sdk-support.md)). Request structs are read as the JSON they send (`MaxTokens` ->
 `max_tokens`), with the fields set on their variable afterwards (`req.Stream = true`); the SDKs' value helpers
 (`openai.Int(512)`, `anthropic.String(s)`, `openai.UserMessage(m)`, `anthropic.NewUserMessage(anthropic.NewTextBlock(t))`,
 `genai.Text(p)`) as what they build, and their model constants (`openai.GPT4o`, `openai.ChatModelGPT4o`,
@@ -270,8 +285,9 @@ a request struct literal as written), openai-api-rs (`OpenAIClient::builder().wi
 `client.chat_completion(ChatCompletionRequest::new(GPT4_O.to_string(), messages))`, the fields set on the request
 afterwards, its model constants), teloxide (`Bot::new(token)`, `Bot::from_env()` or a handler's `bot: Bot`;
 `bot.send_message(chat_id, text)` and the other Bot API methods, `POST api.telegram.org/bot{token}/sendMessage` with
-the positional arguments as the body) and serenity (`msg.channel_id.say(&ctx.http, text)`, `msg.reply(&ctx, text)`,
-`ChannelId::new(id).say(...)`: `POST discord.com/api/v10/channels/{channel_id}/messages`) ([sdk-support.md](sdk-support.md)).
+the positional arguments as the body) serenity (`msg.channel_id.say(&ctx.http, text)`, `msg.reply(&ctx, text)`,
+`ChannelId::new(id).say(...)`: `POST discord.com/api/v10/channels/{channel_id}/messages`) and sentry (`sentry::capture_error(&e)`,
+`capture_message`, `Hub::current().capture_event(...)`: the DSN's ingest host) ([sdk-support.md](sdk-support.md)).
 
 Values are resolved through string literals (raw strings too), `const` and `static` items (also of other modules and
 crates, of `impl` blocks and inline modules), `format!` with positional, named (`{name}`, `name = v`) and captured
@@ -303,7 +319,12 @@ SDK calls are detected through the Dart registries (`src/lang/dart/registry/`): 
 (`Supabase.instance.client`, a `SupabaseClient` field or parameter, `SupabaseClient(url, key)`; `from('t').select()` /
 `insert` / `update` / `upsert` / `delete`, `rpc('fn', params: p)`, `auth.signInWithPassword(email:, password:)` and the
 other auth calls, `storage.from('bucket').upload(...)`, `functions.invoke('fn', body: b)`; the base URL is the `url:` of
-the project's `Supabase.initialize(...)`) ([sdk-support.md](sdk-support.md)).
+the project's `Supabase.initialize(...)`), firebase_auth (`FirebaseAuth.instance.signInWithEmailAndPassword(email:,
+password:)` and the other sign-in and account calls, also on `currentUser`) and cloud_firestore
+(`FirebaseFirestore.instance.collection('c').doc(id).get()` / `set` / `update` / `delete`, `add`, `snapshots()`, the path
+the `collection` and `doc` arguments join) ([sdk-support.md](sdk-support.md)). firebase_core (`Firebase.initializeApp()`),
+firebase_messaging (device registration happens in the platform SDKs) and google_maps_flutter (a map widget) send no
+request the code names: `coverage.sdks` lists them as unsupported.
 
 Values are resolved through string literals (interpolation `$x` / `${a.b}`, raw and multi-line strings, adjacent
 strings, which Dart concatenates), `+`, `??`, conditionals, `const` and `final` values (top level, `static` members of
@@ -369,7 +390,7 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `api-grep providers` prints the table as JSON so other tools can share the same names.
 - **Headers**: names only. Literal values are kept unless they look like credentials, and the
   auth scheme is inferred (`Bearer `, `Basic `, `x-api-key`).
-- **Wrappers** (up to four deep): a local function or method whose body performs an HTTP call *and*
+- **Wrappers** (up to six deep in TypeScript and JavaScript, four in the other languages): a local function or method whose body performs an HTTP call *and*
   whose parameters flow into its request (URL, method, query, body; for an SDK call, the
   arguments its registry reads) is treated as a client. Calls to it are reported at the call
   site with `via: "wrapper:<name>"` and the caller's arguments substituted, including
@@ -381,6 +402,20 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   `Sentry.captureException(err)` is not a client: every caller sends the same request, so only
   the call inside it is reported. A wrapper that sends the same request twice (a retry) gives one
   call per call site; different requests from one call site get distinct `id`s.
+  A wrapper is also a function the code pins down without naming it (`src/detect/fn-value.ts`): a member of what the
+  app's hook or factory returns (`const { fetchWithAuth } = useApi()`, `api.fetchWithAuth(url)`, through `useCallback`
+  / `useMemo`), a method of an object literal, an arrow a factory returns (`const send = makeSender(base)`: the
+  factory's parameters read as its call passes them), a method a class inherits from a base class of the project, and
+  an arrow whose body is the request (`(path) => fetch(base + path)`). Calling a factory is not calling what it
+  returns: `makeSender(base)` itself sends nothing. When several functions fit (a factory returning one of two, a
+  `let` given another), none is followed.
+- **Fetch functions passed down** (`src/detect/passed-fn.ts`): a fetch-named callee that is a parameter
+  (`fetchImpl(url)`), a member of one (`deps.fetchUpstream(url)`, `{ dbFetch }` destructured), or a field the
+  constructor sets from one (`this.fetchFn = opts.fetchFn`) is what the enclosing function's callers pass, one level
+  up, or the parameter's default for a caller that passes nothing: the global `fetch` makes it a fetch call, a
+  function of the project a wrapper call. Callers whose argument cannot be read are not counted; when two pass
+  different functions the call stays `injected-fetch`. A fetch-named value whose checker type is the platform's
+  `typeof fetch` (`const f = resolveFetch(custom)`) is a fetch call too.
 - **Host tables**: a base URL picked at run time from a table the code writes is reported once per
   candidate host, each copy with its own `host`, `provider` and `id`, and every candidate listed in
   `hostAlternatives`. A table is an object, dict or map read with a key known at run time only
@@ -409,8 +444,9 @@ TypeScript; Python follows the same ones with its own syntax (f-strings, `%` and
   branch with a literal host (`cloud ? "https://api..." : selfHostedUrl`): the other value is not
   listed. A variable assigned in branches reads the same way. A helper with several `return`s, a table and a Rust
   `match` are host tables (above): one call per host.
-- Wrapper expansion stops at four wrappers; the definition-site call is still reported and
-  deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`).
+- Wrapper expansion stops at six wrappers (four in the languages read with tree-sitter); the definition-site call is
+  still reported and deeper call sites are listed in `diagnostics.unfollowed` (`wrapper-depth`). A wrapper that calls
+  several others keeps the requests of the first three it reaches.
 - Host tables: only the first table a call's URL reads that tells hosts apart is listed (of the first three it meets);
   a table nested in another entry reads as before. A table built by code (a loop filling a map, `dict(zip(...))`, a
   Python `for` returning the matching element, Rust `find_map`), read through a class registry, a factory map of

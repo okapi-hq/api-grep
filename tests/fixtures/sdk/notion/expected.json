@@ -1,0 +1,10 @@
+{
+  "issue": "@notionhq/client registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "journal.ts", "line": 6, "provider": "notion"},
+    {"file": "journal.ts", "line": 9, "provider": "notion"},
+    {"file": "journal.ts", "line": 11, "provider": "notion"},
+    {"file": "journal.ts", "line": 13, "provider": "notion"},
+    {"file": "journal.ts", "line": 15, "provider": "notion"}
+  ]
+}

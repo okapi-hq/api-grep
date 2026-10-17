@@ -7,6 +7,24 @@ import { evaluate } from "./evaluate.js";
 const MAX_DEPTH = 6;
 /** Firebase reference builders: `doc(db, "users", id)`, `collection(ref, "posts")`, `ref(storage, path)`; `query(ref, ...)` keeps its ref. */
 const BUILDERS = new Set(["doc", "collection", "collectionGroup", "ref", "child"]);
+/**
+ * Methods of a reference that narrow a query and keep its path (firebase-admin / namespaced SDK:
+ * `db.collection("orders").where(...).limit(20)`; Realtime Database `ref.orderByChild(k)`).
+ */
+const NARROWERS = new Set(["where", "orderBy", "limit", "limitToLast", "offset", "startAt", "startAfter", "endAt", "endBefore", "select", "findNearest", "orderByChild", "orderByKey", "orderByValue", "limitToFirst", "equalTo"]);
+
+/**
+ * The reference a method-form builder is called on (`db.collection("users").doc(id)`: `db.collection("users")` for
+ * `doc`); undefined for the modular functions, which take it as their first argument (`doc(db, "users", id)`, also
+ * through a namespace import: `fs.doc(db, ...)`).
+ */
+function receiverOf(call: CallExpression): Expression | undefined {
+  const callee = unwrap(call.getExpression());
+  if (!Node.isPropertyAccessExpression(callee)) return undefined;
+  const target = unwrap(callee.getExpression());
+  const namespace = Node.isIdentifier(target) && declarationsOf(target).some((d) => Node.isNamespaceImport(d));
+  return namespace ? undefined : target;
+}
 
 function builderName(call: CallExpression): string | undefined {
   const callee = unwrap(call.getExpression());
@@ -35,6 +53,7 @@ function asBuilder(expr: Expression, ctx: EvalCtx, depth: number): CallExpressio
   if (depth > MAX_DEPTH) return undefined;
   if (Node.isCallExpression(u)) {
     const name = builderName(u);
+    if (name && NARROWERS.has(name) && receiverOf(u)) return u;
     return name && (BUILDERS.has(name) || name === "query") ? u : undefined;
   }
   if (Node.isIdentifier(u)) {
@@ -48,7 +67,9 @@ function builderParts(call: CallExpression, ctx: EvalCtx, depth: number): Part[]
   const name = builderName(call)!;
   const args = call.getArguments() as Expression[];
   if (name === "query") return args[0] ? refParts(args[0], ctx, depth + 1) : [{ kind: "dynamic", name: "ref", origin: "unknown" }];
-  const [parent, ...segArgs] = args;
+  const receiver = receiverOf(call);
+  if (receiver && NARROWERS.has(name)) return refParts(receiver, ctx, depth + 1);
+  const [parent, ...segArgs] = receiver ? [receiver, ...args] : args;
   const parentCall = parent ? asBuilder(parent, ctx, depth + 1) : undefined;
   const prefix = parentCall ? builderParts(parentCall, ctx, depth + 1) : [];
   const segments = segArgs.map((a) => evaluate(a, ctx, depth + 1));

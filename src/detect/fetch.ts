@@ -48,7 +48,22 @@ const TYPEOF_FETCH = /^typeof\s+(?:globalThis\.|window\.|self\.)?fetch$/;
 /** `fetchImpl: typeof fetch` received from outside: whatever it is, it takes fetch's arguments. */
 function declaredAsFetch(node: CallExpression): boolean {
   const expr = unwrap(node.getExpression());
-  return (Node.isIdentifier(expr) || Node.isPropertyAccessExpression(expr)) && TYPEOF_FETCH.test(writtenType(expr).trim());
+  if (!Node.isIdentifier(expr) && !Node.isPropertyAccessExpression(expr)) return false;
+  if (TYPEOF_FETCH.test(writtenType(expr).trim())) return true;
+  // `const fetchImpl = resolveFetch(fetcher)` returning `typeof fetch`: the checker's type, for fetch-named callees only
+  const name = Node.isIdentifier(expr) ? expr.getText() : expr.getName();
+  return /fetch/i.test(name) && TYPEOF_FETCH.test(checkerType(expr));
+}
+
+function checkerType(expr: Node): string {
+  try {
+    const type = expr.getType();
+    // the platform's `fetch`, not a function of the project that happens to be named so
+    const decl = type.getSymbol()?.getDeclarations()[0];
+    return decl?.getSourceFile().isDeclarationFile() ? type.getText(expr) : "";
+  } catch {
+    return "";
+  }
 }
 
 export function detectFetch(node: CallExpression | NewExpression, callee: Callee, ctx: EvalCtx = {}): RawCall | null {

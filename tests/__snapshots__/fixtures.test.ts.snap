@@ -4268,11 +4268,11 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 9,
+    "filesSeen": 11,
     "languages": {
       "typescript": {
         "filesScanned": 5,
-        "filesSeen": 9,
+        "filesSeen": 11,
       },
     },
     "skipped": [
@@ -4285,6 +4285,14 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
         "reason": "excluded",
       },
       {
+        "file": "function-values/local-fetchers.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "guarded-clients/pick.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "img-src/Avatar.tsx",
         "reason": "excluded",
       },
@@ -4294,7 +4302,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       },
     ],
     "skippedCounts": {
-      "excluded": 4,
+      "excluded": 6,
     },
     "unfollowed": [],
   },
@@ -9571,20 +9579,40 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 78,
+    "filesSeen": 102,
     "languages": {
+      "html": {
+        "filesScanned": 0,
+        "filesSeen": 1,
+      },
       "javascript": {
         "filesScanned": 0,
-        "filesSeen": 6,
+        "filesSeen": 10,
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 72,
+        "filesSeen": 91,
       },
     },
     "skipped": [
       {
         "file": "ai-sdk/generate.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "ai-sdk-providers/flags.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "ai-sdk-providers/models.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "ai-sdk-providers/route.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "ai-sdk-providers/untraced.ts",
         "reason": "excluded",
       },
       {
@@ -9616,6 +9644,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "claude-agent/triage.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/app.tsx",
         "reason": "excluded",
       },
@@ -9633,6 +9665,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "discord-js/deploy.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "firebase-admin/server.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "firebase-admin/storage.ts",
         "reason": "excluded",
       },
       {
@@ -9656,11 +9696,47 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "google-auth/tokens.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "googleapis/sheets.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "grammy/bot.ts",
         "reason": "excluded",
       },
       {
+        "file": "guarded-clients/copy.mjs",
+        "reason": "excluded",
+      },
+      {
+        "file": "guarded-clients/login.html",
+        "reason": "excluded",
+      },
+      {
+        "file": "guarded-clients/on-demand.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "guarded-clients/store.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "guarded-clients/transcribe.js",
+        "reason": "excluded",
+      },
+      {
         "file": "huggingface/hf.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "lazy-modules/subscriptions.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "lazy-modules/telemetry.ts",
         "reason": "excluded",
       },
       {
@@ -9712,6 +9788,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "notion/journal.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "openai-compatible/clients.ts",
         "reason": "excluded",
       },
@@ -9725,6 +9805,26 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "react-context/assistant.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "reexported-clients/boundary.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "reexported-clients/events.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "reexported-clients/monitoring.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "reexported-clients/sentry-setup.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "reexported-clients/worker.js",
         "reason": "excluded",
       },
       {
@@ -9836,6 +9936,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "vercel-blob/avatars.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "vertexai/summarize.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/_generated/api.ts",
         "reason": "excluded",
       },
@@ -9865,7 +9973,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 70,
+      "excluded": 94,
     },
     "unfollowed": [],
   },
@@ -10811,16 +10919,28 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 9,
+    "filesSeen": 13,
     "languages": {
       "typescript": {
         "filesScanned": 5,
-        "filesSeen": 9,
+        "filesSeen": 13,
       },
     },
     "skipped": [
       {
         "file": "deep-chain/catalog.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/factories.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/hooks.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/inherited.ts",
         "reason": "excluded",
       },
       {
@@ -10832,12 +10952,16 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "passed-functions/callers.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "two-hop/client.ts",
         "reason": "excluded",
       },
     ],
     "skippedCounts": {
-      "excluded": 4,
+      "excluded": 8,
     },
     "unfollowed": [],
   },

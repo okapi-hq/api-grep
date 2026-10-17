@@ -122,7 +122,9 @@ third parties are counted: [eval/README.md](eval/README.md). Its tests use the i
    properties; `encoding` sets the body encoding (`form`, `multipart` or `raw`; JSON otherwise). A
    method can also set its own `host` and `auth`, read its body from a property of an argument
    (`bodyProp`), and name where each path placeholder comes from in `params`: `arg:N`,
-   `instance:N` (the builder it is called on, `from(table)`) or `ref:N` (a Firebase reference).
+   `instance:N` (the builder it is called on, `from(table)`), `ref:N` (a Firebase reference) or `receiver` (the
+   reference the method is called on: firebase-admin's `db.collection("users").doc(id).get()`). `modelProp` may be
+   dotted (`options.model`).
    With `inlinePathLiterals`, literal values are written into the path; `instance.urlArg` names
    the constructor argument that holds the base URL. An alias ending in `/*` covers a whole
    scope (`@sentry/*`). `urlArg` can point into an options object (`"0.baseURL"`), `basePath`
@@ -197,7 +199,10 @@ reads the query from keyword arguments. Path parameters also accept `kw:<name>`,
 narrow a request (`collection`, `document`). `fieldArgs` names the positional arguments the library sends as fields,
 the keyword arguments adding theirs (`bot.send_message(chat_id, text, parse_mode=...)`; with `queryKwargs` they are the
 query string); `modelSeg` names the client constructors whose `model` is the request's when the method is given none
-(`InferenceClient(model=...)`). A registry file may hold a list of entries of one package, one per object type that
+(`InferenceClient(model=...)`); `modelAt` and `bodyAt` name a place of the method's arguments or, prefixed by a call's
+name, of that call of the chain (`ClaudeSDKClient:kw:options.model`, `insert:kw:body` for
+`service.events().insert(body=e).execute()`), an options object built with keywords read too; a `params` source with
+`|` tries each in turn (`kw:request.name|arg:0`). A registry file may hold a list of entries of one package, one per object type that
 sends requests (python-telegram-bot's `Bot`, `Update`, `Message`); spread it into `PYTHON_REGISTRY`. See `IrRegistryEntry` in
 [`src/lang/ir/language.ts`](src/lang/ir/language.ts) for every field.
 

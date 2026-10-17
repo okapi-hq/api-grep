@@ -10,8 +10,10 @@ import { DART_INJECTION } from "./inject.js";
 import { detectHttpRequest } from "./requests.js";
 import { dartResolveCall } from "./resolve.js";
 import supabaseFlutter from "./registry/supabase-flutter.json" with { type: "json" };
+import cloudFirestore from "./registry/cloud-firestore.json" with { type: "json" };
+import firebaseAuth from "./registry/firebase-auth.json" with { type: "json" };
 
-export const DART_REGISTRY = [supabaseFlutter] as unknown as IrRegistryEntry[];
+export const DART_REGISTRY = [supabaseFlutter, cloudFirestore, firebaseAuth] as unknown as IrRegistryEntry[];
 
 /**
  * Tests, tool caches and generated code: `*.g.dart` (json_serializable, retrofit), `*.freezed.dart`, `*.mocks.dart`,

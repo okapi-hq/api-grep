@@ -1,0 +1,8 @@
+{
+  "issue": "claude-agent-sdk registry: query() and ClaudeSDKClient.query() send Messages API requests through the Claude Code CLI",
+  "calls": [
+    {"file": "reviewer.py", "line": 7, "provider": "anthropic"},
+    {"file": "reviewer.py", "line": 15, "provider": "anthropic"},
+    {"file": "reviewer.py", "line": 21, "provider": "anthropic"}
+  ]
+}

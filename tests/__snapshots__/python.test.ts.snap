@@ -171,6 +171,78 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       "urlTemplate": "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke",
     },
     {
+      "authScheme": "unknown",
+      "body": {
+        "properties": {
+          "MessageBody": {
+            "hint": "msg",
+            "type": "string",
+          },
+          "QueueUrl": {
+            "enum": [
+              "https://sqs.us-east-1.amazonaws.com/1/q",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "QueueUrl",
+          "MessageBody",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "MessageBody",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "MessageBody": "Summit birch island yonder quartz pebble.",
+            "QueueUrl": "https://sqs.us-east-1.amazonaws.com/1/q",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "AWS4-HMAC-SHA256 <signature>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://sqs.{region}.amazonaws.com/",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "sqs.{region}.amazonaws.com",
+      "hostKind": "literal",
+      "id": "f5f893e08bd2",
+      "location": {
+        "col": 12,
+        "file": "cloud.py",
+        "language": "python",
+        "line": 29,
+      },
+      "method": "POST",
+      "operationId": "SendMessage",
+      "optionsOpaque": false,
+      "pathTemplate": "/",
+      "provider": "aws",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "send_message",
+        "package": "boto3",
+      },
+      "urlTemplate": "https://sqs.{region}.amazonaws.com/",
+    },
+    {
       "authScheme": "basic",
       "body": {
         "properties": {
@@ -1632,20 +1704,9 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
   ],
   "coverage": {
     "hosts": {
-      "explained": 3,
+      "explained": 4,
       "named": 4,
-      "unexplained": [
-        {
-          "files": 1,
-          "first": {
-            "file": "cloud.py",
-            "line": 29,
-          },
-          "host": "sqs.us-east-1.amazonaws.com",
-          "language": "python",
-          "literals": 1,
-        },
-      ],
+      "unexplained": [],
     },
     "sdks": [
       {
@@ -1660,7 +1721,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "supported": true,
       },
       {
-        "calls": 2,
+        "calls": 3,
         "declared": false,
         "ecosystem": "pypi",
         "importSites": 1,
@@ -1753,14 +1814,18 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 3,
-    "filesSeen": 23,
+    "filesSeen": 29,
     "languages": {
       "python": {
         "filesScanned": 3,
-        "filesSeen": 23,
+        "filesSeen": 29,
       },
     },
     "skipped": [
+      {
+        "file": "claude-agent/reviewer.py",
+        "reason": "excluded",
+      },
       {
         "file": "discord/bot.py",
         "reason": "excluded",
@@ -1770,7 +1835,23 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "google-auth/creds.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "google-cloud/assets.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "googleapiclient/agenda.py",
+        "reason": "excluded",
+      },
+      {
         "file": "huggingface/infer.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "langchain-more/chains.py",
         "reason": "excluded",
       },
       {
@@ -1814,6 +1895,10 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "pygithub/release_bot.py",
+        "reason": "excluded",
+      },
+      {
         "file": "sentry/errors.py",
         "reason": "excluded",
       },
@@ -1843,24 +1928,24 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       },
     ],
     "skippedCounts": {
-      "excluded": 20,
+      "excluded": 26,
     },
     "unfollowed": [],
   },
   "schemaVersion": "1.27.0",
   "stats": {
     "byClient": {
-      "sdk": 22,
+      "sdk": 23,
     },
     "byHostKind": {
-      "literal": 22,
+      "literal": 23,
     },
     "byLanguage": {
-      "python": 22,
+      "python": 23,
     },
     "byProvider": {
       "anthropic": 2,
-      "aws": 1,
+      "aws": 2,
       "aws-bedrock": 1,
       "google-ai": 1,
       "openai": 4,
@@ -1871,12 +1956,12 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       "stripe": 5,
       "twilio": 2,
     },
-    "callsFound": 22,
+    "callsFound": 23,
     "durationMs": 0,
     "filesScanned": 3,
     "redacted": 0,
-    "withBodyShape": 18,
-    "withDynamic": 17,
+    "withBodyShape": 19,
+    "withDynamic": 18,
   },
   "tool": "api-grep",
   "version": "<version>",

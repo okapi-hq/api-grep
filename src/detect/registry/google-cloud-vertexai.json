@@ -1,0 +1,20 @@
+{
+  "$comment": "@google-cloud/vertexai: `new VertexAI({ project, location }).getGenerativeModel({ model }).generateContent(...)` (also under `preview.`). Requests go to the regional Vertex AI endpoint with the model in the path; `{project}` and `{location}` are the constructor's.",
+  "package": "@google-cloud/vertexai",
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against nodejs-vertexai 1.x src/models/generative_models.ts)",
+  "instance": {"names": ["VertexAI"]},
+  "inlinePathLiterals": true,
+  "methods": {
+    "getGenerativeModel.generateContent": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.generateContentStream": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "getGenerativeModel.countTokens": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "preview.getGenerativeModel.generateContent": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "preview.getGenerativeModel.generateContentStream": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "preview.getGenerativeModel.countTokens": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"model": "instance:0.model"}, "bodyArg": 0},
+    "startChat.sendMessage": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "bodyArg": 0},
+    "startChat.sendMessageStream": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent", "bodyArg": 0}
+  }
+}

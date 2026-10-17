@@ -1,12 +1,12 @@
 {
-  "$comment": "posthog-js / posthog-react-native: events go to the ingestion host set in `init({ api_host })`; flag reads are local.",
+  "$comment": "posthog-js / posthog-react-native: events go to the ingestion host set in `init({ api_host })` (posthog-react-native: `new PostHog(key, { host })`); flag reads are local.",
   "package": "posthog-js",
   "aliases": ["posthog-react-native"],
   "provider": "posthog",
   "host": "us.i.posthog.com",
   "auth": "none",
   "generatedFrom": "manual",
-  "instance": {"names": ["default", "PostHog", "usePostHog"]},
+  "instance": {"names": ["default", "PostHog", "usePostHog"], "urlArg": {"default": "1.host", "PostHog": "1.host"}},
   "methods": {
     "capture": {"method": "POST", "path": "/e/"},
     "identify": {"method": "POST", "path": "/e/"},

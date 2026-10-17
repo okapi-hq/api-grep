@@ -1,0 +1,22 @@
+{
+  "$comment": "google-auth-library: token requests the code makes itself on a client whose kind tells the endpoint. A `JWT` (service account) or `UserRefreshClient` asks Google's OAuth 2.0 token endpoint for an access token (`authorize`, `getAccessToken`, `getRequestHeaders` when none is cached); an `OAuth2Client` exchanges a code (`getToken`), refreshes, revokes, and fetches Google's public certificates to verify an ID token (`verifyIdToken`). `GoogleAuth` picks its credentials at run time (a metadata server, a key file): its calls are not listed.",
+  "package": "google-auth-library",
+  "provider": "google",
+  "host": "oauth2.googleapis.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against google-auth-library-nodejs 10.x src/auth/oauth2client.ts and jwtclient.ts)",
+  "methods": {
+    "JWT.authorize": {"method": "POST", "path": "/token", "encoding": "form"},
+    "JWT.getAccessToken": {"method": "POST", "path": "/token", "encoding": "form"},
+    "JWT.getRequestHeaders": {"method": "POST", "path": "/token", "encoding": "form"},
+    "UserRefreshClient.getAccessToken": {"method": "POST", "path": "/token", "encoding": "form"},
+    "UserRefreshClient.getRequestHeaders": {"method": "POST", "path": "/token", "encoding": "form"},
+    "OAuth2Client.getToken": {"method": "POST", "path": "/token", "encoding": "form"},
+    "OAuth2Client.refreshAccessToken": {"method": "POST", "path": "/token", "encoding": "form"},
+    "OAuth2Client.getAccessToken": {"method": "POST", "path": "/token", "encoding": "form"},
+    "OAuth2Client.revokeToken": {"method": "POST", "path": "/revoke", "encoding": "form"},
+    "OAuth2Client.getTokenInfo": {"method": "POST", "path": "/tokeninfo", "encoding": "form"},
+    "OAuth2Client.verifyIdToken": {"method": "GET", "path": "/oauth2/v1/certs", "host": "www.googleapis.com"},
+    "OAuth2Client.getFederatedSignonCerts": {"method": "GET", "path": "/oauth2/v1/certs", "host": "www.googleapis.com"}
+  }
+}

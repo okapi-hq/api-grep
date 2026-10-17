@@ -1,0 +1,9 @@
+{
+  "issue": "langchain-deepseek and langchain-google-vertexai registries",
+  "calls": [
+    {"file": "chains.py", "line": 6, "provider": "deepseek"},
+    {"file": "chains.py", "line": 8, "provider": "deepseek"},
+    {"file": "chains.py", "line": 10, "provider": "google-vertex"},
+    {"file": "chains.py", "line": 12, "provider": "google-vertex"}
+  ]
+}

@@ -16,7 +16,12 @@ import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "j
 import anthropicVertex from "./registry/anthropic-vertex.json" with { type: "json" };
 import anthropic from "./registry/anthropic.json" with { type: "json" };
 import boto3Bedrock from "./registry/boto3-bedrock.json" with { type: "json" };
+import boto3DynamoDb from "./registry/boto3-dynamodb.json" with { type: "json" };
 import boto3S3 from "./registry/boto3-s3.json" with { type: "json" };
+import boto3Ses from "./registry/boto3-ses.json" with { type: "json" };
+import boto3SesV2 from "./registry/boto3-sesv2.json" with { type: "json" };
+import boto3Sns from "./registry/boto3-sns.json" with { type: "json" };
+import boto3Sqs from "./registry/boto3-sqs.json" with { type: "json" };
 import cohereV2 from "./registry/cohere-v2.json" with { type: "json" };
 import cohere from "./registry/cohere.json" with { type: "json" };
 import convex from "./registry/convex.json" with { type: "json" };
@@ -69,6 +74,14 @@ import aiogram from "./registry/aiogram.json" with { type: "json" };
 import pyTelegramBotApi from "./registry/pytelegrambotapi.json" with { type: "json" };
 import discordPy from "./registry/discord-py.json" with { type: "json" };
 import huggingfaceHub from "./registry/huggingface-hub.json" with { type: "json" };
+import claudeAgentSdk from "./registry/claude-agent-sdk.json" with { type: "json" };
+import langchainDeepseek from "./registry/langchain-deepseek.json" with { type: "json" };
+import langchainGoogleVertexai from "./registry/langchain-google-vertexai.json" with { type: "json" };
+import googleCloudStorage from "./registry/google-cloud-storage.json" with { type: "json" };
+import googleCloudSecretManager from "./registry/google-cloud-secret-manager.json" with { type: "json" };
+import pygithub from "./registry/pygithub.json" with { type: "json" };
+import googleAuth from "./registry/google-auth.json" with { type: "json" };
+import googleApiPythonClient from "./registry/google-api-python-client.json" with { type: "json" };
 
 /** Registries sharing an import root are told apart by their instance names; module-level calls (`openai.chat...`) go to the first one. */
 export const PYTHON_REGISTRY = [
@@ -86,6 +99,11 @@ export const PYTHON_REGISTRY = [
   sentrySdk,
   boto3S3,
   boto3Bedrock,
+  boto3DynamoDb,
+  boto3Ses,
+  boto3SesV2,
+  boto3Sqs,
+  boto3Sns,
   twilio,
   slackSdk,
   resend,
@@ -129,6 +147,14 @@ export const PYTHON_REGISTRY = [
   pyTelegramBotApi,
   ...discordPy,
   huggingfaceHub,
+  claudeAgentSdk,
+  langchainDeepseek,
+  langchainGoogleVertexai,
+  googleCloudStorage,
+  googleCloudSecretManager,
+  pygithub,
+  googleAuth,
+  ...googleApiPythonClient,
 ] as unknown as IrRegistryEntry[];
 
 const MODULES: Record<string, string[]> = modules.modules;

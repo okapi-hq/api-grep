@@ -1,0 +1,10 @@
+{
+  "issue": "google-api-python-client registries (one per API from its discovery document): the request is sent at execute()",
+  "calls": [
+    {"file": "agenda.py", "line": 11, "provider": "google"},
+    {"file": "agenda.py", "line": 17, "provider": "google"},
+    {"file": "agenda.py", "line": 21, "provider": "google"},
+    {"file": "agenda.py", "line": 26, "provider": "google"},
+    {"file": "agenda.py", "line": 27, "provider": "google"}
+  ]
+}

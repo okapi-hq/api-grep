@@ -137,7 +137,8 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (spec.bodyArg !== undefined) raw.bodyExpr = spec.bodyProp ? getProp(args[spec.bodyArg], spec.bodyProp) : args[spec.bodyArg];
   if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
-  if (spec.modelArg !== undefined) raw.modelExpr = spec.modelProp ? getProp(args[spec.modelArg], spec.modelProp) : args[spec.modelArg];
+  // `options.model` reads a property of a property (Claude Agent SDK `query({ prompt, options: { model } })`)
+  if (spec.modelArg !== undefined) raw.modelExpr = (spec.modelProp?.split(".") ?? []).reduce<Expression | undefined>((e, key) => getProp(e, key), args[spec.modelArg]);
   const record = spec.record && Node.isCallExpression(node) ? recordOf(node, reg) : undefined;
   if (record) raw.record = record;
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);

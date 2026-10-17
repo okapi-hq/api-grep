@@ -1,0 +1,16 @@
+{
+  "$comment": "sentry (Rust) sends events to the DSN's ingest host (the DSN is given to `sentry::init`, which sends nothing by itself). Only the capture functions are calls, also on a hub (`Hub::current()`, `Hub::main()`); integrations that report on their own (panics, `tracing`) are not listed.",
+  "package": "sentry",
+  "aliases": ["sentry-core"],
+  "imports": ["sentry", "sentry_core"],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against sentry-rust 0.42 sentry-core api.rs and hub.rs)",
+  "instance": {"names": ["Hub.current", "Hub.main", "Hub.new", "Hub.new_from_top"]},
+  "methods": {
+    "capture_error": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "capture_message": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "capture_event": {"method": "POST", "path": "/api/{projectId}/envelope/"}
+  }
+}

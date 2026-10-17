@@ -1,0 +1,18 @@
+{
+  "$comment": "getsentry/sentry-go sends events to the DSN's ingest host (the DSN is given to `sentry.Init`, which sends nothing by itself). Only the capture functions are calls, also on a hub (`sentry.CurrentHub()`, `sentry.GetHubFromContext(ctx)`, a `*sentry.Hub`); `Flush` waits for what they queued.",
+  "package": "github.com/getsentry/sentry-go",
+  "imports": ["github.com/getsentry/sentry-go"],
+  "provider": "sentry",
+  "host": "{org}.ingest.sentry.io",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against sentry-go v0.36 sentry.go and hub.go)",
+  "instance": {"names": ["CurrentHub", "GetHubFromContext", "NewHub", "Hub"]},
+  "methods": {
+    "CaptureException": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "CaptureMessage": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "CaptureEvent": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "CaptureCheckIn": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "Recover": {"method": "POST", "path": "/api/{projectId}/envelope/"},
+    "RecoverWithContext": {"method": "POST", "path": "/api/{projectId}/envelope/"}
+  }
+}

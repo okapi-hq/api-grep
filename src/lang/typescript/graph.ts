@@ -14,6 +14,8 @@ export interface GraphInput {
   /** Files in scope (absolute paths). */
   files: string[];
   options: ts.CompilerOptions;
+  /** The options of a file whose package declares its own path aliases (`nested-aliases.ts`), else undefined. */
+  optionsFor?: (file: string) => ts.CompilerOptions | undefined;
   /** The text the checker reads for a file in scope (an HTML page: its inline scripts), undefined when unreadable. */
   textOf: (file: string) => string | undefined;
   /** What resolution reads: the scan bounds it to the scanned directory, as the checker's (`bounded-fs.ts`). */
@@ -66,6 +68,7 @@ class Graph {
   private readonly ids = new Map<string, number>();
   private readonly real = new Map<string, string>();
   private readonly cache: ts.ModuleResolutionCache;
+  private readonly caches = new Map<ts.CompilerOptions, ts.ModuleResolutionCache>();
   private readonly modes: ts.ResolutionMode[];
   private readonly host: ts.ModuleResolutionHost;
 
@@ -82,6 +85,12 @@ class Graph {
       if (same === undefined) this.ids.set(key, id);
       else this.sets.union(id, same);
     }
+  }
+
+  private cacheFor(options: ts.CompilerOptions): ts.ModuleResolutionCache {
+    let c = this.caches.get(options);
+    if (!c) this.caches.set(options, (c = ts.createModuleResolutionCache(process.cwd(), (f) => f, options)));
+    return c;
   }
 
   /** The node of a file, added on first sight; files in scope come first, in their order. */
@@ -132,10 +141,12 @@ class Graph {
 
   private targets(file: string, facts: FileFacts): string[] {
     const out = new Set<string>();
-    const { options } = this.input;
+    const nested = this.input.optionsFor?.(file);
+    const options = nested ?? this.input.options;
+    const cache = nested ? this.cacheFor(nested) : this.cache;
     for (const spec of facts.specifiers) {
       for (const mode of this.modes) {
-        const r = ts.resolveModuleName(spec, file, options, this.host, this.cache, undefined, mode).resolvedModule;
+        const r = ts.resolveModuleName(spec, file, options, this.host, cache, undefined, mode).resolvedModule;
         if (r && !r.isExternalLibraryImport) out.add(r.resolvedFileName);
       }
     }

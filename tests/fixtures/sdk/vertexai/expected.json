@@ -1,0 +1,7 @@
+{
+  "issue": "@google-cloud/vertexai registry: generative models of a VertexAI client",
+  "calls": [
+    {"file": "summarize.ts", "line": 7, "provider": "google-vertex"},
+    {"file": "summarize.ts", "line": 13, "provider": "google-vertex"}
+  ]
+}

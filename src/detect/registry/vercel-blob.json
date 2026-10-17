@@ -1,0 +1,21 @@
+{
+  "$comment": "@vercel/blob: free functions (`put(pathname, body, { access })`, `del(url)`, `list()`, ...) sending to the Blob API at `https://vercel.com/api/blob` (`VERCEL_BLOB_API_URL` overrides it), with the store's token as a bearer. `upload` of `@vercel/blob/client` first asks the app's own `handleUploadUrl` for a token (not listed), then sends the file the same way as `put`.",
+  "package": "@vercel/blob",
+  "aliases": ["@vercel/blob/client"],
+  "provider": "vercel-blob",
+  "host": "vercel.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against @vercel/blob 2.x dist, October 2026)",
+  "inlinePathLiterals": true,
+  "methods": {
+    "put": {"method": "PUT", "path": "/api/blob/?pathname={pathname}", "params": {"pathname": "arg:0"}, "bodyArg": 1, "encoding": "raw"},
+    "upload": {"method": "PUT", "path": "/api/blob/?pathname={pathname}", "params": {"pathname": "arg:0"}, "bodyArg": 1, "encoding": "raw"},
+    "del": {"method": "POST", "path": "/api/blob/delete"},
+    "head": {"method": "GET", "path": "/api/blob/?url={url}", "params": {"url": "arg:0"}},
+    "list": {"method": "GET", "path": "/api/blob/", "queryArg": 0},
+    "copy": {"method": "PUT", "path": "/api/blob/?pathname={pathname}", "params": {"pathname": "arg:1"}},
+    "createMultipartUpload": {"method": "POST", "path": "/api/blob/mpu?pathname={pathname}", "params": {"pathname": "arg:0"}},
+    "uploadPart": {"method": "POST", "path": "/api/blob/mpu?pathname={pathname}", "params": {"pathname": "arg:0"}, "bodyArg": 1, "encoding": "raw"},
+    "completeMultipartUpload": {"method": "POST", "path": "/api/blob/mpu?pathname={pathname}", "params": {"pathname": "arg:0"}}
+  }
+}

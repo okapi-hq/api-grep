@@ -68,7 +68,7 @@ function textOf(scope: Scope): (file: string) => string | undefined {
 /** A repository whose source fits in one batch is one group: reading every file's imports first would only cost time. */
 function groupsOf(files: string[], scope: Scope, budget: number): FileGroups {
   if (files.reduce((a, f) => a + sizeOf(f), 0) <= budget) return { groups: [files.map((_, i) => i)], groupOf: () => undefined };
-  return fileGroups({ files, options: scope.options, textOf: textOf(scope), host: boundedResolutionHost(scope.root) });
+  return fileGroups({ files, options: scope.options, optionsFor: (f) => scope.aliases.optionsFor(f), textOf: textOf(scope), host: boundedResolutionHost(scope.root) });
 }
 
 /**

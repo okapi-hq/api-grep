@@ -1,0 +1,41 @@
+{
+  "$comment": "langchain-google-vertexai: `ChatVertexAI(model=..., project=..., location=...)` and `VertexAIEmbeddings(model_name=...)` call the regional Vertex AI endpoint with the model in the path (gRPC by default; the REST paths are listed). `ChatAnthropicVertex` sends Claude models through Vertex AI's `rawPredict`.",
+  "package": "langchain-google-vertexai",
+  "imports": [
+    "langchain_google_vertexai"
+  ],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (langchain-google-vertexai: ChatVertexAI, VertexAI, VertexAIEmbeddings, ChatAnthropicVertex)",
+  "inlinePathLiterals": true,
+  "methods": {
+    "ChatVertexAI": {
+      "method": "POST",
+      "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {"model": "kw:model", "project": "kw:project", "location": "kw:location"}
+    },
+    "VertexAI": {
+      "method": "POST",
+      "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {"model": "kw:model_name", "project": "kw:project", "location": "kw:location"}
+    },
+    "VertexAIEmbeddings": {
+      "method": "POST",
+      "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict",
+      "clientKwargs": true,
+      "params": {"model": "kw:model_name", "project": "kw:project", "location": "kw:location"}
+    },
+    "ChatAnthropicVertex": {
+      "method": "POST",
+      "path": "/v1/projects/{project}/locations/{location}/publishers/anthropic/models/{model}:rawPredict",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "params": {"model": "kw:model_name", "project": "kw:project", "location": "kw:location"}
+    }
+  }
+}

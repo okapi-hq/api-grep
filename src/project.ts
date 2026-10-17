@@ -3,7 +3,8 @@ import path from "node:path";
 import { Project, ts, type SourceFile } from "ts-morph";
 import { BoundedFileSystem } from "./bounded-fs.js";
 import { isInside, realPath, relativePosix } from "./files.js";
-import { leanResolution } from "./module-resolution.js";
+import { leanResolution, leanResolutionWith } from "./module-resolution.js";
+import { NestedAliases } from "./nested-aliases.js";
 import { globMatcher, languageFiles, leftOutFiles, readEnvHints, SHARED_EXCLUDES, type LeftOut } from "./lang/files.js";
 import { COMPONENT_EXTENSIONS, isComponent, parseComponent } from "./lang/html/components.js";
 import { parseHtml, type HtmlDoc } from "./lang/html/extract.js";
@@ -75,6 +76,8 @@ export interface Scope {
   /** Files in scope (absolute paths), in the order they are loaded. */
   files: string[];
   options: ts.CompilerOptions;
+  /** The path aliases of the monorepo packages under the tsconfig of the scan. */
+  aliases: NestedAliases;
   /** HTML pages in scope: their forms and CDN scripts (inline scripts become source files of a batch). */
   html: Map<string, HtmlDoc>;
   envHints: Record<string, string>;
@@ -228,13 +231,16 @@ export function scopeOf(opts: LoadOptions): Scope {
   const files = tsFiles(dir, opts.include, opts.exclude, languages);
   // the tsconfig may be above `dir` (in its repository): read here, not by the batches
   const options = compilerOptionsOf(choice, languages);
-  return { dir, root: readRoot(dir), opts, tsconfig, files, options, ...readPages(dir, files), envHints: readEnvHints(dir) };
+  const root = readRoot(dir);
+  const aliases = new NestedAliases(options, choice.bound ?? root, tsconfig && path.resolve(tsconfig));
+  return { dir, root, opts, tsconfig, files, options, aliases, ...readPages(dir, files), envHints: readEnvHints(dir) };
 }
 
 /** Some files of the scope in a project of their own, with what they import. */
 export function loadBatch(scope: Scope, files: string[]): Loaded {
   const { dir, opts, tsconfig } = scope;
-  const project = new Project({ resolutionHost: leanResolution, fileSystem: new BoundedFileSystem(scope.root), compilerOptions: scope.options });
+  const resolutionHost = leanResolutionWith((f) => scope.aliases.optionsFor(f));
+  const project = new Project({ resolutionHost, fileSystem: new BoundedFileSystem(scope.root), compilerOptions: scope.options });
   const unreadable = addFiles(project, dir, files, scope.html);
   if (tsconfig) {
     try {

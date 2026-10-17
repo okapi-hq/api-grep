@@ -1,0 +1,8 @@
+{
+  "issue": "Rust: sentry crate registry (capture functions, also on a hub)",
+  "calls": [
+    {"file": "worker.rs", "line": 13, "provider": "sentry"},
+    {"file": "worker.rs", "line": 14, "provider": "sentry"},
+    {"file": "worker.rs", "line": 16, "provider": "sentry"}
+  ]
+}

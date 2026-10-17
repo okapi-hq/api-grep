@@ -1,0 +1,7 @@
+{
+  "issue": "@anthropic-ai/claude-agent-sdk registry: query() sends Messages API requests through the Claude Code CLI",
+  "calls": [
+    {"file": "triage.ts", "line": 4, "provider": "anthropic"},
+    {"file": "triage.ts", "line": 12, "provider": "anthropic"}
+  ]
+}

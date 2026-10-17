@@ -1,0 +1,18 @@
+{
+  "issue": "firebase-admin (Node) registry: Firestore references and queries, Auth, Cloud Messaging",
+  "calls": [
+    {"file": "server.ts", "line": 10, "provider": "firebase"},
+    {"file": "server.ts", "line": 16, "provider": "firebase"},
+    {"file": "server.ts", "line": 19, "provider": "firebase"},
+    {"file": "server.ts", "line": 21, "provider": "firebase"},
+    {"file": "server.ts", "line": 23, "provider": "firebase"},
+    {"file": "server.ts", "line": 25, "provider": "firebase"},
+    {"file": "server.ts", "line": 27, "provider": "firebase"},
+    {"file": "server.ts", "line": 29, "provider": "firebase"},
+    {"file": "storage.ts", "line": 5, "provider": "firebase"},
+    {"file": "storage.ts", "line": 7, "provider": "firebase"},
+    {"file": "storage.ts", "line": 9, "provider": "firebase"},
+    {"file": "storage.ts", "line": 11, "provider": "firebase"},
+    {"file": "storage.ts", "line": 17, "provider": "firebase"}
+  ]
+}

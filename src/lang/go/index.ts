@@ -13,6 +13,9 @@ import anthropicSdkGo from "./registry/anthropic-sdk-go.json" with { type: "json
 import genai from "./registry/genai.json" with { type: "json" };
 import goOpenai from "./registry/go-openai.json" with { type: "json" };
 import openaiGo from "./registry/openai-go.json" with { type: "json" };
+import slackGo from "./registry/slack-go.json" with { type: "json" };
+import discordgo from "./registry/discordgo.json" with { type: "json" };
+import sentryGo from "./registry/sentry-go.json" with { type: "json" };
 
 /**
  * Registries and client tables name Go import paths (`github.com/sashabaranov/go-openai`); the engine matches dotted
@@ -31,7 +34,7 @@ function majorVersions(entries: (IrRegistryEntry & { majorVersions?: string[] })
   ]);
 }
 
-export const GO_REGISTRY = rooted(majorVersions([goOpenai, openaiGo, anthropicSdkGo, genai] as unknown as IrRegistryEntry[]));
+export const GO_REGISTRY = rooted(majorVersions([goOpenai, openaiGo, anthropicSdkGo, genai, slackGo, discordgo, sentryGo] as unknown as IrRegistryEntry[]));
 
 export const GO_EXCLUDES = [...SHARED_EXCLUDES, "**/vendor/**", "**/testdata/**", "**/*_test.go"];
 
