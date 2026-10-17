@@ -1,0 +1,28 @@
+{
+  "$comment": "CrewAI's MCP servers. `MCPServerAdapter({\"url\": ..., \"transport\": \"streamable-http\" | \"sse\", \"headers\": ...})` (from `crewai_tools`, installed with `crewai[tools]`), or a list of those, connects to each server and gives its tools; `StdioServerParameters` runs a local process and is not reported. `Agent(mcps=[\"https://...\", MCPServerHTTP(url=..., headers=...), MCPServerSSE(...)])` connects to each, beside the agent's model requests (`crewai.json`'s, at the same call); a string that is no URL (`crewai-amp:...`, a server of CrewAI's catalog) and `MCPServerStdio` (a local process) are not reported.",
+  "package": "crewai",
+  "imports": ["crewai_tools.adapters.mcp_adapter", "crewai_tools", "crewai"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against crewai 1.0 Agent.mcps, crewai.mcp and crewai-tools 0.70 adapters/mcp_adapter.py)",
+  "instance": { "names": ["MCPServerAdapter"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPServerAdapter": {
+        "servers": { "at": "kw:serverparams|0", "url": "url", "headers": "headers", "transport": { "key": "transport", "http": ["streamable-http", "streamable_http", "sse"] }, "local": ["command"] }
+      },
+      "Agent": { "servers": { "at": "kw:mcps", "url": "url", "headers": "headers" } }
+    },
+    "transports": {
+      "MCPServerHTTP": { "url": "kw:url|0", "headers": "kw:headers" },
+      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["StdioServerParameters", "MCPServerStdio"]
+  },
+  "methods": {
+    "MCPServerAdapter": { "method": "POST", "path": "", "mcp": "initialize" },
+    "Agent": { "method": "POST", "path": "", "mcp": "initialize" }
+  }
+}

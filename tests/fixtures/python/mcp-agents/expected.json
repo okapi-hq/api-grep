@@ -1,0 +1,33 @@
+{
+  "issue": "MCP servers agent frameworks connect to over HTTP: LangChain, OpenAI Agents, Claude Agent SDK, CrewAI, PydanticAI, Google ADK, smolagents, LlamaIndex, AutoGen",
+  "calls": [
+    {"file": "langchain_tools.py", "line": 21, "provider": "mcp", "operation": "initialize"},
+    {"file": "langchain_tools.py", "line": 21, "provider": "linear", "operation": "initialize"},
+    {"file": "langchain_tools.py", "line": 22, "provider": "mcp", "operation": "tools/list"},
+    {"file": "langchain_tools.py", "line": 22, "provider": "linear", "operation": "tools/list"},
+    {"file": "langchain_tools.py", "line": 29, "provider": "mcp", "operation": "tools/list"},
+    {"file": "agents_sdk.py", "line": 8, "provider": "mcp", "operation": "initialize"},
+    {"file": "agents_sdk.py", "line": 12, "provider": "mcp", "operation": "tools/list"},
+    {"file": "agents_sdk.py", "line": 13, "provider": "mcp", "operation": "tools/call"},
+    {"file": "agents_sdk.py", "line": 14, "provider": "openai"},
+    {"file": "agents_sdk.py", "line": 19, "provider": "mcp", "operation": "initialize"},
+    {"file": "claude_agent.py", "line": 7, "provider": "mcp", "operation": "initialize"},
+    {"file": "claude_agent.py", "line": 20, "provider": "anthropic"},
+    {"file": "claude_agent.py", "line": 25, "provider": "mcp", "operation": "initialize"},
+    {"file": "crew.py", "line": 12, "provider": "mcp", "operation": "initialize"},
+    {"file": "crew.py", "line": 16, "provider": "openai"},
+    {"file": "crew.py", "line": 16, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 13, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 14, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 18, "provider": "mcp", "operation": "tools/list"},
+    {"file": "toolkits.py", "line": 22, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 27, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 32, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 37, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 42, "provider": "mcp", "operation": "tools/list"},
+    {"file": "toolkits.py", "line": 43, "provider": "mcp", "operation": "tools/call"},
+    {"file": "toolkits.py", "line": 50, "provider": "mcp", "operation": "initialize"},
+    {"file": "toolkits.py", "line": 51, "provider": "mcp", "operation": "tools/call"},
+    {"file": "toolkits.py", "line": 55, "provider": "mcp", "operation": "tools/list"}
+  ]
+}

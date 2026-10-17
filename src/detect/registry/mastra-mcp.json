@@ -1,0 +1,25 @@
+{
+  "$comment": "Mastra MCP client: `new MCPClient({ servers: { name: { url: new URL(...), requestInit: { headers } } } })` (`MCPConfiguration` in older releases) connects to each server with a URL (Streamable HTTP, then SSE); `getTools()` and `getToolsets()` list the tools of each. A server with a `command` runs a local process and is not reported. `operation` is the MCP method.",
+  "package": "@mastra/mcp",
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against @mastra/mcp 0.13)",
+  "callersOnly": true,
+  "instance": {"names": ["MCPClient", "MCPConfiguration"]},
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPClient": {"servers": {"at": "0.servers", "named": true, "url": "url", "headers": "requestInit.headers", "local": ["command"]}},
+      "MCPConfiguration": {"servers": {"at": "0.servers", "named": true, "url": "url", "headers": "requestInit.headers", "local": ["command"]}}
+    }
+  },
+  "commands": {
+    "MCPClient": {"method": "POST", "path": "", "mcp": "initialize"},
+    "MCPConfiguration": {"method": "POST", "path": "", "mcp": "initialize"}
+  },
+  "methods": {
+    "getTools": {"method": "POST", "path": "", "mcp": "tools/list"},
+    "getToolsets": {"method": "POST", "path": "", "mcp": "tools/list"}
+  }
+}

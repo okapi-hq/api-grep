@@ -1,0 +1,33 @@
+{
+  "$comment": "LangChain MCP adapters: `MultiServerMCPClient({\"name\": {\"url\": ..., \"transport\": \"streamable_http\" | \"sse\", \"headers\": ...}})` connects to each server; `get_tools()` lists the tools of each. A server with a `command` or the `stdio` transport runs a local process and is not reported. `load_mcp_tools(session)` lists the tools of an MCP SDK session (`mcp.json`'s), or of the one `connection` it is given. `operation` is the MCP method.",
+  "package": "langchain-mcp-adapters",
+  "imports": ["langchain_mcp_adapters.client", "langchain_mcp_adapters.tools", "langchain_mcp_adapters"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against langchain-mcp-adapters 0.1)",
+  "instance": { "names": ["MultiServerMCPClient"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MultiServerMCPClient": {
+        "servers": { "at": "kw:connections|0", "named": true, "url": "url", "headers": "headers", "transport": { "key": "transport", "http": ["streamable_http", "streamable-http", "http", "sse"] }, "local": ["command"] }
+      },
+      "load_mcp_tools": {
+        "servers": { "at": "kw:connection|kw:session|0", "url": "url", "headers": "headers", "transport": { "key": "transport", "http": ["streamable_http", "streamable-http", "http", "sse"] }, "local": ["command"] }
+      },
+      "ClientSession": { "transport": "kw:read_stream|0" }
+    },
+    "transports": {
+      "streamablehttp_client": { "url": "kw:url|0", "headers": "kw:headers" },
+      "streamable_http_client": { "url": "kw:url|0", "headers": "kw:headers" },
+      "sse_client": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["stdio_client", "websocket_client"]
+  },
+  "methods": {
+    "MultiServerMCPClient": { "method": "POST", "path": "", "mcp": "initialize" },
+    "get_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "load_mcp_tools": { "method": "POST", "path": "", "mcp": "tools/list" }
+  }
+}

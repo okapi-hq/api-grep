@@ -75,6 +75,8 @@ export interface RawCall {
   bodyAlternatives?: Expression[];
   /** The same call to other providers the code picks among at run time (an AI SDK model, `ai-sdk.ts`). */
   alternatives?: RawCall[];
+  /** Other requests the same call sends, each a call of its own at its place (the MCP servers an agent connects to). */
+  also?: RawCall[];
   bodyKey?: "body" | "json" | "form" | "data" | "input";
   queryExpr?: Expression;
   headersExpr?: Expression;
@@ -278,6 +280,30 @@ export interface ClientSource {
   urlOrNetwork?: boolean;
   /** The transport may be its URL (fastmcp `Client("https://.../mcp")`); a literal that is no `http(s)` URL is a local script (stdio). */
   urlTransport?: boolean;
+  /** The MCP servers an agent framework's client connects to (`EndpointSpec.agent`). */
+  servers?: McpServersSource;
+}
+
+/**
+ * Where an agent framework's MCP client takes its servers (`new MultiServerMCPClient({ mcpServers: { name: { url,
+ * transport } } })`): one call per server that reads as HTTP (`detect/mcp-servers.ts`, `lang/ir/mcp-servers.ts`). A
+ * server is a configuration dict / object, a construction of one of the registry's `transports` (`nonHttp` and others
+ * are not reported), another client of the registry (its servers), or a string: an `http(s)` URL, the client's
+ * `headers` with it; a literal that is no URL is a local command.
+ */
+export interface McpServersSource {
+  /** Where the client takes its servers; `|` tries each place in turn (`0.mcpServers|0`, Python `kw:connections|0`). */
+  at: string;
+  /** The servers are a dict / object by name (`{ name: config }`), else one configuration or a list of them. */
+  named?: boolean;
+  /** Key of a configuration's URL (`url`). */
+  url?: string;
+  /** Path of a configuration's headers (`headers`, `requestInit.headers`). */
+  headers?: string;
+  /** The key naming a configuration's transport and the values that send HTTP: a configuration with another one is not reported. */
+  transport?: { key: string; http: string[] };
+  /** Keys of a configuration that runs a local process (`command`): not reported. */
+  local?: string[];
 }
 
 /**
@@ -298,6 +324,11 @@ export interface EndpointSpec {
    * to the transports its receiver is connected with in the file, else to the file's own transports (`mcp-endpoint.ts`).
    */
   connect?: string;
+  /**
+   * The clients are an agent framework's MCP clients (LangChain, Mastra, the Claude Agent SDK...): a call goes to each
+   * HTTP server its client is configured with (`servers`), or to the one it names (`url`), the construction included.
+   */
+  agent?: boolean;
   /** Types a client of the library is declared with (`JsonRpcProvider`, `PublicClient`): a call on another type is not one. */
   types?: string[];
   /** The package the clients come from when it is another one (`@solana/spl-token` helpers take a `@solana/web3.js` Connection). */

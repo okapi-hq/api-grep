@@ -1,0 +1,20 @@
+{
+  "$comment": "Claude Agent SDK MCP servers: `ClaudeAgentOptions(mcp_servers={\"name\": {\"type\": \"http\" | \"sse\", \"url\": ..., \"headers\": ...}})`. The app does not connect itself: the Claude Code process `query` / `ClaudeSDKClient` start does, with the configuration the app gives, so each HTTP server is still an outbound connection of the app, reported where the options name it. Servers with a `command` (stdio) or of type `sdk` (`create_sdk_mcp_server`, in process), and a path to a configuration file, are not reported. The model requests are `claude-agent-sdk.json`'s.",
+  "package": "claude-agent-sdk",
+  "imports": ["claude_agent_sdk"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against claude-agent-sdk-python 0.1.x src/claude_agent_sdk/types.py: McpServerConfig)",
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "ClaudeAgentOptions": {
+        "servers": { "at": "kw:mcp_servers", "named": true, "url": "url", "headers": "headers", "transport": { "key": "type", "http": ["http", "sse"] }, "local": ["command"] }
+      }
+    }
+  },
+  "methods": {
+    "ClaudeAgentOptions": { "method": "POST", "path": "", "mcp": "initialize" }
+  }
+}

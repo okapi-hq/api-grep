@@ -1,0 +1,31 @@
+{
+  "$comment": "Google ADK MCP toolsets: `MCPToolset(connection_params=StreamableHTTPConnectionParams(url=..., headers=...))` (also `McpToolset`, `SseConnectionParams`, the older `SseServerParams` and `MCPToolset.from_server`) connects to that server; `get_tools()` lists its tools. Stdio parameters run a local process and are not reported. The agent's model requests are `google-adk.json`'s.",
+  "package": "google-adk",
+  "imports": ["google.adk.tools.mcp_tool.mcp_toolset", "google.adk.tools.mcp_tool", "google.adk.tools"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against google-adk 1.15 tools/mcp_tool)",
+  "instance": { "names": ["MCPToolset", "McpToolset"] },
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "MCPToolset": { "servers": { "at": "kw:connection_params|0" } },
+      "McpToolset": { "servers": { "at": "kw:connection_params|0" } },
+      "from_server": { "servers": { "at": "kw:connection_params|0" } }
+    },
+    "transports": {
+      "StreamableHTTPConnectionParams": { "url": "kw:url|0", "headers": "kw:headers" },
+      "StreamableHTTPServerParams": { "url": "kw:url|0", "headers": "kw:headers" },
+      "SseConnectionParams": { "url": "kw:url|0", "headers": "kw:headers" },
+      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["StdioServerParameters", "StdioConnectionParams"]
+  },
+  "methods": {
+    "MCPToolset": { "method": "POST", "path": "", "mcp": "initialize" },
+    "McpToolset": { "method": "POST", "path": "", "mcp": "initialize" },
+    "MCPToolset.from_server": { "method": "POST", "path": "", "mcp": "initialize" },
+    "get_tools": { "method": "POST", "path": "", "mcp": "tools/list" }
+  }
+}

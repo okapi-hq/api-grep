@@ -139,6 +139,8 @@ function alternativeBodies(exprs: Expression[], ctx: EvalCtx): BodyResult {
  * candidate host when its base URL is picked from a host table (`resolve/choice.ts`).
  */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
+  // the other requests of the call: at its place, through the same wrapper
+  if (raw.also?.length) return [{ ...raw, also: undefined }, ...raw.also.map((r) => ({ ...r, node: raw.node, via: raw.via, subst: raw.subst ?? r.subst }))].flatMap((r) => buildCall(r, base));
   if (raw.alternatives?.length) return asCandidates([raw, ...raw.alternatives].map((r) => buildCall({ ...r, alternatives: undefined }, base)));
   return withCandidates((choice) => buildOne(raw, base, choice));
 }

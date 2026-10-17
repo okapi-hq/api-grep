@@ -1481,6 +1481,46 @@ exports[`regression fixtures > python/mcp 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/mcp-agents 1`] = `
+[
+  "agents_sdk.py:8 mcp POST /mcp initialize",
+  "agents_sdk.py:12 mcp POST /mcp tools/list",
+  "agents_sdk.py:13 mcp POST /mcp tools/call",
+  "agents_sdk.py:14 openai POST /v1/responses",
+  "agents_sdk.py:19 mcp POST /sse initialize",
+  "claude_agent.py:7 mcp POST /mcp initialize",
+  "claude_agent.py:7 mcp POST /sse initialize",
+  "claude_agent.py:20 anthropic POST /v1/messages",
+  "claude_agent.py:25 mcp POST /mcp initialize",
+  "crew.py:12 mcp POST /mcp initialize",
+  "crew.py:16 openai POST /v1/chat/completions",
+  "crew.py:16 mcp POST /search initialize",
+  "crew.py:16 mcp POST /mcp initialize",
+  "langchain_tools.py:21 mcp POST /mcp initialize",
+  "langchain_tools.py:21 mcp POST /sse initialize",
+  "langchain_tools.py:21 linear POST /mcp initialize",
+  "langchain_tools.py:22 mcp POST /mcp tools/list",
+  "langchain_tools.py:22 mcp POST /sse tools/list",
+  "langchain_tools.py:22 linear POST /mcp tools/list",
+  "langchain_tools.py:28 mcp POST /mcp initialize",
+  "langchain_tools.py:29 mcp POST /mcp tools/list",
+  "toolkits.py:13 mcp POST /mcp initialize",
+  "toolkits.py:14 mcp POST /sse initialize",
+  "toolkits.py:18 mcp POST /mcp tools/list",
+  "toolkits.py:22 mcp POST /mcp initialize",
+  "toolkits.py:27 mcp POST /mcp initialize",
+  "toolkits.py:32 mcp POST /sse initialize",
+  "toolkits.py:37 mcp POST /mcp initialize",
+  "toolkits.py:42 mcp POST /mcp tools/list",
+  "toolkits.py:43 mcp POST /mcp tools/call",
+  "toolkits.py:50 mcp POST /mcp initialize",
+  "toolkits.py:51 mcp POST /mcp tools/call",
+  "toolkits.py:55 mcp POST /sse tools/list",
+]
+`;
+
+exports[`regression fixtures > python/mcp-agents-local 1`] = `[]`;
+
 exports[`regression fixtures > python/mcp-not-http 1`] = `[]`;
 
 exports[`regression fixtures > python/models 1`] = `
@@ -2788,6 +2828,39 @@ exports[`regression fixtures > sdk/mcp 1`] = `
   "vendor.ts:18 mcp POST / tools/list",
 ]
 `;
+
+exports[`regression fixtures > sdk/mcp-agents 1`] = `
+[
+  "ai-sdk.ts:7 mcp POST /sse initialize",
+  "ai-sdk.ts:10 mcp POST /sse tools/list",
+  "ai-sdk.ts:11 openai POST /v1/responses",
+  "ai-sdk.ts:20 mcp POST /mcp initialize",
+  "ai-sdk.ts:21 mcp POST /mcp tools/list",
+  "ai-sdk.ts:25 mcp POST / initialize",
+  "ai-sdk.ts:26 mcp POST / tools/list",
+  "claude-agent.ts:11 anthropic POST /v1/messages",
+  "claude-agent.ts:11 mcp POST /mcp initialize",
+  "claude-agent.ts:11 mcp POST /sse initialize",
+  "claude-agent.ts:21 anthropic POST /v1/messages",
+  "langchain.ts:3 mcp POST /mcp initialize",
+  "langchain.ts:3 mcp POST /sse initialize",
+  "langchain.ts:13 mcp POST /mcp tools/list",
+  "langchain.ts:13 mcp POST /sse tools/list",
+  "langchain.ts:17 mcp POST /sse initialize",
+  "langchain.ts:23 mcp POST /mcp initialize",
+  "mastra.ts:3 mcp POST /mcp initialize",
+  "mastra.ts:15 mcp POST /mcp tools/list",
+  "mastra.ts:18 mcp POST /sse initialize",
+  "openai-agents.ts:3 mcp POST /mcp initialize",
+  "openai-agents.ts:12 mcp POST /mcp tools/list",
+  "openai-agents.ts:13 mcp POST /mcp tools/call",
+  "openai-agents.ts:14 openai POST /v1/responses",
+  "openai-agents.ts:19 mcp POST /sse initialize",
+  "openai-agents.ts:24 mcp POST / tools/list",
+]
+`;
+
+exports[`regression fixtures > sdk/mcp-agents-local 1`] = `[]`;
 
 exports[`regression fixtures > sdk/mcp-not-http 1`] = `[]`;
 

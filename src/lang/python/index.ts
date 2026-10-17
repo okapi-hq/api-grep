@@ -35,6 +35,15 @@ import { sgqlcDocument } from "./sgqlc.js";
 import gql from "./registry/gql.json" with { type: "json" };
 import mcp from "./registry/mcp.json" with { type: "json" };
 import fastmcp from "./registry/fastmcp.json" with { type: "json" };
+import autogenExtMcp from "./registry/autogen-ext-mcp.json" with { type: "json" };
+import claudeAgentSdkMcp from "./registry/claude-agent-sdk-mcp.json" with { type: "json" };
+import crewaiMcp from "./registry/crewai-mcp.json" with { type: "json" };
+import googleAdkMcp from "./registry/google-adk-mcp.json" with { type: "json" };
+import langchainMcpAdapters from "./registry/langchain-mcp-adapters.json" with { type: "json" };
+import llamaIndexToolsMcp from "./registry/llama-index-tools-mcp.json" with { type: "json" };
+import openaiAgentsMcp from "./registry/openai-agents-mcp.json" with { type: "json" };
+import pydanticAiMcp from "./registry/pydantic-ai-mcp.json" with { type: "json" };
+import smolagentsMcp from "./registry/smolagents-mcp.json" with { type: "json" };
 import sgqlc from "./registry/sgqlc.json" with { type: "json" };
 import shopify from "./registry/shopify.json" with { type: "json" };
 import solana from "./registry/solana.json" with { type: "json" };
@@ -155,6 +164,16 @@ export const PYTHON_REGISTRY = [
   pygithub,
   googleAuth,
   ...googleApiPythonClient,
+  // the MCP servers agent frameworks connect to: after the framework's own registry, which keeps its import roots
+  langchainMcpAdapters,
+  openaiAgentsMcp,
+  claudeAgentSdkMcp,
+  crewaiMcp,
+  pydanticAiMcp,
+  googleAdkMcp,
+  smolagentsMcp,
+  llamaIndexToolsMcp,
+  autogenExtMcp,
 ] as unknown as IrRegistryEntry[];
 
 const MODULES: Record<string, string[]> = modules.modules;

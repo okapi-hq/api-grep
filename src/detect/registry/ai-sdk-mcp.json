@@ -1,0 +1,33 @@
+{
+  "$comment": "Vercel AI SDK MCP client: `experimental_createMCPClient({ transport })` (`ai`) or `createMCPClient` (`@ai-sdk/mcp`) connects to the server its transport names: `{ type: \"sse\" | \"http\", url, headers }` or an MCP SDK transport (`new StreamableHTTPClientTransport(url, { requestInit })`). A stdio transport runs a local process and is not reported. The client's `tools()` lists the server's tools. `operation` is the MCP method.",
+  "package": "@ai-sdk/mcp",
+  "aliases": ["ai"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against ai 5.0 and @ai-sdk/mcp 1.0)",
+  "callersOnly": true,
+  "instance": {"names": ["experimental_createMCPClient", "createMCPClient"]},
+  "endpoint": {
+    "agent": true,
+    "clients": {
+      "experimental_createMCPClient": {"servers": {"at": "0.transport", "url": "url", "headers": "headers", "transport": {"key": "type", "http": ["sse", "http"]}}},
+      "createMCPClient": {"servers": {"at": "0.transport", "url": "url", "headers": "headers", "transport": {"key": "type", "http": ["sse", "http"]}}}
+    },
+    "transports": {
+      "StreamableHTTPClientTransport": {"url": "0", "headers": "1.requestInit.headers"},
+      "SSEClientTransport": {"url": "0", "headers": "1.requestInit.headers"}
+    },
+    "nonHttp": ["Experimental_StdioMCPTransport", "StdioMCPTransport", "StdioClientTransport"]
+  },
+  "methods": {
+    "experimental_createMCPClient": {"method": "POST", "path": "", "mcp": "initialize"},
+    "createMCPClient": {"method": "POST", "path": "", "mcp": "initialize"},
+    "tools": {"method": "POST", "path": "", "mcp": "tools/list"},
+    "listResources": {"method": "POST", "path": "", "mcp": "resources/list"},
+    "listResourceTemplates": {"method": "POST", "path": "", "mcp": "resources/templates/list"},
+    "readResource": {"method": "POST", "path": "", "mcp": "resources/read", "targetArg": "0.uri"},
+    "experimental_listPrompts": {"method": "POST", "path": "", "mcp": "prompts/list"},
+    "experimental_getPrompt": {"method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments"}
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "issue": "MCP servers agent frameworks connect to over HTTP: Vercel AI SDK, OpenAI Agents, LangChain, Claude Agent SDK, Mastra",
+  "calls": [
+    {"file": "ai-sdk.ts", "line": 7, "provider": "mcp", "operation": "initialize"},
+    {"file": "ai-sdk.ts", "line": 10, "provider": "mcp", "operation": "tools/list"},
+    {"file": "ai-sdk.ts", "line": 11, "provider": "openai"},
+    {"file": "ai-sdk.ts", "line": 20, "provider": "mcp", "operation": "initialize"},
+    {"file": "ai-sdk.ts", "line": 21, "provider": "mcp", "operation": "tools/list"},
+    {"file": "ai-sdk.ts", "line": 25, "provider": "mcp", "operation": "initialize"},
+    {"file": "ai-sdk.ts", "line": 26, "provider": "mcp", "operation": "tools/list"},
+    {"file": "openai-agents.ts", "line": 3, "provider": "mcp", "operation": "initialize"},
+    {"file": "openai-agents.ts", "line": 12, "provider": "mcp", "operation": "tools/list"},
+    {"file": "openai-agents.ts", "line": 13, "provider": "mcp", "operation": "tools/call"},
+    {"file": "openai-agents.ts", "line": 14, "provider": "openai"},
+    {"file": "openai-agents.ts", "line": 19, "provider": "mcp", "operation": "initialize"},
+    {"file": "openai-agents.ts", "line": 24, "provider": "mcp", "operation": "tools/list"},
+    {"file": "langchain.ts", "line": 3, "provider": "mcp", "operation": "initialize"},
+    {"file": "langchain.ts", "line": 13, "provider": "mcp", "operation": "tools/list"},
+    {"file": "langchain.ts", "line": 17, "provider": "mcp", "operation": "initialize"},
+    {"file": "langchain.ts", "line": 23, "provider": "mcp", "operation": "initialize"},
+    {"file": "claude-agent.ts", "line": 11, "provider": "anthropic"},
+    {"file": "claude-agent.ts", "line": 11, "provider": "mcp", "operation": "initialize"},
+    {"file": "claude-agent.ts", "line": 21, "provider": "anthropic"},
+    {"file": "mastra.ts", "line": 3, "provider": "mcp", "operation": "initialize"},
+    {"file": "mastra.ts", "line": 15, "provider": "mcp", "operation": "tools/list"},
+    {"file": "mastra.ts", "line": 18, "provider": "mcp", "operation": "initialize"}
+  ]
+}
