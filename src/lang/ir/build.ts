@@ -1,6 +1,7 @@
 import { assembleCalls } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
 import { rpcClientOperation } from "../../operation/json-rpc.js";
+import { mcpOperation } from "../../operation/mcp.js";
 import type { Call, Language, Operation } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
@@ -163,7 +164,11 @@ function documentOf(raw: IrRaw, ctx: IrCtx): Shape | undefined {
 /** The RPC method a JSON-RPC client library's method sends (#52), from its registry or the argument naming it. */
 function rpcOperation(raw: IrRaw, ctx: IrCtx): Operation | undefined {
   const m = raw.sdk;
-  if (!m || (m.spec.rpc === undefined && m.spec.rpcArg === undefined)) return undefined;
+  if (!m) return undefined;
+  const target = m.spec.targetArg !== undefined ? argAt(m.method, m.spec.targetArg, ctx) : undefined;
+  const mcp = mcpOperation(m.spec, target ? shapeOf(target.expr, target.fn, ctx).shape : undefined);
+  if (mcp) return mcp;
+  if (m.spec.rpc === undefined && m.spec.rpcArg === undefined) return undefined;
   const arg = m.spec.rpcArg !== undefined ? argAt(m.method, m.spec.rpcArg, ctx) : undefined;
   return rpcClientOperation(m.spec, arg ? shapeOf(arg.expr, arg.fn, ctx).shape : undefined);
 }

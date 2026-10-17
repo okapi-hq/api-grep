@@ -1,0 +1,36 @@
+{
+  "$comment": "The MCP Python SDK's client: a `ClientSession(read, write)` sends JSON-RPC over the streams its transport gives (`async with streamablehttp_client(url, headers=...) as (read, write, _)`, `sse_client(url, headers=...)`, also through `AsyncExitStack.enter_async_context`). A session over `stdio_client` or `websocket_client` sends no HTTP request and is not reported. Servers (`FastMCP`, `Server`) receive requests: none of their methods is listed. `operation` is the MCP method, `operation.target` the tool, prompt or resource named.",
+  "package": "mcp",
+  "imports": ["mcp"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against mcp 1.17)",
+  "instance": { "names": ["ClientSession"] },
+  "endpoint": {
+    "clients": {
+      "ClientSession": { "transport": "kw:read_stream|0" }
+    },
+    "transports": {
+      "streamablehttp_client": { "url": "kw:url|0", "headers": "kw:headers" },
+      "streamable_http_client": { "url": "kw:url|0", "headers": "kw:headers" },
+      "sse_client": { "url": "kw:url|0", "headers": "kw:headers" }
+    },
+    "nonHttp": ["stdio_client", "websocket_client", "create_connected_server_and_client_session"]
+  },
+  "methods": {
+    "initialize": { "method": "POST", "path": "", "mcp": "initialize" },
+    "call_tool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "list_tools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "list_resources": { "method": "POST", "path": "", "mcp": "resources/list" },
+    "list_resource_templates": { "method": "POST", "path": "", "mcp": "resources/templates/list" },
+    "read_resource": { "method": "POST", "path": "", "mcp": "resources/read", "targetArg": "kw:uri|0" },
+    "subscribe_resource": { "method": "POST", "path": "", "mcp": "resources/subscribe", "targetArg": "kw:uri|0" },
+    "unsubscribe_resource": { "method": "POST", "path": "", "mcp": "resources/unsubscribe", "targetArg": "kw:uri|0" },
+    "list_prompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "get_prompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "kw:name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "complete": { "method": "POST", "path": "", "mcp": "completion/complete" },
+    "set_logging_level": { "method": "POST", "path": "", "mcp": "logging/setLevel" },
+    "send_ping": { "method": "POST", "path": "", "mcp": "ping" }
+  }
+}

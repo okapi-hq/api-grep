@@ -1,0 +1,15 @@
+{
+  "issue": "MCP clients over HTTP: the MCP Python SDK's ClientSession and FastMCP's Client",
+  "calls": [
+    {"file": "session.py", "line": 15, "provider": "mcp", "operation": "initialize"},
+    {"file": "session.py", "line": 16, "provider": "mcp", "operation": "tools/list"},
+    {"file": "session.py", "line": 17, "provider": "mcp", "operation": "tools/call"},
+    {"file": "session.py", "line": 24, "provider": "mcp", "operation": "initialize"},
+    {"file": "session.py", "line": 25, "provider": "mcp", "operation": "resources/read"},
+    {"file": "session.py", "line": 37, "provider": "mcp", "operation": "initialize"},
+    {"file": "session.py", "line": 40, "provider": "mcp", "operation": "tools/call"},
+    {"file": "fast_client.py", "line": 7, "provider": "mcp", "operation": "tools/call"},
+    {"file": "fast_client.py", "line": 13, "provider": "mcp", "operation": "prompts/list"},
+    {"file": "fast_client.py", "line": 14, "provider": "mcp", "operation": "prompts/get"}
+  ]
+}

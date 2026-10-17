@@ -55,9 +55,29 @@ describe("provider inventory: LLM SDKs", () => {
       "invoke.ts:10 aws-bedrock POST bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke",
     ]);
   });
+});
 
+describe("provider inventory: MCP clients", () => {
   it("mcp, with the server URL from the transport", async () => {
-    expect(await calls("sdk/mcp")).toEqual(["tools.ts:9 mcp POST mcp.example-tools.dev/mcp", "tools.ts:10 mcp POST mcp.example-tools.dev/mcp"]);
+    expect(await calls("sdk/mcp")).toEqual([
+      "consumer.ts:5 mcp POST {mcpServer}/",
+      "consumer.ts:5 mcp POST {mcpServer}/",
+      "consumer.ts:5 mcp POST {mcpServer}/",
+      "gateway.ts:13 mcp POST tools.harbor-notes.dev/mcp",
+      "gateway.ts:15 mcp POST tools.harbor-notes.dev/mcp",
+      "gateway.ts:20 mcp POST tools.harbor-notes.dev/mcp",
+      "gateway.ts:24 mcp POST tools.harbor-notes.dev/mcp",
+      "gateway.ts:28 mcp POST tools.harbor-notes.dev/mcp",
+      "gateway.ts:32 mcp POST tools.harbor-notes.dev/mcp",
+      "tools.ts:8 mcp POST mcp.example-tools.dev/mcp",
+      "tools.ts:9 mcp POST mcp.example-tools.dev/mcp",
+      "tools.ts:10 mcp POST mcp.example-tools.dev/mcp",
+      // a vendor's MCP endpoint is that vendor's
+      "vendor.ts:10 linear POST mcp.linear.app/mcp",
+      "vendor.ts:11 linear POST mcp.linear.app/mcp",
+      "vendor.ts:17 mcp POST {env:undefined}/",
+      "vendor.ts:18 mcp POST {env:undefined}/",
+    ]);
   });
 });
 

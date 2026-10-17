@@ -203,6 +203,15 @@ export interface MethodSpec {
   rpc?: string | string[];
   /** Where a generic transport method takes the RPC method: `0` (`send(method, params)`), `0.method` (`request({ method })`). */
   rpcArg?: string;
+  /** MCP clients: the MCP method the client method sends (`callTool` sends `tools/call`). */
+  mcp?: string;
+  /** Where an MCP method takes what it names on the server (`operation.target`): `0.name` (the tool), `0.uri` (the resource); Python `kw:name|0`. */
+  targetArg?: string;
+  /**
+   * The method is given the transport it sends through (MCP `client.connect(transport)`): `0`. It is reported only when
+   * that transport reads as HTTP, as `connect` names too many other things to stand for the SDK by itself.
+   */
+  transportArg?: string;
   /** Called as the package's own function (viem/actions `getBalance(client, args)`), the call takes the client first. */
   clientFirst?: boolean;
   /** An attribute read rather than a call (web3.py `w3.eth.block_number` sends `eth_blockNumber`, #78). */
@@ -267,6 +276,8 @@ export interface ClientSource {
   component?: { name: string; url: string; headers?: string };
   vendor?: VendorSource;
   urlOrNetwork?: boolean;
+  /** The transport may be its URL (fastmcp `Client("https://.../mcp")`); a literal that is no `http(s)` URL is a local script (stdio). */
+  urlTransport?: boolean;
 }
 
 /**
@@ -282,6 +293,11 @@ export interface EndpointSpec {
    * client reads as HTTP. It names the constructions that do not (`BrowserProvider`, viem's `custom`, `WebsocketProvider`).
    */
   nonHttp?: string[];
+  /**
+   * The client method a transport is given to after the client is built (MCP `client.connect(transport)`): a call goes
+   * to the transports its receiver is connected with in the file, else to the file's own transports (`mcp-endpoint.ts`).
+   */
+  connect?: string;
   /** Types a client of the library is declared with (`JsonRpcProvider`, `PublicClient`): a call on another type is not one. */
   types?: string[];
   /** The package the clients come from when it is another one (`@solana/spl-token` helpers take a `@solana/web3.js` Connection). */
@@ -325,8 +341,6 @@ export interface RegistryEntry {
   instance?: { names: string[]; urlArg?: Record<string, number | string> };
   /** Path prefix the default base URL already carries (`/v1` for OpenAI), dropped when the code gives its own base URL. */
   basePath?: string;
-  /** Base URL from the one `new <name>(url)` of the same file (MCP: the client's transport). */
-  urlFromFile?: { new: string[]; arg: number };
   /** Literal path values are written into the path (`/rest/v1/todos`, not `/rest/v1/{table}`). */
   inlinePathLiterals?: boolean;
   methods?: Record<string, MethodSpec>;

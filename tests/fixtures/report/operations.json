@@ -774,33 +774,102 @@
       "optionsOpaque": false,
       "bodySource": "literal",
       "examples": []
+    },
+    {
+      "id": "8057b1ca7c66",
+      "location": {
+        "file": "src/agent/notes.ts",
+        "line": 20,
+        "col": 12,
+        "language": "typescript"
+      },
+      "client": "sdk",
+      "sdk": {
+        "package": "@modelcontextprotocol/sdk",
+        "chain": "callTool"
+      },
+      "provider": "mcp",
+      "host": "tools.harbor-notes.dev",
+      "hostKind": "const",
+      "scheme": "https",
+      "method": "POST",
+      "pathTemplate": "/mcp",
+      "urlTemplate": "https://tools.harbor-notes.dev/mcp",
+      "operation": {
+        "protocol": "mcp",
+        "name": "tools/call",
+        "target": "search_notes",
+        "dynamic": false,
+        "from": "body"
+      },
+      "query": [],
+      "headers": [
+        "authorization"
+      ],
+      "headerValues": {
+        "authorization": null
+      },
+      "authScheme": "bearer",
+      "body": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "hint": "query"
+          },
+          "limit": {
+            "type": "integer",
+            "enum": [
+              10
+            ]
+          }
+        },
+        "required": [
+          "query",
+          "limit"
+        ]
+      },
+      "bodyEncoding": "json",
+      "dynamic": [
+        {
+          "where": "body",
+          "name": "query",
+          "origin": "param"
+        }
+      ],
+      "optionsOpaque": false,
+      "bodySource": "literal",
+      "examples": []
     }
   ],
   "stats": {
     "filesScanned": 5,
-    "callsFound": 10,
+    "callsFound": 11,
     "byLanguage": {
-      "typescript": 5,
+      "typescript": 6,
       "python": 3,
       "php": 2
     },
     "byClient": {
       "fetch": 5,
       "requests": 3,
-      "guzzle": 2
+      "guzzle": 2,
+      "sdk": 1
     },
     "byProvider": {
       "api.mainnet-beta.solana.com": 4,
       "rpc.example-node.com": 2,
       "ws.example-carrier.com": 2,
       "aws": 1,
-      "example-shop.myshopify.com": 1
+      "example-shop.myshopify.com": 1,
+      "mcp": 1
     },
     "byHostKind": {
-      "literal": 10
+      "literal": 10,
+      "const": 1
     },
-    "withBodyShape": 9,
-    "withDynamic": 8,
+    "withBodyShape": 10,
+    "withDynamic": 9,
     "redacted": 0,
     "durationMs": 0
   }

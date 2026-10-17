@@ -19,7 +19,9 @@ export interface IrEndpoint {
 
 /** The transport construction an option holds, as a chain segment whose arguments can be read. */
 function transportSeg(s: Scoped, names: string[], ctx: IrCtx): Seg | undefined {
-  const d = deref(s.expr, s.fn, ctx);
+  let d = deref(s.expr, s.fn, ctx);
+  // a stream of a transport (MCP `async with sse_client(url) as (read, write)`): the transport
+  if (d.expr.k === "index") d = deref(d.expr.obj, d.fn, ctx);
   if (d.expr.k !== "call") return undefined;
   const chain = calleeChain(d.expr, d.fn, ctx);
   const last = chain.segs.at(-1);
@@ -63,12 +65,28 @@ function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, c
   if (own.url) return own;
   const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
   if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
+  const given = client.urlTransport && transport ? givenUrl(transport, ctx) : undefined;
+  if (given !== undefined) return given && { url: given };
   const transports = spec.transports ?? {};
   const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
   return t ? read(t, transports[t.name]!, ctx) : {};
 }
 
-/** Two endpoints with the same URL: the same literal or variable, written in the same scope; an unknown one agrees with nothing. */
+/**
+ * A transport given as a string (fastmcp `Client("https://.../mcp")`): an `http(s)` literal is the URL, another literal
+ * a local script run over stdio (`null`), a string built in code or read from the environment a URL; undefined for a
+ * value that is no string (a transport object, a server instance).
+ */
+function givenUrl(s: Scoped, ctx: IrCtx): Scoped | null | undefined {
+  const d = deref(s.expr, s.fn, ctx);
+  const e = d.expr;
+  if (e.k === "str") return /^https?:\/\//i.test(e.v) ? s : null;
+  const first = e.k === "tmpl" || e.k === "concat" ? e.parts[0] : undefined;
+  if (first?.k === "str") return /^https?:\/\//i.test(first.v) ? s : null;
+  return first || e.k === "env" || e.k === "format" ? s : undefined;
+}
+
+/** Two endpoints with the same URL:the same literal or variable, written in the same scope; an unknown one agrees with nothing. */
 function sameUrl(a: IrEndpoint, b: IrEndpoint, ctx: IrCtx): boolean {
   if (!a.url || !b.url) return false;
   const [x, y] = [deref(a.url.expr, a.url.fn, ctx), deref(b.url.expr, b.url.fn, ctx)];

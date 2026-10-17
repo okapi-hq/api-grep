@@ -1,9 +1,10 @@
-import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpression } from "ts-morph";
+import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import type { Callee, MethodSpec, RawCall, RegistryEntry } from "../types.js";
 import { declarationsOf, getProp } from "../ast/object.js";
 import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint, type Endpoint } from "./endpoint.js";
+import { mcpEndpoint } from "./mcp-endpoint.js";
 import { contractCall } from "./rpc-contract.js";
 import { rpcEndpoint } from "./rpc-endpoint.js";
 import { keepsSender, withSenderArgs } from "./sender.js";
@@ -65,17 +66,6 @@ function clientUrlArg(callee: Callee, reg: RegistryEntry): Expression | undefine
     return prop ? getProp(arg, prop) : arg;
   }
   return undefined;
-}
-
-/** MCP-style clients get their server URL from a transport built next to them: the one `new Transport(url)` of the file. */
-function fileUrlArg(node: Node, reg: RegistryEntry): Expression | undefined {
-  const from = reg.urlFromFile;
-  if (!from) return undefined;
-  const built = node
-    .getSourceFile()
-    .getDescendantsOfKind(SyntaxKind.NewExpression)
-    .filter((n) => from.new.includes(n.getExpression().getText()));
-  return built.length === 1 ? (built[0]!.getArguments()[from.arg] as Expression | undefined) : undefined;
 }
 
 /** A base URL among the settings of a model client built here (`new ChatOpenAI({ configuration: { baseURL } })`). */
@@ -152,7 +142,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   const record = spec.record && Node.isCallExpression(node) ? recordOf(node, reg) : undefined;
   if (record) raw.record = record;
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
-  const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg) ?? fileUrlArg(node, reg);
+  const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }
@@ -163,7 +153,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
  */
 function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, callee: Callee, own: { url?: Expression; client?: Expression }, given?: Endpoint): RawCall | null {
   const args = raw.sdk!.args;
-  const endpoint = given ?? (own.url ? { url: own.url } : reg.endpoint!.nonHttp ? rpcEndpoint(node, reg, spec, callee, args, own.client) : clientEndpoint(node, reg, spec, callee, args));
+  const endpoint = given ?? (own.url ? { url: own.url } : reg.endpoint!.connect ? mcpEndpoint(node, reg, spec, args) : reg.endpoint!.nonHttp ? rpcEndpoint(node, reg, spec, callee, args, own.client) : clientEndpoint(node, reg, spec, callee, args));
   if (!endpoint) return null;
   if (endpoint.url) raw.baseUrlExpr = endpoint.url;
   if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
@@ -192,7 +182,7 @@ export function detectSdk(node: CallExpression | NewExpression, callee: Callee, 
     return spec ? buildRaw(node, reg, name, spec, callee) : null;
   }
   // a contract object's function (#78), before its name is read as one of the client's own methods
-  const contract = reg.endpoint?.nonHttp ? contractCall(node, callee, reg) : undefined;
+  const contract = reg.endpoint?.nonHttp && !reg.endpoint.connect ? contractCall(node, callee, reg) : undefined;
   if (contract !== undefined) return contract && buildRaw(node, reg, contract.key, contract.spec, callee, contract.endpoint);
   if (!reg.methods || !onClient(callee, reg)) return null;
   for (const key of candidateKeys(callee, reg)) {

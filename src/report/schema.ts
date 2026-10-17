@@ -8,7 +8,7 @@ import { CoverageSchema, DiagnosticsSchema, LanguageSchema } from "./schema-scan
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.26.0";
+export const SCHEMA_VERSION = "1.27.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
@@ -141,13 +141,15 @@ const GraphqlArgumentsSchema = z.record(z.string(), z.unknown());
 export const OperationSchema = z
   .object({
     protocol: z
-      .enum(["json-rpc", "graphql", "soap", "action"])
-      .describe("The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`)."),
+      .enum(["json-rpc", "graphql", "soap", "action", "mcp"])
+      .describe(
+        "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL).",
+      ),
     name: z
       .string()
       .nullable()
       .describe(
-        "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
+        "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`), `tools/call` (the MCP method). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
       ),
     type: z.enum(["query", "mutation", "subscription"]).optional().describe("GraphQL only: the operation type."),
     fields: z
@@ -160,6 +162,12 @@ export const OperationSchema = z
       .describe(
         "GraphQL only: the arguments of selected fields, by field path as in `fields` (`{ \"orders\": { \"first\": 10, \"sortKey\": \"CREATED_AT\" } }`). A literal is its JSON value (an enum value its name), a variable `\"$name\"`; a path that aliases select with different arguments has a list of them. Absent when no selected field has arguments, or past the bounds.",
       ),
+    target: z
+      .string()
+      .optional()
+      .describe(
+        "MCP only (since 1.27.0): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
+      ),
     alternatives: z.array(z.string()).optional().describe("Every name the call can send when a branch picks one, `name` first."),
     batch: z
       .boolean()
@@ -170,7 +178,7 @@ export const OperationSchema = z
       .enum(["body", "header", "query", "document"])
       .describe("Where the request carries the name: a body property or element, a header (`SOAPAction`), a query parameter, or a GraphQL document."),
   })
-  .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL." });
+  .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP, action-style APIs and MCP send every operation to one URL." });
 
 export const ClientPartSchema = z
   .object({

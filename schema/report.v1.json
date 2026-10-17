@@ -394,12 +394,13 @@
             "json-rpc",
             "graphql",
             "soap",
-            "action"
+            "action",
+            "mcp"
           ],
-          "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`)."
+          "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL)."
         },
         "name": {
-          "description": "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
+          "description": "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`), `tools/call` (the MCP method). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
           "type": [
             "string",
             "null"
@@ -449,6 +450,10 @@
             ]
           }
         },
+        "target": {
+          "description": "MCP only (since 1.27.0): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
+          "type": "string"
+        },
         "alternatives": {
           "description": "Every name the call can send when a branch picks one, `name` first.",
           "type": "array",
@@ -481,7 +486,7 @@
         "dynamic",
         "from"
       ],
-      "description": "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP and action-style APIs send every operation to one URL."
+      "description": "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP, action-style APIs and MCP send every operation to one URL."
     },
     "Shape": {
       "description": "Shape of a value: names and types, never data. `fromType` is the TypeScript type it was read from. Close to JSON Schema, plus `dynamic` and `unknown`.",

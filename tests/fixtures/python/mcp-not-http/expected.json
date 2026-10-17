@@ -1,0 +1,4 @@
+{
+  "issue": "MCP servers receive requests and stdio / in-memory clients send no HTTP request: no call is reported",
+  "calls": []
+}

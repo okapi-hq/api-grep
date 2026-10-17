@@ -1,19 +1,32 @@
 {
-  "$comment": "MCP clients send JSON-RPC to the server their transport points at; the URL comes from the one HTTP transport built in the same file.",
+  "$comment": "MCP clients send JSON-RPC to the server their transport points at: `client.connect(transport)` gives the transport, so a call goes to the HTTP transports its client is connected with in the file (else the file's own); stdio, WebSocket and in-memory transports send no HTTP request and are not reported. Servers (`McpServer`, `Server`) receive requests: none of their methods is listed. `operation` is the MCP method, `operation.target` the tool, prompt or resource named.",
   "package": "@modelcontextprotocol/sdk",
   "provider": "mcp",
   "host": "{mcpServer}",
   "auth": "unknown",
-  "generatedFrom": "manual",
+  "generatedFrom": "manual (checked against @modelcontextprotocol/sdk 1.20)",
   "instance": {"names": ["Client"]},
-  "urlFromFile": {"new": ["StreamableHTTPClientTransport", "SSEClientTransport"], "arg": 0},
+  "endpoint": {
+    "clients": {"Client": {}},
+    "transports": {
+      "StreamableHTTPClientTransport": {"url": "0", "headers": "1.requestInit.headers"},
+      "SSEClientTransport": {"url": "0", "headers": "1.requestInit.headers"}
+    },
+    "nonHttp": ["StdioClientTransport", "WebSocketClientTransport", "InMemoryTransport", "InMemoryTransport.createLinkedPair"],
+    "connect": "connect"
+  },
   "methods": {
-    "callTool": {"method": "POST", "path": "", "bodyArg": 0},
-    "listTools": {"method": "POST", "path": ""},
-    "listResources": {"method": "POST", "path": ""},
-    "readResource": {"method": "POST", "path": "", "bodyArg": 0},
-    "listPrompts": {"method": "POST", "path": ""},
-    "getPrompt": {"method": "POST", "path": "", "bodyArg": 0},
-    "complete": {"method": "POST", "path": "", "bodyArg": 0}
+    "connect": {"method": "POST", "path": "", "mcp": "initialize", "transportArg": "0"},
+    "callTool": {"method": "POST", "path": "", "mcp": "tools/call", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments"},
+    "listTools": {"method": "POST", "path": "", "mcp": "tools/list"},
+    "listResources": {"method": "POST", "path": "", "mcp": "resources/list"},
+    "listResourceTemplates": {"method": "POST", "path": "", "mcp": "resources/templates/list"},
+    "readResource": {"method": "POST", "path": "", "mcp": "resources/read", "targetArg": "0.uri"},
+    "subscribeResource": {"method": "POST", "path": "", "mcp": "resources/subscribe", "targetArg": "0.uri"},
+    "unsubscribeResource": {"method": "POST", "path": "", "mcp": "resources/unsubscribe", "targetArg": "0.uri"},
+    "listPrompts": {"method": "POST", "path": "", "mcp": "prompts/list"},
+    "getPrompt": {"method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments"},
+    "complete": {"method": "POST", "path": "", "mcp": "completion/complete", "bodyArg": 0},
+    "setLoggingLevel": {"method": "POST", "path": "", "mcp": "logging/setLevel"}
   }
 }

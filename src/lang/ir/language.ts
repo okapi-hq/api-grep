@@ -98,7 +98,7 @@ export interface SetterRules {
  * Params sources add `kw:<name>`, `seg:<segment>:<N>` (argument N of a named call in the chain) and
  * `chain:<a>,<b>` (argument 0 of those calls joined with `/`: Firestore references).
  */
-export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "methods" | "commands" | "urlFromFile"> {
+export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "methods" | "commands"> {
   /** Dotted import roots: Python modules (`openai`, `google.genai`), PHP namespaces (`Stripe`, `OpenAI`), JVM classes. */
   imports: string[];
   instance?: {

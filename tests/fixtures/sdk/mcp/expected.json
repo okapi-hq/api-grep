@@ -1,7 +1,21 @@
 {
   "issue": "https://github.com/okapi-hq/api-grep/issues/6",
   "calls": [
-    {"file": "tools.ts", "line": 9, "provider": "mcp"},
-    {"file": "tools.ts", "line": 10, "provider": "mcp"}
+    {"file": "tools.ts", "line": 8, "provider": "mcp", "operation": "initialize"},
+    {"file": "tools.ts", "line": 9, "provider": "mcp", "operation": "tools/list"},
+    {"file": "tools.ts", "line": 10, "provider": "mcp", "operation": "tools/call"},
+    {"file": "gateway.ts", "line": 13, "provider": "mcp", "operation": "initialize"},
+    {"file": "gateway.ts", "line": 15, "provider": "mcp", "operation": "initialize"},
+    {"file": "gateway.ts", "line": 20, "provider": "mcp", "operation": "tools/call"},
+    {"file": "gateway.ts", "line": 24, "provider": "mcp", "operation": "tools/call"},
+    {"file": "gateway.ts", "line": 28, "provider": "mcp", "operation": "resources/read"},
+    {"file": "gateway.ts", "line": 32, "provider": "mcp", "operation": "prompts/get"},
+    {"file": "vendor.ts", "line": 10, "provider": "linear", "operation": "initialize"},
+    {"file": "vendor.ts", "line": 11, "provider": "linear", "operation": "tools/call"},
+    {"file": "vendor.ts", "line": 17, "provider": "mcp", "operation": "initialize"},
+    {"file": "vendor.ts", "line": 18, "provider": "mcp", "operation": "tools/list"},
+    {"file": "consumer.ts", "line": 5, "provider": "mcp", "operation": "tools/list"},
+    {"file": "consumer.ts", "line": 5, "provider": "mcp", "operation": "prompts/list"},
+    {"file": "consumer.ts", "line": 5, "provider": "mcp", "operation": "resources/list"}
   ]
 }
