@@ -1,7 +1,7 @@
 import { Node, SyntaxKind, type BindingElement, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { assignedConstruction } from "../ast/assigned.js";
 import { assignedModule, loadedModule } from "../ast/loaded-module.js";
-import { enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
+import { enclosingClass, fieldAssignments, methodOf, parameterProperty } from "../ast/class.js";
 import { guardedValue, isNothing, memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { isFunctionLike, nestedReturnsOf, returnsOf, type FunctionLike } from "../ast/function.js";
 import { declarationsOf, getProp, memberFunction } from "../ast/object.js";
@@ -9,6 +9,7 @@ import { identifierOrigin, packageFromSpecifier, packageOfType } from "../ast/or
 import { memoValue } from "../ast/react.js";
 import type { Callee, InstanceInfo } from "../types.js";
 import { cacheRead, cachedClients } from "./client-cache.js";
+import { functionCallee } from "./fn-value.js";
 import { heldValue, hookValues, namedValue } from "./held.js";
 import { injectedFunctions } from "./injected-fn.js";
 import { annotatedPackage } from "./type-annotation.js";
@@ -40,8 +41,10 @@ export function factoryOptions(c: Callee, factories: string[]): Expression | und
 export function describeCallee(call: CallExpression | NewExpression, depth = 0): Callee {
   const expr = call.getExpression();
   const mc = memberChain(expr);
-  return calleeFromChain(mc, depth);
+  const c = calleeFromChain(mc, depth);
+  return depth === 0 && Node.isCallExpression(call) && !wrapperFunction(c) ? (functionCallee(expr, c) ?? c) : c;
 }
+
 
 /**
  * Libraries a page loads with a `<script>` tag and uses as globals, without a declaration the checker can see:
@@ -299,7 +302,7 @@ function thisCallee(mc: Chain, depth: number): Callee {
   const propName = chain[0];
   if (!cls || !propName) return { ...typeFallback(mc, 1), thisRoot: true };
   const prop = cls.getProperty(propName);
-  const method = cls.getMethod(propName);
+  const method = methodOf(cls, propName);
   if (method) return { localDecl: method, chain: chain.slice(1) };
   const rest: Chain = { root: mc.nodes[1] ?? root, nodes: mc.nodes.slice(1), chain: chain.slice(1) };
   const init = prop?.getInitializer();
@@ -375,9 +378,10 @@ export function callShift(callee: Callee): number {
 /** The function a call resolves to: a local function (also through `.call(this, …)`), or a method of a local class (`svc.post`, `Svc.post`). */
 export function wrapperFunction(callee: Callee): FunctionLike | undefined {
   const d = callee.localDecl;
-  if (isFunctionLike(d) && (callee.chain.length === 0 || callShift(callee) === 1)) return d;
+  // `const send = makeSender(base); send(path)` calls what `makeSender` returned, not `makeSender`
+  if (isFunctionLike(d) && callee.instance?.kind !== "call" && (callee.chain.length === 0 || callShift(callee) === 1)) return d;
   if (d && (Node.isClassDeclaration(d) || Node.isClassExpression(d)) && callee.chain.length === 1) {
-    const m = d.getMethod(callee.chain[0]!);
+    const m = methodOf(d, callee.chain[0]!);
     return isFunctionLike(m) ? m : undefined;
   }
   return undefined;

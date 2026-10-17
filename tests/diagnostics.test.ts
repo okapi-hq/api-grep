@@ -12,7 +12,7 @@ describe("diagnostics", () => {
       skippedCounts: { "parse-error": 1 },
       droppedCalls: [],
       unfollowed: [
-        { file: "src/deep-chain.ts", line: 23, reason: "wrapper-depth", via: "tlsFetch" },
+        { file: "src/deep-chain.ts", line: 31, reason: "wrapper-depth", via: "tlsFetch" },
         { file: "src/injected.ts", line: 16, reason: "injected-fetch", expr: "deps.fetchUpstream" },
       ],
       languages: { typescript: { filesSeen: 5, filesScanned: 4 } },

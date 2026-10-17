@@ -1,0 +1,7 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "alerts.js", "line": 15, "provider": "events.pagerbell-demo.io"},
+    {"file": "alerts.js", "line": 21, "provider": "status.pagerbell-demo.io"}
+  ]
+}

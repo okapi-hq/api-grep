@@ -242,21 +242,31 @@ export class ReceiverResolver {
     return this.index.get(name) ?? [];
   }
 
-  private fromCallers(node: CallExpression, r: Receiver): RawCall[] {
-    const cls = classNameOf(r.fn);
-    const name = cls ? `new ${cls}` : nameOf(r.fn);
-    const position = r.fn
+  /**
+   * The calls of `fn` in the scanned files that can reach it (`new C(...)` for a constructor), at most `MAX_CALLERS`
+   * looked at, each with the argument `param` receives (undefined when the call passes none).
+   */
+  argumentsFor(fn: FunctionLike, param: ParameterDeclaration): { caller: CallExpression | NewExpression; arg?: Node }[] {
+    const cls = classNameOf(fn);
+    const name = cls ? `new ${cls}` : nameOf(fn);
+    const position = fn
       .getParameters()
       .filter((p) => p.getName() !== "this")
-      .indexOf(r.param);
-    const out = new Map<string, RawCall>();
-    const group = this.groupOf?.(node.getSourceFile().getFilePath());
+      .indexOf(param);
+    const group = this.groupOf?.(fn.getSourceFile().getFilePath());
     const reachable = (c: CallExpression | NewExpression): boolean => group === undefined || this.groupOf!(c.getSourceFile().getFilePath()) === group;
+    const out: { caller: CallExpression | NewExpression; arg?: Node }[] = [];
     for (const caller of (name ? this.callsNamed(name).filter(reachable) : []).slice(0, MAX_CALLERS)) {
       const callee = describeCallee(caller);
-      const runs = cls ? callee.localDecl === r.fn.getParent() && callee.chain.length === 0 : wrapperFunction(callee) === r.fn;
-      if (!runs) continue;
-      const arg = caller.getArguments()[(cls ? 0 : callShift(callee)) + position];
+      const runs = cls ? callee.localDecl === fn.getParent() && callee.chain.length === 0 : wrapperFunction(callee) === fn;
+      if (runs) out.push({ caller, arg: caller.getArguments()[(cls ? 0 : callShift(callee)) + position] });
+    }
+    return out;
+  }
+
+  private fromCallers(node: CallExpression, r: Receiver): RawCall[] {
+    const out = new Map<string, RawCall>();
+    for (const { arg } of this.argumentsFor(r.fn, r.param)) {
       if (!arg || !Node.isExpression(arg)) continue;
       const raw = detectSdk(node, calleeThrough(arg, r.mc), this.registry);
       if (!raw?.sdk) continue;

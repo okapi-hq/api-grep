@@ -7,10 +7,18 @@ import type { HostLiterals } from "../../hosts/literals.js";
 import { loadBatch, type Scope, type Unreadable } from "../../project.js";
 import type { Call } from "../../report/schema.js";
 import { setDocumentRoot } from "../../resolve/graphql-source.js";
+import { MAX_INSTANTIATIONS, MAX_TYPES, relieve } from "./checker-budget.js";
 import { importedPackages } from "./coverage.js";
 import { DeferredDiagnostics } from "./deferred.js";
 import { collectHostLiterals } from "./host-literals.js";
 import { buildAll, detectAll } from "./detect-all.js";
+
+/**
+ * A quarter of the checker budget: a project whose detection made that many types or instantiations drops its checker
+ * before the calls are built (a monorepo of one 35 MB group otherwise built its calls with 150,000 types still held, the
+ * heap at its 2 GB limit). A count, as `relieve`'s own: the report depends on the input only.
+ */
+const BUILD_RELIEF = { types: MAX_TYPES / 4, instantiations: MAX_INSTANTIATIONS / 4 };
 
 export interface BatchCtx {
   scope: Scope;
@@ -60,6 +68,8 @@ export class Merged {
     this.selected.push(...paths(selected));
     const receivers = new ReceiverResolver(selected, ctx.registry, ctx.declared, ctx.groupOf);
     const { raws, scanned } = detectAll(selected, { rootDir: ctx.scope.dir, registry: ctx.registry, receivers, wrappers: ctx.wrappers, diag: this.log.detecting });
+    // the types detection made are mostly not the ones building reads: a large project builds with a new checker
+    relieve(loaded.project, BUILD_RELIEF);
     this.calls.push(...buildAll(raws, ctx.build, this.log.building));
     for (const sf of scanned) {
       this.scanned.push(sf.getFilePath());

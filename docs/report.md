@@ -415,10 +415,11 @@ union branches and booleans. Secret-looking keys and headers (`token`, `api_key`
   source file under the directory is scanned, also outside the tsconfig `include`.
 - `droppedCalls`: calls that failed the report schema (`schema-invalid`, with the zod path) or
   made the resolver throw (`internal-error`). The rest of the report is still written.
-- `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`),
+- `unfollowed`: a fetch function received from outside (`this.fetchFn(url)`, `deps.fetchUpstream(url)`) that the
+  callers do not settle (they pass nothing readable, or different functions),
   an HTTP client object received without a type that names it (`injected-client`: `self.session.post(url)`),
   an SDK method called on an untyped parameter whose client no caller and no single declared SDK settles
-  (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper three or more hops from its HTTP call (the inner call sites are
+  (`receiver-unknown`: `client.chat.completions.create`), and calls to a wrapper more than six wrappers from its HTTP call (four in the languages read with tree-sitter; the inner call sites are
   reported, the outer one is not). A fetcher with a known default (`constructor(private fetchFn = fetch)`) or declared as
   `typeof fetch` is reported as a fetch call instead.
   `graphql-limit` (schema 1.19) is a call whose GraphQL document was read past a bound: the call is reported with

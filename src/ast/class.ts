@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, type ClassDeclaration, type ClassExpression, type Expression, type ParameterDeclaration } from "ts-morph";
+import { Node, SyntaxKind, type ClassDeclaration, type ClassExpression, type Expression, type MethodDeclaration, type ParameterDeclaration } from "ts-morph";
 import { isFunctionLike } from "./function.js";
 
 export type ClassLike = ClassDeclaration | ClassExpression;
@@ -61,4 +61,28 @@ export function classPropertyInitializer(at: Node, propName: string): Expression
   // `constructor(private baseUrl = "https://api.gladia.io")`: the default, unless the constructor reassigns it
   if (param) return constructorAssignment(cls, propName) ?? param.getInitializer();
   return constructorAssignment(cls, propName) ?? getterReturn(cls, propName);
+}
+
+/** Classes walked up an `extends` chain: a bound on hostile input. */
+const MAX_BASES = 6;
+
+/**
+ * A method of the class or, when the class declares no member of that name, of a class it extends (`this.request(url)`
+ * in a provider class whose base class sends the request).
+ */
+export function methodOf(cls: ClassLike, name: string): MethodDeclaration | undefined {
+  let cur: ClassLike | undefined = cls;
+  for (let i = 0; cur && i < MAX_BASES; i++) {
+    // a library's class: its type says what the call is, not a body
+    if (cur.getSourceFile().isDeclarationFile() || cur.getSourceFile().isFromExternalLibrary()) return undefined;
+    const own = cur.getMethod(name);
+    if (own) return own;
+    if (cur.getProperty(name) || cur.getGetAccessor(name) || parameterProperty(cur, name)) return undefined;
+    try {
+      cur = cur.getBaseClass();
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
 }

@@ -13,11 +13,19 @@ function signed(url: string) {
   return retrying(url);
 }
 
-function throttled(url: string) {
+function traced(url: string) {
   return signed(url);
 }
 
-// five wrappers from fetch: the call is not followed, so its host is named in the code and explained by no call
+function metered(url: string) {
+  return traced(url);
+}
+
+function throttled(url: string) {
+  return metered(url);
+}
+
+// seven wrappers from fetch: the call is not followed, so its host is named in the code and explained by no call
 function relay(url: string) {
   return throttled(url);
 }

@@ -11,11 +11,19 @@ function signed(url: string) {
   return retrying(url);
 }
 
-function tlsFetch(url: string) {
+function traced(url: string) {
   return signed(url);
 }
 
-// five wrappers from fetch: beyond what wrappers expand, so listed as not followed
+function metered(url: string) {
+  return traced(url);
+}
+
+function tlsFetch(url: string) {
+  return metered(url);
+}
+
+// seven wrappers from fetch: beyond what wrappers expand, so listed as not followed
 export function probe(url: string) {
   return tlsFetch(url);
 }

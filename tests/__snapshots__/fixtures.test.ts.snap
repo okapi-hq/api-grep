@@ -4268,11 +4268,11 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 10,
+    "filesSeen": 11,
     "languages": {
       "typescript": {
         "filesScanned": 5,
-        "filesSeen": 10,
+        "filesSeen": 11,
       },
     },
     "skipped": [
@@ -4282,6 +4282,10 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       },
       {
         "file": "fetch-override/instrument.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/local-fetchers.ts",
         "reason": "excluded",
       },
       {
@@ -4298,7 +4302,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       },
     ],
     "skippedCounts": {
-      "excluded": 5,
+      "excluded": 6,
     },
     "unfollowed": [],
   },
@@ -10863,16 +10867,28 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 5,
-    "filesSeen": 9,
+    "filesSeen": 13,
     "languages": {
       "typescript": {
         "filesScanned": 5,
-        "filesSeen": 9,
+        "filesSeen": 13,
       },
     },
     "skipped": [
       {
         "file": "deep-chain/catalog.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/factories.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/hooks.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "function-values/inherited.ts",
         "reason": "excluded",
       },
       {
@@ -10884,12 +10900,16 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "passed-functions/callers.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "two-hop/client.ts",
         "reason": "excluded",
       },
     ],
     "skippedCounts": {
-      "excluded": 4,
+      "excluded": 8,
     },
     "unfollowed": [],
   },

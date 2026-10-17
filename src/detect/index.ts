@@ -10,6 +10,7 @@ import { detectGotKy } from "./got-ky.js";
 import { detectJquery } from "./jquery.js";
 import { detectNodeHttp } from "./node-http.js";
 import { detectNodeSoap } from "./node-soap.js";
+import { passedFunction } from "./passed-fn.js";
 import type { Registry } from "./registry/index.js";
 import { receiverOf, substitutedReceiver, type ReceiverResolver } from "./receiver.js";
 import { detectSdk } from "./sdk.js";
@@ -89,7 +90,12 @@ export function detectFile(sf: SourceFile, registry: Registry, root: Node = sf, 
       continue;
     }
     const u = unfollowedFetch(node, callee);
-    if (u) unfollowed.push(u);
+    // the one function the callers pass for it, one level up (#4)
+    const passed = u && receivers ? passedFunction(node, receivers) : undefined;
+    const fetched = passed === "fetch" ? detectFetch(node, { global: "fetch", chain: [] }) : null;
+    if (fetched) calls.push(fetched);
+    else if (passed && passed !== "fetch") candidates.push({ node, callee: { localDecl: passed.fn, chain: [], closure: passed.closure } });
+    else if (u) unfollowed.push(u);
   }
   calls.push(...detectComponents(root, registry));
   return { calls, candidates, unfollowed };
