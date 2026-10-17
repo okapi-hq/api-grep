@@ -57,8 +57,11 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `/// <reference>`, `declare module`, globals); `batches.ts` packs groups into projects of about 16 MB of source (a
   smaller repository is one project, without the pre-pass), scanned one after the other (`batched.ts`), results
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
-  instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
-  without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
+  instantiations (never on the heap: a report depends on the input only), and before a batch builds its calls once
+  detection made a quarter of that (`batched.ts`); `src/module-resolution.ts` resolves imports
+  without keeping every path tried, each file with the path aliases of its own monorepo package
+  (`src/nested-aliases.ts`: the `paths` / `baseUrl` of the nearest tsconfig when it is not the scan's, or those the
+  configs of a `references`-only solution config agree on; the file graph does the same). A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
 - Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust, Dart): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A file of another format a grammar reads goes through the source's `readText` hook (`IrSource`): Python reads a
@@ -160,6 +163,13 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
+- Functions as values (TypeScript, #3 / #4): `src/detect/fn-value.ts` reads the function a callee is when the chain
+  names none (a member of what a hook or factory returns, `useCallback`, an object literal's method, an arrow a factory
+  returns with the factory's parameters as `Callee.closure`); `describeCallee` uses it, so such calls are wrappers.
+  `src/detect/passed-fn.ts` follows a fetch-named callee that is a parameter, a member of one or a field set from one to
+  what the callers pass (`ReceiverResolver.argumentsFor`, one level; one function or the global `fetch`, else
+  `injected-fetch`). Wrapper chains are expanded per remaining depth (`src/wrappers/detect.ts`), so a recursive wrapper
+  is never cached half-expanded.
 - Go (`src/lang/go/`): a module name is the file's import path (`go.mod`'s `module` and the directory, dotted:
   `github_com.acme.bot.internal.llm`; registries and `clients.json` give Go import paths, converted by `importRoot`);
   the files of a directory are one package (`packageScope`), and the language's `link` hook (`link.ts`, run once every
@@ -312,6 +322,17 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `@mastra/core` agents count in coverage (`AI_SDK_AGENTS`). Left unsupported on purpose: botocore (exceptions and
   config; its clients are boto3's), azure-identity (the token endpoint depends on the credential chain), `@ngrok/ngrok`
   (a tunnel, no HTTP API call), firebase_core, firebase_messaging, google_maps_flutter.
+- Supported SDKs imported with no call found (`coverage.sdks` `imported-no-calls`): TypeScript clients built behind a
+  guard (`guardedValue` in `src/ast/expr.ts`), SDKs re-exported by a project module (`reexportedPackage` /
+  `moduleExportsPackage` in `src/ast/origin.ts`), SDK modules loaded on demand (`await import("pkg")` read as `require`;
+  a `let` given `require("pkg").default` or a `.then` callback's module, `src/ast/loaded-module.ts`), class fields
+  declared `= null` and set later, `window.<global>` script-tag clients, clients destructured from an untyped object
+  parameter (`destructuredReceiver` in `src/detect/receiver.ts`), monorepo path aliases (above), AI SDK models from
+  `customProvider`, wrappers, helpers and branches with one call per candidate provider (`src/detect/ai-sdk-model.ts`,
+  `RawCall.alternatives`, `asCandidates` in `src/resolve/choice.ts`), imports used as types only left out of import
+  sites (`src/lang/typescript/type-imports.ts`) and boto3 DynamoDB / SES / SES v2 / SQS / SNS registries (Python) are
+  done. Left: builder chains on untyped parameters, Python clients a subclass sets for its base class's methods,
+  LangChain's own modules (agents, tools: no request of their own).
 - Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
   are done (`docs/languages.md#go`, limitations there).
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).
@@ -322,4 +343,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   there); Firebase and the other pub SDKs in `providers.json` have no registry yet, dart:io `HttpClient`, Chopper and
   retrofit.dart are not read.
 - Jupyter notebooks (Python's `readText`) and Vue, Svelte and Astro components (the TypeScript front end) are read.
+- TypeScript recall (#3, #4): functions as values (hooks, factories, object literals, inherited methods), fetch
+  functions passed by callers (also `opts.fetcher ?? defaultFetcher`), `https.request(url,
+  opts)` with an untyped `url`, and wrapper chains of six are done. Left: provider catalogs of more than 20 base URLs
+  picked at run time (most of the hosts `coverage.hosts` leaves unexplained), a wrapper fanning out to more than three
+  requests (the first three are kept).
 - Next language candidates (Ruby, C#) and what each needs are listed at the end of `docs/languages.md`.

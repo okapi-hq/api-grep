@@ -7,6 +7,7 @@ import type { Registry } from "../../detect/registry/index.js";
 import { sdkPackages } from "../../normalize/provider.js";
 import { PackageJsonReader } from "../../package-json.js";
 import type { Call, Coverage } from "../../report/schema.js";
+import { usedAsTypesOnly } from "./type-imports.js";
 
 /** `dependencies` and `peerDependencies` of every package.json between the scanned files and the scanned directory. */
 export function declaredPackages(rootDir: string, files: string[], packages: PackageJsonReader): Set<string> {
@@ -18,12 +19,20 @@ export function declaredPackages(rootDir: string, files: string[], packages: Pac
   return out;
 }
 
-/** Packages a file loads at runtime: import / export-from declarations (not `import type`), `require()` and `import()`. */
+const NPM_SDKS = sdkPackages("npm");
+
+/**
+ * Packages a file loads at runtime: import / export-from declarations (not `import type`, nor an import of an SDK whose
+ * bindings are only used as types), `require()` and `import()`.
+ */
 export function importedPackages(sf: SourceFile): Set<string> {
   const specs: string[] = [];
   for (const d of [...sf.getImportDeclarations(), ...sf.getExportDeclarations()]) {
     const spec = specifierOf(d);
-    if (spec && !d.isTypeOnly()) specs.push(spec);
+    if (!spec || d.isTypeOnly()) continue;
+    const pkg = packageFromSpecifier(spec);
+    if (pkg && NPM_SDKS.has(pkg) && Node.isImportDeclaration(d) && usedAsTypesOnly(d)) continue;
+    specs.push(spec);
   }
   const text = sf.getFullText();
   if (text.includes("require(") || text.includes("import(")) {

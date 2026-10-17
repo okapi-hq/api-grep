@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "route.ts", "line": 5, "provider": "vercel-ai-gateway"},
+    {"file": "route.ts", "line": 6, "provider": "vercel-ai-gateway"},
+    {"file": "route.ts", "line": 7, "provider": "anthropic"},
+    {"file": "route.ts", "line": 8, "provider": "anthropic"},
+    {"file": "route.ts", "line": 8, "provider": "mistral"},
+    {"file": "route.ts", "line": 15, "provider": "anthropic"},
+    {"file": "route.ts", "line": 15, "provider": "mistral"},
+    {"file": "route.ts", "line": 16, "provider": "mistral"},
+    {"file": "untraced.ts", "line": 12, "provider": "unknown"},
+    {"file": "untraced.ts", "line": 14, "provider": "unknown"}
+  ]
+}

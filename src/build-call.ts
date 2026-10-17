@@ -24,7 +24,7 @@ import { resolveQuery } from "./resolve/query.js";
 import { sdkUrl } from "./resolve/sdk-url.js";
 import { soapClientCall } from "./resolve/soap-client.js";
 import { withoutClientSettings } from "./model/client-settings.js";
-import { withCandidates, type Choice } from "./resolve/choice.js";
+import { asCandidates, withCandidates, type Choice } from "./resolve/choice.js";
 import { partsToUrlShape, resolveUrl } from "./resolve/url.js";
 import type { BodyEncoding, DynamicPart, EvalCtx, Part, RawCall, Shape, UrlShape } from "./types.js";
 
@@ -134,6 +134,7 @@ function alternativeBodies(exprs: Expression[], ctx: EvalCtx): BodyResult {
  * candidate host when its base URL is picked from a host table (`resolve/choice.ts`).
  */
 export function buildCall(raw: RawCall, base: BuildCtx): Call[] {
+  if (raw.alternatives?.length) return asCandidates([raw, ...raw.alternatives].map((r) => buildCall({ ...r, alternatives: undefined }, base)));
   return withCandidates((choice) => buildOne(raw, base, choice));
 }
 

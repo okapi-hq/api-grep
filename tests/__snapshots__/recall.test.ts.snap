@@ -711,6 +711,14 @@ exports[`regression fixtures > javascript/node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > javascript/node-request 1`] = `
+[
+  "alerts.js:7 unknown POST /",
+  "alerts.js:15 events.pagerbell-demo.io POST /v2/enqueue (wrapper:postJson)",
+  "alerts.js:21 status.pagerbell-demo.io GET /v1/health",
+]
+`;
+
 exports[`regression fixtures > javascript/runtime-models 1`] = `
 [
   "providers.js:12 anthropic POST /v1/messages",
@@ -1193,6 +1201,10 @@ exports[`regression fixtures > multi-provider-site 1`] = `
 exports[`regression fixtures > negatives/data-uri 1`] = `[]`;
 
 exports[`regression fixtures > negatives/fetch-override 1`] = `[]`;
+
+exports[`regression fixtures > negatives/function-values 1`] = `[]`;
+
+exports[`regression fixtures > negatives/guarded-clients 1`] = `[]`;
 
 exports[`regression fixtures > negatives/img-src 1`] = `[]`;
 
@@ -1904,6 +1916,21 @@ exports[`regression fixtures > python/sdk/telegram 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk-aws 1`] = `
+[
+  "notify.py:11 aws POST /",
+  "notify.py:12 aws POST /",
+  "notify.py:16 aws POST /",
+  "notify.py:20 aws POST /v2/email/outbound-emails",
+  "notify.py:24 aws GET /v2/email/identities/{EmailIdentity}",
+  "orders.py:9 aws POST /",
+  "orders.py:11 aws POST /",
+  "orders.py:12 aws POST /",
+  "orders.py:16 aws POST /",
+  "orders.py:30 aws POST /",
+]
+`;
+
 exports[`regression fixtures > python/sgqlc-helpers 1`] = `
 [
   "orchard.py:24 api.example-orchard.dev POST /graphql TreeNames",
@@ -2519,6 +2546,21 @@ exports[`regression fixtures > sdk/ai-sdk 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/ai-sdk-providers 1`] = `
+[
+  "route.ts:5 vercel-ai-gateway POST /v1/ai/language-model",
+  "route.ts:6 vercel-ai-gateway POST /v1/ai/language-model",
+  "route.ts:7 anthropic POST /v1/messages",
+  "route.ts:8 anthropic POST /v1/messages",
+  "route.ts:8 mistral POST /v1/chat/completions",
+  "route.ts:15 anthropic POST /v1/messages",
+  "route.ts:15 mistral POST /v1/chat/completions",
+  "route.ts:16 mistral POST /v1/chat/completions",
+  "untraced.ts:12 unknown POST /",
+  "untraced.ts:14 unknown POST /",
+]
+`;
+
 exports[`regression fixtures > sdk/anthropic 1`] = `
 [
   "claude.ts:6 anthropic POST /v1/messages",
@@ -2663,11 +2705,41 @@ exports[`regression fixtures > sdk/grammy 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/guarded-clients 1`] = `
+[
+  "copy.mjs:6 supabase GET /auth/v1/admin/users/{uid}",
+  "copy.mjs:7 supabase POST /auth/v1/admin/users",
+  "copy.mjs:11 openai POST /v1/chat/completions",
+  "copy.mjs:17 supabase GET /auth/v1/admin/users/{uid} (wrapper:moveUser)",
+  "copy.mjs:18 openai POST /v1/chat/completions (wrapper:caption)",
+  "login.html:12 supabase POST /auth/v1/otp",
+  "on-demand.ts:5 openai POST /v1/chat/completions",
+  "on-demand.ts:20 openai POST /v1/chat/completions",
+  "on-demand.ts:26 resend POST /emails",
+  "store.ts:14 supabase GET /rest/v1/beds",
+  "store.ts:19 resend POST /emails",
+  "store.ts:23 supabase GET /rest/v1/seeds",
+  "transcribe.js:15 groq POST /openai/v1/chat/completions",
+  "transcribe.js:21 groq POST /openai/v1/audio/transcriptions",
+]
+`;
+
 exports[`regression fixtures > sdk/huggingface 1`] = `
 [
   "hf.ts:6 huggingface POST /v1/chat/completions",
   "hf.ts:9 huggingface POST /hf-inference/models/gpt2",
   "hf.ts:10 huggingface POST /hf-inference/models/stabilityai/stable-diffusion-2",
+]
+`;
+
+exports[`regression fixtures > sdk/lazy-modules 1`] = `
+[
+  "subscriptions.ts:28 revenuecat GET /v1/subscribers/{app_user_id}",
+  "subscriptions.ts:31 revenuecat GET /v1/subscribers/{app_user_id}",
+  "subscriptions.ts:35 revenuecat POST /v1/receipts",
+  "telemetry.ts:35 posthog POST /e",
+  "telemetry.ts:42 sentry POST /api/{projectId}/envelope",
+  "telemetry.ts:56 sentry POST /api/{projectId}/envelope",
 ]
 `;
 
@@ -2770,6 +2842,15 @@ exports[`regression fixtures > sdk/receiver/same-client 1`] = `
   "helpers.ts:2 openai POST /v1/chat/completions",
   "jobs.ts:6 openai POST /v1/chat/completions (wrapper:summarize)",
   "jobs.ts:10 openai POST /v1/chat/completions (wrapper:summarize)",
+]
+`;
+
+exports[`regression fixtures > sdk/reexported-clients 1`] = `
+[
+  "boundary.tsx:4 sentry POST /api/{projectId}/envelope",
+  "events.ts:4 posthog POST /batch",
+  "worker.js:4 sentry POST /api/{projectId}/envelope",
+  "worker.js:8 sentry POST /api/{projectId}/envelope",
 ]
 `;
 
@@ -3024,6 +3105,25 @@ exports[`regression fixtures > wrappers/deep-chain 1`] = `
 ]
 `;
 
+exports[`regression fixtures > wrappers/function-values 1`] = `
+[
+  "factories.ts:3 unknown POST /{path}",
+  "factories.ts:8 hooks.parcelpost-demo.io POST /v2/parcels/{id}/notify (wrapper:send)",
+  "factories.ts:12 api.meterly-demo.io PUT /v1/events/{name}",
+  "factories.ts:15 api.meterly-demo.io PUT /v1/events/signup (wrapper:record)",
+  "factories.ts:20 ping.meterly-demo.io GET /v1/ping",
+  "factories.ts:24 unknown DELETE /v1/leases/{id}",
+  "factories.ts:32 unknown DELETE /v1/leases/{id} (wrapper:releaseLease)",
+  "factories.ts:38 leases.lockbox-demo.io DELETE /v1/leases/{id} (wrapper:release>releaseLease)",
+  "hooks.ts:8 api.ledgerly-demo.io GET /{path}",
+  "hooks.ts:15 api.ledgerly-demo.io GET /v1/balances (wrapper:fetchLedger)",
+  "hooks.ts:20 api.ledgerly-demo.io POST /v1/history (wrapper:fetchLedger)",
+  "hooks.ts:25 api.ledgerly-demo.io GET /v1/accounts (wrapper:fetchLedger)",
+  "inherited.ts:5 unknown GET /",
+  "inherited.ts:15 api.quotely-demo.io GET /v1/quotes/latest (wrapper:BaseProvider.request)",
+]
+`;
+
 exports[`regression fixtures > wrappers/injected-fetch 1`] = `
 [
   "pricing.ts:7 api.example-rates.com GET /v2/prices/latest",
@@ -3038,6 +3138,21 @@ exports[`regression fixtures > wrappers/object-argument 1`] = `
   "upstream.ts:17 api.example-weather.com POST /v1/plans (wrapper:proxyUpstream>callUpstream)",
   "upstream.ts:20 api.example-weather.com GET /v1/stations/{id}/reports/{getFullYear}/summary",
   "upstream.ts:22 api.example-weather.com GET /v1/stations/{station}/history (wrapper:proxyUpstream>callUpstream)",
+]
+`;
+
+exports[`regression fixtures > wrappers/passed-functions 1`] = `
+[
+  "callers.ts:3 unknown GET /",
+  "callers.ts:7 status.uptimer-demo.io GET /v1/health (wrapper:safeFetch)",
+  "callers.ts:12 rows.tabular-demo.io GET /{path}",
+  "callers.ts:16 rows.tabular-demo.io GET /rest/v1/{table} (wrapper:restFetch)",
+  "callers.ts:19 rows.tabular-demo.io GET /rest/v1/orders (wrapper:loadRows>restFetch)",
+  "callers.ts:30 unknown GET /",
+  "callers.ts:36 jobs.pollster-demo.io GET /v1/queue (wrapper:Poller.poll)",
+  "callers.ts:40 unknown GET /",
+  "callers.ts:45 unknown GET /v1/models (wrapper:defaultModelsFetcher)",
+  "callers.ts:48 models.catalogue-demo.io GET /v1/models (wrapper:listModels>defaultModelsFetcher)",
 ]
 `;
 

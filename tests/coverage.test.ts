@@ -8,7 +8,7 @@ describe("sdk coverage", () => {
     const byPkg = Object.fromEntries(r.coverage!.sdks.map((s) => [s.package, s]));
     expect(byPkg["twilio"]).toMatchObject({ provider: "twilio", supported: true, imported: true, importSites: 1, calls: 1, status: "ok" });
     expect(byPkg["@getbrevo/brevo"]).toMatchObject({ provider: "brevo", supported: false, imported: true, calls: 0, status: "unsupported" });
-    // the `import type` in types.ts is not an import site
+    // the `import type` in types.ts is not an import site, nor invoices.ts, which uses its import as types only
     expect(byPkg["stripe"]).toMatchObject({ supported: true, importSites: 1, calls: 0, status: "imported-no-calls" });
     expect(byPkg["openai"]).toMatchObject({ declared: true, imported: false, importSites: 0, status: "declared-not-imported" });
     expect(Object.keys(byPkg)).toHaveLength(4);

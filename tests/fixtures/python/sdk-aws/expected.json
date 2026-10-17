@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "notify.py", "line": 11, "provider": "aws"},
+    {"file": "notify.py", "line": 12, "provider": "aws"},
+    {"file": "notify.py", "line": 16, "provider": "aws"},
+    {"file": "notify.py", "line": 20, "provider": "aws"},
+    {"file": "notify.py", "line": 24, "provider": "aws"},
+    {"file": "orders.py", "line": 9, "provider": "aws"},
+    {"file": "orders.py", "line": 11, "provider": "aws"},
+    {"file": "orders.py", "line": 12, "provider": "aws"},
+    {"file": "orders.py", "line": 16, "provider": "aws"},
+    {"file": "orders.py", "line": 30, "provider": "aws"}
+  ]
+}

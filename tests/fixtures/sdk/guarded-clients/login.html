@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <form id="login"><input name="email" /></form>
+    <script>
+      const sb = window.supabase.createClient("https://allotment-demo.supabase.co", "anon-key");
+      document.getElementById("login").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await sb.auth.signInWithOtp({ email: e.target.email.value });
+      });
+    </script>
+  </body>
+</html>

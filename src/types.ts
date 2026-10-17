@@ -58,6 +58,8 @@ export interface Callee {
   rootInstance?: InstanceInfo;
   /** The client came from a cache a helper fills (`getProvider(chainId)`, #85): every construction it may hold. */
   cached?: ClientValues;
+  /** The function `localDecl` is was made by a factory (`const send = makeSender(base)`): its parameters, as called. */
+  closure?: Subst;
 }
 
 export interface RawCall {
@@ -71,6 +73,8 @@ export interface RawCall {
   bodyExpr?: Expression;
   /** Several bodies the call may send, as alternatives (the variables of each `loadQuery(...)` call, #102). */
   bodyAlternatives?: Expression[];
+  /** The same call to other providers the code picks among at run time (an AI SDK model, `ai-sdk.ts`). */
+  alternatives?: RawCall[];
   bodyKey?: "body" | "json" | "form" | "data" | "input";
   queryExpr?: Expression;
   headersExpr?: Expression;

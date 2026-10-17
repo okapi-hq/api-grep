@@ -67,7 +67,9 @@ name. A `declare global` block, or an interface of a script, links its file to e
 batches of about 16 MB of source (a repository with less is one project, without the pre-pass) (`batches.ts`), each read by a project of its own and dropped once its calls are built;
 calls, diagnostics and coverage come out in the order a single project gives them. A group is never split: when one
 group is most of the repository (a backend whose modules import each other), `checker-budget.ts` drops the checker's
-types once it has made 400,000 types or 3 million instantiations, and a new checker makes again those it needs. The
+types once it has made 400,000 types or 3 million instantiations, and a new checker makes again those it needs; a
+project whose detection made a quarter of that starts building its calls with a new checker too (the types detection
+made are mostly not those building reads: a 35 MB group built its calls with 150,000 of them held, at its 2 GB heap). The
 trigger is a count, not the heap: a new checker can type a few expressions differently (TypeScript's inference depends
 on the order it meets types), and a report must be the same whatever the heap or the machine. Imports are resolved by
 `src/module-resolution.ts`, which keeps what it found and not every path it tried (the checker's own keeps them for
@@ -187,7 +189,7 @@ use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 `urllib.request` (`urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))`, `urlretrieve`), `urllib3`
 (`PoolManager().request`), and the SDKs in
 [`sdk-support.md`](sdk-support.md) (OpenAI and Azure OpenAI, Anthropic and its Bedrock / Vertex clients, Google Gen AI,
-Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3 and Bedrock runtime,
+Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3, Bedrock runtime, DynamoDB, SES, SES v2, SQS and SNS,
 Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, python-telegram-bot, aiogram,
 pyTelegramBotAPI, discord.py and its forks, huggingface_hub, claude-agent-sdk, PyGithub, google-cloud-storage,
 google-cloud-secret-manager, google-api-python-client, google-auth, langchain-deepseek, langchain-google-vertexai). Jupyter notebooks (`.ipynb`) are read as the Python of
@@ -1755,6 +1757,10 @@ Decisions:
   manifests declare (`unknown` host). Any other parameter called is a callback.
 - An untyped parameter holding the client (`ctx.provider.getBalance(a)`, #98) is followed through the callers only:
   their object's property (`settle({ provider })`) is the client; neither the manifests nor a diagnostic speak for it.
+- A client destructured from an untyped object parameter (`async function move({ source, userId }) {
+  source.auth.admin.getUserById(userId) }`, TypeScript / JavaScript) is that property of what the callers pass
+  (`move({ source: createClient(u, k), userId })`), then the manifests as for a plain parameter. A builder chain on it
+  (`source.storage.from(b).download(p)`) is not followed yet.
 - Bounds: 50 callers per function, 4 distinct clients per call. Callers are only followed one level; a client passed
   through two helpers is found at the outer call site by wrapper expansion and inside the inner helper through the
   manifests.
