@@ -240,6 +240,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 
 ## Conventions
 
+- This repository is public. Never name a private project, product, customer, or another repository (theirs or ours)
+  in anything here: code, comments, docs, fixtures, snapshots, commit messages, pull requests, issues. Measurements
+  from real repositories are aggregates of "production repositories", with no name, host or path from them.
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
   `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`, Rust under `tests/fixtures/rust/`, Dart under `tests/fixtures/dart/`). The recall check scans a fixture without its
