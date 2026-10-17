@@ -328,7 +328,9 @@ A call whose client neither the callers nor the manifests settle is listed in `d
 A call whose base URL the code picks at run time from a table it writes (`PROVIDERS[name].baseUrl`,
 `LIST.find((p) => p.key === id).url`, `next(d for d in DEFAULTS if d.name == name).base_url`, a helper with several
 returns, a Rust `match`; [detection.md](detection.md#how-a-call-is-resolved)) is reported once per candidate host
-(schema 1.24). Each copy has its own `host`, `hostKind`, `provider` and `id` (the place's, then `#1`, `#2`… in table
+(schema 1.24). So is an AI SDK call whose model the code picks among several providers (`tier === "pro" ?
+anthropic(a) : mistral(b)`, a helper's returns, a `customProvider` read with a name known at run time): one copy per
+provider, each with its models; candidates of one provider are one call naming every model. Each copy has its own `host`, `hostKind`, `provider` and `id` (the place's, then `#1`, `#2`… in table
 order, as for the requests a wrapper sends from one place), and all of them carry `hostAlternatives`, every
 candidate host in table order:
 
@@ -440,7 +442,9 @@ Skipped files and dropped calls are also printed to stderr as `warning:` lines.
 `coverage.sdks` compares the API SDKs a repo uses with the calls found, so "0 Supabase calls"
 never reads as "no Supabase". Each known SDK package (the `packages` of `providers.json`, by
 ecosystem) that a covered manifest declares or a scanned file imports gets a row. The manifests are
-`package.json` (`dependencies`, `peerDependencies`; type-only imports aside) for npm, and
+`package.json` (`dependencies`, `peerDependencies`; type-only imports aside: `import type`, and an import whose
+bindings the file only uses as types, `import { User } from "@supabase/supabase-js"` read in annotations, which the
+compiler drops) for npm, and
 `requirements*.txt`, `requirements/*.txt`, `pyproject.toml` (PEP 621 and Poetry), `Pipfile`,
 `setup.cfg` and `setup.py` for PyPI (import names that differ from the package, like
 `google-genai` / `google.genai`, are in [`src/lang/python/modules.json`](../src/lang/python/modules.json)),

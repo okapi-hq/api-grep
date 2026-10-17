@@ -187,7 +187,7 @@ use the keyword-argument fields (`bodyKwargs`, `kw:<name>`), like Python.
 `urllib.request` (`urlopen(url, data)`, `urlopen(Request(url, data, headers, method=...))`, `urlretrieve`), `urllib3`
 (`PoolManager().request`), and the SDKs in
 [`sdk-support.md`](sdk-support.md) (OpenAI and Azure OpenAI, Anthropic and its Bedrock / Vertex clients, Google Gen AI,
-Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3 and Bedrock runtime,
+Google Generative AI, Supabase, Firebase Admin, Google Cloud Firestore, Sentry, Stripe, boto3 S3, Bedrock runtime, DynamoDB, SES, SES v2, SQS and SNS,
 Twilio, Slack, Resend, PostHog, Mistral, Groq, Cohere, ElevenLabs, Convex, python-telegram-bot, aiogram,
 pyTelegramBotAPI, discord.py and its forks, huggingface_hub). Jupyter notebooks (`.ipynb`) are read as the Python of
 their code cells (`src/lang/python/notebook.ts`, through the IR's `readText` hook): each source line on the line of
@@ -1752,6 +1752,10 @@ Decisions:
   manifests declare (`unknown` host). Any other parameter called is a callback.
 - An untyped parameter holding the client (`ctx.provider.getBalance(a)`, #98) is followed through the callers only:
   their object's property (`settle({ provider })`) is the client; neither the manifests nor a diagnostic speak for it.
+- A client destructured from an untyped object parameter (`async function move({ source, userId }) {
+  source.auth.admin.getUserById(userId) }`, TypeScript / JavaScript) is that property of what the callers pass
+  (`move({ source: createClient(u, k), userId })`), then the manifests as for a plain parameter. A builder chain on it
+  (`source.storage.from(b).download(p)`) is not followed yet.
 - Bounds: 50 callers per function, 4 distinct clients per call. Callers are only followed one level; a client passed
   through two helpers is found at the outer call site by wrapper expansion and inside the inner helper through the
   manifests.

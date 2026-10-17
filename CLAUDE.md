@@ -58,7 +58,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   smaller repository is one project, without the pre-pass), scanned one after the other (`batched.ts`), results
   merged in single-project order; `checker-budget.ts` drops a project's checker after a fixed count of types or
   instantiations (never on the heap: a report depends on the input only); `src/module-resolution.ts` resolves imports
-  without keeping every path tried. A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
+  without keeping every path tried, each file with the path aliases of its own monorepo package
+  (`src/nested-aliases.ts`: the `paths` / `baseUrl` of the nearest tsconfig when it is not the scan's; the file graph
+  does the same). A scan of the public eval fits in a 2 GB heap (`pnpm eval` runs with it).
 - Tree-sitter languages (Python, PHP, Kotlin, Java, Go, Rust, Dart): `src/lang/<lang>/lower*.ts` turns the syntax tree into the IR of `src/lang/ir/model.ts`; the
   engine in `src/lang/ir/` (lookup, chains, evaluation, shapes, SDK and HTTP-table detection, wrappers, build) does the
   rest. A file of another format a grammar reads goes through the source's `readText` hook (`IrSource`): Python reads a
@@ -302,6 +304,17 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   (`src/lang/python/lower-calls.ts`), `@property` clients, FastAPI `Depends` (`src/lang/python/depends.ts`, the
   `injection` hook) and factories returning one of several SDKs' clients (`Chain.alternatives`); TypeScript follows
   lazily assigned `let` clients (`src/ast/assigned.ts`).
+- Supported SDKs imported with no call found (`coverage.sdks` `imported-no-calls`): TypeScript clients built behind a
+  guard (`guardedValue` in `src/ast/expr.ts`), SDKs re-exported by a project module (`reexportedPackage` /
+  `moduleExportsPackage` in `src/ast/origin.ts`), SDK modules loaded on demand (`await import("pkg")` read as `require`;
+  a `let` given `require("pkg").default` or a `.then` callback's module, `src/ast/loaded-module.ts`), class fields
+  declared `= null` and set later, `window.<global>` script-tag clients, clients destructured from an untyped object
+  parameter (`destructuredReceiver` in `src/detect/receiver.ts`), monorepo path aliases (above), AI SDK models from
+  `customProvider`, wrappers, helpers and branches with one call per candidate provider (`src/detect/ai-sdk-model.ts`,
+  `RawCall.alternatives`, `asCandidates` in `src/resolve/choice.ts`), imports used as types only left out of import
+  sites (`src/lang/typescript/type-imports.ts`) and boto3 DynamoDB / SES / SES v2 / SQS / SNS registries (Python) are
+  done. Left: builder chains on untyped parameters, Python clients a subclass sets for its base class's methods,
+  LangChain's own modules (agents, tools: no request of their own).
 - Go: `net/http` (and go-retryablehttp, fhttp), Resty and the go-openai, openai-go, anthropic-sdk-go and genai registries
   are done (`docs/languages.md#go`, limitations there).
 - Shell: curl, wget and HTTPie command lines are done (`docs/languages.md#shell`, limitations there).

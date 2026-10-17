@@ -1,0 +1,169 @@
+{
+  "$comment": "boto3 SES (the v1 API): `boto3.client(\"ses\")`, `ses.send_email(Source=..., Destination=..., Message=...)`. SES speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`; the keyword arguments are the form fields.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws",
+  "host": "email.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SES API reference, 2010-12-01, under their boto3 names)",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "ses"
+      ]
+    }
+  },
+  "methods": {
+    "send_email": {
+      "method": "POST",
+      "path": "/?Action=SendEmail",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SendEmail"
+    },
+    "send_raw_email": {
+      "method": "POST",
+      "path": "/?Action=SendRawEmail",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SendRawEmail"
+    },
+    "send_templated_email": {
+      "method": "POST",
+      "path": "/?Action=SendTemplatedEmail",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SendTemplatedEmail"
+    },
+    "send_bulk_templated_email": {
+      "method": "POST",
+      "path": "/?Action=SendBulkTemplatedEmail",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "SendBulkTemplatedEmail"
+    },
+    "verify_email_identity": {
+      "method": "POST",
+      "path": "/?Action=VerifyEmailIdentity",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "VerifyEmailIdentity"
+    },
+    "verify_email_address": {
+      "method": "POST",
+      "path": "/?Action=VerifyEmailAddress",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "VerifyEmailAddress"
+    },
+    "verify_domain_identity": {
+      "method": "POST",
+      "path": "/?Action=VerifyDomainIdentity",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "VerifyDomainIdentity"
+    },
+    "verify_domain_dkim": {
+      "method": "POST",
+      "path": "/?Action=VerifyDomainDkim",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "VerifyDomainDkim"
+    },
+    "delete_identity": {
+      "method": "POST",
+      "path": "/?Action=DeleteIdentity",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "DeleteIdentity"
+    },
+    "list_identities": {
+      "method": "POST",
+      "path": "/?Action=ListIdentities",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListIdentities"
+    },
+    "get_identity_verification_attributes": {
+      "method": "POST",
+      "path": "/?Action=GetIdentityVerificationAttributes",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetIdentityVerificationAttributes"
+    },
+    "list_verified_email_addresses": {
+      "method": "POST",
+      "path": "/?Action=ListVerifiedEmailAddresses",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListVerifiedEmailAddresses"
+    },
+    "create_template": {
+      "method": "POST",
+      "path": "/?Action=CreateTemplate",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "CreateTemplate"
+    },
+    "update_template": {
+      "method": "POST",
+      "path": "/?Action=UpdateTemplate",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "UpdateTemplate"
+    },
+    "delete_template": {
+      "method": "POST",
+      "path": "/?Action=DeleteTemplate",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "DeleteTemplate"
+    },
+    "get_template": {
+      "method": "POST",
+      "path": "/?Action=GetTemplate",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetTemplate"
+    },
+    "list_templates": {
+      "method": "POST",
+      "path": "/?Action=ListTemplates",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "ListTemplates"
+    },
+    "get_send_quota": {
+      "method": "POST",
+      "path": "/?Action=GetSendQuota",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetSendQuota"
+    },
+    "get_send_statistics": {
+      "method": "POST",
+      "path": "/?Action=GetSendStatistics",
+      "bodyKwargs": true,
+      "encoding": "form",
+      "operationId": "GetSendStatistics"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/3",
+  "calls": [
+    {"file": "boundary.tsx", "line": 4, "provider": "sentry"},
+    {"file": "events.ts", "line": 4, "provider": "posthog"},
+    {"file": "worker.js", "line": 4, "provider": "sentry"},
+    {"file": "worker.js", "line": 8, "provider": "sentry"}
+  ]
+}

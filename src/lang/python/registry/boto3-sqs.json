@@ -1,0 +1,240 @@
+{
+  "$comment": "boto3 SQS: `boto3.client(\"sqs\")` (`sqs.send_message(QueueUrl=..., MessageBody=...)`) and `boto3.resource(\"sqs\")` (`sqs.get_queue_by_name(QueueName=q).send_message(...)`, `sqs.Queue(url).receive_messages(...)`). boto3 speaks the AWS JSON 1.0 protocol to SQS (since botocore 1.31.62): every operation is a POST to `/` naming itself in the `X-Amz-Target` header (`AmazonSQS.SendMessage`), reported as `operationId`.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws",
+  "host": "sqs.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SQS API reference, 2012-11-05, under their boto3 names); resource methods from boto3 resources-1.json",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client",
+      "resource",
+      "Session.resource",
+      "session.Session.resource"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url",
+      "resource": "kw:endpoint_url",
+      "Session.resource": "kw:endpoint_url",
+      "session.Session.resource": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "sqs"
+      ]
+    }
+  },
+  "methods": {
+    "send_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessage"
+    },
+    "send_message_batch": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessageBatch"
+    },
+    "receive_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ReceiveMessage"
+    },
+    "delete_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteMessage"
+    },
+    "delete_message_batch": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteMessageBatch"
+    },
+    "change_message_visibility": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ChangeMessageVisibility"
+    },
+    "change_message_visibility_batch": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ChangeMessageVisibilityBatch"
+    },
+    "create_queue": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "CreateQueue"
+    },
+    "delete_queue": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteQueue"
+    },
+    "purge_queue": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "PurgeQueue"
+    },
+    "get_queue_url": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "GetQueueUrl"
+    },
+    "get_queue_attributes": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "GetQueueAttributes"
+    },
+    "set_queue_attributes": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SetQueueAttributes"
+    },
+    "list_queues": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ListQueues"
+    },
+    "list_dead_letter_source_queues": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ListDeadLetterSourceQueues"
+    },
+    "tag_queue": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "TagQueue"
+    },
+    "untag_queue": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "UntagQueue"
+    },
+    "list_queue_tags": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ListQueueTags"
+    },
+    "add_permission": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "AddPermission"
+    },
+    "remove_permission": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "RemovePermission"
+    },
+    "start_message_move_task": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "StartMessageMoveTask"
+    },
+    "get_queue_by_name": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "GetQueueUrl"
+    },
+    "queues.all": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "ListQueues"
+    },
+    "Queue.send_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessage"
+    },
+    "Queue.send_messages": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessageBatch"
+    },
+    "Queue.receive_messages": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ReceiveMessage"
+    },
+    "Queue.delete_messages": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "DeleteMessageBatch"
+    },
+    "Queue.purge": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "PurgeQueue"
+    },
+    "Queue.delete": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": false,
+      "operationId": "DeleteQueue"
+    },
+    "get_queue_by_name.send_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessage"
+    },
+    "get_queue_by_name.send_messages": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessageBatch"
+    },
+    "get_queue_by_name.receive_messages": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "ReceiveMessage"
+    },
+    "create_queue.send_message": {
+      "method": "POST",
+      "path": "/",
+      "bodyKwargs": true,
+      "operationId": "SendMessage"
+    }
+  }
+}

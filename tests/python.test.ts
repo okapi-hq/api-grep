@@ -77,7 +77,7 @@ describe("python: SDKs", () => {
     expect(at(r, "stripe_billing.py", 25)).toMatchObject({ method: "DELETE", sdk: { chain: "v1.subscriptions.cancel" } });
     expect(at(r, "cloud.py", 21)).toMatchObject({ provider: "aws", method: "PUT", pathTemplate: "/{Bucket}/{Key}", bodyEncoding: "raw" });
     expect(at(r, "cloud.py", 25)).toMatchObject({ provider: "aws-bedrock", pathTemplate: "/model/{modelId}/invoke" });
-    expect(r.calls.some((c) => c.location.file === "cloud.py" && c.location.line === 29)).toBe(false);
+    expect(at(r, "cloud.py", 29)).toMatchObject({ provider: "aws", method: "POST", host: "sqs.{region}.amazonaws.com", pathTemplate: "/", sdk: { chain: "send_message" } });
     expect(at(r, "cloud.py", 37)).toMatchObject({ host: "verify.twilio.com", pathTemplate: "/v2/Services/{ServiceSid}/Verifications" });
     expect(at(r, "cloud.py", 45)).toMatchObject({ provider: "slack", host: "hooks.slack.com", pathTemplate: "/services/T000/B000/XXXX" });
     expect(at(r, "cloud.py", 54)).toMatchObject({ provider: "posthog", host: "eu.i.posthog.com" });

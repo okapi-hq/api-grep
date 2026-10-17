@@ -71,6 +71,8 @@ export interface RawCall {
   bodyExpr?: Expression;
   /** Several bodies the call may send, as alternatives (the variables of each `loadQuery(...)` call, #102). */
   bodyAlternatives?: Expression[];
+  /** The same call to other providers the code picks among at run time (an AI SDK model, `ai-sdk.ts`). */
+  alternatives?: RawCall[];
   bodyKey?: "body" | "json" | "form" | "data" | "input";
   queryExpr?: Expression;
   headersExpr?: Expression;

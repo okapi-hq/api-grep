@@ -1,0 +1,183 @@
+{
+  "$comment": "boto3 SES v2: `boto3.client(\"sesv2\")`, `sesv2.send_email(FromEmailAddress=..., Destination=..., Content=...)`, a REST JSON API (`POST /v2/email/outbound-emails`); keyword arguments named in the path fill it, the others are the JSON body.",
+  "package": "boto3",
+  "aliases": [
+    "aioboto3"
+  ],
+  "imports": [
+    "boto3",
+    "aioboto3"
+  ],
+  "provider": "aws",
+  "host": "email.{region}.amazonaws.com",
+  "auth": "unknown",
+  "generatedFrom": "manual (operations of the SES API v2 reference under their boto3 names)",
+  "instance": {
+    "names": [
+      "client",
+      "Session.client",
+      "session.Session.client"
+    ],
+    "urlArg": {
+      "client": "kw:endpoint_url",
+      "Session.client": "kw:endpoint_url",
+      "session.Session.client": "kw:endpoint_url"
+    },
+    "select": {
+      "arg": 0,
+      "kw": "service_name",
+      "equals": [
+        "sesv2"
+      ]
+    }
+  },
+  "methods": {
+    "send_email": {
+      "method": "POST",
+      "path": "/v2/email/outbound-emails",
+      "bodyKwargs": true,
+      "operationId": "SendEmail"
+    },
+    "send_bulk_email": {
+      "method": "POST",
+      "path": "/v2/email/outbound-bulk-emails",
+      "bodyKwargs": true,
+      "operationId": "SendBulkEmail"
+    },
+    "create_email_identity": {
+      "method": "POST",
+      "path": "/v2/email/identities",
+      "bodyKwargs": true,
+      "operationId": "CreateEmailIdentity"
+    },
+    "get_email_identity": {
+      "method": "GET",
+      "path": "/v2/email/identities/{EmailIdentity}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "EmailIdentity"
+      ],
+      "operationId": "GetEmailIdentity"
+    },
+    "delete_email_identity": {
+      "method": "DELETE",
+      "path": "/v2/email/identities/{EmailIdentity}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "EmailIdentity"
+      ],
+      "operationId": "DeleteEmailIdentity"
+    },
+    "list_email_identities": {
+      "method": "POST",
+      "path": "/v2/email/list-identities",
+      "bodyKwargs": true,
+      "operationId": "ListEmailIdentities"
+    },
+    "create_email_template": {
+      "method": "POST",
+      "path": "/v2/email/templates",
+      "bodyKwargs": true,
+      "operationId": "CreateEmailTemplate"
+    },
+    "get_email_template": {
+      "method": "GET",
+      "path": "/v2/email/templates/{TemplateName}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "TemplateName"
+      ],
+      "operationId": "GetEmailTemplate"
+    },
+    "update_email_template": {
+      "method": "PUT",
+      "path": "/v2/email/templates/{TemplateName}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "TemplateName"
+      ],
+      "operationId": "UpdateEmailTemplate"
+    },
+    "delete_email_template": {
+      "method": "DELETE",
+      "path": "/v2/email/templates/{TemplateName}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "TemplateName"
+      ],
+      "operationId": "DeleteEmailTemplate"
+    },
+    "list_email_templates": {
+      "method": "GET",
+      "path": "/v2/email/templates",
+      "bodyKwargs": true,
+      "operationId": "ListEmailTemplates"
+    },
+    "create_contact_list": {
+      "method": "POST",
+      "path": "/v2/email/contact-lists",
+      "bodyKwargs": true,
+      "operationId": "CreateContactList"
+    },
+    "delete_contact_list": {
+      "method": "DELETE",
+      "path": "/v2/email/contact-lists/{ContactListName}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "ContactListName"
+      ],
+      "operationId": "DeleteContactList"
+    },
+    "list_contact_lists": {
+      "method": "GET",
+      "path": "/v2/email/contact-lists",
+      "bodyKwargs": true,
+      "operationId": "ListContactLists"
+    },
+    "create_contact": {
+      "method": "POST",
+      "path": "/v2/email/contact-lists/{ContactListName}/contacts",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "ContactListName"
+      ],
+      "operationId": "CreateContact"
+    },
+    "list_contacts": {
+      "method": "POST",
+      "path": "/v2/email/contact-lists/{ContactListName}/contacts/list",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "ContactListName"
+      ],
+      "operationId": "ListContacts"
+    },
+    "create_configuration_set": {
+      "method": "POST",
+      "path": "/v2/email/configuration-sets",
+      "bodyKwargs": true,
+      "operationId": "CreateConfigurationSet"
+    },
+    "delete_configuration_set": {
+      "method": "DELETE",
+      "path": "/v2/email/configuration-sets/{ConfigurationSetName}",
+      "bodyKwargs": true,
+      "pathFromBody": [
+        "ConfigurationSetName"
+      ],
+      "operationId": "DeleteConfigurationSet"
+    },
+    "get_account": {
+      "method": "GET",
+      "path": "/v2/email/account",
+      "bodyKwargs": true,
+      "operationId": "GetAccount"
+    },
+    "put_account_details": {
+      "method": "POST",
+      "path": "/v2/email/account/details",
+      "bodyKwargs": true,
+      "operationId": "PutAccountDetails"
+    }
+  }
+}

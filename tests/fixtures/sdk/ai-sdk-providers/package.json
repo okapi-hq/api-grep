@@ -1,0 +1,10 @@
+{
+  "name": "ai-sdk-providers-fixture",
+  "private": true,
+  "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.0",
+    "@ai-sdk/gateway": "^1.0.0",
+    "@ai-sdk/mistral": "^2.0.0",
+    "ai": "^5.0.0"
+  }
+}

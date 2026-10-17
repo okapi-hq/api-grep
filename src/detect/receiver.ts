@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, type CallExpression, type NewExpression, type ParameterDeclaration, type SourceFile } from "ts-morph";
+import { Node, SyntaxKind, type BindingElement, type CallExpression, type NewExpression, type ParameterDeclaration, type SourceFile } from "ts-morph";
 import { constructorAssignment, enclosingClass, fieldAssignments, parameterProperty } from "../ast/class.js";
 import { memberChain, unwrap, type Chain } from "../ast/expr.js";
 import { declarationsOf } from "../ast/object.js";
@@ -105,7 +105,9 @@ export function receiverOf(node: CallExpression, callee: Callee, registry: Regis
   const mc = memberChain(node.getExpression());
   if (Node.isThisExpression(mc.root)) return fieldReceiver(mc, registry);
   if (!Node.isIdentifier(mc.root)) return undefined;
-  const param = mc.root.getSymbol()?.getDeclarations()[0];
+  const decl = mc.root.getSymbol()?.getDeclarations()[0];
+  if (decl && Node.isBindingElement(decl)) return destructuredReceiver(decl, mc, registry);
+  const param = decl;
   if (!param || !Node.isParameterDeclaration(param) || param.getInitializer() || !untyped(param)) return undefined;
   const fn = param.getParent();
   if (!isFunctionLike(fn)) return undefined;
@@ -113,6 +115,23 @@ export function receiverOf(node: CallExpression, callee: Callee, registry: Regis
   if (hasMethod(registry, key)) return { param, fn, mc, key };
   // `ctx.provider.getBalance(a)`: an object holding the client, followed through the callers only (#98)
   return mc.chain.length >= 2 && hasMethod(registry, mc.chain.slice(1).join(".")) ? { param, fn, mc, key, held: true } : undefined;
+}
+
+/**
+ * `async function move({ source, id }) { await source.auth.admin.getUserById(id) }`: a client destructured from an
+ * untyped object parameter is that property of what the callers pass (`move({ source: createClient(a, k), id })`).
+ */
+function destructuredReceiver(decl: BindingElement, mc: Chain, registry: Registry): Receiver | undefined {
+  const pattern = decl.getParent();
+  const param = pattern.getParent();
+  if (decl.getDotDotDotToken() || !Node.isObjectBindingPattern(pattern) || !Node.isParameterDeclaration(param) || !untyped(param)) return undefined;
+  const init = param.getInitializer();
+  if (init && !(Node.isObjectLiteralExpression(init) && init.getProperties().length === 0)) return undefined;
+  const fn = param.getParent();
+  const prop = decl.getPropertyNameNode()?.getText() ?? decl.getName();
+  const key = mc.chain.join(".");
+  if (!isFunctionLike(fn) || !hasMethod(registry, key)) return undefined;
+  return { param, fn, mc: { root: mc.root, nodes: [mc.root, ...mc.nodes], chain: [prop, ...mc.chain] }, key };
 }
 
 /** In a wrapper expansion, the receiver is what the caller passed for the parameter. */
@@ -254,7 +273,7 @@ export class ReceiverResolver {
     const has = (e: RegistryEntry): boolean => !!e.methods && Object.hasOwn(e.methods, r.key);
     const matches = this.registry.entries().filter((e) => has(e) && !e.callersOnly && [e.package, ...(e.aliases ?? [])].some((p) => declared.has(p)));
     if (matches.length !== 1) return undefined;
-    const raw = detectSdk(node, { package: matches[0]!.package, chain: r.mc.chain, viaType: true }, this.registry);
+    const raw = detectSdk(node, { package: matches[0]!.package, chain: r.key.split("."), viaType: true }, this.registry);
     return raw ? { ...raw, clientFrom: "manifest" } : undefined;
   }
 }
