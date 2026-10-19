@@ -159,6 +159,7 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
   if (!endpoint) return null;
   if (endpoint.url) raw.baseUrlExpr = endpoint.url;
   if (endpoint.headers) raw.instanceHeadersExpr = endpoint.headers;
+  if (endpoint.transport) raw.mcpTransport = endpoint.transport;
   // a node vendor's client builds its URL itself (`InfuraProvider`)
   if (endpoint.host) raw.sdk = { ...raw.sdk!, host: endpoint.host, spec: { ...spec, path: `${endpoint.path ?? ""}${spec.path}` } };
   if (spec.headersArg !== undefined) raw.headersExpr = raw.sdk!.args[spec.headersArg];
@@ -167,7 +168,7 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
 
 /** An agent framework's MCP call: one per HTTP server of its client, none when it has none. */
 function withServers(raw: RawCall, servers: Endpoint[]): RawCall | null {
-  const each = servers.map((ep): RawCall => ({ ...raw, baseUrlExpr: ep.url, instanceHeadersExpr: ep.headers }));
+  const each = servers.map((ep): RawCall => ({ ...raw, baseUrlExpr: ep.url, instanceHeadersExpr: ep.headers, mcpTransport: ep.transport }));
   return each.length > 1 ? { ...each[0]!, also: each.slice(1) } : (each[0] ?? null);
 }
 

@@ -1,0 +1,9 @@
+{
+  "issue": "JSON-RPC requests written by hand that send a method only MCP defines: the tool, prompt or resource they name",
+  "calls": [
+    {"file": "tools.py", "line": 9, "provider": "mcp.harborlight-search.dev", "operation": "tools/call"},
+    {"file": "tools.py", "line": 13, "provider": "linear", "operation": "resources/read"},
+    {"file": "tools.py", "line": 17, "provider": "linear", "operation": "resources/subscribe"},
+    {"file": "tools.py", "line": 21, "provider": "linear", "operation": "tools/call"}
+  ]
+}

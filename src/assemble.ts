@@ -8,7 +8,7 @@ import type { BodyResult } from "./resolve/body.js";
 import { isNullable } from "./resolve/type-shape.js";
 import { isXmlContentType } from "./resolve/xml-shape.js";
 import { withoutCredentialLiterals } from "./secrets.js";
-import type { AuthScheme, DynamicPart, Shape, UrlShape } from "./types.js";
+import type { AuthScheme, DynamicPart, McpTransport, Shape, UrlShape } from "./types.js";
 
 /** A call resolved by a language front end: everything the report needs, before provider and id. */
 export interface ResolvedCall {
@@ -41,6 +41,10 @@ export interface ResolvedCall {
   clientParts?: ClientPart[];
   /** The SDK client is an untyped parameter: found through the callers, or the one declared SDK with that method. */
   clientFrom?: ClientFrom;
+  /** The transport an MCP client sends through, when the code or its configuration says (kept on MCP calls only). */
+  transport?: McpTransport;
+  /** The provider when the URL names no known service (`mcp` for a server a configuration file declares). */
+  fallbackProvider?: string;
 }
 
 function queryOf(url: UrlShape, q: ResolvedCall["query"]): { query: string[]; queryShape?: Shape } {
@@ -59,6 +63,7 @@ function providerOf(r: ResolvedCall): ResolvedProvider {
   const fromUrl = resolveProvider({ hostKind: r.url.hostKind, host: r.url.host, envName: r.url.envName });
   // an MCP client's server is the protocol's provider unless its URL names a known service
   if (r.sdk && keepsIdOnUnknownHost(r.sdk.provider) && !fromUrl.source) return { provider: r.sdk.provider, source: "sdk" };
+  if (r.fallbackProvider && !fromUrl.source) return { provider: r.fallbackProvider };
   if (r.sdk && isAnyHost(r.sdk.provider)) return fromUrl;
   if (r.sdk && r.codeBaseUrl && fromUrl.source && fromUrl.provider !== r.sdk.provider) return fromUrl;
   return r.sdk ? { provider: r.sdk.provider, source: "sdk" } : fromUrl;
@@ -146,6 +151,7 @@ export function assembleCall(r: ResolvedCall): Call {
     ...(model ? { model: route ? unprefixed(model) : model } : {}),
     ...(r.clientParts?.length ? { clientParts: r.clientParts } : {}),
     ...(r.clientFrom ? { clientFrom: r.clientFrom } : {}),
+    ...(r.transport && r.operation?.protocol === "mcp" ? { transport: r.transport } : {}),
   };
   return route ? { ...call, ...route } : call;
 }

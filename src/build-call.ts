@@ -191,5 +191,6 @@ function buildOne(raw: RawCall, base: BuildCtx, choice: Choice): Call[] {
     operation: soap?.operation ?? rpcOperation(sdk, ctx),
     routeByModel: sdk?.routeByModel,
     clientFrom: raw.clientFrom,
+    transport: raw.mcpTransport,
   });
 }

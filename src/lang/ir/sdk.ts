@@ -332,5 +332,6 @@ function sdkRaw(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, endpoint: IrEndp
     headers,
     inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
     model: modelOf(m, ctx),
+    mcpTransport: endpoint?.transport ?? (endpoint?.transportFromUrl ? "url" : undefined),
   };
 }

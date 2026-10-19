@@ -1,0 +1,13 @@
+{
+  "issue": "Remote MCP servers declared in coding agents' and editors' configuration files (the files of the fixture's root; those in tool directories are checked by tests/mcp-config.test.ts)",
+  "calls": [
+    {"file": ".mcp.json", "line": 5, "provider": "linear", "operation": "initialize"},
+    {"file": ".mcp.json", "line": 10, "provider": "mcp", "operation": "initialize"},
+    {"file": ".mcp.json", "line": 15, "provider": "mcp", "operation": "initialize"},
+    {"file": "cline_mcp_settings.json", "line": 3, "provider": "mcp", "operation": "initialize"},
+    {"file": "cline_mcp_settings.json", "line": 4, "provider": "mcp", "operation": "initialize"},
+    {"file": "mcp_config.json", "line": 3, "provider": "mcp", "operation": "initialize"},
+    {"file": "opencode.jsonc", "line": 7, "provider": "mcp", "operation": "initialize"},
+    {"file": "opencode.jsonc", "line": 14, "provider": "mcp", "operation": "initialize"}
+  ]
+}

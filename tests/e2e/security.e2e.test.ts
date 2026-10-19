@@ -193,6 +193,27 @@ describe.skipIf(!posix)("Dart files a hostile repository links to", () => {
   });
 });
 
+describe.skipIf(!posix)("MCP configuration files a hostile repository links to", () => {
+  it("reads no configuration outside the repository or from a device, and bounds the servers of one file", () => {
+    const outside = tempRepo({ ".mcp.json": JSON.stringify({ mcpServers: { leak: { type: "http", url: "https://outside.example/mcp" } } }) });
+    const many = Object.fromEntries(Array.from({ length: 80 }, (_, i) => [`s${i}`, { url: `https://s${i}.inside.example/mcp` }]));
+    const repo = tempRepo({
+      ".mcp.json": JSON.stringify({ mcpServers: { ok: { type: "sse", url: "https://inside.example/sse" } } }),
+      "many/.cursor/mcp.json": JSON.stringify({ mcpServers: many }),
+    });
+    symlinkSync(path.join(outside, ".mcp.json"), path.join(repo, "mcp.json"));
+    symlinkSync("/dev/zero", path.join(repo, "claude_desktop_config.json"));
+    const { run, report } = scanJson(repo);
+    expect(run.status).toBe(0);
+    expect(schemaErrors(report)).toEqual([]);
+    expect(report.calls.filter((c) => c.location.file === ".mcp.json").map((c) => [c.host, c.location.language, c.transport])).toEqual([
+      ["inside.example", "mcp-config", { kind: "sse" }],
+    ]);
+    expect(report.calls.filter((c) => c.location.file === "many/.cursor/mcp.json")).toHaveLength(50);
+    expect(report.calls.some((c) => c.host === "outside.example")).toBe(false);
+  });
+});
+
 describe.skipIf(!posix)("WSDL files a hostile repository links to (#58)", () => {
   it("reads no WSDL that links out of the repository or to a device", () => {
     const outside = tempRepo({ "x.wsdl": `<definitions><soap:address location="https://internal.corp.example/soap"/></definitions>` });

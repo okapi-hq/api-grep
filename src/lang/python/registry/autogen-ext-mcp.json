@@ -14,8 +14,8 @@
       "mcp_server_tools": { "servers": { "at": "kw:server_params|0" } }
     },
     "transports": {
-      "StreamableHttpServerParams": { "url": "kw:url|0", "headers": "kw:headers" },
-      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers" }
+      "StreamableHttpServerParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["StdioServerParams"]
   },

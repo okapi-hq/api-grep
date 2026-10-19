@@ -57,7 +57,11 @@ get the server URL from the HTTP transport they are connected with (`client.conn
 the file's transports), and their provider is `mcp` unless the URL names a known service; see
 [report.md](report.md#mcp-clients). Agent frameworks' MCP clients (AI SDK `createMCPClient`, OpenAI Agents
 `MCPServerStreamableHttp`, LangChain `MultiServerMCPClient`, Claude Agent SDK `mcpServers`, Mastra `MCPClient`) are one
-call per HTTP server of their configuration; see [report.md](report.md#mcp-servers-of-agent-frameworks).
+call per HTTP server of their configuration; see [report.md](report.md#mcp-servers-of-agent-frameworks). Both carry
+the transport the code or configuration names (`transport`: a construction such as `SSEClientTransport`, or a
+configuration's `transport: "sse"` / `type: "http"`). A JSON-RPC request written by hand (`fetch(url, { body:
+JSON.stringify({ jsonrpc: "2.0", method: "tools/call", params: { name } }) })`) that sends a method only MCP defines
+names its tool, prompt or resource in `operation.target`; its protocol stays `json-rpc`.
 
 Libraries loaded with a `<script>` tag are used as globals the checker cannot see: `axios`, `$` /
 `jQuery`, `supabase`, `Sentry` and `posthog` are read as their npm packages. Imports from a CDN
@@ -342,6 +346,41 @@ at the class's one construction in the project, a Riverpod provider read (`ref.w
 dependencies and overrides aside), so `coverage.sdks` lists the packages an app depends on (`ecosystem: "pub"`).
 `test/`, `integration_test/`, `test_driver/`, `*_test.dart`, `.dart_tool/` and generated code (`*.g.dart`,
 `*.freezed.dart`, `*.mocks.dart`, `*.gr.dart`, `*.config.dart`, plugin registrants) are out of scope.
+
+## MCP configuration files
+
+Coding agents and editors declare the MCP servers they connect to in configuration files. A remote server declared
+there is a dependency on its URL as much as a client in the code is (a vendor retiring an `/sse` endpoint breaks it),
+so each one is a call (`client: "mcp-config"`, `location.language: "mcp-config"`): `POST` to the server's URL,
+`operation` `{ protocol: "mcp", name: "initialize" }` (the request the tool opens its session with), at the line and
+column of the URL value. Read as data, never run; `--language mcp-config` selects them.
+
+| file (anywhere, dot directories included) | tool | servers |
+|---|---|---|
+| `.mcp.json` | Claude Code | `mcpServers`: `type` (`http`, `sse`, `stdio`), `url`, `headers` |
+| `mcp.json` | Cursor (`.cursor/`), VS Code (`.vscode/`: `servers`), Roo (`.roo/`), Kiro (`.kiro/settings/`), Amazon Q (`.amazonq/`) | `mcpServers` / `servers`: `type`, `url`, `headers` |
+| `claude_desktop_config.json` | Claude Desktop | `mcpServers` |
+| `mcp_config.json` | Windsurf | `mcpServers`: `serverUrl` or `url`, `headers` |
+| `cline_mcp_settings.json` | Cline | `mcpServers`: `type` (`streamableHttp`, `sse`: SSE when absent), `url`, `headers` |
+| `.gemini/settings.json` | Gemini CLI | `mcpServers`: `httpUrl` (Streamable HTTP), `url` (SSE), `headers` |
+| `opencode.json`, `opencode.jsonc` | opencode | `mcp`: `type: "remote"`, `url`, `headers` |
+| `.codex/config.toml` | Codex CLI | `[mcp_servers.<name>]`: `url` (Streamable HTTP), `http_headers`, `env_http_headers`, `bearer_token_env_var` |
+| `.zed/settings.json` | Zed | `context_servers`: `url`, `headers` |
+
+JSON files may hold comments and trailing commas. Values: `${env:X}` (VS Code, Cursor, Windsurf), `${X}` and
+`${X:-default}` (Claude Code) and `{env:X}` (opencode) are env reads (`hostKind: "env"` for a URL); `${input:id}` (a
+VS Code input) is a value known at run time only (`{id}`). Header names are lower-cased, their literal values kept
+unless they are credentials, and the auth scheme read from them. `transport` holds the kind the file states (its
+`type` / `transport`, Gemini's URL key, the transport the tool documents for a server that names none: Cline's SSE,
+Codex's Streamable HTTP), never a construction name. The provider is the known service the URL names
+(`mcp.linear.app`: `linear`), else `mcp`.
+
+A server that runs a local process (`command`) is no call, unless it runs a bridge to a remote server, directly or
+through `npx`, `bunx`, `pnpm dlx`, `uvx`: `mcp-remote <url>` (`--transport sse-only` / `http-only`, `--header "Name:
+value"`), `supergateway --sse <url>` / `--streamableHttp <url>` (`--header`), `mcp-proxy <url>` (SSE unless
+`--transport streamablehttp`, `-H` / `--headers Name value`). A file that does not parse is a `parse-error` in
+`diagnostics.skipped`; a file without a server map (another tool's `settings.json`) is read and gives none. At most 50
+servers per file.
 
 ## How a call is resolved
 

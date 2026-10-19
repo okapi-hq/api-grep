@@ -1,3 +1,4 @@
+import { transportKind, transportOf } from "../../operation/mcp-transport.js";
 import type { ClientSource, EndpointSource, McpServersSource } from "../../types.js";
 import { argAt } from "./args.js";
 import { calleeChain } from "./chain.js";
@@ -46,7 +47,8 @@ function fromConfig(dict: Dict, spec: McpServersSource, r: Reader): void {
   const named = kind ? staticKey(kind.expr, kind.fn, r.ctx) : undefined;
   if (named !== undefined && !spec.transport!.http.includes(named)) return;
   const url = pathOf(dict, spec.url, r.ctx);
-  if (url || named !== undefined) r.out.push({ url, headers: pathOf(dict, spec.headers, r.ctx) });
+  const transport = transportOf(transportKind(named));
+  if (url || named !== undefined) r.out.push({ url, headers: pathOf(dict, spec.headers, r.ctx), ...(transport ? { transport } : {}) });
 }
 
 /** A transport construction (an HTTP one gives its URL and headers), or another client of the registry (its servers). */

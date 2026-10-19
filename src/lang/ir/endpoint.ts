@@ -1,4 +1,5 @@
-import type { EndpointSource } from "../../types.js";
+import { transportOf } from "../../operation/mcp-transport.js";
+import type { EndpointSource, McpTransport } from "../../types.js";
 import { argAt } from "./args.js";
 import { calleeChain } from "./chain.js";
 import type { Scoped } from "./language.js";
@@ -15,6 +16,10 @@ import { deref, staticKey } from "./values.js";
 export interface IrEndpoint {
   url?: Scoped;
   headers?: Scoped;
+  /** An MCP client's transport, when the construction or configuration names its kind. */
+  transport?: McpTransport;
+  /** The library picks the MCP transport from the URL's path (FastMCP's `Client(url)`). */
+  transportFromUrl?: boolean;
 }
 
 /** The transport construction an option holds, as a chain segment whose arguments can be read. */
@@ -66,7 +71,7 @@ export function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: 
   const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
   if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
   const given = client.urlTransport && transport ? givenUrl(transport, ctx) : undefined;
-  if (given !== undefined) return given && { url: given };
+  if (given !== undefined) return given && { url: given, transportFromUrl: true };
   const transports = spec.transports ?? {};
   const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
   return t ? readEndpoint(t, transports[t.name]!, ctx) : {};
@@ -95,5 +100,6 @@ function sameUrl(a: IrEndpoint, b: IrEndpoint, ctx: IrCtx): boolean {
 
 export function readEndpoint(seg: Seg, source: EndpointSource, ctx: IrCtx): IrEndpoint {
   const url = source.url ? argAt(seg, source.url, ctx) : undefined;
-  return url ? { url, headers: source.headers ? argAt(seg, source.headers, ctx) : undefined } : {};
+  const transport = transportOf(source.mcpTransport, seg.name);
+  return url ? { url, headers: source.headers ? argAt(seg, source.headers, ctx) : undefined, ...(transport ? { transport } : {}) } : {};
 }

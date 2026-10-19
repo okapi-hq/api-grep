@@ -13,3 +13,8 @@ async def catalog(token: str):
         prompts = await client.list_prompts()
         summary = await client.get_prompt("summarize_shelf", {"shelf": "new"})
         return prompts, summary
+
+
+async def alerts():
+    async with Client("https://alerts.paper-trail.dev/sse") as client:
+        return await client.list_tools()

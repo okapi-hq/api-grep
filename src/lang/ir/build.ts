@@ -2,6 +2,7 @@ import { assembleCalls } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
 import { rpcClientOperation } from "../../operation/json-rpc.js";
 import { mcpOperation } from "../../operation/mcp.js";
+import { urlPathTransport } from "../../operation/mcp-transport.js";
 import type { Call, Language, Operation } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
@@ -225,5 +226,6 @@ function buildOne(raw: IrRaw, base: BuildIrCtx, choice: Choice): Call[] {
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,
+    transport: raw.mcpTransport === "url" ? urlPathTransport(url) : raw.mcpTransport,
   });
 }

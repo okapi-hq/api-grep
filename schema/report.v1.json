@@ -264,6 +264,10 @@
         "clientFrom": {
           "description": "Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client.",
           "$ref": "#/definitions/ClientFrom"
+        },
+        "transport": {
+          "description": "Since 1.28.0, MCP calls only (`operation.protocol` mcp): the transport the client sends through, when the code or configuration says so; absent when unknown.",
+          "$ref": "#/definitions/McpTransport"
         }
       },
       "required": [
@@ -327,9 +331,10 @@
         "go",
         "shell",
         "rust",
-        "dart"
+        "dart",
+        "mcp-config"
       ],
-      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, rust, dart, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line)."
+      "description": "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, rust, dart, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line); mcp-config (since 1.28.0) is the MCP configuration files of coding agents and editors (`.mcp.json`, `mcp.json`, `claude_desktop_config.json`, `mcp_config.json`, `cline_mcp_settings.json`, `.gemini/settings.json`, `opencode.json(c)`, `.codex/config.toml`, `.zed/settings.json`)."
     },
     "Client": {
       "type": "string",
@@ -380,10 +385,11 @@
         "surf",
         "dart-http",
         "dio",
+        "mcp-config",
         "sdk",
         "framework"
       ],
-      "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Go: net-http (net/http: http.Get / Post / PostForm, a http.Client, a request built with http.NewRequest; also the fhttp fork and go-retryablehttp, which keep its API), resty (go-resty). Shell: curl (the curl command), wget, httpie (HTTPie's http and https commands). Rust: reqwest (async and blocking: reqwest::get, a Client's verb or request(method, url) call, its builder steps, sent by send()), ureq (ureq 2 and 3: the verb functions and an Agent's, sent by call() or a send_* method), awc (the actix-web client), isahc (its verb functions), surf (a request sent by send() or a recv_* method). Dart: dart-http (package:http: its verb functions, a Client's, a Request or MultipartRequest sent by send()), dio (Dio: a Dio instance's verb and request calls, with its BaseOptions). Any language: sdk (a registry), framework (a framework helper)."
+      "description": "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Go: net-http (net/http: http.Get / Post / PostForm, a http.Client, a request built with http.NewRequest; also the fhttp fork and go-retryablehttp, which keep its API), resty (go-resty). Shell: curl (the curl command), wget, httpie (HTTPie's http and https commands). Rust: reqwest (async and blocking: reqwest::get, a Client's verb or request(method, url) call, its builder steps, sent by send()), ureq (ureq 2 and 3: the verb functions and an Agent's, sent by call() or a send_* method), awc (the actix-web client), isahc (its verb functions), surf (a request sent by send() or a recv_* method). Dart: dart-http (package:http: its verb functions, a Client's, a Request or MultipartRequest sent by send()), dio (Dio: a Dio instance's verb and request calls, with its BaseOptions). MCP configuration files (since 1.28.0): mcp-config (an MCP server a coding agent's or editor's configuration file declares: a remote server the tool connects to, not a request the code sends). Any language: sdk (a registry), framework (a framework helper)."
     },
     "Operation": {
       "type": "object",
@@ -397,7 +403,7 @@
             "action",
             "mcp"
           ],
-          "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL)."
+          "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL); since 1.28.0 also a remote server an MCP configuration file declares (client mcp-config, `initialize`)."
         },
         "name": {
           "description": "The operation: `getTransaction` (JSON-RPC `method`), `GetOrder` (GraphQL; the root fields of an anonymous operation), `Track` (SOAP action), `DescribeInstances` (`Action=`), `tools/call` (the MCP method). With `dynamic`, the literal parts with a `{placeholder}` for the rest (`eth_{kind}`); null when no part is known.",
@@ -451,7 +457,7 @@
           }
         },
         "target": {
-          "description": "MCP only (since 1.27.0): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
+          "description": "MCP operations (since 1.27.0), and JSON-RPC requests sending one of the methods only MCP defines (since 1.28.0: `tools/call`, `prompts/get`, `resources/read`, `resources/subscribe`, `resources/unsubscribe`, from `params.name` or `params.uri`): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
           "type": "string"
         },
         "alternatives": {
@@ -864,6 +870,27 @@
         "manifest"
       ],
       "description": "Where the SDK client of a call made on an untyped parameter (`def ask(client, prompt)`, `c: any`) was found. caller: the argument the function's callers in the repository pass, one call per distinct client. manifest: no caller passes a known client, and exactly one SDK the manifests declare has that method."
+    },
+    "McpTransport": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "streamable-http",
+            "sse"
+          ],
+          "description": "streamable-http: MCP's Streamable HTTP transport (JSON-RPC POSTed to the server's one endpoint). sse: the older HTTP+SSE transport (an event stream opened with a GET, messages POSTed to the endpoint it names), which servers are retiring."
+        },
+        "name": {
+          "description": "The transport construction the code uses (`StreamableHTTPClientTransport`, `SSEClientTransport`, `streamablehttp_client`, `sse_client`, FastMCP's `SSETransport`, OpenAI Agents' `MCPServerSse`). Absent when a configuration names the kind only (`transport: \"sse\"`, `type: \"http\"`) or a library picks it from the URL.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "description": "Since 1.28.0: the transport an MCP client sends through, when the code or its configuration says so (a transport construction, a configuration's `transport` / `type` value, a configuration file's key, or the rule a library documents for a URL)."
     },
     "Stats": {
       "type": "object",

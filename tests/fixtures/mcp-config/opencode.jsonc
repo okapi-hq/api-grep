@@ -1,0 +1,17 @@
+{
+  // opencode: remote and local servers
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "notes": {
+      "type": "remote",
+      "url": "https://mcp.quillstack.dev/mcp", // the notes server
+      "headers": { "Authorization": "Bearer {env:QUILL_TOKEN}" },
+      "enabled": true,
+    },
+    /* a bridge run locally */
+    "search": {
+      "type": "local",
+      "command": ["bunx", "mcp-remote", "https://search.quillstack.dev/mcp", "--transport", "http-only"],
+    },
+  },
+}
