@@ -17,6 +17,7 @@ supports, and how to add the next one. The SDKs each language supports are liste
 | Shell | supported: curl, wget and HTTPie command lines | tree-sitter (bash grammar), read directly | none | none |
 | Rust | supported: reqwest, ureq, awc, surf, isahc, SDK registries | tree-sitter + shared engine | crates.io (Cargo) | `Cargo.toml` (workspaces too) |
 | Dart | supported: package:http, Dio, supabase_flutter, firebase_auth, cloud_firestore | tree-sitter (a grammar built from source, committed) + shared engine | pub.dev | `pubspec.yaml` |
+| MCP configuration (`mcp-config`) | supported: the remote MCP servers coding agents' and editors' configuration files declare, and bridges to one | TypeScript's JSON parser (JSONC), the TOML reader, read as data | none | none |
 
 ## Goals
 
@@ -991,6 +992,28 @@ the rest of the file is read; a file of which more than half is unread is a `par
   from a file the script does not source by a readable path (a `.env` the repository does not hold) is an env read.
 - curl's URL globbing (`[1-10]`, `{a,b}`), `--next`, `--variable` / `--expand-*` and `--config` files are not modelled.
 - Shell scripts have no package manifest: they add no `coverage.sdks` rows.
+
+## MCP configuration files
+
+**Detected** (`src/lang/mcp-config/`, language and client `mcp-config`, schema 1.28): the remote servers declared in
+the MCP configuration files of coding agents and editors ([detection.md](detection.md#mcp-configuration-files) lists
+the files and keys): `.mcp.json`, `mcp.json` anywhere (Cursor, VS Code, Roo, Kiro, Amazon Q), `claude_desktop_config.json`,
+`mcp_config.json`, `cline_mcp_settings.json`, `.gemini/settings.json`, `opencode.json(c)`, `.codex/config.toml`,
+`.zed/settings.json`. Each server with a URL is one call (`initialize`, at the URL value), and so is a local server
+running `mcp-remote`, `supergateway` or `mcp-proxy` with a URL. Not a request the code sends: a dependency the
+repository declares on a remote server.
+
+**How:** `files.ts` lists the files (dot directories included, the shared excludes applied); `document.ts` reads JSON
+with TypeScript's JSON parser (comments and trailing commas, positions of every string) and TOML with smol-toml (the
+position of a string found in the text after its server's name), both through `readConfigFile`; `tools.ts` holds each
+format as data (server maps, URL keys and the transport a key means, header keys, documented default transports);
+`servers.ts` reads the servers (at most 50 a file), `bridges.ts` the bridges' arguments, `placeholders.ts` the env and
+input placeholders, and `build.ts` makes the `ResolvedCall` (`fallbackProvider: "mcp"`: the provider is the known
+service the URL names, else `mcp`).
+
+**Not covered:** user-level files outside the repository (`~/.cursor/mcp.json`, `~/.claude.json`), VS Code's
+`settings.json` `mcp` section and workspace files, other tools' formats (Continue's YAML, JetBrains), servers a tool
+adds from a registry or marketplace by name, and Windows command lines (`cmd /c npx ...`).
 ## Rust
 
 **Detected:** reqwest, async and blocking (`reqwest::get(url)`; a `Client`'s `get` / `post` / `put` / `patch` /

@@ -2,13 +2,14 @@ import { z } from "zod";
 import type { Shape } from "../types.js";
 import { ModelSchema } from "./schema-model.js";
 import { CoverageSchema, DiagnosticsSchema, LanguageSchema } from "./schema-scan.js";
+import { McpTransportSchema } from "./schema-transport.js";
 
 /**
  * The report contract. `schema/report.v1.json` is generated from these schemas (`pnpm gen:schema`): every
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.27.0";
+export const SCHEMA_VERSION = "1.28.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
@@ -54,13 +55,14 @@ export const ClientSchema = z
     "wget",
     "httpie",
     "reqwest", "ureq", "awc", "isahc", "surf", "dart-http", "dio",
+    "mcp-config",
     "sdk",
     "framework",
   ])
   .meta({
     id: "Client",
     description:
-      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Go: net-http (net/http: http.Get / Post / PostForm, a http.Client, a request built with http.NewRequest; also the fhttp fork and go-retryablehttp, which keep its API), resty (go-resty). Shell: curl (the curl command), wget, httpie (HTTPie's http and https commands). Rust: reqwest (async and blocking: reqwest::get, a Client's verb or request(method, url) call, its builder steps, sent by send()), ureq (ureq 2 and 3: the verb functions and an Agent's, sent by call() or a send_* method), awc (the actix-web client), isahc (its verb functions), surf (a request sent by send() or a recv_* method). Dart: dart-http (package:http: its verb functions, a Client's, a Request or MultipartRequest sent by send()), dio (Dio: a Dio instance's verb and request calls, with its BaseOptions). Any language: sdk (a registry), framework (a framework helper).",
+      "How the request is sent. TypeScript and JavaScript: fetch, axios, got, ky, node-http, jquery ($.ajax, $.get, $.post), xhr (XMLHttpRequest), node-soap (a SOAP client of the soap package). HTML: html-form (a form submitted to its action URL). Python: requests, httpx, aiohttp, urllib (urllib.request), urllib3, zeep (a zeep SOAP client). PHP: guzzle, laravel-http (the Http facade), symfony-http (HttpClient), curl, psr-18 (a PSR-7 request sent by any PSR-18 client), php-stream (file_get_contents / fopen on a URL), wordpress (wp_remote_*), php-soap (the SoapClient of the soap extension). Kotlin and Java: okhttp, java-http (java.net.http HttpClient and HttpURLConnection), ktor (Ktor client), spring-rest (RestTemplate, RestClient), spring-webclient (WebClient), feign (an OpenFeign interface method), retrofit (a Retrofit service interface method), apache-httpclient (Apache HttpClient 4 and 5: classic, async and fluent), jaxrs-client (the JAX-RS client: Jersey, RESTEasy), async-http-client (AsyncHttpClient), unirest (Unirest), vertx-webclient (the Vert.x WebClient). Go: net-http (net/http: http.Get / Post / PostForm, a http.Client, a request built with http.NewRequest; also the fhttp fork and go-retryablehttp, which keep its API), resty (go-resty). Shell: curl (the curl command), wget, httpie (HTTPie's http and https commands). Rust: reqwest (async and blocking: reqwest::get, a Client's verb or request(method, url) call, its builder steps, sent by send()), ureq (ureq 2 and 3: the verb functions and an Agent's, sent by call() or a send_* method), awc (the actix-web client), isahc (its verb functions), surf (a request sent by send() or a recv_* method). Dart: dart-http (package:http: its verb functions, a Client's, a Request or MultipartRequest sent by send()), dio (Dio: a Dio instance's verb and request calls, with its BaseOptions). MCP configuration files (since 1.28.0): mcp-config (an MCP server a coding agent's or editor's configuration file declares: a remote server the tool connects to, not a request the code sends). Any language: sdk (a registry), framework (a framework helper).",
   });
 
 export const ShapeSchema: z.ZodType<Shape> = z
@@ -143,7 +145,7 @@ export const OperationSchema = z
     protocol: z
       .enum(["json-rpc", "graphql", "soap", "action", "mcp"])
       .describe(
-        "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL).",
+        "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL); since 1.28.0 also a remote server an MCP configuration file declares (client mcp-config, `initialize`).",
       ),
     name: z
       .string()
@@ -166,7 +168,7 @@ export const OperationSchema = z
       .string()
       .optional()
       .describe(
-        "MCP only (since 1.27.0): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
+        "MCP operations (since 1.27.0), and JSON-RPC requests sending one of the methods only MCP defines (since 1.28.0: `tools/call`, `prompts/get`, `resources/read`, `resources/subscribe`, `resources/unsubscribe`, from `params.name` or `params.uri`): what the method names on the server: the tool of `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; with a `{placeholder}` for parts not known statically. Absent when no part is known or a branch picks one of several.",
       ),
     alternatives: z.array(z.string()).optional().describe("Every name the call can send when a branch picks one, `name` first."),
     batch: z
@@ -267,6 +269,9 @@ export const CallSchema = z
       .optional()
       .describe("Which of `query` and `headers` the client adds rather than the call (an interceptor, a client default); absent when none."),
     clientFrom: ClientFromSchema.optional().describe("Set when the SDK client is an untyped parameter: where it was found. Absent when the code names the client."),
+    transport: McpTransportSchema.optional().describe(
+      "Since 1.28.0, MCP calls only (`operation.protocol` mcp): the transport the client sends through, when the code or configuration says so; absent when unknown.",
+    ),
   })
   .meta({ id: "Call", description: "One outbound HTTP or SDK call found in the source." });
 

@@ -1,0 +1,13 @@
+model = "gpt-5"
+
+[mcp_servers.billing]
+url = "https://mcp.pantry-ledger.dev/mcp"
+bearer_token_env_var = "LEDGER_TOKEN"
+http_headers = { "X-Region" = "eu" }
+
+[mcp_servers.gateway]
+command = "npx"
+args = ["-y", "supergateway", "--sse", "https://gateway.pantry-ledger.dev/sse"]
+
+[mcp_servers.local]
+command = "pantry-mcp"

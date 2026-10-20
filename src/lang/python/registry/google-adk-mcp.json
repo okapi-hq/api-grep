@@ -15,10 +15,10 @@
       "from_server": { "servers": { "at": "kw:connection_params|0" } }
     },
     "transports": {
-      "StreamableHTTPConnectionParams": { "url": "kw:url|0", "headers": "kw:headers" },
-      "StreamableHTTPServerParams": { "url": "kw:url|0", "headers": "kw:headers" },
-      "SseConnectionParams": { "url": "kw:url|0", "headers": "kw:headers" },
-      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers" }
+      "StreamableHTTPConnectionParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "StreamableHTTPServerParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "SseConnectionParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" },
+      "SseServerParams": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["StdioServerParameters", "StdioConnectionParams"]
   },

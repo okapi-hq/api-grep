@@ -61,9 +61,11 @@ function fromTransports(found: Construction[], http: Record<string, EndpointSour
   const own = found.filter((c) => listedName(c, http) !== undefined);
   if (own.length === 0) return found.length > 0 ? null : {};
   const eps = own.map((c) => fromTransport(c, http));
-  // Streamable HTTP with an SSE fallback to the same URL is one server
+  // Streamable HTTP with an SSE fallback to the same URL is one server, its transport either
   const url = eps[0]!.url?.getText();
-  return url !== undefined && eps.every((e) => e.url?.getText() === url) ? eps[0]! : {};
+  if (url === undefined || !eps.every((e) => e.url?.getText() === url)) return {};
+  const kind = eps[0]!.transport?.kind;
+  return eps.every((e) => e.transport?.kind === kind) ? eps[0]! : { ...eps[0]!, transport: undefined };
 }
 
 export function mcpEndpoint(node: CallExpression | NewExpression, reg: RegistryEntry, spec: MethodSpec, args: Expression[]): Endpoint | null {

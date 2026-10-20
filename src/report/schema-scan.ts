@@ -3,11 +3,11 @@ import { z } from "zod";
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
 export const LanguageSchema = z
-  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go", "shell", "rust", "dart"])
+  .enum(["typescript", "javascript", "html", "python", "php", "kotlin", "java", "go", "shell", "rust", "dart", "mcp-config"])
   .meta({
     id: "Language",
     description:
-      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, rust, dart, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line).",
+      "Source language of a file, from its extension. The TypeScript checker reads typescript, javascript and the inline scripts and forms of html files; the tree-sitter front ends read python, php, go, rust, dart, and kotlin and java together (one front end, so names resolve across the two); shell is sh, bash and zsh scripts (`.sh`, `.bash`, `.zsh`, or no extension and a shell `#!` line); mcp-config (since 1.28.0) is the MCP configuration files of coding agents and editors (`.mcp.json`, `mcp.json`, `claude_desktop_config.json`, `mcp_config.json`, `cline_mcp_settings.json`, `.gemini/settings.json`, `opencode.json(c)`, `.codex/config.toml`, `.zed/settings.json`).",
   });
 
 export const EcosystemSchema = z

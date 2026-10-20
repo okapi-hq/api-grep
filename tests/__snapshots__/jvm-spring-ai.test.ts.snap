@@ -665,7 +665,7 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.27.0",
+  "schemaVersion": "1.28.0",
   "stats": {
     "byClient": {
       "sdk": 11,
@@ -951,7 +951,7 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.27.0",
+  "schemaVersion": "1.28.0",
   "stats": {
     "byClient": {
       "sdk": 4,

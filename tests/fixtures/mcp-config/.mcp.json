@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "tracker": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp",
+      "headers": { "Authorization": "Bearer ${LINEAR_TOKEN}" }
+    },
+    "status": {
+      "type": "sse",
+      "url": "https://status.lanternworks.dev/sse",
+      "headers": { "X-Team": "platform" }
+    },
+    "docs": {
+      "type": "http",
+      "url": "${DOCS_MCP_URL:-https://docs.lanternworks.dev/mcp}"
+    },
+    "files": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@lanternworks/files-mcp", "./data"]
+    }
+  }
+}

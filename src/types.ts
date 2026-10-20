@@ -107,6 +107,8 @@ export interface RawCall {
   record?: { decl: VariableDeclaration; found?: Expression };
   /** A SOAP client library's call (#58): the WSDL and the address its client was built with, and the operation. */
   soap?: { wsdlExpr?: Expression; locationExpr?: Expression; operation: string };
+  /** The MCP transport the client sends through, when the code or its configuration says. */
+  mcpTransport?: McpTransport;
 }
 
 export interface MethodSpec {
@@ -230,10 +232,18 @@ export interface MethodSpec {
   abiArg?: string;
 }
 
+/** The MCP transport a client sends through (`Call.transport`): its kind, and the construction the code names it with. */
+export interface McpTransport {
+  kind: "streamable-http" | "sse";
+  name?: string;
+}
+
 /** Where a GraphQL client or one of its transports takes its URL and headers: `0`, `0.uri`, `1.headers` (TypeScript). */
 export interface EndpointSource {
   url?: string;
   headers?: string;
+  /** The MCP transport this construction sends through (`SSEClientTransport`: `sse`), reported as `Call.transport`. */
+  mcpTransport?: McpTransport["kind"];
   /**
    * The function at this position sends the requests (Relay's `Network.create(fetchFn)`): the URL and headers of the one
    * `fetch` it makes, also through the functions it calls.
@@ -278,7 +288,10 @@ export interface ClientSource {
   component?: { name: string; url: string; headers?: string };
   vendor?: VendorSource;
   urlOrNetwork?: boolean;
-  /** The transport may be its URL (fastmcp `Client("https://.../mcp")`); a literal that is no `http(s)` URL is a local script (stdio). */
+  /**
+   * The transport may be its URL (fastmcp `Client("https://.../mcp")`); a literal that is no `http(s)` URL is a local
+   * script (stdio). The library picks the transport from the URL's path (`mcp/transport.ts` `urlPathTransport`).
+   */
   urlTransport?: boolean;
   /** The MCP servers an agent framework's client connects to (`EndpointSpec.agent`). */
   servers?: McpServersSource;

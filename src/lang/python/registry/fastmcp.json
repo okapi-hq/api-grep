@@ -12,8 +12,8 @@
       "Client": { "transport": "kw:transport|0", "urlTransport": true }
     },
     "transports": {
-      "StreamableHttpTransport": { "url": "kw:url|0", "headers": "kw:headers" },
-      "SSETransport": { "url": "kw:url|0", "headers": "kw:headers" }
+      "StreamableHttpTransport": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "SSETransport": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["FastMCP", "FastMCPTransport", "StdioTransport", "PythonStdioTransport", "NodeStdioTransport", "UvStdioTransport", "UvxStdioTransport", "NpxStdioTransport", "FastMCPStdioTransport"]
   },

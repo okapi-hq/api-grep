@@ -1,0 +1,12 @@
+{
+  "issue": "JSON-RPC requests written by hand that send a method only MCP defines: the tool, prompt or resource they name",
+  "calls": [
+    {"file": "tools.ts", "line": 4, "provider": "mcp.harborlight-search.dev", "operation": "tools/call"},
+    {"file": "tools.ts", "line": 12, "provider": "linear", "operation": "resources/read"},
+    {"file": "tools.ts", "line": 20, "provider": "linear", "operation": "resources/read"},
+    {"file": "tools.ts", "line": 21, "provider": "linear", "operation": "tools/list"},
+    {"file": "tools.ts", "line": 24, "provider": "linear", "operation": "tools/call"},
+    {"file": "tools.ts", "line": 31, "provider": "mcp.harborlight-search.dev", "operation": "prompts/get"},
+    {"file": "tools.ts", "line": 39, "provider": "rpc.example-chain.net", "operation": "getTransaction"}
+  ]
+}

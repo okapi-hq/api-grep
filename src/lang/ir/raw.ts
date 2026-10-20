@@ -1,6 +1,6 @@
 import type { ClientFrom, ClientKind } from "../../report/schema.js";
 import type { Choice } from "../../resolve/choice.js";
-import type { AuthScheme, BodyEncoding } from "../../types.js";
+import type { AuthScheme, BodyEncoding, McpTransport } from "../../types.js";
 import type { IrMethodSpec, IrRegistryEntry, OptionRole, Scoped } from "./language.js";
 import type { CallExpr, ClassDef, FunctionDef, Param } from "./model.js";
 import type { ProjectIndex } from "./project.js";
@@ -124,6 +124,8 @@ export interface IrRaw {
    * branches): each is a call of its own at the same place.
    */
   alternatives?: IrRaw[];
+  /** The MCP transport the client sends through, when the code or its configuration says; `url`: the library picks it from the URL. */
+  mcpTransport?: McpTransport | "url";
 }
 
 /** A detected call and the other requests it may send. */

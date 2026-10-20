@@ -17,7 +17,7 @@
     },
     "transports": {
       "MCPServerHTTP": { "url": "kw:url|0", "headers": "kw:headers" },
-      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers" }
+      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["StdioServerParameters", "MCPServerStdio"]
   },

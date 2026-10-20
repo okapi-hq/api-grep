@@ -13,7 +13,7 @@ start, links: keep it short and put reference material in `docs/`), [CONTRIBUTIN
 path template, body / query / header shapes, auth scheme, and where each part came from. The report states facts only
 and leaves any judgement (a score, a verdict) to its consumer. Supported languages: TypeScript, JavaScript, HTML
 (inline scripts and forms; Vue, Svelte and Astro components' scripts), Python (Jupyter notebooks too), PHP, Kotlin
-and Java (one front end and one index for both: HTTP clients, Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust, Dart (Flutter) and shell scripts (curl, wget, HTTPie). It must stay
+and Java (one front end and one index for both: HTTP clients, Retrofit, Feign and the JVM SDK registries; `docs/languages.md`), Go, Rust, Dart (Flutter) and shell scripts (curl, wget, HTTPie), plus the MCP configuration files of coding agents and editors (`mcp-config`). It must stay
 static: no network, no code execution, no AI.
 
 ## Commands
@@ -174,6 +174,15 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   `src/detect/mcp-servers.ts` / `src/lang/ir/mcp-servers.ts` into one call per HTTP server, none for stdio or an
   unreadable configuration. A TypeScript package may have several registries (`Registry.allByPackage`, the others'
   calls in `RawCall.also`); a Python agent registry after the matching one adds its calls as `IrRaw.alternatives`.
+  Schema 1.28: `Call.transport` (MCP calls only: `kind` streamable-http / sse, `name` the construction) comes from the
+  registries' `mcpTransport` on `transports` / one-server `clients` entries (`Endpoint.transport`, `IrEndpoint.transport`
+  -> `RawCall` / `IrRaw.mcpTransport` -> `ResolvedCall.transport`), from a configuration's transport value
+  (`transportKind` in `src/operation/mcp-transport.ts`), or FastMCP's URL rule (`urlPathTransport`); a hand-written
+  JSON-RPC request sending an MCP-only method gets `operation.target` (`json-rpc.ts`, `mcpTargetParam`). MCP
+  configuration files are a front end of their own (`src/lang/mcp-config/`, language and client `mcp-config`): the
+  remote servers (and `mcp-remote` / `supergateway` / `mcp-proxy` bridges) of `.mcp.json`, `mcp.json`, Claude Desktop,
+  Windsurf, Cline, Gemini, opencode, Codex and Zed files, read as data (JSONC through `ts.parseJsonText`, TOML), one
+  `initialize` call per server at its URL; `ResolvedCall.fallbackProvider` makes an unknown host `mcp`.
 - SDK clients passed as untyped parameters (#37): `src/lang/ir/receiver.ts` and `src/detect/receiver.ts` follow the
   callers one level up (one call per distinct client), else the one SDK the nearby manifests declare with that method,
   else `diagnostics.unfollowed` `receiver-unknown`; `Call.clientFrom` says which (`docs/languages.md`).
@@ -259,7 +268,7 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   from real repositories are aggregates of "production repositories", with no name, host or path from them.
 - Every detection or resolution change needs a fixture (`tests/fixtures/<group>/`, JavaScript and HTML under
   `tests/fixtures/javascript/` and `tests/fixtures/html/`, Python under `tests/fixtures/python/`, PHP under
-  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`, Rust under `tests/fixtures/rust/`, Dart under `tests/fixtures/dart/`). The recall check scans a fixture without its
+  `tests/fixtures/php/`, Kotlin under `tests/fixtures/kotlin/`, Java and mixed Kotlin / Java under `tests/fixtures/java/`, Go under `tests/fixtures/go/`, shell under `tests/fixtures/shell/`, Rust under `tests/fixtures/rust/`, Dart under `tests/fixtures/dart/`, MCP configuration files under `tests/fixtures/mcp-config/`, its tool directories checked by `tests/mcp-config.test.ts`). The recall check scans a fixture without its
   subdirectories: a project with a nested layout (an Android app) is checked by its own test instead. Patterns from real repositories go in a directory with an `expected.json` so the recall
   check (`tests/recall.test.ts`) covers them; write fixtures from scratch with invented names.
 - Snapshots are part of the review: never update them blindly.
@@ -325,7 +334,9 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
 - MCP: `@modelcontextprotocol/sdk` (TypeScript), `mcp` and `fastmcp` (Python) clients over HTTP are done
   (`docs/report.md#mcp-clients`); so are the MCP servers of agent frameworks (AI SDK, OpenAI Agents, LangChain, Claude
   Agent SDK, Mastra, CrewAI, PydanticAI, Google ADK, smolagents, LlamaIndex, AutoGen:
-  `docs/report.md#mcp-servers-of-agent-frameworks`); the Kotlin / Java SDK is not yet.
+  `docs/report.md#mcp-servers-of-agent-frameworks`); so are their transports (`Call.transport`), MCP methods in
+  hand-written JSON-RPC requests (`operation.target`) and the servers of MCP configuration files
+  (`docs/detection.md#mcp-configuration-files`); the Kotlin / Java SDK is not yet.
 - Messaging and inference SDKs: Telegram (generated by `pnpm gen:telegram`; positional arguments named as body fields by
   `fieldArgs`, handler objects as their own entries or `contextClients`), discord.js (REST `Routes` through `routes` /
   `routeHelperArg`, `src/resolve/sdk-template.ts`), discord.py, huggingface_hub (`modelSeg`) and `@huggingface/inference`.

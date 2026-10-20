@@ -12,9 +12,9 @@
       "ClientSession": { "transport": "kw:read_stream|0" }
     },
     "transports": {
-      "streamablehttp_client": { "url": "kw:url|0", "headers": "kw:headers" },
-      "streamable_http_client": { "url": "kw:url|0", "headers": "kw:headers" },
-      "sse_client": { "url": "kw:url|0", "headers": "kw:headers" }
+      "streamablehttp_client": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "streamable_http_client": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "sse_client": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["stdio_client", "websocket_client", "create_connected_server_and_client_session"]
   },

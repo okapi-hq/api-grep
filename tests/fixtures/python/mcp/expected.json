@@ -10,6 +10,7 @@
     {"file": "session.py", "line": 40, "provider": "mcp", "operation": "tools/call"},
     {"file": "fast_client.py", "line": 7, "provider": "mcp", "operation": "tools/call"},
     {"file": "fast_client.py", "line": 13, "provider": "mcp", "operation": "prompts/list"},
-    {"file": "fast_client.py", "line": 14, "provider": "mcp", "operation": "prompts/get"}
+    {"file": "fast_client.py", "line": 14, "provider": "mcp", "operation": "prompts/get"},
+    {"file": "fast_client.py", "line": 20, "provider": "mcp", "operation": "tools/list"}
   ]
 }

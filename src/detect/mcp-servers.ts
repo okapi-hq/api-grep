@@ -1,6 +1,7 @@
 import { Node, type CallExpression, type Expression, type NewExpression } from "ts-morph";
 import { unwrap } from "../ast/expr.js";
 import { getProp, propertyValue, toArrayLiteral, toObjectLiteral } from "../ast/object.js";
+import { transportKind, transportOf } from "../operation/mcp-transport.js";
 import type { Callee, ClientSource, EndpointSource, McpServersSource, RegistryEntry } from "../types.js";
 import { at, calledName, fromTransport, listedName, MAX_DEPTH, valueOf, type Construction, type Endpoint } from "./endpoint.js";
 
@@ -52,7 +53,8 @@ function fromConfig(obj: Expression, spec: McpServersSource, r: Reader): void {
   const named = kind ? leadingText(unwrap(kind)) : undefined;
   if (named !== undefined && !spec.transport!.http.includes(named)) return;
   const url = pathOf(obj, spec.url);
-  if (url || named !== undefined) r.out.push({ url, headers: pathOf(obj, spec.headers) });
+  const transport = transportOf(transportKind(named));
+  if (url || named !== undefined) r.out.push({ url, headers: pathOf(obj, spec.headers), ...(transport ? { transport } : {}) });
 }
 
 function readOne(e: Expression, spec: McpServersSource, source: Source, args: Expression[], r: Reader, depth: number): void {
@@ -78,7 +80,7 @@ function fromConstruction(c: Construction, r: Reader, depth: number): void {
   }
   const name = calledName(c) ?? "";
   const clients = r.reg.endpoint!.clients;
-  if (Object.hasOwn(clients, name)) readClient(clients[name]!, c.getArguments() as Expression[], r, depth + 1);
+  if (Object.hasOwn(clients, name)) readClient({ name, source: clients[name]!, args: c.getArguments() as Expression[] }, r, depth + 1);
 }
 
 function readServers(e: Expression, spec: McpServersSource, source: Source, args: Expression[], r: Reader, depth: number): void {
@@ -104,9 +106,17 @@ function readServers(e: Expression, spec: McpServersSource, source: Source, args
   }
 }
 
-function readClient(source: Source, args: Expression[], r: Reader, depth: number): void {
+interface BuiltClient {
+  name: string;
+  source: Source;
+  args: Expression[];
+}
+
+function readClient({ name, source, args }: BuiltClient, r: Reader, depth: number): void {
+  // a client of one server (`new MCPServerSSE({ url })`): its URL, and its transport when the client names one
   if (!source.servers) {
-    r.out.push({ url: at(args, source.url), headers: at(args, source.headers) });
+    const transport = transportOf(source.mcpTransport, name);
+    r.out.push({ url: at(args, source.url), headers: at(args, source.headers), ...(transport ? { transport } : {}) });
     return;
   }
   const given = firstAt(args, source.servers.at);
@@ -114,12 +124,12 @@ function readClient(source: Source, args: Expression[], r: Reader, depth: number
 }
 
 /** The client construction a call is made on: the call itself (`new MultiServerMCPClient(...)`), else its receiver's. */
-function clientOf(node: CallExpression | NewExpression, key: string, callee: Callee, reg: RegistryEntry): { source: Source; args: Expression[] } | undefined {
+function clientOf(node: CallExpression | NewExpression, key: string, callee: Callee, reg: RegistryEntry): BuiltClient | undefined {
   const clients = reg.endpoint!.clients;
-  if (Object.hasOwn(clients, key)) return { source: clients[key]!, args: node.getArguments() as Expression[] };
+  if (Object.hasOwn(clients, key)) return { name: key, source: clients[key]!, args: node.getArguments() as Expression[] };
   for (const inst of [callee.instance, callee.rootInstance]) {
     const ctor = inst?.chain.at(-1);
-    if (inst && ctor !== undefined && Object.hasOwn(clients, ctor)) return { source: clients[ctor]!, args: inst.args };
+    if (inst && ctor !== undefined && Object.hasOwn(clients, ctor)) return { name: ctor, source: clients[ctor]!, args: inst.args };
   }
   return undefined;
 }
@@ -132,6 +142,6 @@ export function mcpServerEndpoints(node: CallExpression | NewExpression, key: st
   const client = clientOf(node, key, callee, reg);
   if (!client) return Object.values(reg.endpoint!.clients).some((c) => c.servers) ? [] : [{}];
   const r: Reader = { reg, out: [], budget: { left: 4 * MAX_SERVERS } };
-  readClient(client.source, client.args, r, 0);
+  readClient(client, r, 0);
   return r.out;
 }

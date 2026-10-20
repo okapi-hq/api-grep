@@ -757,6 +757,18 @@ exports[`regression fixtures > json-rpc 1`] = `
 ]
 `;
 
+exports[`regression fixtures > json-rpc-mcp 1`] = `
+[
+  "tools.ts:4 mcp.harborlight-search.dev POST /mcp tools/call",
+  "tools.ts:12 linear POST /mcp resources/read",
+  "tools.ts:20 linear POST /mcp resources/read (wrapper:rpc)",
+  "tools.ts:21 linear POST /mcp tools/list (wrapper:rpc)",
+  "tools.ts:24 linear POST /mcp tools/call",
+  "tools.ts:31 mcp.harborlight-search.dev POST /mcp prompts/get",
+  "tools.ts:39 rpc.example-chain.net POST / getTransaction",
+]
+`;
+
 exports[`regression fixtures > kotlin/const-names 1`] = `
 [
   "Shelf.kt:17 shelf.example.com GET /v1/items",
@@ -1188,6 +1200,19 @@ exports[`regression fixtures > kotlin/spring 1`] = `
 ]
 `;
 
+exports[`regression fixtures > mcp-config 1`] = `
+[
+  ".mcp.json:5 linear POST /mcp initialize",
+  ".mcp.json:10 mcp POST /sse initialize",
+  ".mcp.json:15 mcp POST /mcp initialize",
+  "cline_mcp_settings.json:3 mcp POST /sse initialize",
+  "cline_mcp_settings.json:4 mcp POST /mcp initialize",
+  "mcp_config.json:3 mcp POST /mcp initialize",
+  "opencode.jsonc:7 mcp POST /mcp initialize",
+  "opencode.jsonc:14 mcp POST /mcp initialize",
+]
+`;
+
 exports[`regression fixtures > multi-provider-site 1`] = `
 [
   "models.ts:11 openai GET /v1/models",
@@ -1466,11 +1491,21 @@ exports[`regression fixtures > python/json-rpc 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/json-rpc-mcp 1`] = `
+[
+  "tools.py:9 mcp.harborlight-search.dev POST /mcp tools/call",
+  "tools.py:13 linear POST /mcp resources/read",
+  "tools.py:17 linear POST /mcp resources/subscribe",
+  "tools.py:21 linear POST /mcp tools/call",
+]
+`;
+
 exports[`regression fixtures > python/mcp 1`] = `
 [
   "fast_client.py:7 mcp POST /mcp tools/call",
   "fast_client.py:13 mcp POST /mcp prompts/list",
   "fast_client.py:14 mcp POST /mcp prompts/get",
+  "fast_client.py:20 mcp POST /sse tools/list",
   "session.py:15 mcp POST /mcp initialize",
   "session.py:16 mcp POST /mcp tools/list",
   "session.py:17 mcp POST /mcp tools/call",

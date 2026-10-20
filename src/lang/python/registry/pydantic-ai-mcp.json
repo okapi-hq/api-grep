@@ -10,9 +10,9 @@
   "endpoint": {
     "agent": true,
     "clients": {
-      "MCPServerStreamableHTTP": { "url": "kw:url|0", "headers": "kw:headers" },
-      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers" },
-      "MCPServerHTTP": { "url": "kw:url|0", "headers": "kw:headers" }
+      "MCPServerStreamableHTTP": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "streamable-http" },
+      "MCPServerSSE": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" },
+      "MCPServerHTTP": { "url": "kw:url|0", "headers": "kw:headers", "mcpTransport": "sse" }
     },
     "nonHttp": ["MCPServerStdio"]
   },

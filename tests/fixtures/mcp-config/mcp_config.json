@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "burrow": { "serverUrl": "https://mcp.burrowtrack.dev/mcp", "headers": { "X-Api-Key": "${env:BURROW_KEY}" } }
+  }
+}

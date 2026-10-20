@@ -1,0 +1,15 @@
+{
+  "inputs": [{ "type": "promptString", "id": "crm-token", "description": "CRM token", "password": true }],
+  "servers": {
+    "crm": {
+      "type": "http",
+      "url": "https://mcp.tallyhouse-crm.dev/mcp",
+      "headers": { "Authorization": "Bearer ${input:crm-token}" }
+    },
+    "tenant": {
+      "type": "sse",
+      "url": "https://${input:tenant}.tallyhouse-crm.dev/sse"
+    },
+    "local": { "type": "stdio", "command": "node", "args": ["server.js"] }
+  }
+}

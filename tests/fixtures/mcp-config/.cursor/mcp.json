@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "weather": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.drizzle-forecast.dev/sse", "--transport", "sse-only", "--header", "Authorization:${AUTH_HEADER}"],
+      "env": { "AUTH_HEADER": "Bearer <token>" }
+    },
+    "radar": {
+      "url": "https://radar.drizzle-forecast.dev/mcp",
+      "headers": { "X-Api-Key": "${env:RADAR_KEY}" }
+    },
+    "git": { "command": "uvx", "args": ["example-git-mcp"] }
+  }
+}

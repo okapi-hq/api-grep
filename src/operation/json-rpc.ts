@@ -1,6 +1,7 @@
 import type { Operation } from "../report/schema.js";
 import type { BodyResult } from "../resolve/body.js";
 import type { MethodSpec, Shape } from "../types.js";
+import { mcpTarget, mcpTargetParam } from "./mcp.js";
 import { namesOf } from "./names.js";
 
 /**
@@ -28,11 +29,23 @@ function isRequest(s: Shape): s is ObjectShape {
   return !namesOf(method).names.some((n) => HTTP_VERB.test(n));
 }
 
+/**
+ * What a request sending one of the methods only MCP defines names on the server (`tools/call`: `params.name`, the
+ * tool), read as MCP clients' targets are; the protocol stays JSON-RPC, as nothing else says it is an MCP server.
+ */
+function targetOf(request: ObjectShape, names: string[]): string | undefined {
+  const key = names.length === 1 ? mcpTargetParam(names[0]!) : undefined;
+  const params = request.properties.params;
+  return key && params?.type === "object" ? mcpTarget(params.properties[key]) : undefined;
+}
+
 function operationOf(request: ObjectShape, batch: boolean): Operation {
   const acc = namesOf(request.properties.method!);
+  const target = targetOf(request, acc.names);
   return {
     protocol: "json-rpc",
     name: acc.names[0] ?? null,
+    ...(target !== undefined ? { target } : {}),
     ...(acc.names.length > 1 ? { alternatives: acc.names } : {}),
     ...(batch ? { batch: true } : {}),
     dynamic: acc.dynamic,

@@ -681,7 +681,7 @@ exports[`dart: Dio > reads BaseOptions, per-call Options, FormData, and the opti
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.27.0",
+  "schemaVersion": "1.28.0",
   "stats": {
     "byClient": {
       "dio": 10,
@@ -1713,7 +1713,7 @@ exports[`dart: package:http > reads verb functions, a Client's methods, request 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.27.0",
+  "schemaVersion": "1.28.0",
   "stats": {
     "byClient": {
       "dart-http": 10,

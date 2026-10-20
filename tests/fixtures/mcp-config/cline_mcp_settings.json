@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "harbor": { "url": "https://mcp.harbor-notes.dev/sse", "disabled": false },
+    "tools": { "type": "streamableHttp", "url": "https://tools.harbor-notes.dev/mcp" }
+  }
+}

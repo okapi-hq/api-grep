@@ -15,8 +15,8 @@
       "createMCPClient": {"servers": {"at": "0.transport", "url": "url", "headers": "headers", "transport": {"key": "type", "http": ["sse", "http"]}}}
     },
     "transports": {
-      "StreamableHTTPClientTransport": {"url": "0", "headers": "1.requestInit.headers"},
-      "SSEClientTransport": {"url": "0", "headers": "1.requestInit.headers"}
+      "StreamableHTTPClientTransport": {"url": "0", "headers": "1.requestInit.headers", "mcpTransport": "streamable-http"},
+      "SSEClientTransport": {"url": "0", "headers": "1.requestInit.headers", "mcpTransport": "sse"}
     },
     "nonHttp": ["Experimental_StdioMCPTransport", "StdioMCPTransport", "StdioClientTransport"]
   },

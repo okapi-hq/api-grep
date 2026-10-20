@@ -2,7 +2,8 @@ import { Node, SyntaxKind, type CallExpression, type Expression, type NewExpress
 import { memberChain, unwrap } from "../ast/expr.js";
 import { declarationsOf, getProp } from "../ast/object.js";
 import { memoValue } from "../ast/react.js";
-import type { Callee, EndpointSource, MethodSpec, RegistryEntry } from "../types.js";
+import { transportOf } from "../operation/mcp-transport.js";
+import type { Callee, EndpointSource, McpTransport, MethodSpec, RegistryEntry } from "../types.js";
 import { describeCallee } from "./callee.js";
 import { innerValues } from "./client-cache.js";
 import { fetchEndpoint } from "./fetch-endpoint.js";
@@ -21,6 +22,8 @@ export interface Endpoint {
   /** A URL the library builds itself (a node vendor's, #78): its host and the path before the method's. */
   host?: string;
   path?: string;
+  /** An MCP client's transport, when the construction or configuration names its kind. */
+  transport?: McpTransport;
 }
 
 export type Construction = CallExpression | NewExpression;
@@ -104,7 +107,8 @@ export function fromTransport(c: Construction, spec: Record<string, EndpointSour
   if (!source) return {};
   // Relay's `Network.create(fetchFn)`: the `fetch` the function sends
   if (source.fetchIn !== undefined) return fetchEndpoint(at(argsOf(c), source.fetchIn));
-  return { url: at(argsOf(c), source.url), headers: at(argsOf(c), source.headers) };
+  const transport = transportOf(source.mcpTransport, name);
+  return { url: at(argsOf(c), source.url), headers: at(argsOf(c), source.headers), ...(transport ? { transport } : {}) };
 }
 
 /** The URL and headers a client construction gives: its own, else those of the one transport in its options. */

@@ -24,8 +24,8 @@ calls:                          # one entry per call, sorted by file, line, colu
       file: billing/stripe.ts   # relative to the scanned directory
       line: 6
       col: 10
-      language: typescript      # typescript | javascript | html | python | php | kotlin | java | go | shell | rust | dart
-    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr | node-soap (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 | zeep (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress | php-soap (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), net-http | resty (Go), curl | wget | httpie (shell), reqwest | ureq | awc | isahc | surf (Rust), dart-http | dio (Dart), sdk | framework
+      language: typescript      # typescript | javascript | html | python | php | kotlin | java | go | shell | rust | dart | mcp-config
+    client: sdk                 # fetch | axios | got | ky | node-http | jquery | xhr | node-soap (TypeScript, JavaScript), html-form (HTML), requests | httpx | aiohttp | urllib | urllib3 | zeep (Python), guzzle | laravel-http | symfony-http | curl | psr-18 | php-stream | wordpress | php-soap (PHP), okhttp | java-http | ktor | spring-rest | spring-webclient | feign | retrofit | apache-httpclient | jaxrs-client | async-http-client | unirest | vertx-webclient (Kotlin, Java), net-http | resty (Go), curl | wget | httpie (shell), reqwest | ureq | awc | isahc | surf (Rust), dart-http | dio (Dart), mcp-config (an MCP server a configuration file declares), sdk | framework
     sdk: { package: stripe, version: ^22.6.1, chain: customers.create }
     provider: stripe            # `api-grep providers` id, or internal | env:<NAME> | unknown
     host: api.stripe.com        # may hold placeholders: {project}.supabase.co
@@ -160,7 +160,10 @@ has a list of them; absent when no selected field has any. A persisted query is 
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
 (`Action` for AWS Query, `method` for Flickr): `protocol: action`. An MCP client's request to an MCP server is
-`protocol: mcp` (schema 1.27), see [MCP clients](#mcp-clients).
+`protocol: mcp` (schema 1.27), see [MCP clients](#mcp-clients). A JSON-RPC request written by hand that sends a
+method only MCP defines (`tools/call`, `prompts/get`: `params.name`; `resources/read`, `resources/subscribe`,
+`resources/unsubscribe`: `params.uri`) keeps `protocol: json-rpc` and names what it targets in `target` (schema 1.28),
+read as for MCP clients.
 
 ```yaml
     operation:
@@ -170,7 +173,7 @@ Action-style APIs name the operation in a query or form parameter that `provider
       fields: [order.customer.email, order.id]   # GraphQL only: selected leaf paths, sorted, aliases resolved, fragments inlined
       arguments:                 # GraphQL only, when a selected field has some: by field path, sorted
         order: { id: $id }       # literals as JSON values (`first: 10`, `sortKey: CREATED_AT`), variables as "$name"
-      # target: forecast         # MCP only: the tool, prompt or resource URI the method names
+      # target: forecast         # MCP, and JSON-RPC sending an MCP method: the tool, prompt or resource URI the method names
       dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
       from: document             # body | header | query | document
 ```
@@ -207,6 +210,25 @@ HTTP request: a stdio transport (`StdioClientTransport`, `stdio_client`, a FastM
 local process whose own calls are found by scanning its code), a WebSocket transport, an in-memory pair
 (`InMemoryTransport`, `Client(server)`). `client.connect(transport)` is reported only when its transport reads as HTTP.
 An SSE server announces the URL it takes requests at: the call keeps the stream's URL, whose host is the server's.
+
+`transport` (schema 1.28, MCP calls only) is the transport the client sends through, when the code or its
+configuration says so; absent otherwise:
+
+```yaml
+    transport:
+      kind: sse                  # streamable-http | sse (the older HTTP+SSE transport, which servers are retiring)
+      name: SSEClientTransport   # the construction the code uses; absent when a configuration names the kind only
+```
+
+`name` is the transport construction: `StreamableHTTPClientTransport` / `SSEClientTransport` (TypeScript SDK and the
+AI SDK), `streamablehttp_client` / `streamable_http_client` / `sse_client` (Python SDK), FastMCP's
+`StreamableHttpTransport` / `SSETransport`, or the agent framework's client or parameters (`MCPServerSSE`,
+`MCPServerSse`, `MCPServerStreamableHTTP`, `StreamableHTTPConnectionParams`, `SseServerParams`...). A configuration's
+value names the kind only: `sse`, else `http`, `streamable_http`, `streamable-http`, `streamableHttp` for Streamable
+HTTP (`transport: "sse"`, `type: "http"`). FastMCP's `Client("https://...")` picks the transport from the URL by the rule its
+transport inference documents: SSE when the path has an `/sse` segment, else Streamable HTTP (a URL the code writes
+whole only).
+A client connected over either transport (a Streamable HTTP transport with an SSE fallback) has none.
 
 #### MCP servers of agent frameworks
 
@@ -249,6 +271,16 @@ Not reported, as for the MCP SDKs:
   API's `{"type": "mcp", "server_url": ...}` tools, the Anthropic Messages API's `mcp_servers=[{"type": "url", ...}]`.
   They are part of the request to the model provider (its body), and the connection to the MCP server is the
   provider's, not the app's.
+
+#### MCP servers in configuration files
+
+The MCP servers coding agents and editors are configured with (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`,
+Claude Desktop, Windsurf, Cline, Gemini CLI, opencode, Codex, Zed: [detection.md](detection.md#mcp-configuration-files))
+are calls too (schema 1.28): `client: mcp-config`, `location.language: mcp-config`, at the URL's line and column, a
+`POST` with `operation: { protocol: mcp, name: initialize, from: body }`, the headers the file gives, `transport` when
+the file states the kind (no `name`), and the provider of the known service the URL names, else `mcp`. A local server
+is none, unless it runs a bridge to a remote one (`mcp-remote`, `supergateway`, `mcp-proxy`): the bridge's URL is the
+call's.
 
 ### SOAP clients
 

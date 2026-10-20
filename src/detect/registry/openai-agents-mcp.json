@@ -11,8 +11,8 @@
   "endpoint": {
     "agent": true,
     "clients": {
-      "MCPServerStreamableHttp": {"url": "0.url", "headers": "0.requestInit.headers"},
-      "MCPServerSSE": {"url": "0.url", "headers": "0.requestInit.headers"}
+      "MCPServerStreamableHttp": {"url": "0.url", "headers": "0.requestInit.headers", "mcpTransport": "streamable-http"},
+      "MCPServerSSE": {"url": "0.url", "headers": "0.requestInit.headers", "mcpTransport": "sse"}
     },
     "nonHttp": ["MCPServerStdio"]
   },

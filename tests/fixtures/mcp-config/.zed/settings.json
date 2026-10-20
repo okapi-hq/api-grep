@@ -1,0 +1,7 @@
+{
+  "theme": "One Dark",
+  "context_servers": {
+    "ops": { "url": "https://mcp.nightowl-ops.dev/mcp", "headers": { "Authorization": "Bearer token-from-keychain" } },
+    "shell": { "command": { "path": "ops-mcp", "args": ["--stdio"] } }
+  }
+}
