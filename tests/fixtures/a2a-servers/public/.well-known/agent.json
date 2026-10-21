@@ -1,0 +1,9 @@
+{
+  "name": "Pantry helper",
+  "url": "https://pantry.example.test/a2a",
+  "version": "0.4.0",
+  "protocolVersion": "0.2.5",
+  "preferredTransport": "JSONRPC",
+  "capabilities": { "streaming": false },
+  "skills": [{ "id": "list", "name": "List items" }, { "id": "add", "name": "Add an item" }]
+}

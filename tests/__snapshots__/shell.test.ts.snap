@@ -1077,6 +1077,10 @@ exports[`shell: curl > reads curl command lines, their variables, wrapper functi
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -1106,7 +1110,7 @@ exports[`shell: curl > reads curl command lines, their variables, wrapper functi
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "curl": 16,
@@ -1613,6 +1617,10 @@ exports[`shell: wget and HTTPie > reads their methods, headers, bodies and query
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -1642,7 +1650,7 @@ exports[`shell: wget and HTTPie > reads their methods, headers, bodies and query
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "httpie": 4,

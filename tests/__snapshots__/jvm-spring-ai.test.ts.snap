@@ -598,6 +598,10 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -672,7 +676,7 @@ exports[`java: Spring AI clients configured by the starter and application.yml (
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 11,
@@ -924,6 +928,10 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -965,7 +973,7 @@ exports[`kotlin: Spring AI (#89) > reads ChatClient chains on an injected builde
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 4,

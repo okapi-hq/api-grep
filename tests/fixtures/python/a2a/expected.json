@@ -1,0 +1,14 @@
+{
+  "issue": "A2A clients of a2a-sdk: create_client, ClientFactory, A2ACardResolver and the 0.3 A2AClient",
+  "calls": [
+    {"file": "travel_client.py", "line": 8, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "travel_client.py", "line": 9, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "travel_client.py", "line": 15, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "travel_client.py", "line": 16, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "travel_client.py", "line": 18, "provider": "a2a", "operation": "GetTask"},
+    {"file": "travel_client.py", "line": 24, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "travel_client.py", "line": 26, "provider": "a2a", "operation": "CancelTask"},
+    {"file": "legacy_client.py", "line": 8, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "legacy_client.py", "line": 9, "provider": "a2a", "operation": "SendStreamingMessage"}
+  ]
+}

@@ -883,6 +883,10 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -912,7 +916,7 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "retrofit": 15,

@@ -78,6 +78,14 @@ function ownBaseUrl(args: Expression[], spec: MethodSpec): Expression | undefine
   return undefined;
 }
 
+/** The URL a method that also builds the client is given (`spec.ownBaseUrl`: A2A `createFromUrl(url)`), by `instance.urlArg`. */
+function constructionUrl(args: Expression[], spec: MethodSpec, callee: Callee, reg: RegistryEntry): Expression | undefined {
+  const where = spec.ownBaseUrl ? reg.instance?.urlArg?.[callee.chain.at(-1) ?? ""] : undefined;
+  if (where === undefined) return undefined;
+  const [idx, prop] = String(where).split(".");
+  return prop ? getProp(args[Number(idx)], prop) : args[Number(idx)];
+}
+
 /**
  * graphql-request's own `request(url, document, variables)` takes the endpoint first, or one object with its `url`:
  * the endpoint, and the method's arguments after it.
@@ -144,7 +152,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (record) raw.record = record;
   if (reg.endpoint?.agent) return withServers(raw, mcpServerEndpoints(node, key, callee, reg));
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
-  const base = ownBaseUrl(args, spec) ?? clientUrlArg(callee, reg);
+  const base = ownBaseUrl(args, spec) ?? constructionUrl(args, spec, callee, reg) ?? clientUrlArg(callee, reg);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }

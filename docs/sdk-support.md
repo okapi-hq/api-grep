@@ -8,11 +8,11 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 
 | language | packages with a registry | HTTP clients |
 |---|---|---|
-| TypeScript / JavaScript (npm) | 119 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
-| Python (PyPI) | 66 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
+| TypeScript / JavaScript (npm) | 120 | `fetch`, `axios`, `got`, `ky`, `node http/https`, `jQuery`, `XMLHttpRequest`, `node-soap`, `AI SDK`, `n8n / activepieces helpers`, `HTML forms` |
+| Python (PyPI) | 70 | `requests`, `httpx`, `aiohttp`, `urllib3`, `urllib`, `zeep` |
 | PHP (Composer) | 28 | `guzzle`, `laravel-http`, `symfony-http`, `wordpress`, `curl`, `php-stream`, `php-soap` |
 | Kotlin and Java (Maven) | 77 | `spring-rest`, `okhttp`, `java-http`, `ktor`, `spring-webclient`, `feign`, `retrofit`, `apache-httpclient`, `jaxrs-client`, `async-http-client`, `unirest`, `vertx-webclient` |
-| Go (modules) | 9 | `net-http`, `resty` |
+| Go (modules) | 11 | `net-http`, `resty` |
 | Rust (crates.io) | 6 | `reqwest`, `isahc`, `ureq`, `awc`, `surf` |
 | Dart (pub.dev) | 4 | `dart-http`, `dio` |
 
@@ -82,6 +82,7 @@ are never silently missing. Raw HTTP calls to a provider's host are found in eve
 | Supabase | **`@supabase/supabase-js`**, **`@supabase/ssr`** | **`supabase`**, `postgrest`, `supabase-auth`, `gotrue`, `storage3`, `supabase-functions`, `realtime` |  | **`io.github.jan-tennert.supabase:postgrest-kt`**, **`io.github.jan-tennert.supabase:auth-kt`**, **`io.github.jan-tennert.supabase:gotrue-kt`**, **`io.github.jan-tennert.supabase:storage-kt`**, **`io.github.jan-tennert.supabase:functions-kt`**, `io.github.jan-tennert.supabase:realtime-kt` |  |  | **`supabase_flutter`**, **`supabase`** |
 | Convex | **`convex`** | **`convex`** |  | `dev.convex:android-convexmobile` |  |  |  |
 | MCP server | **`@modelcontextprotocol/sdk`**, **`@ai-sdk/mcp`**, **`@langchain/mcp-adapters`**, **`@mastra/mcp`** | **`mcp`**, **`fastmcp`**, **`langchain-mcp-adapters`**, **`llama-index-tools-mcp`** |  | `io.modelcontextprotocol.sdk:mcp`, `io.modelcontextprotocol:kotlin-sdk` |  |  |  |
+| A2A agent | **`@a2a-js/sdk`** | **`a2a-sdk`**, **`fasta2a`**, **`agent-framework-a2a`**, **`strands-agents`** |  |  | **`github.com/a2aproject/a2a-go`**, **`github.com/a2aproject/a2a-go/v2`** |  |  |
 | JSON-RPC client | **`@solana/web3.js`**, **`@solana/kit`**, **`@solana/rpc`**, **`@solana/spl-token`**, **`viem`**, **`ethers`**, **`@ethersproject/providers`**, **`@ethersproject/contracts`**, **`web3`**, **`wagmi`**, **`@wagmi/core`**, **`@rainbow-me/rainbowkit`**, **`connectkit`**, **`@solana/wallet-adapter-react`** | **`web3`**, **`solana`** |  |  |  |  |  |
 | GraphQL client | **`@apollo/client`**, **`apollo-client`**, **`apollo-boost`**, **`@apollo/react-hooks`**, **`react-apollo`**, **`urql`**, **`@urql/core`**, **`@urql/preact`**, **`@urql/svelte`**, **`@urql/vue`**, **`graphql-request`**, **`relay-runtime`**, **`react-relay`** | **`gql`**, **`sgqlc`** |  |  |  |  |  |
 | Shopify | **`@shopify/shopify-api`**, **`@shopify/shopify-app-express`**, **`@shopify/shopify-app-remix`**, **`@shopify/shopify-app-react-router`**, **`@shopify/admin-api-client`**, **`@shopify/storefront-api-client`**, **`shopify-api-node`**, **`@shopify/hydrogen`** | **`ShopifyAPI`** |  |  |  |  |  |

@@ -1,0 +1,18 @@
+{
+  "issue": "Remote A2A agents of agent frameworks: Google ADK, Strands, Microsoft Agent Framework, CrewAI, fasta2a",
+  "calls": [
+    {"file": "adk_agents.py", "line": 4, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "adk_agents.py", "line": 4, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "adk_agents.py", "line": 9, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "adk_agents.py", "line": 9, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "adk_agents.py", "line": 11, "provider": "google-ai"},
+    {"file": "other_frameworks.py", "line": 7, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "other_frameworks.py", "line": 7, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "other_frameworks.py", "line": 9, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "other_frameworks.py", "line": 11, "provider": "openai"},
+    {"file": "other_frameworks.py", "line": 16, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "other_frameworks.py", "line": 16, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "other_frameworks.py", "line": 22, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "other_frameworks.py", "line": 23, "provider": "a2a", "operation": "GetTask"}
+  ]
+}

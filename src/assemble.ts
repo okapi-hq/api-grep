@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mapModelValues, modelOf, type ModelFact } from "./model/fact.js";
 import { routeOf, routePath, splitModel } from "./model/route.js";
 import { isAnyHost, keepsIdOnUnknownHost, resolveProvider, type ResolvedProvider } from "./normalize/provider.js";
+import { a2aUrl } from "./operation/a2a.js";
 import { operationsOf } from "./operation/index.js";
 import type { BodySource, Call, ClientFrom, ClientKind, ClientPart, Operation } from "./report/schema.js";
 import type { BodyResult } from "./resolve/body.js";
@@ -37,6 +38,8 @@ export interface ResolvedCall {
   document?: Shape;
   /** The operation when the URL does not name it (JSON-RPC `method`, GraphQL document, SOAP action, `Action=`). */
   operation?: Operation;
+  /** Further operations the same call performs (an A2A remote agent fetches its card, then sends messages): a call each. */
+  moreOperations?: Operation[];
   /** Query parameters and headers the client adds to every request (interceptors, client defaults). */
   clientParts?: ClientPart[];
   /** The SDK client is an untyped parameter: found through the callers, or the one declared SDK with that method. */
@@ -178,6 +181,6 @@ function withXmlEncoding(r: ResolvedCall): ResolvedCall {
  */
 export function assembleCalls(resolved: ResolvedCall): Call[] {
   const r = withXmlEncoding(resolved);
-  const ops = r.operation ? [r.operation] : operationsOf(r);
-  return ops.length === 0 ? [assembleCall(r)] : ops.map((operation) => assembleCall({ ...r, operation }));
+  const ops = r.operation ? [r.operation, ...(r.moreOperations ?? [])] : operationsOf(r);
+  return ops.length === 0 ? [assembleCall(r)] : ops.map((operation) => assembleCall(a2aUrl({ ...r, operation })));
 }

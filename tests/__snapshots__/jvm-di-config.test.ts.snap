@@ -171,6 +171,10 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 3,
       "named": 3,
@@ -200,7 +204,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -437,6 +441,10 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 4,
       "named": 4,
@@ -466,7 +474,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 4,
@@ -646,6 +654,10 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 1,
       "named": 1,
@@ -675,7 +687,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

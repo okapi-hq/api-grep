@@ -1,6 +1,7 @@
 import { assembleCalls } from "../../assemble.js";
 import { relativePosix } from "../../files.js";
 import { rpcClientOperation } from "../../operation/json-rpc.js";
+import { a2aOperations, moreA2aOperations } from "../../operation/a2a.js";
 import { mcpOperation } from "../../operation/mcp.js";
 import { urlPathTransport } from "../../operation/mcp-transport.js";
 import type { Call, Language, Operation } from "../../report/schema.js";
@@ -167,7 +168,7 @@ function rpcOperation(raw: IrRaw, ctx: IrCtx): Operation | undefined {
   const m = raw.sdk;
   if (!m) return undefined;
   const target = m.spec.targetArg !== undefined ? argAt(m.method, m.spec.targetArg, ctx) : undefined;
-  const mcp = mcpOperation(m.spec, target ? shapeOf(target.expr, target.fn, ctx).shape : undefined);
+  const mcp = mcpOperation(m.spec, target ? shapeOf(target.expr, target.fn, ctx).shape : undefined) ?? a2aOperations(m.spec)[0];
   if (mcp) return mcp;
   if (m.spec.rpc === undefined && m.spec.rpcArg === undefined) return undefined;
   const arg = m.spec.rpcArg !== undefined ? argAt(m.method, m.spec.rpcArg, ctx) : undefined;
@@ -223,6 +224,7 @@ function buildOne(raw: IrRaw, base: BuildIrCtx, choice: Choice): Call[] {
     model: raw.model ? shapeOf(raw.model.expr, raw.model.fn, ctx).shape : undefined,
     document: documentOf(raw, ctx),
     operation: soap?.operation ?? rpcOperation(raw, ctx),
+    ...moreA2aOperations(raw.sdk?.spec),
     routeByModel: sdk?.entry.routeByModel,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,

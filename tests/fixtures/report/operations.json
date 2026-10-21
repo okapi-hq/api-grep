@@ -840,32 +840,107 @@
       "optionsOpaque": false,
       "bodySource": "literal",
       "examples": []
+    },
+    {
+      "id": "c025e3d3746b",
+      "client": "sdk",
+      "sdk": {
+        "package": "a2a-sdk",
+        "version": ">=0.3",
+        "chain": "create_client"
+      },
+      "provider": "a2a",
+      "host": "planner.harbor-notes.dev",
+      "hostKind": "literal",
+      "scheme": "https",
+      "query": [],
+      "headers": [],
+      "headerValues": {},
+      "authScheme": "unknown",
+      "dynamic": [],
+      "optionsOpaque": false,
+      "examples": [],
+      "location": {
+        "file": "agents/planner.py",
+        "line": 9,
+        "col": 20,
+        "language": "python"
+      },
+      "method": "GET",
+      "pathTemplate": "/.well-known/agent-card.json",
+      "urlTemplate": "https://planner.harbor-notes.dev/.well-known/agent-card.json",
+      "operation": {
+        "protocol": "a2a",
+        "name": "GetAgentCard",
+        "dynamic": false,
+        "from": "path"
+      },
+      "bodyEncoding": "none",
+      "bodySource": "none"
+    },
+    {
+      "id": "114f94b3e087",
+      "client": "sdk",
+      "sdk": {
+        "package": "a2a-sdk",
+        "version": ">=0.3",
+        "chain": "send_message"
+      },
+      "provider": "a2a",
+      "host": "planner.harbor-notes.dev",
+      "hostKind": "literal",
+      "scheme": "https",
+      "query": [],
+      "headers": [],
+      "headerValues": {},
+      "authScheme": "unknown",
+      "dynamic": [],
+      "optionsOpaque": false,
+      "examples": [],
+      "location": {
+        "file": "agents/planner.py",
+        "line": 10,
+        "col": 30,
+        "language": "python"
+      },
+      "method": "POST",
+      "pathTemplate": "/",
+      "urlTemplate": "https://planner.harbor-notes.dev",
+      "operation": {
+        "protocol": "a2a",
+        "name": "SendMessage",
+        "dynamic": false,
+        "from": "body"
+      },
+      "bodyEncoding": "none",
+      "bodySource": "unknown"
     }
   ],
   "stats": {
     "filesScanned": 5,
-    "callsFound": 11,
+    "callsFound": 13,
     "byLanguage": {
       "typescript": 6,
-      "python": 3,
+      "python": 5,
       "php": 2
     },
     "byClient": {
       "fetch": 5,
       "requests": 3,
-      "guzzle": 2,
-      "sdk": 1
+      "sdk": 3,
+      "guzzle": 2
     },
     "byProvider": {
       "api.mainnet-beta.solana.com": 4,
       "rpc.example-node.com": 2,
       "ws.example-carrier.com": 2,
+      "a2a": 2,
       "aws": 1,
       "example-shop.myshopify.com": 1,
       "mcp": 1
     },
     "byHostKind": {
-      "literal": 10,
+      "literal": 12,
       "const": 1
     },
     "withBodyShape": 10,

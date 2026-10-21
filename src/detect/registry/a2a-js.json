@@ -1,0 +1,110 @@
+{
+  "$comment": "A2A (Agent2Agent) clients of @a2a-js/sdk. `new ClientFactory().createFromUrl(url, path?)` and `DefaultAgentCardResolver.resolve(url, path?)` fetch the agent card under that base URL (`/.well-known/agent-card.json` unless a path is given; a card's own URL with `''`), `createFromAgentCard(card)` takes one already fetched; 0.x's `A2AClient.fromCardUrl(cardUrl)` fetches the card at its own URL and `new A2AClient(cardUrlOrCard)` too. Requests go to the interface URL the card lists, which the code does not say: a call keeps the agent's base URL. `operation.name` is the A2A 1.0 name of what a method performs; 0.x sends the older method names (`message/send`). Servers (`A2AExpressApp`, `DefaultRequestHandler`, `agentCardHandler`) receive requests: none of their methods is listed.",
+  "package": "@a2a-js/sdk",
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against @a2a-js/sdk 0.3.14 and 1.3.0)",
+  "instance": {
+    "names": [
+      "A2AClient",
+      "fromCardUrl",
+      "createFromUrl",
+      "ClientFactory",
+      "DefaultAgentCardResolver"
+    ],
+    "urlArg": {
+      "A2AClient": 0,
+      "fromCardUrl": 0,
+      "createFromUrl": 0,
+      "resolve": 0
+    }
+  },
+  "methods": {
+    "fromCardUrl": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "createFromUrl": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "resolve": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "getAgentCard": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard"
+    },
+    "sendMessage": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendMessage",
+      "bodyArg": 0
+    },
+    "sendMessageStream": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendStreamingMessage",
+      "bodyArg": 0
+    },
+    "getTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTask"
+    },
+    "listTasks": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTasks"
+    },
+    "cancelTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CancelTask"
+    },
+    "resubscribeTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SubscribeToTask"
+    },
+    "setTaskPushNotificationConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CreateTaskPushNotificationConfig"
+    },
+    "createTaskPushNotificationConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CreateTaskPushNotificationConfig"
+    },
+    "getTaskPushNotificationConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTaskPushNotificationConfig"
+    },
+    "listTaskPushNotificationConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTaskPushNotificationConfigs"
+    },
+    "deleteTaskPushNotificationConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "DeleteTaskPushNotificationConfig"
+    },
+    "getExtendedAgentCard": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetExtendedAgentCard"
+    }
+  }
+}

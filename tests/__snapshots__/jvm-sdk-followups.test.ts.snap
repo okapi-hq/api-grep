@@ -557,6 +557,10 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -631,7 +635,7 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 6,

@@ -178,6 +178,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -207,7 +211,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -342,6 +346,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 1,
       "named": 1,
@@ -371,7 +379,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -624,6 +632,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 4,
       "named": 4,
@@ -653,7 +665,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "ktor": 1,
@@ -842,6 +854,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 1,
       "named": 1,
@@ -871,7 +887,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -1100,6 +1116,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 4,
       "named": 4,
@@ -1129,7 +1149,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -1276,6 +1296,10 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -1305,7 +1329,7 @@ exports[`JVM DI: Lazy and Provider, multibindings, bindings by other types, Inje
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 1,

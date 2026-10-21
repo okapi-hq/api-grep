@@ -4,6 +4,13 @@
     "PyGithub": [
       "github"
     ],
+    "a2a-sdk": [
+      "a2a"
+    ],
+    "agent-framework-a2a": [
+      "agent_framework_a2a",
+      "agent_framework.a2a"
+    ],
     "airtable-python-wrapper": [
       "airtable"
     ],
@@ -156,6 +163,9 @@
     ],
     "slackclient": [
       "slack"
+    ],
+    "strands-agents": [
+      "strands"
     ],
     "vt-py": [
       "vt"

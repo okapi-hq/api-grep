@@ -2086,6 +2086,10 @@ exports[`models: python > reads model names through env defaults, settings, func
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -2292,7 +2296,7 @@ exports[`models: python > reads model names through env defaults, settings, func
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 26,
@@ -3587,6 +3591,10 @@ exports[`models: typescript > reads model names through imported constants, defa
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -3738,7 +3746,7 @@ exports[`models: typescript > reads model names through imported constants, defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 16,

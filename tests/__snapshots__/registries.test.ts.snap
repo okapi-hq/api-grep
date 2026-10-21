@@ -624,6 +624,10 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -665,7 +669,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -832,6 +836,10 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -884,7 +892,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -1797,6 +1805,10 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 1,
       "named": 1,
@@ -1849,7 +1861,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 16,

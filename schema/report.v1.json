@@ -401,7 +401,8 @@
             "graphql",
             "soap",
             "action",
-            "mcp"
+            "mcp",
+            "a2a"
           ],
           "description": "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL); since 1.28.0 also a remote server an MCP configuration file declares (client mcp-config, `initialize`)."
         },
@@ -481,7 +482,8 @@
             "body",
             "header",
             "query",
-            "document"
+            "document",
+            "path"
           ],
           "description": "Where the request carries the name: a body property or element, a header (`SOAPAction`), a query parameter, or a GraphQL document."
         }
@@ -1161,12 +1163,16 @@
         "mcpToolRefs": {
           "description": "MCP tool names the repository's files pin. Present on every full scan since 1.29.0.",
           "$ref": "#/definitions/McpToolRefs"
+        },
+        "a2aServers": {
+          "description": "A2A agents the repository serves. Present on every full scan since 1.30.0.",
+          "$ref": "#/definitions/A2aServers"
         }
       },
       "required": [
         "sdks"
       ],
-      "description": "API SDKs the repository declares or imports, API hosts its code names and MCP tool names its files pin. Absent for --changed-since scans."
+      "description": "API SDKs the repository declares or imports, API hosts its code names, MCP tool names its files pin and A2A agents it serves. Absent for --changed-since scans."
     },
     "SdkCoverage": {
       "type": "object",
@@ -1448,6 +1454,114 @@
         "declared"
       ],
       "description": "A reference to every tool of an MCP server, or to some of them by a pattern: `mcp__<server>`, `mcp__<server>__*`, `mcp__<server>__prefix*`."
+    },
+    "A2aServers": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "number",
+          "description": "Agents found: files with a serving construction, and card files; `servers` lists at most 200."
+        },
+        "servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/A2aServer"
+          },
+          "description": "By file path; at most 200."
+        }
+      },
+      "required": [
+        "count",
+        "servers"
+      ],
+      "description": "Since 1.30.0: the A2A (Agent2Agent) agents the repository serves, by SDK and framework constructions and committed agent cards, with what their cards say (protocol versions, bindings, fields that tell the version). A measurement only: serving an agent receives requests, so no call is reported for it."
+    },
+    "A2aServer": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Relative to the scanned directory."
+        },
+        "line": {
+          "type": "number",
+          "description": "1-based line of the construction (the first one in the file), or 1 for a card file."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sdk",
+            "card-file"
+          ],
+          "description": "sdk: an A2A SDK or framework construction serving an agent; card-file: an agent card committed under `.well-known/`."
+        },
+        "construction": {
+          "description": "sdk: what serves the agent (`A2AStarletteApplication`, `to_a2a`, `A2AExpressApp`, `a2asrv.NewHandler`).",
+          "type": "string"
+        },
+        "package": {
+          "description": "sdk: the package it comes from (`a2a-sdk`, `@a2a-js/sdk`, `google-adk`).",
+          "type": "string"
+        },
+        "card": {
+          "$ref": "#/definitions/A2aCardFacts"
+        }
+      },
+      "required": [
+        "file",
+        "line",
+        "kind",
+        "card"
+      ],
+      "description": "An A2A (Agent2Agent) agent the repository serves."
+    },
+    "A2aCardFacts": {
+      "type": "object",
+      "properties": {
+        "protocolVersions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A2A protocol versions the card states (`protocolVersion`, each interface's), literal values only, sorted."
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Protocol bindings the card offers (`JSONRPC`, `GRPC`, `HTTP+JSON`: `preferredTransport`, interfaces' `transport` or `protocolBinding`), sorted."
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Version-telling card fields it writes, camel case, sorted: `supportedInterfaces` (1.0), or the fields it replaced (`preferredTransport`, `additionalInterfaces`, `supportsAuthenticatedExtendedCard`)."
+        },
+        "cardPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Well-known card paths the file writes (`/.well-known/agent-card.json`, the older `/.well-known/agent.json`), sorted."
+        },
+        "name": {
+          "description": "The card's `name`, for a card file.",
+          "type": "string"
+        },
+        "skills": {
+          "description": "The card's skills, for a card file.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "protocolVersions",
+        "bindings",
+        "fields",
+        "cardPaths"
+      ],
+      "description": "What a served agent's card says, read as literal text: absent parts were not found."
     }
   }
 }

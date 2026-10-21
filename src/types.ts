@@ -209,6 +209,12 @@ export interface MethodSpec {
   rpcArg?: string;
   /** MCP clients: the MCP method the client method sends (`callTool` sends `tools/call`). */
   mcp?: string;
+  /**
+   * A2A (Agent2Agent) clients: the operation the client method performs, by its A2A 1.0 name (`send_message` is
+   * `SendMessage`; the agent card's fetch is `GetAgentCard`), whatever the method name the SDK's version sends; several
+   * when one call performs each (a framework's remote agent: `["GetAgentCard", "SendMessage"]`).
+   */
+  a2a?: string | string[];
   /** Where an MCP method takes what it names on the server (`operation.target`): `0.name` (the tool), `0.uri` (the resource); Python `kw:name|0`. */
   targetArg?: string;
   /**
@@ -216,6 +222,11 @@ export interface MethodSpec {
    * that transport reads as HTTP, as `connect` names too many other things to stand for the SDK by itself.
    */
   transportArg?: string;
+  /**
+   * The method is also a construction `instance.urlArg` names: the URL it is given is the base URL of its own request
+   * too (A2A `create_client(url)` fetches the agent card under it).
+   */
+  ownBaseUrl?: boolean;
   /** Called as the package's own function (viem/actions `getBalance(client, args)`), the call takes the client first. */
   clientFirst?: boolean;
   /** An attribute read rather than a call (web3.py `w3.eth.block_number` sends `eth_blockNumber`, #78). */

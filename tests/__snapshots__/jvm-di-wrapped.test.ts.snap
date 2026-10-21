@@ -136,6 +136,10 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 1,
@@ -176,7 +180,7 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -336,6 +340,10 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -365,7 +373,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -627,6 +635,10 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 4,
       "named": 4,
@@ -656,7 +668,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

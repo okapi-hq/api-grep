@@ -177,6 +177,10 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -206,7 +210,7 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "ktor": 2,
@@ -354,6 +358,10 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -383,7 +391,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 1,
@@ -708,6 +716,10 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 4,
       "named": 4,
@@ -737,7 +749,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -972,6 +984,10 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -1001,7 +1017,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "ktor": 3,
@@ -1214,6 +1230,10 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -1243,7 +1263,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

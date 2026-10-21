@@ -133,7 +133,8 @@ function codeBaseUrl(m: IrSdkMatch, ctx: IrCtx): Scoped | undefined {
   }
   const urlArg = m.entry.instance?.urlArg;
   if (!urlArg) return undefined;
-  const before = m.segs.slice(0, -1);
+  // a call that builds the client may send a request of its own under that URL (A2A `create_client(url)`: the card)
+  const before = m.spec.ownBaseUrl ? m.segs : m.segs.slice(0, -1);
   for (let i = 0; i < before.length; i++) {
     if (!before[i]!.call) continue;
     const where = Object.entries(urlArg).find(([name]) => namedAt(before, i, name))?.[1];

@@ -1,5 +1,19 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`regression fixtures > a2a-js 1`] = `
+[
+  "booking.ts:8 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "booking.ts:9 a2a POST / SendMessage",
+  "booking.ts:10 a2a POST / GetTask",
+  "booking.ts:14 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "booking.ts:15 a2a POST / SendStreamingMessage",
+  "booking.ts:18 a2a POST / CancelTask",
+  "concierge.js:5 a2a POST / SendMessage",
+  "concierge.js:10 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "concierge.js:12 a2a POST / ListTasks",
+]
+`;
+
 exports[`regression fixtures > action-api 1`] = `
 [
   "cloud.ts:5 aws GET / DescribeInstances",
@@ -70,6 +84,15 @@ exports[`regression fixtures > dart/http 1`] = `
 `;
 
 exports[`regression fixtures > dart/negative 1`] = `[]`;
+
+exports[`regression fixtures > go/a2a 1`] = `
+[
+  "ferry.go:15 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "ferry.go:23 a2a POST / SendMessage",
+  "ferry.go:28 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "ferry.go:36 a2a POST / GetTask",
+]
+`;
 
 exports[`regression fixtures > go/negative 1`] = `[]`;
 
@@ -1411,6 +1434,38 @@ exports[`regression fixtures > php/wrappers/two-hop 1`] = `
   "signed.php:12 mixpanel POST /{path} (wrapper:do_fetch)",
   "signed.php:17 mixpanel POST /track (wrapper:signed_fetch>do_fetch)",
   "signed.php:22 mixpanel POST /track (wrapper:tracked>signed_fetch>do_fetch)",
+]
+`;
+
+exports[`regression fixtures > python/a2a 1`] = `
+[
+  "legacy_client.py:8 a2a POST /a2a SendMessage",
+  "legacy_client.py:9 a2a POST /a2a SendStreamingMessage",
+  "travel_client.py:8 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "travel_client.py:9 a2a POST / SendMessage",
+  "travel_client.py:15 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "travel_client.py:16 a2a POST / SendMessage",
+  "travel_client.py:18 a2a POST / GetTask",
+  "travel_client.py:24 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "travel_client.py:26 a2a POST / CancelTask",
+]
+`;
+
+exports[`regression fixtures > python/a2a-agents 1`] = `
+[
+  "adk_agents.py:4 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "adk_agents.py:4 a2a POST / SendMessage",
+  "adk_agents.py:9 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "adk_agents.py:9 a2a POST / SendMessage",
+  "adk_agents.py:11 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "other_frameworks.py:7 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "other_frameworks.py:7 a2a POST / SendMessage",
+  "other_frameworks.py:9 a2a POST /a2a SendMessage",
+  "other_frameworks.py:11 openai POST /v1/chat/completions",
+  "other_frameworks.py:16 a2a GET /.well-known/agent-card.json GetAgentCard",
+  "other_frameworks.py:16 a2a POST / SendMessage",
+  "other_frameworks.py:22 a2a POST / SendMessage",
+  "other_frameworks.py:23 a2a POST / GetTask",
 ]
 `;
 

@@ -1,0 +1,14 @@
+{
+  "issue": "A2A clients of @a2a-js/sdk: ClientFactory, A2AClient.fromCardUrl, new A2AClient, DefaultAgentCardResolver",
+  "calls": [
+    {"file": "booking.ts", "line": 8, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "booking.ts", "line": 9, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "booking.ts", "line": 10, "provider": "a2a", "operation": "GetTask"},
+    {"file": "booking.ts", "line": 14, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "booking.ts", "line": 15, "provider": "a2a", "operation": "SendStreamingMessage"},
+    {"file": "booking.ts", "line": 18, "provider": "a2a", "operation": "CancelTask"},
+    {"file": "concierge.js", "line": 5, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "concierge.js", "line": 10, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "concierge.js", "line": 12, "provider": "a2a", "operation": "ListTasks"}
+  ]
+}

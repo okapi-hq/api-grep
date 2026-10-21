@@ -922,6 +922,10 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 3,
       "named": 3,
@@ -996,7 +1000,7 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -2095,6 +2099,10 @@ exports[`rust: reqwest > reads verb and request(method, url) calls, builder step
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 9,
       "named": 9,
@@ -2124,7 +2132,7 @@ exports[`rust: reqwest > reads verb and request(method, url) calls, builder step
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "reqwest": 12,

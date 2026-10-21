@@ -1,0 +1,32 @@
+{
+  "$comment": "Strands' remote A2A agents: `A2AAgent(endpoint=url)` resolves the agent card under that base URL, then sends the agent messages when invoked: both are reported at the construction. Serving an agent (`A2AServer`) receives requests and is no call.",
+  "package": "strands-agents",
+  "imports": [
+    "strands.agent.a2a_agent",
+    "strands.agent",
+    "strands"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against strands-agents 1.61 agent/a2a_agent.py)",
+  "instance": {
+    "names": [
+      "A2AAgent"
+    ],
+    "urlArg": {
+      "A2AAgent": "kw:endpoint|0"
+    }
+  },
+  "methods": {
+    "A2AAgent": {
+      "method": "POST",
+      "path": "",
+      "a2a": [
+        "GetAgentCard",
+        "SendMessage"
+      ],
+      "ownBaseUrl": true
+    }
+  }
+}
