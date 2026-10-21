@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { McpToolRefsSchema } from "./schema-tool-refs.js";
 
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
 
@@ -127,8 +128,15 @@ export const HostCoverageSchema = z
   });
 
 export const CoverageSchema = z
-  .object({ sdks: z.array(SdkCoverageSchema), hosts: HostCoverageSchema.optional().describe("Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0.") })
-  .meta({ id: "Coverage", description: "API SDKs the repository declares or imports, and API hosts its code names. Absent for --changed-since scans." });
+  .object({
+    sdks: z.array(SdkCoverageSchema),
+    hosts: HostCoverageSchema.optional().describe("Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0."),
+    mcpToolRefs: McpToolRefsSchema.optional().describe("MCP tool names the repository's files pin. Present on every full scan since 1.29.0."),
+  })
+  .meta({
+    id: "Coverage",
+    description: "API SDKs the repository declares or imports, API hosts its code names and MCP tool names its files pin. Absent for --changed-since scans.",
+  });
 
 export type Ecosystem = z.infer<typeof EcosystemSchema>;
 export type Diagnostics = z.infer<typeof DiagnosticsSchema>;
@@ -139,3 +147,4 @@ export type UnexplainedHost = z.infer<typeof UnexplainedHostSchema>;
 export type SkippedFile = z.infer<typeof SkippedFileSchema>;
 export type DroppedCall = z.infer<typeof DroppedCallSchema>;
 export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;
+export * from "./schema-tool-refs.js";

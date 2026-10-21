@@ -215,6 +215,13 @@ exports[`jvm: header and query names from constants (#61) > reads Java static fi
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -232,7 +239,7 @@ exports[`jvm: header and query names from constants (#61) > reads Java static fi
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "feign": 1,
@@ -544,6 +551,13 @@ exports[`jvm: header and query names from constants (#61) > reads Kotlin const v
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -561,7 +575,7 @@ exports[`jvm: header and query names from constants (#61) > reads Kotlin const v
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "feign": 1,

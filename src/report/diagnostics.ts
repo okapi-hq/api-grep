@@ -1,4 +1,4 @@
-import type { Coverage, Diagnostics, DroppedCall, HostCoverage, SkippedFile, UnfollowedCall } from "./schema.js";
+import type { Coverage, Diagnostics, DroppedCall, HostCoverage, McpToolRefs, SkippedFile, UnfollowedCall } from "./schema.js";
 
 /** Files left out by --exclude / --include are listed one by one up to this count, then only counted. */
 const MAX_LISTED_EXCLUSIONS = 200;
@@ -87,4 +87,12 @@ export function hostsLine(h: HostCoverage): string {
   const shown = h.unexplained.slice(0, 5).map((u) => `${u.host} (${plural(u.files, "file", "files")})`);
   const more = h.named - h.explained - shown.length;
   return shown.length === 0 ? line : `${line}; not explained: ${shown.join(", ")}${more > 0 ? `, +${more}` : ""}`;
+}
+
+/** The table's line for `coverage.mcpToolRefs`; undefined when no file pins a tool name. */
+export function mcpToolRefsLine(r: McpToolRefs): string | undefined {
+  if (r.files === 0) return undefined;
+  const line = `MCP tool names pinned in ${plural(r.files, "file", "files")}: ${plural(r.pairs, "tool", "tools")}, ${plural(r.references, "reference", "references")}`;
+  const shown = r.tools.slice(0, 3).map((t) => `mcp__${t.server}__${t.tool} (${t.references})`);
+  return shown.length === 0 ? line : `${line}; most: ${shown.join(", ")}`;
 }

@@ -176,6 +176,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
       "named": 3,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -193,7 +200,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -435,6 +442,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -452,7 +466,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 4,
@@ -637,6 +651,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -654,7 +675,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

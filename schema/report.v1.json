@@ -1157,12 +1157,16 @@
         "hosts": {
           "description": "Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0.",
           "$ref": "#/definitions/HostCoverage"
+        },
+        "mcpToolRefs": {
+          "description": "MCP tool names the repository's files pin. Present on every full scan since 1.29.0.",
+          "$ref": "#/definitions/McpToolRefs"
         }
       },
       "required": [
         "sdks"
       ],
-      "description": "API SDKs the repository declares or imports, and API hosts its code names. Absent for --changed-since scans."
+      "description": "API SDKs the repository declares or imports, API hosts its code names and MCP tool names its files pin. Absent for --changed-since scans."
     },
     "SdkCoverage": {
       "type": "object",
@@ -1306,6 +1310,144 @@
         "first"
       ],
       "description": "An API-looking host the code names that no reported call has: where api-grep likely misses calls."
+    },
+    "McpToolRefs": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "number",
+          "description": "Files with at least one reference (a tool's or a server's)."
+        },
+        "references": {
+          "type": "number",
+          "description": "References to a tool (`tools`), counting each time one is written."
+        },
+        "pairs": {
+          "type": "number",
+          "description": "Distinct (server, tool) pairs referenced; `tools` lists at most 200 of them."
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/McpToolRef"
+          },
+          "description": "The tools referenced, by `references` (most first), then server and tool; at most 200."
+        },
+        "servers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/McpServerRef"
+          },
+          "description": "The servers referenced as a whole or by a pattern, in the same order; at most 200."
+        }
+      },
+      "required": [
+        "files",
+        "references",
+        "pairs",
+        "tools",
+        "servers"
+      ],
+      "description": "Since 1.29.0: MCP tool names pinned in the repository's text files by the `mcp__<server>__<tool>` convention of coding agents (permission lists, agents', commands' and skills' `tools`, instructions, CI workflows, code): names that break when a server renames or removes a tool. A measurement only: no call is reported for them. Placeholders (`mcp__server__tool`, a template's `mcp__${server}__…`) and `mcp__*` are left out."
+    },
+    "McpToolRef": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string",
+          "description": "The server's name as the reference writes it (`[A-Za-z0-9_-]`, no `__`)."
+        },
+        "references": {
+          "type": "number",
+          "description": "Times it is written in the files read."
+        },
+        "files": {
+          "type": "number",
+          "description": "Files it is written in."
+        },
+        "kinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ToolRefKind"
+          },
+          "description": "Kinds of the files it is written in, each once, in the order of the enum."
+        },
+        "declared": {
+          "type": "boolean",
+          "description": "A server of that name is declared in an MCP configuration file of the repository (the files the `mcp-config` language reads, local servers too), its name compared as coding agents write it in tool names: every character outside `[A-Za-z0-9_-]` read as `_`."
+        },
+        "host": {
+          "description": "Host of the declared server's URL, lower case, when it is a remote server whose URL names a literal host.",
+          "type": "string"
+        },
+        "tool": {
+          "type": "string",
+          "description": "The tool's name: what follows the server's `__`, up to the first character outside `[A-Za-z0-9_-]`."
+        }
+      },
+      "required": [
+        "server",
+        "references",
+        "files",
+        "kinds",
+        "declared",
+        "tool"
+      ],
+      "description": "An MCP tool named by the `mcp__<server>__<tool>` convention."
+    },
+    "ToolRefKind": {
+      "type": "string",
+      "enum": [
+        "settings",
+        "agent",
+        "command",
+        "skill",
+        "instructions",
+        "workflow",
+        "code",
+        "other"
+      ],
+      "description": "The kind of file a pinned MCP tool name is written in, by its path: settings (`.claude/settings*.json`), agent (under `.claude/agents/`), command (under `.claude/commands/`), skill (a `SKILL.md`, or under `.claude/skills/`), instructions (`CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md`, under `.github/instructions/`, `.cursor/rules/`, `.windsurf/rules/` or `.clinerules/`, `.cursorrules`, `.windsurfrules`, `.clinerules`), workflow (under `.github/workflows/`), code (a source file of a language api-grep reads, or Ruby), other (anything else)."
+    },
+    "McpServerRef": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string",
+          "description": "The server's name as the reference writes it (`[A-Za-z0-9_-]`, no `__`)."
+        },
+        "references": {
+          "type": "number",
+          "description": "Times it is written in the files read."
+        },
+        "files": {
+          "type": "number",
+          "description": "Files it is written in."
+        },
+        "kinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ToolRefKind"
+          },
+          "description": "Kinds of the files it is written in, each once, in the order of the enum."
+        },
+        "declared": {
+          "type": "boolean",
+          "description": "A server of that name is declared in an MCP configuration file of the repository (the files the `mcp-config` language reads, local servers too), its name compared as coding agents write it in tool names: every character outside `[A-Za-z0-9_-]` read as `_`."
+        },
+        "host": {
+          "description": "Host of the declared server's URL, lower case, when it is a remote server whose URL names a literal host.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server",
+        "references",
+        "files",
+        "kinds",
+        "declared"
+      ],
+      "description": "A reference to every tool of an MCP server, or to some of them by a pattern: `mcp__<server>`, `mcp__<server>__*`, `mcp__<server>__prefix*`."
     }
   }
 }

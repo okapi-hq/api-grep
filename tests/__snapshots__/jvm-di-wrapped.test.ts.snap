@@ -152,6 +152,13 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
         },
       ],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -169,7 +176,7 @@ exports[`JVM DI: nested configuration properties and configuration files (#100) 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
@@ -334,6 +341,13 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -351,7 +365,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -618,6 +632,13 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -635,7 +656,7 @@ exports[`JVM DI: wrapped interceptors, lists built in steps, handed builders (#1
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

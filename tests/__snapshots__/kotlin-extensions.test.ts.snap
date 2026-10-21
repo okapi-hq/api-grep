@@ -977,6 +977,13 @@ exports[`Kotlin: calls made in extension functions of a client type (#86) > read
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 6,
@@ -1006,7 +1013,7 @@ exports[`Kotlin: calls made in extension functions of a client type (#86) > read
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "ktor": 4,

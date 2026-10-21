@@ -1,0 +1,10 @@
+name: review
+on: pull_request
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: some-org/agent-action@v1
+        with:
+          allowed_tools: "mcp__tracker__get_pull_request,mcp__incident-desk__get_incident"
+          claude_args: --allowedTools mcp__incident-desk__get_incident

@@ -14,7 +14,8 @@ import { formatOf } from "./tools.js";
  * breaks it): each remote server is a call. Read as data, never run.
  */
 
-function readDocument(file: string, rootDir: string): Document {
+/** A configuration file read as data; one that does not parse is a `ConfigParseError`. */
+export function readDocument(file: string, rootDir: string): Document {
   const text = readConfigFile(file, rootDir);
   if (text === undefined) throw new Error("not a regular file of at most 4 MB");
   return file.endsWith(".toml") ? readToml(text) : readJson(text);

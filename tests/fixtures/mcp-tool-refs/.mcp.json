@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "tracker": { "type": "http", "url": "https://mcp.tracker-hub.dev/mcp" },
+    "local-files": { "command": "npx", "args": ["-y", "local-files-mcp"] },
+    "team notes": { "type": "sse", "url": "https://notes.quillfern.dev/sse" }
+  }
+}

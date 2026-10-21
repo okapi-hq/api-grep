@@ -694,6 +694,13 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -711,7 +718,7 @@ exports[`java: HTTP clients > reads OkHttp request builders, bodies, URL builder
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 11,
@@ -1037,6 +1044,13 @@ exports[`java: HTTP clients > reads java.net.http requests and HttpURLConnection
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1054,7 +1068,7 @@ exports[`java: HTTP clients > reads java.net.http requests and HttpURLConnection
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "java-http": 6,
@@ -1689,6 +1703,13 @@ exports[`java: SDK registries > reads JVM SDK clients, builders as bodies and en
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -1762,7 +1783,7 @@ exports[`java: SDK registries > reads JVM SDK clients, builders as bodies and en
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 7,
@@ -2728,6 +2749,13 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2745,7 +2773,7 @@ exports[`java: Spring, Feign and Retrofit > reads RestTemplate, RestClient and W
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 11,
@@ -3252,6 +3280,13 @@ exports[`java: Spring, Feign and Retrofit > reports each Retrofit method with th
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3269,7 +3304,7 @@ exports[`java: Spring, Feign and Retrofit > reports each Retrofit method with th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "retrofit": 7,
@@ -3702,6 +3737,13 @@ exports[`java: Spring, Feign and Retrofit > reports each mapped method of a Feig
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3719,7 +3761,7 @@ exports[`java: Spring, Feign and Retrofit > reports each mapped method of a Feig
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "feign": 6,
@@ -4059,6 +4101,13 @@ exports[`java: a mixed Kotlin and Java Android project > reads both languages in
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -4103,7 +4152,7 @@ exports[`java: a mixed Kotlin and Java Android project > reads both languages in
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 1,

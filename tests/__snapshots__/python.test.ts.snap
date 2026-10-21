@@ -1708,6 +1708,13 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -1932,7 +1939,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 23,
@@ -2439,6 +2446,13 @@ exports[`python: constants > follows module constants, imported modules, class c
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2467,7 +2481,7 @@ exports[`python: constants > follows module constants, imported modules, class c
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "requests": 10,
@@ -2749,6 +2763,13 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2773,7 +2794,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "httpx": 4,
@@ -2984,6 +3005,13 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3001,7 +3029,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "aiohttp": 2,
@@ -3326,6 +3354,13 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
       "named": 5,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3350,7 +3385,7 @@ exports[`python: httpx, aiohttp, urllib > reads client objects, base URLs and re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "urllib": 4,
@@ -3925,6 +3960,13 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
       "named": 8,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3953,7 +3995,7 @@ exports[`python: requests > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "requests": 9,
@@ -4321,6 +4363,13 @@ exports[`python: wrappers > expands project functions and methods at their call 
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4338,7 +4387,7 @@ exports[`python: wrappers > expands project functions and methods at their call 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "requests": 5,

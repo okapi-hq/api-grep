@@ -6,6 +6,7 @@ import type { Registry } from "./detect/registry/index.js";
 import { changedFiles, headCommit } from "./git.js";
 import { hostCoverage } from "./hosts/coverage.js";
 import { HostLiterals } from "./hosts/literals.js";
+import { mcpToolRefs } from "./mcp-refs/coverage.js";
 import { errorText } from "./lang/files.js";
 import { selectLanguages } from "./lang/index.js";
 import { readEnvExamples, withEnvExamples } from "./model/env-examples.js";
@@ -156,6 +157,6 @@ export async function scan(opts: ScanOptions): Promise<Report> {
     calls,
     stats: computeStats(calls, found.filesScanned, Date.now() - started),
     diagnostics: diag.finish(found.filesSeen, found.filesScanned, found.languages),
-    coverage: hosts ? { sdks: found.coverage, hosts: hostCoverage(hosts, calls) } : undefined,
+    coverage: hosts ? { sdks: found.coverage, hosts: hostCoverage(hosts, calls), mcpToolRefs: mcpToolRefs(rootDir, opts) } : undefined,
   };
 }

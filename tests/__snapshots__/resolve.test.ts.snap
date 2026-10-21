@@ -123,6 +123,13 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -140,7 +147,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -382,6 +389,13 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -399,7 +413,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -590,6 +604,13 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -607,7 +628,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 3,
@@ -772,6 +793,13 @@ exports[`provider resolution > takes the provider from an env var's literal defa
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -789,7 +817,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -1047,6 +1075,13 @@ exports[`provider resolution > takes the provider from the env var's name 1`] = 
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1064,7 +1099,7 @@ exports[`provider resolution > takes the provider from the env var's name 1`] = 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 5,

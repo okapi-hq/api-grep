@@ -629,6 +629,13 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 10,
@@ -658,7 +665,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -830,6 +837,13 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -870,7 +884,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -1788,6 +1802,13 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -1828,7 +1849,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 16,

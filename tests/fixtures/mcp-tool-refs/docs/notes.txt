@@ -1,0 +1,1 @@
+The tracker tool mcp__tracker__create_issue files the bug.

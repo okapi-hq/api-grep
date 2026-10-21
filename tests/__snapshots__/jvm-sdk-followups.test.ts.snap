@@ -562,6 +562,13 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -624,7 +631,7 @@ exports[`kotlin: remaining JVM SDK forms (#89) > reads builders across functions
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 6,

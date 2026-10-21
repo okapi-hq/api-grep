@@ -87,6 +87,7 @@ coverage:                       # API SDKs the repo uses, see SDK coverage
   sdks:
     - { package: stripe, ecosystem: npm, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
   hosts: { named: 1, explained: 1, unexplained: [] }   # API hosts the code names, see Host coverage
+  mcpToolRefs: { files: 0, references: 0, pairs: 0, tools: [], servers: [] }   # see MCP tool names pinned in files
 ```
 
 ## Model names
@@ -647,3 +648,59 @@ URL can still be shown to a user, compared or opened in a browser in ways the ru
 over 2 MB are not read for hosts, only the first 64 KB of a literal is, and a scan keeps at most 50,000 host mentions.
 The table prints `hosts named in code: 23, explained by a call: 21; not explained: api.telegram.org (2 files)`.
 `--changed-since` scans have no coverage section.
+
+## MCP tool names pinned in files
+
+`coverage.mcpToolRefs` (since 1.29.0) measures how much a repository pins MCP tool names outside its MCP calls.
+Coding agents name a server's tools `mcp__<server>__<tool>`, and repositories write those names in permission lists
+(`.claude/settings.json`), in the `tools:` / `allowed-tools:` frontmatter of agents, commands and skills, in
+instructions (`CLAUDE.md`, `AGENTS.md`), in CI workflows (an agent action's `allowed_tools`, `--allowedTools`) and in
+code (an agent SDK's `allowedTools`). A server renaming or removing a tool breaks them. It is a diagnostic: no call is
+reported for these names.
+
+```json
+"mcpToolRefs": {
+  "files": 9,
+  "references": 14,
+  "pairs": 7,
+  "tools": [
+    { "server": "tracker", "tool": "create_issue", "references": 5, "files": 5,
+      "kinds": ["settings", "agent", "instructions", "other"], "declared": true, "host": "mcp.tracker-hub.dev" },
+    { "server": "incident-desk", "tool": "get_incident", "references": 3, "files": 2,
+      "kinds": ["workflow", "code"], "declared": false }
+  ],
+  "servers": [
+    { "server": "tracker", "references": 1, "files": 1, "kinds": ["settings"], "declared": true, "host": "mcp.tracker-hub.dev" }
+  ]
+}
+```
+
+- A name is `mcp__`, the server (`[A-Za-z0-9_-]`, no `__`: coding agents replace every other character with `_` and
+  use `__` as the separator), `__`, then the tool up to the first character outside `[A-Za-z0-9_-]`. It is not read
+  after a name character (`x_mcp__a__b`).
+- `tools`: one row per (server, tool), by `references` (most first), then server and tool, at most 200 (`pairs`
+  counts them all). `references` counts each time a name is written, `files` the files it is in, `kinds` their kinds.
+- `servers`: names of a whole server or of some of its tools by a pattern (`mcp__tracker`, `mcp__tracker__*`,
+  `mcp__tracker__get_*`), counted the same way, at most 200. `mcp__*` names no server and is left out.
+- Left out as placeholders and templates: a server or tool named `server`, `server_name`, `my_server`, `tool`,
+  `tool_name`, `my_tool`, `xxx` and their variants, any case (`mcp__server__tool`); a name followed by `$`, `{`, `<` or
+  `%` (`mcp__${name}__run`, `mcp__tracker__{tool}`, `mcp__tracker__get_%s`); `mcp__<server>__<tool>` holds no name.
+- `kinds`, by the file's path: `settings` (`.claude/settings*.json`), `agent` (under `.claude/agents/`), `command`
+  (under `.claude/commands/`), `skill` (a `SKILL.md`, or under `.claude/skills/`), `instructions` (`CLAUDE.md`,
+  `CLAUDE.local.md`, `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md`, under `.github/instructions/`,
+  `.cursor/rules/`, `.windsurf/rules/`, `.clinerules/`; `.cursorrules`, `.windsurfrules`, `.clinerules`), `workflow`
+  (under `.github/workflows/`), `code` (a file of a language api-grep reads, or Ruby), `other`.
+- `declared`: a server of that name is in an MCP configuration file of the repository
+  ([MCP configuration files](detection.md#mcp-configuration-files), local servers too), its name compared as coding
+  agents write it (`"team notes"` is `team_notes`); `host` is the declared server's URL host when it is remote and
+  literal. A file that does not parse declares none.
+- `files`: the files with at least one name, a tool's or a server's.
+
+Files read: Markdown (`.md`, `.mdx`, `.mdc`), text, JSON (JSONC, JSON5), YAML and TOML files, the source files of the
+languages api-grep reads and Ruby, and `.cursorrules`, `.windsurfrules`, `.clinerules`, dot directories included,
+`--include` / `--exclude` applied, and never what no one writes: `node_modules`, `dist`, `build`, `.git`, `vendor`,
+`bower_components`, virtualenvs (`.venv`, `venv`, `site-packages`, `.tox`), `target`, framework build output (`.next`,
+`.nuxt`, `.output`, `.svelte-kit`), `coverage`, `storybook-static`, minified and bundled JavaScript and npm / pnpm
+lockfiles. Files are read as text, never run; files over 2 MB are not read, a scan reads at most 100,000 files and
+counts at most 50,000 names. The table prints `MCP tool names pinned in 9 files: 7 tools, 14 references; most:
+mcp__tracker__create_issue (5), …` when a file pins one. `--changed-since` scans have no coverage section.
