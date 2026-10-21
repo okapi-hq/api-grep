@@ -88,6 +88,7 @@ coverage:                       # API SDKs the repo uses, see SDK coverage
     - { package: stripe, ecosystem: npm, provider: stripe, supported: true, declared: true, imported: true, importSites: 1, calls: 2, status: ok }
   hosts: { named: 1, explained: 1, unexplained: [] }   # API hosts the code names, see Host coverage
   mcpToolRefs: { files: 0, references: 0, pairs: 0, tools: [], servers: [] }   # see MCP tool names pinned in files
+  a2aServers: { count: 0, servers: [] }   # see A2A agents served
 ```
 
 ## Model names
@@ -161,14 +162,15 @@ has a list of them; absent when no selected field has any. A persisted query is 
 `protocol: soap` with the action's last segment (`Track`), else the first element of the envelope's `Body`.
 Action-style APIs name the operation in a query or form parameter that `providers.json` declares per provider
 (`Action` for AWS Query, `method` for Flickr): `protocol: action`. An MCP client's request to an MCP server is
-`protocol: mcp` (schema 1.27), see [MCP clients](#mcp-clients). A JSON-RPC request written by hand that sends a
+`protocol: mcp` (schema 1.27), see [MCP clients](#mcp-clients); an A2A (Agent2Agent) client's request to an agent is
+`protocol: a2a` (schema 1.30), see [A2A clients](#a2a-clients). A JSON-RPC request written by hand that sends a
 method only MCP defines (`tools/call`, `prompts/get`: `params.name`; `resources/read`, `resources/subscribe`,
 `resources/unsubscribe`: `params.uri`) keeps `protocol: json-rpc` and names what it targets in `target` (schema 1.28),
 read as for MCP clients.
 
 ```yaml
     operation:
-      protocol: graphql          # json-rpc | graphql | soap | action | mcp
+      protocol: graphql          # json-rpc | graphql | soap | action | mcp | a2a
       name: GetOrder             # null when no part of it is known
       type: query                # GraphQL only: query | mutation | subscription
       fields: [order.customer.email, order.id]   # GraphQL only: selected leaf paths, sorted, aliases resolved, fragments inlined
@@ -176,7 +178,7 @@ read as for MCP clients.
         order: { id: $id }       # literals as JSON values (`first: 10`, `sortKey: CREATED_AT`), variables as "$name"
       # target: forecast         # MCP, and JSON-RPC sending an MCP method: the tool, prompt or resource URI the method names
       dynamic: false             # true: part of the name is computed; name keeps the rest ({…} for the unknown part)
-      from: document             # body | header | query | document
+      from: document             # body | header | query | document | path (an A2A agent card's fetch)
 ```
 
 `alternatives` lists every name when a branch picks one (`name` is the first). A request that sends several
@@ -282,6 +284,66 @@ are calls too (schema 1.28): `client: mcp-config`, `location.language: mcp-confi
 the file states the kind (no `name`), and the provider of the known service the URL names, else `mcp`. A local server
 is none, unless it runs a bridge to a remote one (`mcp-remote`, `supergateway`, `mcp-proxy`): the bridge's URL is the
 call's.
+
+### A2A clients
+
+An A2A (Agent2Agent) client talks to another agent (schema 1.30): it fetches the agent's card, then sends it messages
+and follows its tasks. Covered: a2a-sdk (Python: `create_client(url)`, `ClientFactory(config).create_from_url(url)`,
+0.3's `ClientFactory.connect(url)`, `A2ACardResolver(httpx_client, base_url).get_agent_card()`, `factory.create(card)`,
+the 0.x `A2AClient(httpx_client, url=...)`), `@a2a-js/sdk` (`new ClientFactory().createFromUrl(url)`,
+`DefaultAgentCardResolver.resolve(url)`, `createFromAgentCard(card)`, 0.x's `A2AClient.fromCardUrl(cardUrl)` and `new
+A2AClient(cardUrl)`), a2a-go before v2 and v2 (`agentcard.DefaultResolver.Resolve(ctx, url)` or a `NewResolver`'s,
+`a2aclient.NewFromCard(ctx, card)`), and the remote agents of agent frameworks:
+
+| framework | Python |
+|---|---|
+| Google ADK | `RemoteA2aAgent(name=..., agent_card=url)` |
+| Strands | `A2AAgent(endpoint=url)` |
+| Microsoft Agent Framework | `A2AAgent(url=...)` (`agent_framework.a2a`, `agent-framework-a2a`) |
+| CrewAI | `Agent(a2a=A2AClientConfig(endpoint=url))`, the deprecated `A2AConfig` |
+| fasta2a | `A2AClient(agent=url)`: `send_message`, `stream_message`, `get_task` |
+
+Each request is a call with `operation: { protocol: a2a, name: SendMessage, from: body }`: `name` is what the method
+performs, by its A2A 1.0 name (`SendMessage`, `SendStreamingMessage`, `GetTask`, `ListTasks`, `CancelTask`,
+`SubscribeToTask`, `GetExtendedAgentCard`, `CreateTaskPushNotificationConfig`, `GetTaskPushNotificationConfig`,
+`ListTaskPushNotificationConfigs`, `DeleteTaskPushNotificationConfig`), whatever the SDK's version. What goes on the
+wire depends on that version (`sdk.version`): before 1.0 the JSON-RPC methods were `message/send`, `message/stream`,
+`tasks/get`, `tasks/cancel`, `tasks/resubscribe`, `tasks/pushNotificationConfig/set`…; from 1.0 they are the names
+above. Fetching the card is a `GET` with `operation: { protocol: a2a, name: GetAgentCard, from: path }`:
+
+```yaml
+  - location: { file: agents/planner.py, line: 9, col: 20, language: python }
+    client: sdk
+    sdk: { package: a2a-sdk, version: ">=0.3", chain: create_client }
+    provider: a2a
+    host: planner.harbor-notes.dev
+    method: GET
+    pathTemplate: /.well-known/agent-card.json
+    operation: { protocol: a2a, name: GetAgentCard, dynamic: false, from: path }
+  - location: { file: agents/planner.py, line: 10, col: 30, language: python }
+    sdk: { package: a2a-sdk, version: ">=0.3", chain: send_message }
+    provider: a2a
+    host: planner.harbor-notes.dev
+    method: POST
+    pathTemplate: /
+    operation: { protocol: a2a, name: SendMessage, dynamic: false, from: body }
+```
+
+The URL is the agent's, as the code names it. The card is fetched under it (`/.well-known/agent-card.json`, the path
+current SDKs read; before 0.3 they read `/.well-known/agent.json`), or at the card's own URL when the code gives one (a
+`.json` path: ADK's `agent_card`, `fromCardUrl`). The other operations keep the agent's base URL: the code's URL
+without the card's well-known path. The card lists the interface URL and binding (JSON-RPC, gRPC, HTTP+JSON) requests
+really go to, which the code does not say. A client built from a card the scan does not follow (`factory.create(card)`,
+`NewFromCard(ctx, card)`) has the host `{a2aAgent}`. A framework's remote agent fetches its card, then sends messages
+whenever the agent holding it delegates to it: both are calls at its construction (Microsoft Agent Framework's
+`A2AAgent(url=...)` builds a card in place: `SendMessage` only). The provider is the known service the URL names,
+else `a2a`.
+
+Not reported as calls: the agents a repository serves (they receive requests: see
+[A2A agents served](#a2a-agents-served)). A card path given apart from the URL (`relative_card_path`,
+`createFromUrl(url, path)`) is not read: the default path is reported. A JSON-RPC request written by hand that sends
+an A2A method (`message/send`, `SendMessage`) keeps `protocol: json-rpc` with the method as `name`, as nothing else
+says the server is an A2A agent; a hand-written `GET` of `/.well-known/agent-card.json` is a plain call to that path.
 
 ### SOAP clients
 
@@ -704,3 +766,45 @@ languages api-grep reads and Ruby, and `.cursorrules`, `.windsurfrules`, `.cline
 lockfiles. Files are read as text, never run; files over 2 MB are not read, a scan reads at most 100,000 files and
 counts at most 50,000 names. The table prints `MCP tool names pinned in 9 files: 7 tools, 14 references; most:
 mcp__tracker__create_issue (5), …` when a file pins one. `--changed-since` scans have no coverage section.
+
+## A2A agents served
+
+`coverage.a2aServers` (since 1.30.0) lists the A2A (Agent2Agent) agents a repository serves, and what their cards say.
+Serving an agent receives requests, so it is no call; a client of another agent is (see [A2A clients](#a2a-clients)).
+
+```json
+"a2aServers": {
+  "count": 2,
+  "servers": [
+    { "file": "agents/recipes.py", "line": 17, "kind": "sdk", "construction": "A2AStarletteApplication", "package": "a2a-sdk",
+      "card": { "protocolVersions": ["0.3.0"], "bindings": ["JSONRPC"], "fields": ["preferredTransport"], "cardPaths": [] } },
+    { "file": "public/.well-known/agent.json", "line": 1, "kind": "card-file",
+      "card": { "protocolVersions": ["0.2.5"], "bindings": ["JSONRPC"], "fields": ["preferredTransport"],
+                "cardPaths": ["/.well-known/agent.json"], "name": "Pantry helper", "skills": 2 } }
+  ]
+}
+```
+
+- `kind: sdk`: a source file that names a package's module and calls what serves an agent with it, one entry per file
+  and package, at the first such call (comment lines skipped): a2a-sdk (`A2AStarletteApplication`,
+  `A2AFastAPIApplication`, `A2ARESTFastAPIApplication`; 1.x's `create_jsonrpc_routes`, `create_rest_routes`,
+  `create_agent_card_routes`, `add_a2a_routes_to_fastapi`), `@a2a-js/sdk` (`A2AExpressApp`, `agentCardHandler`,
+  `jsonRpcHandler`, `restHandler`), Google ADK (`to_a2a`), Strands (`A2AServer`), fasta2a (`FastA2A`), PydanticAI
+  (`agent.to_a2a()`), CrewAI (`A2AServerConfig`), Bedrock AgentCore (`serve_a2a`) and a2a-go (`a2asrv.NewHandler`,
+  `NewJSONRPCHandler`, `NewRESTHandler`, the agent card handlers; `package` is the module the file imports, `/v2`
+  included).
+- `kind: card-file`: a committed `.well-known/agent-card.json` or `.well-known/agent.json` (a static site's) that parses
+  as a JSON object with a `name`.
+- `card`, read as literal text (a source file's) or as the card's JSON (a card file's): `protocolVersions`, the A2A
+  versions it states (the card's `protocolVersion` before 1.0, each interface's from it); `bindings`, the protocol
+  bindings it offers (`JSONRPC`, `GRPC`, `HTTP+JSON`); `fields`, the version-telling fields it writes: 1.0's
+  `supportedInterfaces`, or the ones it replaced (`preferredTransport`, `additionalInterfaces`,
+  `supportsAuthenticatedExtendedCard`); `cardPaths`, the well-known card paths it writes (the file's own for a card
+  file); a card file's `name` and `skills` count. A source file's facts are the whole file's: a value built at run time
+  is not read.
+
+Files read: the source files of the languages api-grep reads (and Ruby) that mention `a2a`, and card files, with the
+same excludes, limits and hostile-input rules as [MCP tool names pinned in files](#mcp-tool-names-pinned-in-files). At
+most 200 agents are listed (`count` counts them all). The table prints `A2A agents served: 2; agents/recipes.py
+(A2AStarletteApplication), public/.well-known/agent.json` when a repository serves one. `--changed-since` scans have no
+coverage section.

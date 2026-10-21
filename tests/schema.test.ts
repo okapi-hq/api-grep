@@ -79,7 +79,7 @@ describe("operation", () => {
     ["a missing name", { name: undefined }],
     ["a name that is not a string", { name: 42 }],
     ["a missing dynamic", { dynamic: undefined }],
-    ["an unknown source", { from: "path" }],
+    ["an unknown source", { from: "url" }],
     ["an unknown GraphQL type", { type: "fragment" }],
     ["fields that are not strings", { fields: [1] }],
     ["alternatives that are not strings", { alternatives: [null] }],

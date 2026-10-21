@@ -1,0 +1,9 @@
+{
+  "issue": "A2A clients of a2a-go v2: agentcard resolvers and a2aclient clients",
+  "calls": [
+    {"file": "ferry.go", "line": 15, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "ferry.go", "line": 23, "provider": "a2a", "operation": "SendMessage"},
+    {"file": "ferry.go", "line": 28, "provider": "a2a", "operation": "GetAgentCard"},
+    {"file": "ferry.go", "line": 36, "provider": "a2a", "operation": "GetTask"}
+  ]
+}

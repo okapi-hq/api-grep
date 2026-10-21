@@ -830,6 +830,10 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -948,7 +952,7 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 15,
@@ -1090,6 +1094,10 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -1142,7 +1150,7 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 2,

@@ -1,0 +1,39 @@
+{
+  "$comment": "fasta2a's client: `A2AClient(agent=url)` sends JSON-RPC to the agent's base URL (`fetch_card=True` first fetches its card, under `relative_card_path`); `send_message`, `stream_message`, `get_task`. A card given as a value gives `{a2aAgent}`. `FastA2A` and `agent.to_a2a()` serve an agent and are no call.",
+  "package": "fasta2a",
+  "imports": [
+    "fasta2a.client",
+    "fasta2a"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against fasta2a 2.1 client.py)",
+  "instance": {
+    "names": [
+      "A2AClient"
+    ],
+    "urlArg": {
+      "A2AClient": "kw:agent|0"
+    }
+  },
+  "methods": {
+    "send_message": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendMessage",
+      "bodyArg": 0
+    },
+    "stream_message": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendStreamingMessage",
+      "bodyArg": 0
+    },
+    "get_task": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTask"
+    }
+  }
+}

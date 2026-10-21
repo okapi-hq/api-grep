@@ -1740,6 +1740,10 @@ exports[`jvm: requests started in several places (#73) > reads a factory with se
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -1769,7 +1773,7 @@ exports[`jvm: requests started in several places (#73) > reads a factory with se
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 3,
@@ -2658,6 +2662,10 @@ exports[`kotlin: requests started in several places (#73) > reads Kotlin \`when\
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -2687,7 +2695,7 @@ exports[`kotlin: requests started in several places (#73) > reads Kotlin \`when\
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,

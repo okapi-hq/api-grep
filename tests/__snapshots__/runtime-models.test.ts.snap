@@ -2570,6 +2570,10 @@ exports[`runtime models: python > reads settings classes, dataclass configuratio
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 1,
       "named": 1,
@@ -2633,7 +2637,7 @@ exports[`runtime models: python > reads settings classes, dataclass configuratio
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -4156,6 +4160,10 @@ exports[`runtime models: typescript and javascript > never gives a default every
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 2,
       "named": 2,
@@ -4197,7 +4205,7 @@ exports[`runtime models: typescript and javascript > never gives a default every
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -5405,6 +5413,10 @@ exports[`runtime models: typescript and javascript > reads env schemas, config f
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -5468,7 +5480,7 @@ exports[`runtime models: typescript and javascript > reads env schemas, config f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "sdk": 11,

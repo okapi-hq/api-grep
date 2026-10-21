@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { A2aServersSchema } from "./schema-a2a-servers.js";
 import { McpToolRefsSchema } from "./schema-tool-refs.js";
 
 /** What the scan could not read, and the API SDKs it saw: the parts of a report that are about the scan, not a call. */
@@ -132,10 +133,11 @@ export const CoverageSchema = z
     sdks: z.array(SdkCoverageSchema),
     hosts: HostCoverageSchema.optional().describe("Hosts the code names compared with the calls' hosts. Present on every full scan since 1.21.0."),
     mcpToolRefs: McpToolRefsSchema.optional().describe("MCP tool names the repository's files pin. Present on every full scan since 1.29.0."),
+    a2aServers: A2aServersSchema.optional().describe("A2A agents the repository serves. Present on every full scan since 1.30.0."),
   })
   .meta({
     id: "Coverage",
-    description: "API SDKs the repository declares or imports, API hosts its code names and MCP tool names its files pin. Absent for --changed-since scans.",
+    description: "API SDKs the repository declares or imports, API hosts its code names, MCP tool names its files pin and A2A agents it serves. Absent for --changed-since scans.",
   });
 
 export type Ecosystem = z.infer<typeof EcosystemSchema>;
@@ -148,3 +150,4 @@ export type SkippedFile = z.infer<typeof SkippedFileSchema>;
 export type DroppedCall = z.infer<typeof DroppedCallSchema>;
 export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;
 export * from "./schema-tool-refs.js";
+export * from "./schema-a2a-servers.js";

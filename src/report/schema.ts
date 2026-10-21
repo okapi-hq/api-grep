@@ -9,7 +9,7 @@ import { McpTransportSchema } from "./schema-transport.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.29.0";
+export const SCHEMA_VERSION = "1.30.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */
@@ -143,7 +143,7 @@ const GraphqlArgumentsSchema = z.record(z.string(), z.unknown());
 export const OperationSchema = z
   .object({
     protocol: z
-      .enum(["json-rpc", "graphql", "soap", "action", "mcp"])
+      .enum(["json-rpc", "graphql", "soap", "action", "mcp", "a2a"])
       .describe(
         "The protocol that names the operation. action: an action-style API that names the operation in a query or form parameter (AWS Query `Action=`, Flickr `method=`). mcp (since 1.27.0): a Model Context Protocol client request to an MCP server over HTTP (JSON-RPC to the server's one URL); since 1.28.0 also a remote server an MCP configuration file declares (client mcp-config, `initialize`).",
       ),
@@ -177,7 +177,7 @@ export const OperationSchema = z
       .describe("Sent in one request together with other operations (a JSON-RPC array): each operation is a call of its own at the same location."),
     dynamic: z.boolean().describe("Part of the name is not known statically (computed, or a branch the scan could not read)."),
     from: z
-      .enum(["body", "header", "query", "document"])
+      .enum(["body", "header", "query", "document", "path"])
       .describe("Where the request carries the name: a body property or element, a header (`SOAPAction`), a query parameter, or a GraphQL document."),
   })
   .meta({ id: "Operation", description: "The operation a call performs when its URL does not name it: JSON-RPC, GraphQL, SOAP, action-style APIs and MCP send every operation to one URL." });

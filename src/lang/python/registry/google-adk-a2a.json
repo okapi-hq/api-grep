@@ -1,0 +1,32 @@
+{
+  "$comment": "Google ADK's remote A2A agents: `RemoteA2aAgent(name=..., agent_card=url)` fetches the agent card at that URL (the card's own URL, `.../.well-known/agent-card.json`, or the agent's base URL), then sends the agent messages whenever the agent that holds it delegates to it: both are reported at the construction. A card given as an `AgentCard` gives a call to `{a2aAgent}`. Serving an agent (`to_a2a`) receives requests and is no call. The agent's model requests are `google-adk.json`'s.",
+  "package": "google-adk",
+  "imports": [
+    "google.adk.agents.remote_a2a_agent",
+    "google.adk.a2a.agent",
+    "google.adk.agents"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against google-adk 2.12 a2a/agent/_remote_a2a_agent.py)",
+  "instance": {
+    "names": [
+      "RemoteA2aAgent"
+    ],
+    "urlArg": {
+      "RemoteA2aAgent": "kw:agent_card|1"
+    }
+  },
+  "methods": {
+    "RemoteA2aAgent": {
+      "method": "POST",
+      "path": "",
+      "a2a": [
+        "GetAgentCard",
+        "SendMessage"
+      ],
+      "ownBaseUrl": true
+    }
+  }
+}

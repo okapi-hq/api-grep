@@ -1,0 +1,28 @@
+{
+  "$comment": "Microsoft Agent Framework's A2A agents: `A2AAgent(url=...)` sends the remote agent messages at that URL, from a minimal card built in place (no card fetch); with `agent_card=` (fetched by the code itself) or `client=` the URL is the card's or the client's: `{a2aAgent}`. Reported at the construction.",
+  "package": "agent-framework-a2a",
+  "imports": [
+    "agent_framework_a2a",
+    "agent_framework.a2a"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against agent-framework-a2a 1.0.0b261015 _agent.py)",
+  "instance": {
+    "names": [
+      "A2AAgent"
+    ],
+    "urlArg": {
+      "A2AAgent": "kw:url"
+    }
+  },
+  "methods": {
+    "A2AAgent": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendMessage",
+      "ownBaseUrl": true
+    }
+  }
+}

@@ -210,6 +210,10 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -239,7 +243,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,
@@ -602,6 +606,10 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     },
   ],
   "coverage": {
+    "a2aServers": {
+      "count": 0,
+      "servers": [],
+    },
     "hosts": {
       "explained": 0,
       "named": 0,
@@ -631,7 +639,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.29.0",
+  "schemaVersion": "1.30.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

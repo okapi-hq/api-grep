@@ -6,6 +6,7 @@ import googleGenAi from "./google-genai.json" with { type: "json" };
 import googleGenerativeAi from "./google-generative-ai.json" with { type: "json" };
 import lemonsqueezy from "./lemonsqueezy.json" with { type: "json" };
 import mcp from "./mcp.json" with { type: "json" };
+import a2aJs from "./a2a-js.json" with { type: "json" };
 import posthogJs from "./posthog-js.json" with { type: "json" };
 import posthogNode from "./posthog-node.json" with { type: "json" };
 import resend from "./resend.json" with { type: "json" };
@@ -103,7 +104,7 @@ export class Registry {
 
 export function defaultRegistry(): Registry {
   const entries: unknown[] = [stripe, openai, octokit, slack, twilio, awsS3, awsV2, supabase, firebase, sentry, anthropic, googleGenAi, googleGenerativeAi];
-  entries.push(resend, revenuecat, lemonsqueezy, posthogJs, posthogNode, convex, awsBedrock, mcp);
+  entries.push(resend, revenuecat, lemonsqueezy, posthogJs, posthogNode, convex, awsBedrock, mcp, a2aJs);
   // model clients and agents
   entries.push(huggingfaceInference);
   entries.push(langchainOpenai, langchainAnthropic, langchainGoogleGenai, langchainGroq, langchainMistralai, langchainOllama, langchainAws, langchain, openaiAgents, groqSdk, mistralai, ollama);

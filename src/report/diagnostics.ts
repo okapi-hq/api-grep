@@ -1,4 +1,4 @@
-import type { Coverage, Diagnostics, DroppedCall, HostCoverage, McpToolRefs, SkippedFile, UnfollowedCall } from "./schema.js";
+import type { A2aServers, Coverage, Diagnostics, DroppedCall, HostCoverage, McpToolRefs, SkippedFile, UnfollowedCall } from "./schema.js";
 
 /** Files left out by --exclude / --include are listed one by one up to this count, then only counted. */
 const MAX_LISTED_EXCLUSIONS = 200;
@@ -95,4 +95,11 @@ export function mcpToolRefsLine(r: McpToolRefs): string | undefined {
   const line = `MCP tool names pinned in ${plural(r.files, "file", "files")}: ${plural(r.pairs, "tool", "tools")}, ${plural(r.references, "reference", "references")}`;
   const shown = r.tools.slice(0, 3).map((t) => `mcp__${t.server}__${t.tool} (${t.references})`);
   return shown.length === 0 ? line : `${line}; most: ${shown.join(", ")}`;
+}
+
+/** The table's line for `coverage.a2aServers`; undefined when the repository serves no agent. */
+export function a2aServersLine(r: A2aServers): string | undefined {
+  if (r.count === 0) return undefined;
+  const shown = r.servers.slice(0, 3).map((s) => (s.kind === "card-file" ? s.file : `${s.file} (${s.construction})`));
+  return `A2A agents served: ${r.count}; ${shown.join(", ")}${r.count > shown.length ? ", …" : ""}`;
 }

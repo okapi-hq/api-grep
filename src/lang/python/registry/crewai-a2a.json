@@ -1,0 +1,43 @@
+{
+  "$comment": "CrewAI's A2A delegation: `Agent(a2a=A2AClientConfig(endpoint=url))` (the deprecated `A2AConfig` alike) resolves the remote agent's card at that URL (its own `.../.well-known/agent-card.json` or the agent's base URL), then sends it messages when the agent delegates: both are reported at the configuration. `A2AServerConfig` describes the agent CrewAI serves and is no call.",
+  "package": "crewai",
+  "imports": [
+    "crewai.a2a.config",
+    "crewai.a2a",
+    "crewai"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against crewai 1.15 a2a/config.py)",
+  "instance": {
+    "names": [
+      "A2AClientConfig",
+      "A2AConfig"
+    ],
+    "urlArg": {
+      "A2AClientConfig": "kw:endpoint|0",
+      "A2AConfig": "kw:endpoint|0"
+    }
+  },
+  "methods": {
+    "A2AClientConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": [
+        "GetAgentCard",
+        "SendMessage"
+      ],
+      "ownBaseUrl": true
+    },
+    "A2AConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": [
+        "GetAgentCard",
+        "SendMessage"
+      ],
+      "ownBaseUrl": true
+    }
+  }
+}

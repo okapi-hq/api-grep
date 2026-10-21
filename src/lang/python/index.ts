@@ -35,6 +35,12 @@ import { sgqlcDocument } from "./sgqlc.js";
 import gql from "./registry/gql.json" with { type: "json" };
 import mcp from "./registry/mcp.json" with { type: "json" };
 import fastmcp from "./registry/fastmcp.json" with { type: "json" };
+import a2aSdk from "./registry/a2a-sdk.json" with { type: "json" };
+import googleAdkA2a from "./registry/google-adk-a2a.json" with { type: "json" };
+import strandsA2a from "./registry/strands-a2a.json" with { type: "json" };
+import agentFrameworkA2a from "./registry/agent-framework-a2a.json" with { type: "json" };
+import crewaiA2a from "./registry/crewai-a2a.json" with { type: "json" };
+import fasta2a from "./registry/fasta2a.json" with { type: "json" };
 import autogenExtMcp from "./registry/autogen-ext-mcp.json" with { type: "json" };
 import claudeAgentSdkMcp from "./registry/claude-agent-sdk-mcp.json" with { type: "json" };
 import crewaiMcp from "./registry/crewai-mcp.json" with { type: "json" };
@@ -147,6 +153,12 @@ export const PYTHON_REGISTRY = [
   sgqlc,
   mcp,
   fastmcp,
+  a2aSdk,
+  googleAdkA2a,
+  strandsA2a,
+  agentFrameworkA2a,
+  crewaiA2a,
+  fasta2a,
   shopify,
   web3,
   solana,

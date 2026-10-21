@@ -1,0 +1,136 @@
+{
+  "$comment": "A2A (Agent2Agent) clients of a2a-sdk. A client talks to the agent whose card URL the code gives: `create_client(url)`, `ClientFactory(config).create_from_url(url)` and 0.3's `ClientFactory.connect(url)` fetch the card from `<url>/.well-known/agent-card.json`, `A2ACardResolver(httpx_client, base_url).get_agent_card()` too; `factory.create(card)` takes a card already fetched. The requests go to the interface URL the card lists, which the code does not say: a call keeps the agent's base URL. The 0.3 `A2AClient(httpx_client, url=...)` sends JSON-RPC to its URL. `operation.name` is the A2A 1.0 name of what a method performs; 0.x sends the older method names (`message/send`). Servers (`A2AStarletteApplication`, `A2AFastAPIApplication`, request handlers) receive requests: none of their methods is listed.",
+  "package": "a2a-sdk",
+  "imports": [
+    "a2a.client",
+    "a2a"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against a2a-sdk 0.3.26 and 1.2.3)",
+  "instance": {
+    "names": [
+      "A2AClient",
+      "create_client",
+      "ClientFactory.connect",
+      "A2ACardResolver",
+      "create_from_url",
+      "ClientFactory",
+      "A2AClient.get_client_from_agent_card_url"
+    ],
+    "urlArg": {
+      "A2AClient": "kw:url|2",
+      "create_client": "kw:agent|0",
+      "ClientFactory.connect": "kw:agent|0",
+      "A2ACardResolver": "kw:base_url|1",
+      "create_from_url": "kw:url|0",
+      "A2AClient.get_client_from_agent_card_url": "kw:base_url|1"
+    }
+  },
+  "methods": {
+    "create_client": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "ClientFactory.connect": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "create_from_url": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "get_agent_card": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard"
+    },
+    "send_message": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendMessage",
+      "bodyArg": 0
+    },
+    "send_message_streaming": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendStreamingMessage",
+      "bodyArg": 0
+    },
+    "get_task": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTask"
+    },
+    "list_tasks": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTasks"
+    },
+    "cancel_task": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CancelTask"
+    },
+    "resubscribe": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SubscribeToTask"
+    },
+    "subscribe": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SubscribeToTask"
+    },
+    "set_task_callback": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CreateTaskPushNotificationConfig"
+    },
+    "get_task_callback": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTaskPushNotificationConfig"
+    },
+    "create_task_push_notification_config": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CreateTaskPushNotificationConfig"
+    },
+    "get_task_push_notification_config": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTaskPushNotificationConfig"
+    },
+    "list_task_push_notification_configs": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTaskPushNotificationConfigs"
+    },
+    "delete_task_push_notification_config": {
+      "method": "POST",
+      "path": "",
+      "a2a": "DeleteTaskPushNotificationConfig"
+    },
+    "get_extended_agent_card": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetExtendedAgentCard"
+    },
+    "get_card": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetExtendedAgentCard"
+    }
+  },
+  "builders": [
+    "create"
+  ]
+}

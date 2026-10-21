@@ -1,0 +1,94 @@
+{
+  "$comment": "A2A (Agent2Agent) clients of a2a-go before v2: `agentcard.DefaultResolver.Resolve(ctx, baseURL)` (or a `NewResolver(c)`'s) fetches the agent card under that base URL (`/.well-known/agent-card.json`); `a2aclient.NewFromCard(ctx, card)` builds a client sending to the interface the card lists, which the code does not say (`{a2aAgent}`), as `NewFromEndpoints` does from interfaces built in the code. `operation.name` is the A2A 1.0 name of what a method performs; versions before v2 send the older JSON-RPC method names (`message/send`). Servers (`a2asrv`) receive requests: none of their methods is listed.",
+  "package": "github.com/a2aproject/a2a-go",
+  "imports": [
+    "github.com/a2aproject/a2a-go/a2aclient",
+    "github.com/a2aproject/a2a-go/a2aclient/agentcard"
+  ],
+  "provider": "a2a",
+  "host": "{a2aAgent}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against a2a-go v0.3.15 a2aclient)",
+  "instance": {
+    "names": [
+      "NewFromCard",
+      "NewFromEndpoints",
+      "NewResolver"
+    ],
+    "urlArg": {
+      "DefaultResolver.Resolve": "1",
+      "Resolve": "1"
+    }
+  },
+  "methods": {
+    "DefaultResolver.Resolve": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "Resolve": {
+      "method": "GET",
+      "path": "",
+      "a2a": "GetAgentCard",
+      "ownBaseUrl": true
+    },
+    "SendMessage": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendMessage",
+      "bodyArg": 1
+    },
+    "SendStreamingMessage": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SendStreamingMessage",
+      "bodyArg": 1
+    },
+    "GetTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTask"
+    },
+    "ListTasks": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTasks"
+    },
+    "CancelTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CancelTask"
+    },
+    "GetTaskPushConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetTaskPushNotificationConfig"
+    },
+    "DeleteTaskPushConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "DeleteTaskPushNotificationConfig"
+    },
+    "ResubscribeToTask": {
+      "method": "POST",
+      "path": "",
+      "a2a": "SubscribeToTask"
+    },
+    "ListTaskPushConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "ListTaskPushNotificationConfigs"
+    },
+    "SetTaskPushConfig": {
+      "method": "POST",
+      "path": "",
+      "a2a": "CreateTaskPushNotificationConfig"
+    },
+    "GetAgentCard": {
+      "method": "POST",
+      "path": "",
+      "a2a": "GetExtendedAgentCard"
+    }
+  }
+}
