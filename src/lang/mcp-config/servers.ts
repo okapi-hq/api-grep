@@ -102,3 +102,23 @@ export function declaredServers(root: Value, format: ToolFormat): ServerDecl[] {
 
 /** Whether a file has any server map: one without is no MCP configuration (another tool's `settings.json`). */
 export const hasServerMap = (root: Value, format: ToolFormat): boolean => serverMaps(root, format).length > 0;
+
+/** A server a file declares by name, local or remote; a remote one with its URL as written. */
+export interface ConfiguredServer {
+  name: string;
+  url?: string;
+}
+
+/** Every server of a file, at most `MAX_SERVERS`: what a coding agent's tool names name their server by. */
+export function configuredServers(root: Value, format: ToolFormat): ConfiguredServer[] {
+  const out: ConfiguredServer[] = [];
+  for (const map of serverMaps(root, format)) {
+    for (const [name, server] of map) {
+      if (out.length >= MAX_SERVERS) return out;
+      if (server.kind !== "object") continue;
+      const url = serverOf(name, server, format)?.url.value;
+      out.push(url === undefined ? { name } : { name, url });
+    }
+  }
+  return out;
+}

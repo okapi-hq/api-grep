@@ -215,6 +215,13 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -232,7 +239,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,
@@ -600,6 +607,13 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -617,7 +631,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

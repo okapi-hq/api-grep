@@ -358,6 +358,13 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -375,7 +382,7 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 5,
@@ -1094,6 +1101,13 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1111,7 +1125,7 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "async-http-client": 5,
@@ -1545,6 +1559,13 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1562,7 +1583,7 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "jaxrs-client": 7,
@@ -2231,6 +2252,13 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2248,7 +2276,7 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 11,

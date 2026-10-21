@@ -1059,6 +1059,13 @@ exports[`parameter values: php > reads defaults and callers' literals of methods
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1076,7 +1083,7 @@ exports[`parameter values: php > reads defaults and callers' literals of methods
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "guzzle": 11,
@@ -2702,6 +2709,13 @@ exports[`parameter values: python > reads the default, the callers' literals, an
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 9,
@@ -2731,7 +2745,7 @@ exports[`parameter values: python > reads the default, the callers' literals, an
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "requests": 7,
@@ -4327,6 +4341,13 @@ exports[`parameter values: typescript > reads initializers through the checker a
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 9,
@@ -4356,7 +4377,7 @@ exports[`parameter values: typescript > reads initializers through the checker a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 7,

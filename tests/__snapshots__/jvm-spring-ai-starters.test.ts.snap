@@ -835,6 +835,13 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -941,7 +948,7 @@ exports[`java: more Spring AI starters, qualified beans, model enums and configu
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 15,
@@ -1088,6 +1095,13 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -1128,7 +1142,7 @@ exports[`kotlin: Spring AI beans DSL (#96) > reads ref<ChatModel>(name) in beans
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 2,

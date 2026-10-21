@@ -799,6 +799,13 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "named": 5,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -816,7 +823,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1235,6 +1242,13 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "named": 3,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1252,7 +1266,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2061,6 +2075,13 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2078,7 +2099,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3046,6 +3067,13 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "named": 7,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3063,7 +3091,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3672,6 +3700,13 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3689,7 +3724,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4101,6 +4136,13 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4118,7 +4160,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4262,6 +4304,13 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
         },
       ],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4306,7 +4355,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4421,6 +4470,13 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -4438,7 +4494,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9506,6 +9562,13 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 2,
@@ -10001,7 +10064,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -10937,6 +11000,13 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "named": 3,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -10989,7 +11059,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 2,

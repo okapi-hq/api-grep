@@ -856,6 +856,13 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -873,7 +880,7 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "ktor": 13,
@@ -2127,6 +2134,13 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2144,7 +2158,7 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 20,
@@ -2588,6 +2602,13 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2605,7 +2626,7 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "feign": 6,
@@ -3269,6 +3290,13 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
       "named": 1,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3286,7 +3314,7 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 7,
@@ -3611,6 +3639,13 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -3628,7 +3663,7 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "java-http": 6,

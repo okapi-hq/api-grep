@@ -888,6 +888,13 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -905,7 +912,7 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "retrofit": 15,

@@ -1745,6 +1745,13 @@ exports[`jvm: requests started in several places (#73) > reads a factory with se
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1762,7 +1769,7 @@ exports[`jvm: requests started in several places (#73) > reads a factory with se
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 3,
@@ -2656,6 +2663,13 @@ exports[`kotlin: requests started in several places (#73) > reads Kotlin \`when\
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2673,7 +2687,7 @@ exports[`kotlin: requests started in several places (#73) > reads Kotlin \`when\
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,

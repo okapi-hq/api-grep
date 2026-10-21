@@ -927,6 +927,13 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
       "named": 3,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 5,
@@ -989,7 +996,7 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -2093,6 +2100,13 @@ exports[`rust: reqwest > reads verb and request(method, url) calls, builder step
       "named": 9,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -2110,7 +2124,7 @@ exports[`rust: reqwest > reads verb and request(method, url) calls, builder step
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "reqwest": 12,

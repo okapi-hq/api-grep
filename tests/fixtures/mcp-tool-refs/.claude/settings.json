@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["mcp__tracker__create_issue", "mcp__tracker__list_pulls", "mcp__tracker", "mcp__forecast__*"],
+    "deny": ["mcp__local-files__delete_file"]
+  }
+}

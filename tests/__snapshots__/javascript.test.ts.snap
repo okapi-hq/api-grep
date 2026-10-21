@@ -333,6 +333,13 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
       "named": 3,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -362,7 +369,7 @@ exports[`html > reads inline scripts at their position in the page, forms and CD
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -774,6 +781,13 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -814,7 +828,7 @@ exports[`javascript: Node > reads CommonJS requires, module.exports and ES modul
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -1210,6 +1224,13 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1227,7 +1248,7 @@ exports[`javascript: browser > reads jQuery, XMLHttpRequest, globals loaded by a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "axios": 1,

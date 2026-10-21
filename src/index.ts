@@ -18,11 +18,12 @@ export {
   type Diagnostics,
   type Coverage,
   type HostCoverage,
+  type McpToolRefs,
   type Language,
 } from "./report/schema.js";
 export { reportJsonSchema } from "./report/json-schema.js";
 export { languageOf } from "./language.js";
-export { coverageWarnings, diagnosticsLine, hostsLine } from "./report/diagnostics.js";
+export { coverageWarnings, diagnosticsLine, hostsLine, mcpToolRefsLine } from "./report/diagnostics.js";
 export { sdkCoverage } from "./coverage.js";
 export { Registry, defaultRegistry } from "./detect/registry/index.js";
 export { evaluate, partsToTemplate } from "./resolve/evaluate.js";

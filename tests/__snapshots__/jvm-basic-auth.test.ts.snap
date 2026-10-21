@@ -109,6 +109,13 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -126,7 +133,7 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 2,
@@ -261,6 +268,13 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -278,7 +292,7 @@ exports[`jvm: OkHttp Credentials.basic as basic auth (#69) > reads it on a reque
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 2,

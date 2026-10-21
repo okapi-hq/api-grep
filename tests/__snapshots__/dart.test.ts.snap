@@ -652,6 +652,13 @@ exports[`dart: Dio > reads BaseOptions, per-call Options, FormData, and the opti
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 0,
@@ -681,7 +688,7 @@ exports[`dart: Dio > reads BaseOptions, per-call Options, FormData, and the opti
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "dio": 10,
@@ -1684,6 +1691,13 @@ exports[`dart: package:http > reads verb functions, a Client's methods, request 
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 5,
@@ -1713,7 +1727,7 @@ exports[`dart: package:http > reads verb functions, a Client's methods, request 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "dart-http": 10,

@@ -852,6 +852,13 @@ exports[`go: SDK registries > reads go-openai, openai-go, anthropic-sdk-go and g
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [
       {
         "calls": 1,
@@ -914,7 +921,7 @@ exports[`go: SDK registries > reads go-openai, openai-go, anthropic-sdk-go and g
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "sdk": 9,
@@ -1536,6 +1543,13 @@ exports[`go: net/http > reads package functions, requests built with http.NewReq
       "named": 8,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1553,7 +1567,7 @@ exports[`go: net/http > reads package functions, requests built with http.NewReq
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "net-http": 9,

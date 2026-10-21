@@ -182,6 +182,13 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -199,7 +206,7 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "ktor": 2,
@@ -352,6 +359,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -369,7 +383,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 1,
@@ -699,6 +713,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
       "named": 4,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -716,7 +737,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -956,6 +977,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
       "named": 2,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -973,7 +1001,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "ktor": 3,
@@ -1191,6 +1219,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
       "named": 0,
       "unexplained": [],
     },
+    "mcpToolRefs": {
+      "files": 0,
+      "pairs": 0,
+      "references": 0,
+      "servers": [],
+      "tools": [],
+    },
     "sdks": [],
   },
   "diagnostics": {
@@ -1208,7 +1243,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.28.0",
+  "schemaVersion": "1.29.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

@@ -219,6 +219,10 @@ requests as Conventional Commits (`fix:` patch, `feat:` minor, `feat!:` major); 
   read by name in `hosts/context.ts`: a log's or an error's text, a redirect, a link key, a `url` beside no request
   key), Rust's test items through `IrSource.testCode`; rules in `docs/report.md#host-coverage`. A recall proxy: keep
   it low-noise (a docs link counted reads as a missed call).
+- `coverage.mcpToolRefs` (`src/mcp-refs/`, schema 1.29): the MCP tool names text files pin by the
+  `mcp__<server>__<tool>` convention (`names.ts`), per (server, tool) with the kinds of files they are in (`kinds.ts`)
+  and whether an MCP configuration file declares the server (`declared.ts`, through the `mcp-config` front end's
+  `configuredServers`). A measurement only, no call; rules in `docs/report.md#mcp-tool-names-pinned-in-files`.
 - Shell (`src/lang/shell/`): not the IR. tree-sitter-bash parses `.sh` / `.bash` / `.zsh` files and extension-less files
   with a shell `#!` line (`files.ts`); `scope.ts` collects the file's assignments (`export`, `readonly`, `local`, arrays,
   loop and `read` targets, the most informative one wins: a value over `X="$2"` option parsing over `X=""`), `words.ts`
