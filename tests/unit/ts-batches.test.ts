@@ -170,7 +170,8 @@ describe("a scan in batches gives the report of a scan in one project", () => {
     const one = await scanFixture(group, { exclude: [] });
     const many = await scanFixture(group, { exclude: [], batchBytes: 1_500 });
     expect(stable(many)).toEqual(stable(one));
-  }, 120_000);
+    // `sdk` scans about 250 fixture files twice, one of them in tiny batches: a few minutes on a loaded CI runner
+  }, 300_000);
 });
 
 describe("lean module resolution", () => {
