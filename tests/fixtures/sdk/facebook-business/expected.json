@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "ads.ts", "line": 7, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 9, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 11, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 15, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 16, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 17, "provider": "meta-graph"},
+    {"file": "ads.ts", "line": 20, "provider": "meta-graph"},
+    {"file": "capi.js", "line": 11, "provider": "meta-graph"},
+    {"file": "capi.js", "line": 15, "provider": "meta-graph"},
+    {"file": "capi.js", "line": 18, "provider": "meta-graph"}
+  ]
+}

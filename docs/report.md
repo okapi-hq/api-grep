@@ -193,7 +193,9 @@ An MCP (Model Context Protocol) client sends JSON-RPC to the one URL of the serv
 1.27). Covered: `@modelcontextprotocol/sdk`'s `Client` (`client.connect(transport)`, `callTool`, `listTools`,
 `listResources`, `listResourceTemplates`, `readResource`, `subscribeResource`, `listPrompts`, `getPrompt`, `complete`,
 `setLoggingLevel`), the Python SDK's `ClientSession` (`initialize`, `call_tool`, `list_tools`, `read_resource`,
-`get_prompt`, ...) and FastMCP's `Client`. Each is a `POST` to the server URL with `operation: { protocol: mcp, name:
+`get_prompt`, ...), FastMCP's `Client`, the Java SDK's `McpSyncClient` / `McpAsyncClient` (`McpClient.sync(transport)
+... .build()`, `initialize`, `callTool`, `listTools`, `readResource`, `getPrompt`, ...; Java and Kotlin sources) and the
+Kotlin SDK's `Client`. Each is a `POST` to the server URL with `operation: { protocol: mcp, name:
 tools/call, target: forecast, from: body }`: `name` is the MCP method (`initialize` for `connect` / `initialize()`,
 `tools/list`, `tools/call`, `resources/read`, `prompts/get`, ...), `target` what it names on the server (the tool of
 `tools/call`, the prompt of `prompts/get`, the resource URI of `resources/read`; absent when the code passes a value the
@@ -204,12 +206,20 @@ The URL and headers are the HTTP transport's: `new StreamableHTTPClientTransport
 file's own transports (a Streamable HTTP transport with an SSE fallback to the same URL is one server; transports to
 several URLs leave the host `unknown`); Python's `streamablehttp_client(url, headers=...)` / `sse_client` whose streams
 the session is built from (`async with ... as (read, write, _)`, also through `AsyncExitStack.enter_async_context`);
-FastMCP's `Client("https://...")` or `Client(StreamableHttpTransport(url, headers=...))`. A client given its server
-elsewhere (`describe(client: Client)`) has the host `{mcpServer}`. The provider is the known service the URL names (a
+FastMCP's `Client("https://...")` or `Client(StreamableHttpTransport(url, headers=...))`; the Java SDK's
+`HttpClientStreamableHttpTransport.builder(url)` at the URL resolved with its endpoint (`/mcp` unless `.endpoint(p)`) and
+`HttpClientSseClientTransport.builder(url)` (or the 0.x constructor) with its SSE endpoint (`/sse` unless
+`.sseEndpoint(p)`), both by RFC 3986 as `java.net.URI.resolve` does (`https://h/a/` and `rpc` give `https://h/a/rpc`,
+`/rpc` gives `https://h/rpc`); the Kotlin SDK's `StreamableHttpClientTransport(client, url)` / `SseClientTransport` (also
+Ktor's `mcpStreamableHttpTransport(url)` / `mcpSseTransport(url)`) the same `Client` is connected with in the file, or
+the URL of `httpClient.mcpSse(url)` / `mcpStreamableHttp(url)`. A client given its server
+elsewhere (`describe(client: Client)`) has the host `{mcpServer}`: so does an injected `McpSyncClient` (Spring AI's
+MCP client starter builds them from `spring.ai.mcp.client.*`, not read), and a client over the Java SDK's Spring WebFlux
+transports (built on a `WebClient.Builder`); headers the Java SDK's request customizers add are not read. The provider is the known service the URL names (a
 vendor's MCP endpoint such as `mcp.linear.app` is `linear`), else `mcp`, whatever the host.
 
 Not reported: MCP servers (`McpServer`, `Server`, `FastMCP`: their tools receive requests), and clients that send no
-HTTP request: a stdio transport (`StdioClientTransport`, `stdio_client`, a FastMCP script path or stdio transport: a
+HTTP request: a stdio transport (`StdioClientTransport` in every SDK, `stdio_client`, a FastMCP script path or stdio transport: a
 local process whose own calls are found by scanning its code), a WebSocket transport, an in-memory pair
 (`InMemoryTransport`, `Client(server)`). `client.connect(transport)` is reported only when its transport reads as HTTP.
 An SSE server announces the URL it takes requests at: the call keeps the stream's URL, whose host is the server's.

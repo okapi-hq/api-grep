@@ -1,0 +1,9 @@
+{
+  "issue": "google-auth-oauthlib: the token exchange of a flow, at the client configuration's token_uri (a dict of the code, a client secrets file of the repository) or an unknown host; authorization_url() sends nothing",
+  "calls": [
+    {"file": "desktop.py", "line": 18, "provider": "google"},
+    {"file": "desktop.py", "line": 23, "provider": "google"},
+    {"file": "desktop.py", "line": 27, "provider": "google"},
+    {"file": "web.py", "line": 17, "provider": "google"}
+  ]
+}

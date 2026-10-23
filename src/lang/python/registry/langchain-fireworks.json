@@ -1,0 +1,30 @@
+{
+  "$comment": "langchain-fireworks: `ChatFireworks(model=...)` sends OpenAI-compatible chat requests through the fireworks-ai SDK, to `https://api.fireworks.ai/inference/v1/chat/completions`, or to `/v1/chat/completions` under the `base_url` the code gives (the SDK drops `/inference` then); `FireworksEmbeddings(model=...)` posts to `/inference/v1/embeddings` on a base URL it fixes. The completions LLM `Fireworks` is `langchain-fireworks-llm.json`.",
+  "package": "langchain-fireworks",
+  "imports": [
+    "langchain_fireworks"
+  ],
+  "provider": "fireworks",
+  "host": "api.fireworks.ai",
+  "auth": "bearer",
+  "basePath": "/inference",
+  "generatedFrom": "manual (langchain-fireworks 1.7: ChatFireworks, FireworksEmbeddings)",
+  "methods": {
+    "ChatFireworks": {
+      "method": "POST",
+      "path": "/inference/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "fireworks_api_base"
+      ]
+    },
+    "FireworksEmbeddings": {
+      "method": "POST",
+      "path": "/inference/v1/embeddings",
+      "bodyKwargs": true,
+      "clientKwargs": true
+    }
+  }
+}

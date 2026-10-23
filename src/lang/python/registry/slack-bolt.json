@@ -1,0 +1,31 @@
+{
+  "$comment": "slack_bolt: `app = App(token=...)` (or `AsyncApp`); `app.client` is a slack_sdk `WebClient`, so `app.client.chat_postMessage(...)` is the `client.` key of slack-sdk's method (added from slack-sdk.json by `src/lang/python/slack-bolt.ts`). Listeners (`@app.event(...)`, `@app.command(...)`...) get `client`, `say`, `respond` and `context` by name (the Python injection hook). `say(text)` is `chat.postMessage` to the event's channel; `respond(text)` posts to the `response_url` Slack sends with the request, a hooks.slack.com URL whose path the code never holds. `ack()` answers Slack's request: no call.",
+  "package": "slack-bolt",
+  "imports": [
+    "slack_bolt"
+  ],
+  "provider": "slack",
+  "host": "slack.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against bolt-python 1.30.0 source: App.client, context.say.Say, context.respond.Respond)",
+  "instance": {
+    "names": [
+      "App",
+      "AsyncApp",
+      "app.App",
+      "app.app.App",
+      "async_app.AsyncApp",
+      "app.async_app.AsyncApp"
+    ]
+  },
+  "basePath": "/api",
+  "itemMembers": [
+    "client",
+    "say",
+    "respond"
+  ],
+  "methods": {
+    "say": {"method": "POST", "path": "/api/chat.postMessage", "fieldArgs": ["text"], "bodyKwargs": true, "operationId": "chat_postMessage"},
+    "respond": {"method": "POST", "path": "/{response_url}", "host": "hooks.slack.com", "auth": "none", "fieldArgs": ["text"], "bodyKwargs": true}
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$comment": "google-cloud-vertexai for Java (also used from Kotlin): `new GenerativeModel(\"gemini-2.0-flash\", vertexAi)` or `new GenerativeModel.Builder().setModelName(m).setVertexAi(vertexAi).build()`, then `generateContent(...)`, `generateContentAsync`, `generateContentStream` (`streamGenerateContent`), `countTokens`, `startChat().sendMessage(...)`; `withGenerationConfig(...)` and the other `with*` copies keep the model. The model is the constructor's (`setModelName`'s); `{project}` and `{location}` are the arguments of the project's one `new VertexAI(project, location)`, else placeholders (`new VertexAI()` reads `GOOGLE_CLOUD_PROJECT` and ADC; `VertexAI.Builder` setters are not read). The SDK speaks gRPC to `{location}-aiplatform.googleapis.com:443` unless `VertexAI.Builder().setTransport(Transport.REST)`; the paths are the REST equivalents, as in the Python registry. The contents are Java objects the SDK turns into the request: a text argument is listed as `contents`, as in Python.",
+  "package": "com.google.cloud:google-cloud-vertexai",
+  "imports": ["com.google.cloud.vertexai.generativeai.GenerativeModel"],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against google-cloud-vertexai 1.52.0: VertexAI, GenerativeModel, ChatSession on aiplatform v1 PredictionService)",
+  "instance": { "names": ["GenerativeModel", "Builder"], "build": "build" },
+  "builders": ["with*"],
+  "methods": {
+    "generateContent": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]},
+    "generateContentAsync": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]},
+    "generateContentStream": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]},
+    "countTokens": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]},
+    "startChat.sendMessage": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]},
+    "startChat.sendMessageStream": {"method":"POST","path":"/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent","params":{"project":"setup:VertexAI:0","location":"setup:VertexAI:1","model":"model"},"modelAt":"GenerativeModel:0|setModelName:0","fieldArgs":["contents"]}
+  }
+}

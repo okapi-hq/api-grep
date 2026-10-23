@@ -1,0 +1,18 @@
+{
+  "issue": "google-cloud-bigquery registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "warehouse.py", "line": 9, "provider": "google"},
+    {"file": "warehouse.py", "line": 10, "provider": "google"},
+    {"file": "warehouse.py", "line": 14, "provider": "google"},
+    {"file": "warehouse.py", "line": 18, "provider": "google"},
+    {"file": "warehouse.py", "line": 22, "provider": "google"},
+    {"file": "warehouse.py", "line": 26, "provider": "google"},
+    {"file": "warehouse.py", "line": 30, "provider": "google"},
+    {"file": "warehouse.py", "line": 34, "provider": "google"},
+    {"file": "warehouse.py", "line": 38, "provider": "google"},
+    {"file": "warehouse.py", "line": 42, "provider": "google"},
+    {"file": "warehouse.py", "line": 46, "provider": "google"},
+    {"file": "warehouse.py", "line": 50, "provider": "google"},
+    {"file": "warehouse.py", "line": 54, "provider": "google"}
+  ]
+}

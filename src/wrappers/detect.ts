@@ -35,7 +35,7 @@ function declaredName(fn: FunctionLike): string {
 }
 
 /**
- * SDK arguments the request is built from (path, query, body). The error given to `captureException` is not one: a
+ * SDK arguments the request is built from (path, query, body), and the calls of a fluent request builder. The error given to `captureException` is not one: a
  * `reportError(err)` wrapper sends the same request from every caller, so its call sites are not calls of their own.
  */
 function requestArgs(sdk: SdkMatch): Expression[] {
@@ -45,7 +45,8 @@ function requestArgs(sdk: SdkMatch): Expression[] {
     const m = /^(?:arg|ref|fn):(\d+)/.exec(from);
     if (m) idx.push(Number(m[1]));
   }
-  return idx.flatMap((i) => (i !== undefined && sdk.args[i] ? [sdk.args[i]] : []));
+  // a fluent request builder's calls (`api(path).top(n)`) all build the request
+  return [...idx.flatMap((i) => (i !== undefined && sdk.args[i] ? [sdk.args[i]] : [])), ...(sdk.steps ?? []).flatMap((s) => s.args)];
 }
 
 /** True when at least one of the wrapper's parameters is referenced by what the inner call's request is built from. */

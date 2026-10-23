@@ -1,0 +1,34 @@
+{
+  "$comment": "langchain-together: `ChatTogether(model=...)` and `TogetherEmbeddings(model=...)` send OpenAI-compatible requests through the openai SDK under `base_url` (`together_api_base`, `https://api.together.xyz/v1/` by default). The completions LLM `Together` is `langchain-together-llm.json`.",
+  "package": "langchain-together",
+  "imports": [
+    "langchain_together"
+  ],
+  "provider": "together",
+  "host": "api.together.xyz",
+  "auth": "bearer",
+  "basePath": "/v1",
+  "generatedFrom": "manual (langchain-together 0.4: ChatTogether, TogetherEmbeddings)",
+  "methods": {
+    "ChatTogether": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "together_api_base"
+      ]
+    },
+    "TogetherEmbeddings": {
+      "method": "POST",
+      "path": "/v1/embeddings",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url",
+        "together_api_base"
+      ]
+    }
+  }
+}

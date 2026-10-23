@@ -6,8 +6,10 @@ import { exportedChain, isNamedImport } from "./callee.js";
 import { clientEndpoint, type Endpoint } from "./endpoint.js";
 import { mcpEndpoint } from "./mcp-endpoint.js";
 import { mcpServerEndpoints } from "./mcp-servers.js";
+import { fluentCallee, fluentMatch, withSteps } from "./fluent-steps.js";
 import { contractCall } from "./rpc-contract.js";
 import { rpcEndpoint } from "./rpc-endpoint.js";
+import { setupBaseUrl, turnedOff } from "./setup-call.js";
 import { keepsSender, withSenderArgs } from "./sender.js";
 import type { Registry } from "./registry/index.js";
 
@@ -34,6 +36,11 @@ function candidateKeys(callee: Callee, reg: RegistryEntry): string[] {
   }
   for (const k of [...keys]) if (k.startsWith("rest.")) keys.add(k.slice(5));
   for (const [from, to] of Object.entries(reg.keyAliases ?? {})) for (const k of [...keys]) if (k.startsWith(from)) keys.add(to + k.slice(from.length));
+  // a method of a client class that is no instance name, keyed by its class (`CohereClientV2.chat`), before the method
+  // of the same name the instance names' clients have (`chat`)
+  const ctor = callee.instance?.chain.at(-1);
+  const byClass = ctor && own && !(reg.instance?.names ?? ["default"]).includes(ctor) ? `${ctor}.${own}` : undefined;
+  if (byClass && reg.methods && Object.hasOwn(reg.methods, byClass)) return [byClass, ...[...keys].filter((k) => k !== byClass)];
   return [...keys];
 }
 
@@ -119,9 +126,16 @@ function withOptionalId(args: Expression[], at: number | undefined): Expression[
   return out;
 }
 
+/** The arguments as the earlier form reads them when the call moved the first id into its params object (`idInParams`). */
+function withIdInParams(args: Expression[], at: number | undefined): Expression[] {
+  const before = at !== undefined && at > 0 ? args[at - 1] : undefined;
+  return before && isObjectArg(before) ? [undefined as unknown as Expression, ...args] : args;
+}
+
 function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key: string, spec: MethodSpec, callee: Callee, endpoint?: Endpoint): RawCall | null {
   const own = endpointFirst(node.getArguments() as Expression[], spec, callee);
-  const args = withOptionalId(own.args, spec.optionalId);
+  const args = withIdInParams(withOptionalId(own.args, spec.optionalId), spec.idInParams);
+  if (turnedOff(args, spec)) return null;
   const raw: RawCall = {
     node,
     client: "sdk",
@@ -135,16 +149,19 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
       auth: spec.auth ?? reg.auth,
       args,
       instanceArgs: callee.instance?.args,
+      rootArgs: (callee.rootInstance ?? callee.instance)?.args,
       inlinePath: reg.inlinePathLiterals,
       basePath: reg.basePath,
       routeByModel: reg.routeByModel,
+      modelRefs: reg.modelRefs,
+      wireCase: reg.wireCase,
       ...(reg.routes ? { routes: reg.routes } : {}),
       anyHost: !!reg.endpoint,
     },
     bodyKey: "input",
   };
   if (spec.bodyArg !== undefined) raw.bodyExpr = spec.bodyProp ? getProp(args[spec.bodyArg], spec.bodyProp) : args[spec.bodyArg];
-  if (spec.queryArg !== undefined) raw.queryExpr = args[spec.queryArg];
+  if (spec.queryArg !== undefined) raw.queryExpr = spec.queryProp ? getProp(args[spec.queryArg], spec.queryProp) : args[spec.queryArg];
   if (spec.urlFromInstanceArg !== undefined && callee.instance) raw.urlExpr = callee.instance.args[spec.urlFromInstanceArg];
   // `options.model` reads a property of a property (Claude Agent SDK `query({ prompt, options: { model } })`)
   if (spec.modelArg !== undefined) raw.modelExpr = (spec.modelProp?.split(".") ?? []).reduce<Expression | undefined>((e, key) => getProp(e, key), args[spec.modelArg]);
@@ -152,7 +169,7 @@ function buildRaw(node: CallExpression | NewExpression, reg: RegistryEntry, key:
   if (record) raw.record = record;
   if (reg.endpoint?.agent) return withServers(raw, mcpServerEndpoints(node, key, callee, reg));
   if (reg.endpoint) return withEndpoint(raw, node, reg, spec, callee, own, endpoint);
-  const base = ownBaseUrl(args, spec) ?? constructionUrl(args, spec, callee, reg) ?? clientUrlArg(callee, reg);
+  const base = ownBaseUrl(args, spec) ?? constructionUrl(args, spec, callee, reg) ?? clientUrlArg(callee, reg) ?? setupBaseUrl(node, callee, reg, spec);
   if (base) raw.baseUrlExpr = base;
   return raw;
 }
@@ -174,6 +191,8 @@ function withEndpoint(raw: RawCall, node: CallExpression | NewExpression, reg: R
   return raw;
 }
 
+const withRaw = (raw: RawCall | null, f: (raw: RawCall) => RawCall): RawCall | null => (raw ? f(raw) : null);
+
 /** An agent framework's MCP call: one per HTTP server of its client, none when it has none. */
 function withServers(raw: RawCall, servers: Endpoint[]): RawCall | null {
   const each = servers.map((ep): RawCall => ({ ...raw, baseUrlExpr: ep.url, instanceHeadersExpr: ep.headers, mcpTransport: ep.transport }));
@@ -194,6 +213,8 @@ function onClient(callee: Callee, reg: RegistryEntry): boolean {
  * servers) gives the calls of each: the first, the others in `also`.
  */
 export function detectSdk(node: CallExpression | NewExpression, callee: Callee, registry: Registry): RawCall | null {
+  const long = callee.package ? undefined : fluentCallee(node, registry);
+  if (long) return detectSdk(node, long, registry);
   const raws = registry.allByPackage(callee.package).flatMap((reg) => detectWith(node, callee, reg) ?? []);
   if (raws.length < 2) return raws[0] ?? null;
   return { ...raws[0]!, also: [...(raws[0]!.also ?? []), ...raws.slice(1)] };
@@ -210,6 +231,8 @@ function detectWith(node: CallExpression | NewExpression, callee: Callee, reg: R
   const contract = reg.endpoint?.nonHttp && !reg.endpoint.connect && !reg.endpoint.agent ? contractCall(node, callee, reg) : undefined;
   if (contract !== undefined) return contract && buildRaw(node, reg, contract.key, contract.spec, callee, contract.endpoint);
   if (!reg.methods || !onClient(callee, reg)) return null;
+  const fluent = fluentMatch(node, reg);
+  if (fluent) return withRaw(buildRaw(node, reg, fluent.key, fluent.spec, callee), (raw) => withSteps(raw, fluent.steps, reg));
   for (const key of candidateKeys(callee, reg)) {
     const spec = Object.hasOwn(reg.methods, key) ? reg.methods[key] : undefined;
     if (spec?.sendsThrough && !keepsSender(node, spec.sendsThrough)) return null;

@@ -1,0 +1,11 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "calls": [
+    {"file": "monitoring.ts", "line": 3, "provider": "bugsnag"},
+    {"file": "monitoring.ts", "line": 7, "provider": "bugsnag"},
+    {"file": "monitoring.ts", "line": 11, "provider": "bugsnag"},
+    {"file": "onprem.ts", "line": 9, "provider": "bugsnag"},
+    {"file": "onprem.ts", "line": 11, "provider": "bugsnag"},
+    {"file": "server.js", "line": 6, "provider": "bugsnag"}
+  ]
+}

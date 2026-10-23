@@ -1,0 +1,21 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "skipped": [],
+  "calls": [
+    { "file": "HarborBot.kt", "line": 19, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 20, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 21, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 22, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 27, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 29, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 30, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 38, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 42, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 47, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 51, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 55, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 56, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 61, "provider": "discord" },
+    { "file": "HarborBot.kt", "line": 66, "provider": "discord" }
+  ]
+}

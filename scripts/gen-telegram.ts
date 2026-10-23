@@ -9,6 +9,7 @@
  *   aiogram                `bot.send_message(chat_id, text)`, `message.answer(text)`
  *   pyTelegramBotAPI       `bot.send_message(chat_id, text)`, `bot.reply_to(message, text)`   query string
  *   irazasyed/telegram-bot-sdk  `$telegram->sendMessage([...])`, `Telegram::sendMessage([...])`
+ *   go-telegram/bot        `b.SendMessage(ctx, &bot.SendMessageParams{...})`        multipart body
  *
  *   pnpm gen:telegram
  */
@@ -17,6 +18,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { IrMethodSpec, IrRegistryEntry } from "../src/lang/ir/language.js";
 import type { BodyEncoding, MethodSpec, RegistryEntry } from "../src/types.js";
+import { goTelegramBot } from "./telegram/go.js";
 import { BOT_API, PATH } from "./telegram/methods.js";
 import { GENERATED, pythonEntries } from "./telegram/python.js";
 import { GRAMMY_CONTEXT, TELEGRAF_CONTEXT, type Shortcut } from "./telegram/shortcuts.js";
@@ -183,4 +185,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   save("src/detect/registry/grammy.json", grammy());
   save("src/lang/php/registry/telegram-bot-sdk.json", telegramBotSdk());
   for (const [file, entries] of Object.entries(pythonEntries())) save(`src/lang/python/registry/${file}.json`, entries);
+  save("src/lang/go/registry/go-telegram-bot.json", goTelegramBot());
 }

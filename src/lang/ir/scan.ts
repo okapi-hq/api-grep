@@ -192,7 +192,19 @@ function coverage(idx: ProjectIndex, rootDir: string, files: string[], scanned: 
     for (const pkg of hit) sites.set(pkg, (sites.get(pkg) ?? 0) + 1);
   }
   const supported = (pkg: string): boolean => lang.registry.some((r) => r.package === pkg || r.aliases?.includes(pkg));
-  return coverageRows({ ecosystem: lang.ecosystem, known, declared, sites, calls, supported });
+  return coverageRows({ ecosystem: lang.ecosystem, known, declared, sites, calls, supported, extraCalls: aliasCalls(lang.registry, calls, declared) });
+}
+
+/**
+ * A registry's calls count for another name of its package the manifests declare instead (`mcp-core` for `mcp`,
+ * `kotlin-sdk-client` for `kotlin-sdk`): where both or neither are declared, they stay the package's own.
+ */
+function aliasCalls(registry: IrLanguage["registry"], calls: Call[], declared: Set<string>): Map<string, number> {
+  const aliases = new Map<string, string[]>();
+  for (const r of registry) if (r.aliases && !declared.has(r.package)) aliases.set(r.package, [...(aliases.get(r.package) ?? []), ...r.aliases.filter((a) => declared.has(a))]);
+  const out = new Map<string, number>();
+  for (const c of calls) for (const a of new Set((c.sdk && aliases.get(c.sdk.package)) || [])) out.set(a, (out.get(a) ?? 0) + 1);
+  return out;
 }
 
 /** The files of one source language: in scope, left out by --include / --exclude, and every one to index. */

@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 DynamoDB: `boto3.client(\"dynamodb\")` (keyword arguments named like the API members: `TableName=`, `Item=`) and `boto3.resource(\"dynamodb\").Table(name)` (`table.put_item(Item=...)`, `table.query(...)`; the Table's name is the request's `TableName`). DynamoDB speaks the AWS JSON 1.0 protocol: every operation is a POST to `/` naming itself in the `X-Amz-Target` header (`DynamoDB_20120810.PutItem`), reported as `operationId`.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "dynamodb.{region}.amazonaws.com",

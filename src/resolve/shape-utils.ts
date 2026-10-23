@@ -1,6 +1,6 @@
 import { isSafeKey } from "../record-keys.js";
 import { mergedSources } from "../model/value-sources.js";
-import { VALUE_SOURCES, type Part, type Shape } from "../types.js";
+import { VALUE_SOURCES, type DynamicPart, type Part, type Shape } from "../types.js";
 import { partsToTemplate } from "./parts.js";
 import { dedupe, mergeLiterals } from "./type-shape.js";
 
@@ -66,6 +66,27 @@ export function jsonToShape(v: unknown): Shape {
   const o = v as Record<string, unknown>;
   const entries = Object.entries(o).filter(([k]) => isSafeKey(k));
   return { type: "object", properties: Object.fromEntries(entries.map(([k, x]) => [k, jsonToShape(x)])), required: entries.map(([k]) => k) };
+}
+
+/** Whether some object of the shape, at any depth, has the key. */
+function namesKey(s: Shape, key: string, depth = 0): boolean {
+  if (depth > 8) return false;
+  if (s.type === "object") return Object.hasOwn(s.properties, key) || Object.values(s.properties).some((v) => namesKey(v, key, depth + 1));
+  if (s.type === "array") return namesKey(s.items, key, depth + 1);
+  return s.type === "union" && s.anyOf.some((m) => namesKey(m, key, depth + 1));
+}
+
+/**
+ * An object body without the keys an SDK keeps for itself (`bodyOmit`), nor the dynamic parts named after them that no
+ * key left in the body names; any other body as it is.
+ */
+export function omitBodyKeys(body: { shape?: Shape; dynamic: DynamicPart[] }, keys: string[] | undefined): void {
+  const shape = body.shape;
+  if (shape?.type !== "object" || !keys?.length) return;
+  const properties = Object.fromEntries(Object.entries(shape.properties).filter(([k]) => !keys.includes(k)));
+  const kept: Shape = { ...shape, properties, required: shape.required.filter((k) => k in properties) };
+  body.shape = kept;
+  body.dynamic = body.dynamic.filter((d) => d.where !== "body" || !keys.includes(d.name) || namesKey(kept, d.name));
 }
 
 /**

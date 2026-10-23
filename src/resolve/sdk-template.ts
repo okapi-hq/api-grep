@@ -1,6 +1,7 @@
 import { PLACEHOLDER_RE, placeholderNames } from "../normalize/path.js";
 import type { MethodSpec, Part, UrlShape } from "../types.js";
 import { staticText } from "./parts.js";
+import { sourceValue } from "./ref-pieces.js";
 import { partsToUrlShape } from "./url-shape.js";
 
 /**
@@ -29,15 +30,22 @@ export interface SdkSource<E> {
   routeCall?(e: E): { name: string; args: E[] } | undefined;
 }
 
-function originOfExpr<E>(src: SdkSource<E>, e: E | undefined): string | undefined {
-  if (!e) return undefined;
-  const parts = src.evaluate(e);
+function originOfParts(parts: Part[]): string | undefined {
   if (staticText(parts) !== undefined) return undefined;
   const d = parts.find((p) => p.kind !== "static");
   return d?.kind === "env" ? "env" : d?.kind === "dynamic" ? d.origin : "unknown";
 }
 
+function originOfExpr<E>(src: SdkSource<E>, e: E | undefined): string | undefined {
+  return e ? originOfParts(src.evaluate(e)) : undefined;
+}
+
 function sdkPathOrigin<E>(src: SdkSource<E>, name: string, index: number): string {
+  // a `params` source the call gives (`arg:0.zone_id`): the origin of its value
+  const source = src.spec.params?.[name];
+  const value = source ? sourceValue(src, source, name) : undefined;
+  if (value?.parts) return originOfParts(value.parts) ?? "static";
+  if (value?.expr !== undefined) return originOfExpr(src, value.expr) ?? "static";
   const argIdx = src.spec.pathArgs?.[index];
   if (argIdx !== undefined) {
     const arg = src.arg(argIdx, name);
@@ -64,7 +72,7 @@ export function staticHostUrl<E>(src: SdkSource<E>, pathT: string): UrlShape {
 /** Value behind a placeholder: `params`, then `pathArgs` by position, then the body. */
 function paramValue<E>(src: SdkSource<E>, name: string, index: number): { expr?: E; parts?: Part[] } {
   const source = src.spec.params?.[name];
-  if (source) return src.param(source, name) ?? {};
+  if (source) return sourceValue(src, source, name) ?? {};
   const argIdx = src.spec.pathArgs?.[index];
   if (argIdx !== undefined) return { expr: src.arg(argIdx, name) };
   if (src.spec.pathFromBody?.includes(name)) return { expr: src.bodyProp(name) };
@@ -138,7 +146,10 @@ function onCodeBase<E>(src: SdkSource<E>, pathT: string, names: PathNames): UrlS
   const base = src.urlParts(src.baseUrl);
   if (isNullValue(base)) return undefined;
   const rel = src.basePath && pathT.startsWith(src.basePath) ? pathT.slice(src.basePath.length) : pathT;
-  return partsToUrlShape([...base, ...pathParts(src, rel, names)], { envHints: src.envHints });
+  // a base URL's trailing slash before a rooted path (`baseUrl: "https://graph.microsoft.us/"`) is not doubled
+  const last = base[base.length - 1];
+  const trimmed = rel.startsWith("/") && last?.kind === "static" && /[^/]\/$/.test(last.text) ? [...base.slice(0, -1), { ...last, text: last.text.slice(0, -1) }] : base;
+  return partsToUrlShape([...trimmed, ...pathParts(src, rel, names)], { envHints: src.envHints });
 }
 
 /**
@@ -165,7 +176,7 @@ export function templatedUrl<E>(src: SdkSource<E>, pathT: string): UrlShape {
 /** Whether the call gives a value for the placeholder `name` through its `params` source. */
 function given<E>(src: SdkSource<E>, name: string): boolean {
   const source = src.spec.params?.[name];
-  const value = source ? src.param(source, name) : undefined;
+  const value = source ? sourceValue(src, source, name) : undefined;
   return value?.expr !== undefined || value?.parts !== undefined;
 }
 
@@ -186,6 +197,8 @@ function pickPath<E>(src: SdkSource<E>, candidates: string[]): string {
 function chosenRoute<E>(src: SdkSource<E>): { method: string; pathT: string } {
   const withId = src.spec.record?.withId;
   if (withId && given(src, withId.key ?? "id")) return { method: withId.method, pathT: pickPath(src, [withId.path, ...(withId.paths ?? [])]) };
+  const byParam = src.spec.pathWith;
+  if (byParam && given(src, byParam.param)) return { method: src.spec.method, pathT: byParam.path };
   const byArg = src.spec.argPath;
   const pathT = byArg && src.arg(byArg.arg) !== undefined ? byArg.path : src.spec.path;
   return { method: src.spec.method, pathT: src.spec.paths ? pickPath(src, [pathT, ...src.spec.paths]) : pathT };

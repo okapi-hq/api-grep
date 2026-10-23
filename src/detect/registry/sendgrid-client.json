@@ -1,0 +1,13 @@
+{
+  "$comment": "@sendgrid/client: the default export is a `Client` (`client.setApiKey(key)`), also `new Client()`. `request({ method, url, body, qs })` sends to `url` (or `uri`) under `https://api.sendgrid.com/`, the method a GET when none is given.",
+  "package": "@sendgrid/client",
+  "provider": "sendgrid",
+  "host": "api.sendgrid.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against @sendgrid/client 8.1.6 source)",
+  "instance": {"names": ["default", "Client"]},
+  "methods": {
+    "request": {"method": "GET", "path": "/{url}", "params": {"url": "arg:0.url|arg:0.uri"}, "methodFrom": "arg:0.method", "bodyArg": 0, "bodyProp": "body", "queryArg": 0, "queryProp": "qs"}
+  }
+}

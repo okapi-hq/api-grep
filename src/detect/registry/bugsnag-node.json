@@ -1,0 +1,14 @@
+{
+  "$comment": "@bugsnag/node: as bugsnag.json, but `start` / `createClient` start no session (the Node build tracks sessions per request through a framework plugin, or `startSession`).",
+  "package": "@bugsnag/node",
+  "provider": "bugsnag",
+  "host": "notify.bugsnag.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @bugsnag/node 9.1.0)",
+  "instance": {"names": ["default", "start", "createClient"]},
+  "setup": ["start"],
+  "methods": {
+    "startSession": {"method": "POST", "path": "", "host": "sessions.bugsnag.com", "setupUrl": "0.endpoints.sessions"},
+    "notify": {"method": "POST", "path": "", "setupUrl": "0.endpoints.notify"}
+  }
+}

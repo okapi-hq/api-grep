@@ -1,0 +1,25 @@
+{
+  "issue": "Genkit with the Google GenAI plugins (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "assistant.ts", "line": 5, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 6, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 7, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 8, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 10, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 13, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 16, "provider": "google-vertex"},
+    {"file": "assistant.ts", "line": 17, "provider": "google-vertex"},
+    {"file": "assistant.ts", "line": 18, "provider": "google-vertex"},
+    {"file": "assistant.ts", "line": 21, "provider": "unknown"},
+    {"file": "assistant.ts", "line": 22, "provider": "google-vertex"},
+    {"file": "assistant.ts", "line": 23, "provider": "google-ai"},
+    {"file": "assistant.ts", "line": 24, "provider": "google-vertex"},
+    {"file": "flows.ts", "line": 8, "provider": "google-ai"},
+    {"file": "flows.ts", "line": 13, "provider": "google-ai"},
+    {"file": "flows.ts", "line": 13, "provider": "google-ai"},
+    {"file": "legacy.ts", "line": 6, "provider": "google-ai"},
+    {"file": "legacy.ts", "line": 7, "provider": "google-ai"},
+    {"file": "legacy.ts", "line": 8, "provider": "google-vertex"},
+    {"file": "legacy.ts", "line": 9, "provider": "google-vertex"}
+  ]
+}

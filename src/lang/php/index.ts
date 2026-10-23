@@ -17,6 +17,7 @@ import geminiPhp from "./registry/gemini-php.json" with { type: "json" };
 import googleCloudFirestore from "./registry/google-cloud-firestore.json" with { type: "json" };
 import kreaitFirebase from "./registry/kreait-firebase.json" with { type: "json" };
 import mailgunPhp from "./registry/mailgun-php.json" with { type: "json" };
+import mercadopagoDxPhp from "./registry/mercadopago-dx-php.json" with { type: "json" };
 import mozexAnthropicPhp from "./registry/mozex-anthropic-php.json" with { type: "json" };
 import openaiPhp from "./registry/openai-php.json" with { type: "json" };
 import posthogPhp from "./registry/posthog-php.json" with { type: "json" };
@@ -47,6 +48,7 @@ export const PHP_REGISTRY = [
   mailgunPhp,
   slackPhpApi,
   telegramBotSdk,
+  mercadopagoDxPhp,
 ] as unknown as IrRegistryEntry[];
 
 const NAMESPACES: Record<string, string[]> = namespaces.namespaces;

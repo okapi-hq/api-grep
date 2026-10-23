@@ -1,0 +1,14 @@
+{
+  "issue": "fal registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "canvas.ts", "line": 5, "provider": "fal"},
+    {"file": "canvas.ts", "line": 7, "provider": "fal"},
+    {"file": "canvas.ts", "line": 9, "provider": "fal"},
+    {"file": "canvas.ts", "line": 11, "provider": "fal"},
+    {"file": "canvas.ts", "line": 13, "provider": "fal"},
+    {"file": "canvas.ts", "line": 15, "provider": "fal"},
+    {"file": "canvas.ts", "line": 17, "provider": "fal"},
+    {"file": "canvas.ts", "line": 19, "provider": "fal"},
+    {"file": "canvas.ts", "line": 23, "provider": "fal"}
+  ]
+}

@@ -1,0 +1,2 @@
+msgraph-sdk==1.65.0
+msgraph-beta-sdk==1.65.0

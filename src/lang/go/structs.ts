@@ -17,6 +17,8 @@ interface SdkStructs {
   roots: string[];
   case: "snake" | "camel";
   helpers: Record<string, Helper>;
+  /** Fields whose `json` tag is not their name in `case` (`GameShorName` -> `game_short_name`, `VCard` -> `vcard`). */
+  renames?: Record<string, string>;
 }
 
 const TABLE: SdkStructs[] = [
@@ -32,14 +34,19 @@ const TABLE: SdkStructs[] = [
     helpers: { NewUserMessage: { role: "user", list: true }, NewAssistantMessage: { role: "assistant", list: true }, NewTextBlock: "text-block" },
   },
   { roots: ["google.golang.org/genai"], case: "camel", helpers: { Text: "contents", NewPartFromText: "part" } },
+  { roots: ["github.com/go-telegram/bot"], case: "snake", helpers: {}, renames: { GameShorName: "game_short_name", VCard: "vcard" } },
 ];
 
 const SDKS = TABLE.map((s) => ({ ...s, roots: s.roots.map(importRoot) }));
 
-/** `MaxTokens` -> `max_tokens`, `ToolCallID` -> `tool_call_id`; `camel`: `MaxOutputTokens` -> `maxOutputTokens`. */
+/**
+ * `MaxTokens` -> `max_tokens`, `ToolCallID` -> `tool_call_id`, `MessageIDs` -> `message_ids`; `camel`:
+ * `MaxOutputTokens` -> `maxOutputTokens`.
+ */
 export function fieldKey(name: string, style: "snake" | "camel"): string {
   if (style === "camel") return name.replace(/^[A-Z]+(?=[A-Z][a-z]|$)|^[A-Z]/, (m) => m.toLowerCase());
   return name
+    .replace(/IDs(?=[A-Z]|$)/g, "Ids")
     .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
     .toLowerCase();
@@ -65,7 +72,8 @@ function namerFor(call: CallExpr, fn: FunctionDef, ctx: IrCtx): { name: Namer; c
     return { cls, name: (goName) => cls.annotations.find((a) => (a.field ?? a.name) === goName)?.name ?? goName };
   }
   const sdk = chain.root.kind === "external" ? sdkOf(chain.segs.map((s) => s.name)) : undefined;
-  return { name: (goName) => (sdk ? fieldKey(goName, sdk.sdk.case) : goName) };
+  const renames = sdk?.sdk.renames ?? {};
+  return { name: (goName) => (sdk ? (Object.hasOwn(renames, goName) ? renames[goName]! : fieldKey(goName, sdk.sdk.case)) : goName) };
 }
 
 /** Fields set on the variable a value is assigned to (`req.MaxTokens = 100`), in the same function. */

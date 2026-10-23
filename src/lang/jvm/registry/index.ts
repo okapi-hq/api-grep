@@ -14,7 +14,9 @@ import azureAiOpenai from "./azure-ai-openai.json" with { type: "json" };
 import firebaseAdmin from "./firebase-admin.json" with { type: "json" };
 import firebaseAndroid from "./firebase-android.json" with { type: "json" };
 import firestore from "./firestore.json" with { type: "json" };
+import googleCloudVertexai from "./google-cloud-vertexai.json" with { type: "json" };
 import googleGenai from "./google-genai.json" with { type: "json" };
+import jda from "./jda.json" with { type: "json" };
 import langchain4jAnthropic from "./langchain4j-anthropic.json" with { type: "json" };
 import langchain4jBedrock from "./langchain4j-bedrock.json" with { type: "json" };
 import langchain4jGemini from "./langchain4j-google-ai-gemini.json" with { type: "json" };
@@ -22,6 +24,8 @@ import langchain4jMistral from "./langchain4j-mistral-ai.json" with { type: "jso
 import langchain4jOllama from "./langchain4j-ollama.json" with { type: "json" };
 import langchain4jOpenAi from "./langchain4j-open-ai.json" with { type: "json" };
 import mailgunJava from "./mailgun-java.json" with { type: "json" };
+import mcpJava from "./mcp-java.json" with { type: "json" };
+import mcpKotlin from "./mcp-kotlin.json" with { type: "json" };
 import openaiJava from "./openai-java.json" with { type: "json" };
 import openaiKotlin from "./openai-kotlin.json" with { type: "json" };
 import posthogJava from "./posthog-java.json" with { type: "json" };
@@ -37,7 +41,8 @@ import twilio from "./twilio.json" with { type: "json" };
 
 /**
  * One set of keys for several clients (`variants`, each an entry of its own): Firestore's three JVM clients, an AWS
- * service's Java 2.x and Kotlin SDKs, the Android Firebase and supabase-kt artifacts, a LangChain4j module's models.
+ * service's Java 2.x and Kotlin SDKs, the Android Firebase and supabase-kt artifacts, a LangChain4j module's models;
+ * or one package's kinds of receivers, each with its own keys (JDA's channels, messages, interactions, guilds).
  */
 function variants(file: object): unknown[] {
   const { variants: list, ...shared } = file as { variants: object[] };
@@ -59,6 +64,7 @@ export const JVM_REGISTRY = [
   awsS3TransferManager,
   awsJavaSdkS3,
   googleGenai,
+  googleCloudVertexai,
   ...variants(firestore),
   firebaseAdmin,
   ...variants(firebaseAndroid),
@@ -66,11 +72,14 @@ export const JVM_REGISTRY = [
   ...variants(supabaseKt),
   twilio,
   slackApiClient,
+  ...variants(jda),
   sendgridJava,
   resendJava,
   mailgunJava,
   sentry,
   posthog,
   posthogJava,
+  mcpJava,
+  mcpKotlin,
   ...(SPRING_AI_REGISTRY as unknown[]),
 ] as unknown as IrRegistryEntry[];

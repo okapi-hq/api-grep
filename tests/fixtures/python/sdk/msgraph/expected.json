@@ -1,0 +1,16 @@
+{
+  "issue": "msgraph-sdk and msgraph-beta-sdk registries (SDKs coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "directory.py", "line": 13, "provider": "microsoft"},
+    {"file": "directory.py", "line": 18, "provider": "microsoft"},
+    {"file": "directory.py", "line": 24, "provider": "microsoft"},
+    {"file": "directory.py", "line": 28, "provider": "microsoft"},
+    {"file": "directory.py", "line": 32, "provider": "microsoft"},
+    {"file": "directory.py", "line": 36, "provider": "microsoft"},
+    {"file": "directory.py", "line": 40, "provider": "microsoft"},
+    {"file": "directory.py", "line": 44, "provider": "microsoft"},
+    {"file": "directory.py", "line": 48, "provider": "microsoft"},
+    {"file": "directory.py", "line": 52, "provider": "microsoft"},
+    {"file": "beta.py", "line": 9, "provider": "microsoft"}
+  ]
+}

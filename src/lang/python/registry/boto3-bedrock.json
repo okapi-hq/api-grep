@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 Bedrock Runtime: `bedrock = boto3.client(\"bedrock-runtime\")`; `bedrock.converse(modelId=..., messages=[...])`. The model id keyword is part of the path.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws-bedrock",
   "host": "bedrock-runtime.{region}.amazonaws.com",

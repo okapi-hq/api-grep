@@ -1,0 +1,19 @@
+{
+  "$comment": "sendgrid-python 6.x: `sg = SendGridAPIClient(api_key)`; `sg.send(message)` posts a `Mail` helper object (its `get()`, read by `src/lang/python/sendgrid-mail.ts`) or a dict as it is to `/v3/mail/send`. Every other endpoint goes through the fluent python_http_client: `sg.client.marketing.contacts.put(request_body=...)`, each attribute between `client` and the HTTP verb a path segment under `/v3`, `_(x)` a segment of its own (`client.suppression.bounces._(email).delete()`); the verb takes `request_body` and `query_params`, positional or keyword. The `host` argument replaces the host only (`/v3` stays). `TwilioEmailAPIClient` (email.twilio.com, basic auth) is not read.",
+  "package": "sendgrid",
+  "imports": ["sendgrid"],
+  "provider": "sendgrid",
+  "host": "api.sendgrid.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against sendgrid 6.12.5 and python_http_client 3.3.7 source)",
+  "instance": {"names": ["SendGridAPIClient"], "urlArg": {"SendGridAPIClient": "kw:host|1"}},
+  "methods": {
+    "send": {"method": "POST", "path": "/v3/mail/send", "bodyArg": 0, "bodyKw": "message", "operationId": "mail.send"},
+    "client.**.get": {"method": "GET", "path": "/v3/{endpoint}", "params": {"endpoint": "segs:client"}, "bodyArg": 0, "bodyKw": "request_body", "queryArg": 1, "queryKw": "query_params"},
+    "client.**.post": {"method": "POST", "path": "/v3/{endpoint}", "params": {"endpoint": "segs:client"}, "bodyArg": 0, "bodyKw": "request_body", "queryArg": 1, "queryKw": "query_params"},
+    "client.**.put": {"method": "PUT", "path": "/v3/{endpoint}", "params": {"endpoint": "segs:client"}, "bodyArg": 0, "bodyKw": "request_body", "queryArg": 1, "queryKw": "query_params"},
+    "client.**.patch": {"method": "PATCH", "path": "/v3/{endpoint}", "params": {"endpoint": "segs:client"}, "bodyArg": 0, "bodyKw": "request_body", "queryArg": 1, "queryKw": "query_params"},
+    "client.**.delete": {"method": "DELETE", "path": "/v3/{endpoint}", "params": {"endpoint": "segs:client"}, "bodyArg": 0, "bodyKw": "request_body", "queryArg": 1, "queryKw": "query_params"}
+  }
+}

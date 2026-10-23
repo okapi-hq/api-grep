@@ -1,0 +1,13 @@
+{
+  "issue": "MCP clients over HTTP: the MCP Kotlin SDK's Client and the Java SDK from Kotlin; stdio clients and servers send none",
+  "calls": [
+    {"file": "Concierge.kt", "line": 18, "provider": "mcp", "operation": "initialize"},
+    {"file": "Concierge.kt", "line": 22, "provider": "mcp", "operation": "tools/list"},
+    {"file": "Concierge.kt", "line": 23, "provider": "mcp", "operation": "tools/call"},
+    {"file": "Concierge.kt", "line": 24, "provider": "mcp", "operation": "ping"},
+    {"file": "Concierge.kt", "line": 29, "provider": "mcp", "operation": "tools/call"},
+    {"file": "Concierge.kt", "line": 33, "provider": "mcp", "operation": "prompts/get"},
+    {"file": "JavaSdkClient.kt", "line": 11, "provider": "mcp", "operation": "initialize"},
+    {"file": "JavaSdkClient.kt", "line": 12, "provider": "mcp", "operation": "tools/call"}
+  ]
+}

@@ -6,6 +6,7 @@ import { detectComponents } from "./component.js";
 import { describeCallee, wrapperFunction } from "./callee.js";
 import { detectFetch } from "./fetch.js";
 import { detectFramework } from "./framework.js";
+import { detectGenkit } from "./genkit.js";
 import { detectGotKy } from "./got-ky.js";
 import { detectJquery } from "./jquery.js";
 import { detectNodeHttp } from "./node-http.js";
@@ -38,6 +39,7 @@ type Detector = (node: CallExpression | NewExpression, callee: Callee, registry:
 const DETECTORS: readonly Detector[] = [
   (node, callee, registry) => detectSdk(node, callee, registry),
   (node, callee) => detectAiSdk(node, callee),
+  (node, callee) => detectGenkit(node, callee),
   (node, callee, _registry, ctx) => detectNodeSoap(node, callee, ctx),
   (node, callee, _registry, ctx) => detectFetch(node, callee, ctx),
   (node, callee, _registry, ctx) => detectAxios(node, callee, ctx),

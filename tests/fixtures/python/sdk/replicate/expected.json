@@ -1,0 +1,20 @@
+{
+  "issue": "replicate registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "studio.py", "line": 10, "provider": "replicate"},
+    {"file": "studio.py", "line": 14, "provider": "replicate"},
+    {"file": "studio.py", "line": 18, "provider": "replicate"},
+    {"file": "studio.py", "line": 22, "provider": "replicate"},
+    {"file": "studio.py", "line": 26, "provider": "replicate"},
+    {"file": "studio.py", "line": 30, "provider": "replicate"},
+    {"file": "studio.py", "line": 34, "provider": "replicate"},
+    {"file": "studio.py", "line": 38, "provider": "replicate"},
+    {"file": "studio.py", "line": 42, "provider": "replicate"},
+    {"file": "studio.py", "line": 43, "provider": "replicate"},
+    {"file": "studio.py", "line": 47, "provider": "replicate"},
+    {"file": "studio.py", "line": 51, "provider": "replicate"},
+    {"file": "studio.py", "line": 55, "provider": "replicate"},
+    {"file": "studio.py", "line": 65, "provider": "replicate"},
+    {"file": "studio.py", "line": 69, "provider": "replicate"}
+  ]
+}

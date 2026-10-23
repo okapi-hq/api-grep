@@ -77,3 +77,45 @@ describe("kotlin and java: Firebase for Android, supabase-kt and email SDKs (#50
     expect(at(r, "Mailer.java", 33)).toMatchObject({ provider: "mailgun", urlTemplate: "https://api.mailgun.net/v3/mail.example.com/messages", bodyEncoding: "multipart", body: { properties: { subject: { enum: ["Weekly digest"] } } } });
   });
 });
+
+describe("kotlin and java: JDA and Vertex AI", () => {
+  it("reads JDA actions through the types listeners are handed, at the action call", async () => {
+    const r = await scanFixture("kotlin/sdk/discord");
+    const messages = "/api/v10/channels/{channel_id}/messages";
+    expect(at(r, "HarborBot.kt", 19)).toMatchObject({ provider: "discord", method: "POST", host: "discord.com", pathTemplate: messages, authScheme: "apikey", sdk: { package: "net.dv8tion:JDA" }, body: { properties: { content: { enum: ["ahoy"] } } } });
+    expect(at(r, "HarborBot.kt", 20)).toMatchObject({ method: "POST", pathTemplate: messages, sdk: { chain: "reply" } });
+    expect(at(r, "HarborBot.kt", 21)).toMatchObject({ method: "PUT", pathTemplate: "/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me" });
+    // a slash command's `reply` is the interaction callback, not a message's reply
+    expect(at(r, "HarborBot.kt", 27)).toMatchObject({ method: "POST", pathTemplate: "/api/v10/interactions/{interaction_id}/{interaction_token}/callback", body: { properties: { data: { properties: { content: { enum: ["pong"] } } } } } });
+    expect(at(r, "HarborBot.kt", 30)).toMatchObject({ method: "PATCH", pathTemplate: "/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original" });
+    expect(at(r, "HarborBot.kt", 38)).toMatchObject({ pathTemplate: "/api/v10/channels/1200000000000000001/messages" });
+    expect(at(r, "HarborBot.kt", 42)).toMatchObject({ method: "PUT", pathTemplate: "/api/v10/applications/{application_id}/commands" });
+    expect(at(r, "HarborBot.kt", 47)).toMatchObject({ method: "PUT", pathTemplate: "/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}" });
+    expect(at(r, "HarborBot.kt", 51)).toMatchObject({ method: "DELETE", pathTemplate: "/api/v10/guilds/{guild_id}/members/{user_id}" });
+    expect(at(r, "HarborBot.kt", 61)).toMatchObject({ method: "GET", pathTemplate: "/api/v10/users/@me", sdk: { chain: "build" } });
+    // the terminal (`queue`, `complete`, `submit`) is no call of its own
+    expect(r.calls.filter((c) => c.location.line === 19)).toHaveLength(1);
+    expect(r.coverage?.sdks.map((s) => [s.package, s.status])).toEqual([["net.dv8tion:JDA", "ok"]]);
+  });
+
+  it("reads JDA getters from Java and tells a guild's commands from the application's", async () => {
+    const r = await scanFixture("java/sdk-jda");
+    expect(at(r, "Quartermaster.java", 17)).toMatchObject({ method: "PUT", pathTemplate: "/api/v10/applications/{application_id}/commands" });
+    expect(at(r, "Quartermaster.java", 23)).toMatchObject({ method: "POST", pathTemplate: "/api/v10/webhooks/{application_id}/{interaction_token}", body: { properties: { content: { enum: ["counting crates"] } } } });
+    expect(at(r, "Quartermaster.java", 25)).toMatchObject({ method: "PUT", pathTemplate: "/api/v10/guilds/{guild_id}/bans/{user_id}" });
+    expect(at(r, "Quartermaster.java", 30)).toMatchObject({ pathTemplate: "/api/v10/interactions/{interaction_id}/{interaction_token}/callback" });
+    expect(at(r, "Quartermaster.java", 34)).toMatchObject({ pathTemplate: "/api/v10/applications/{application_id}/guilds/1400000000000000003/commands" });
+    expect(at(r, "Quartermaster.java", 36)).toMatchObject({ method: "GET", pathTemplate: "/api/v10/guilds/1400000000000000003/members/1500000000000000004" });
+    expect(at(r, "Quartermaster.java", 40)).toMatchObject({ method: "DELETE", pathTemplate: "/api/v10/channels/{channel_id}/messages/1600000000000000005" });
+  });
+
+  it("reads Vertex AI generative models with the project and location of the VertexAI construction", async () => {
+    const r = await scanFixture("java/sdk-vertexai");
+    const model = (m: string, verb: string): string => `/v1/projects/atlas-notes-prod/locations/europe-west4/publishers/google/models/${m}:${verb}`;
+    expect(at(r, "Summarizer.java", 15)).toMatchObject({ provider: "google-vertex", method: "POST", pathTemplate: model("gemini-2.0-flash", "generateContent"), authScheme: "bearer", model: { values: ["gemini-2.0-flash"] } });
+    expect(at(r, "Summarizer.java", 24)).toMatchObject({ pathTemplate: model("gemini-2.5-pro", "streamGenerateContent"), model: { values: ["gemini-2.5-pro"] } });
+    expect(at(r, "Summarizer.java", 25)).toMatchObject({ pathTemplate: model("gemini-2.5-pro", "countTokens") });
+    expect(at(r, "Summarizer.java", 32)).toMatchObject({ pathTemplate: model("gemini-2.0-flash-lite", "generateContent"), sdk: { chain: "startChat.sendMessage" } });
+    expect(r.coverage?.sdks.map((s) => [s.package, s.status, s.calls])).toEqual([["com.google.cloud:google-cloud-vertexai", "ok", 4]]);
+  });
+});

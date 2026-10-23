@@ -1,0 +1,10 @@
+{
+  "name": "genkit-fixture",
+  "private": true,
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.20.0",
+    "@genkit-ai/googleai": "^1.14.0",
+    "@genkit-ai/vertexai": "^1.14.0",
+    "genkit": "^1.20.0"
+  }
+}

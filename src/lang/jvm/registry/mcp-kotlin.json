@@ -1,0 +1,49 @@
+{
+  "$comment": "The MCP Kotlin SDK's client: `Client(clientInfo)` gets its transport from `client.connect(transport)` (on the same construction in the file, `connect` itself sending `initialize`), `mcpClient(info, options, transport)` from its argument; `httpClient.mcpSse(url)` / `mcpStreamableHttp(url)` (Ktor extensions) are clients connected to that URL. `SseClientTransport(client, urlString)` / `httpClient.mcpSseTransport(url)` and `StreamableHttpClientTransport(client, url)` / `httpClient.mcpStreamableHttpTransport(url)` use the URL as given. Stdio and WebSocket transports send no HTTP request and are not reported; servers (`Server`, `mcp { }`) receive requests: none of their methods is listed. `operation.target` is the tool, prompt or resource named as an argument (`callTool(name, arguments)`) or in a request's params (`CallToolRequest(CallToolRequestParams(name = n))`, the `types` package of SDK 0.8 and later; the root package's requests of earlier SDKs are not read).",
+  "package": "io.modelcontextprotocol:kotlin-sdk",
+  "aliases": ["io.modelcontextprotocol:kotlin-sdk-client", "io.modelcontextprotocol:kotlin-sdk-client-jvm"],
+  "imports": ["io.modelcontextprotocol.kotlin.sdk.client.Client", "io.modelcontextprotocol.kotlin.sdk.client.mcpClient", "io.ktor.client.HttpClient"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against the sources of io.modelcontextprotocol:kotlin-sdk-client 0.15)",
+  "instance": { "names": ["Client", "mcpClient", "mcpSse", "mcpStreamableHttp"] },
+  "setters": {
+    "packages": ["io.modelcontextprotocol.kotlin.sdk.types"],
+    "case": "camel",
+    "constructors": true,
+    "wrappers": ["CallToolRequest", "GetPromptRequest", "ReadResourceRequest", "SubscribeRequest", "UnsubscribeRequest"],
+    "fields": { "meta": "", "task": "" }
+  },
+  "endpoint": {
+    "clients": {
+      "Client": {},
+      "mcpClient": { "transport": "kw:transport|2" },
+      "mcpSse": { "url": "kw:urlString|0", "mcpTransport": "sse" },
+      "mcpStreamableHttp": { "url": "kw:url|0", "mcpTransport": "streamable-http" }
+    },
+    "transports": {
+      "SseClientTransport": { "url": "kw:urlString|1", "mcpTransport": "sse" },
+      "StreamableHttpClientTransport": { "url": "kw:url|1", "mcpTransport": "streamable-http" },
+      "mcpSseTransport": { "url": "kw:urlString|0", "mcpTransport": "sse" },
+      "mcpStreamableHttpTransport": { "url": "kw:url|0", "mcpTransport": "streamable-http" }
+    },
+    "nonHttp": ["StdioClientTransport", "WebSocketClientTransport", "mcpWebSocketTransport"],
+    "connect": "connect"
+  },
+  "methods": {
+    "connect": { "method": "POST", "path": "", "mcp": "initialize", "transportArg": "0" },
+    "ping": { "method": "POST", "path": "", "mcp": "ping" },
+    "callTool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "kw:name|0.name|0", "bodyArg": 1, "bodyKw": "arguments" },
+    "listTools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "listResources": { "method": "POST", "path": "", "mcp": "resources/list" },
+    "readResource": { "method": "POST", "path": "", "mcp": "resources/read", "targetArg": "0.uri" },
+    "listResourceTemplates": { "method": "POST", "path": "", "mcp": "resources/templates/list" },
+    "subscribeResource": { "method": "POST", "path": "", "mcp": "resources/subscribe", "targetArg": "0.uri" },
+    "unsubscribeResource": { "method": "POST", "path": "", "mcp": "resources/unsubscribe", "targetArg": "0.uri" },
+    "listPrompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "getPrompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments" },
+    "complete": { "method": "POST", "path": "", "mcp": "completion/complete" },
+    "setLoggingLevel": { "method": "POST", "path": "", "mcp": "logging/setLevel" }
+  }
+}

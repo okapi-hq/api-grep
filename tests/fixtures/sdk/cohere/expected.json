@@ -1,0 +1,14 @@
+{
+  "issue": "cohere-ai registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "search.ts", "line": 6, "provider": "cohere"},
+    {"file": "search.ts", "line": 8, "provider": "cohere"},
+    {"file": "search.ts", "line": 10, "provider": "cohere"},
+    {"file": "search.ts", "line": 12, "provider": "cohere"},
+    {"file": "search.ts", "line": 14, "provider": "cohere"},
+    {"file": "search.ts", "line": 16, "provider": "cohere"},
+    {"file": "search.ts", "line": 18, "provider": "cohere"},
+    {"file": "search.ts", "line": 20, "provider": "cohere"},
+    {"file": "search.ts", "line": 22, "provider": "cohere"}
+  ]
+}

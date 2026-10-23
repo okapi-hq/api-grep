@@ -99,6 +99,9 @@ function lowerAssignment(n: SyntaxNode, st: PhpState): Expr {
   } else if ((left.type === "member_access_expression" && field(left, "object")?.text === "$this") || left.type === "scoped_property_access_expression") {
     const name = field(left, "name")?.text.replace(/^\$/, "");
     if (name && st.fn.cls) addField(st.fn.cls, name, value, st.fn);
+  } else if (left.type === "member_access_expression" && !augmented && field(left, "object")?.type === "variable_name" && field(left, "name")?.type === "name") {
+    // `$preference->items = [...]`: what an active record (dx-php 2.x) sends on `save()`
+    (st.fn.attrSets ??= []).push({ target: varName(field(left, "object"))!, name: field(left, "name")!.text, value, offset: n.endIndex });
   }
   return value;
 }

@@ -18,12 +18,14 @@ import { addHeader } from "./resolve/header-names.js";
 import { resolveHeaders } from "./resolve/headers.js";
 import { paramAlternatives } from "./resolve/param-values.js";
 import { staticText } from "./resolve/parts.js";
-import { unionOf, wrapShape } from "./resolve/shape-utils.js";
+import { omitBodyKeys, unionOf, wrapShape } from "./resolve/shape-utils.js";
+import { convertedBody } from "./resolve/sendgrid-mail.js";
+import { sentAsWire } from "./resolve/wire-keys.js";
 import { withEdits } from "./resolve/edited-shape.js";
 import { withFieldArgs } from "./resolve/field-args.js";
 import { resolveMethod } from "./resolve/method.js";
-import { resolveQuery } from "./resolve/query.js";
-import { sdkUrl } from "./resolve/sdk-url.js";
+import { addStepQuery, resolveQuery } from "./resolve/query.js";
+import { sdkMethodExpr, sdkUrl } from "./resolve/sdk-url.js";
 import { soapClientCall } from "./resolve/soap-client.js";
 import { withoutClientSettings } from "./model/client-settings.js";
 import { asCandidates, withCandidates, type Choice } from "./resolve/choice.js";
@@ -61,7 +63,13 @@ function location(raw: RawCall, rootDir: string): Call["location"] {
 }
 
 function resolveTarget(raw: RawCall, ctx: EvalCtx, dynamic: DynamicPart[]): { url: UrlShape; method: string } {
-  if (raw.sdk) return sdkUrl(raw, ctx);
+  if (raw.sdk) {
+    const target = sdkUrl(raw, ctx);
+    const given = sdkMethodExpr(raw, ctx);
+    const m = given ? resolveMethod(undefined, given, ctx) : undefined;
+    if (m?.dynamic) dynamic.push(m.dynamic);
+    return m ? { url: target.url, method: m.method } : target;
+  }
   const url = raw.nodeOpts ? nodeHttpUrl(raw, ctx) : resolveUrl(raw.urlExpr, ctx, raw.baseUrlExpr);
   const m = resolveMethod(raw.impliedMethod, raw.methodExpr, ctx);
   if (m.dynamic) dynamic.push(m.dynamic);
@@ -165,10 +173,13 @@ function buildOne(raw: RawCall, base: BuildCtx, choice: Choice): Call[] {
     body.shape = withEdits(empty(), raw.record.decl, raw.node, (e) => shapeOf(e, ctx), body.dynamic);
     body.encoding = "json";
   }
-  body.shape = wrapShape(body.shape, raw.sdk?.spec.bodyWrap);
+  omitBodyKeys(body, raw.sdk?.spec.bodyOmit);
+  const q = resolveQuery(raw.queryExpr, ctx);
+  addStepQuery(q, raw.stepQuery, ctx);
+  sentAsWire(raw.sdk, body, q);
+  body.shape = wrapShape(convertedBody(body.shape, raw.sdk?.spec.bodyConvert), raw.sdk?.spec.bodyWrap);
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.methodExpr) dynamic.push({ where: "method", name: "options", origin: "unknown" });
-  const q = resolveQuery(raw.queryExpr, ctx);
   dynamic.push(...q.dynamic);
   const sdk = raw.sdk;
   return assembleCalls({
@@ -192,6 +203,7 @@ function buildOne(raw: RawCall, base: BuildCtx, choice: Choice): Call[] {
     operation: soap?.operation ?? rpcOperation(sdk, ctx),
     ...moreA2aOperations(sdk?.spec),
     routeByModel: sdk?.routeByModel,
+    modelRefs: sdk?.modelRefs,
     clientFrom: raw.clientFrom,
     transport: raw.mcpTransport,
   });

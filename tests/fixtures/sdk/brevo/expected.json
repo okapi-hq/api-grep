@@ -1,0 +1,18 @@
+{
+  "issue": "@getbrevo/brevo and sib-api-v3-sdk registries (SDKs coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "client.ts", "line": 6, "provider": "brevo"},
+    {"file": "client.ts", "line": 8, "provider": "brevo"},
+    {"file": "client.ts", "line": 10, "provider": "brevo"},
+    {"file": "client.ts", "line": 12, "provider": "brevo"},
+    {"file": "client.ts", "line": 14, "provider": "brevo"},
+    {"file": "legacy.js", "line": 8, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 12, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 16, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 21, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 23, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 25, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 27, "provider": "brevo"},
+    {"file": "mailer.ts", "line": 31, "provider": "brevo"}
+  ]
+}

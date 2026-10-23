@@ -22,10 +22,15 @@ function recordProperty(decl: VariableDeclaration, use: Node, key: string): Expr
 }
 
 /**
- * `params` sources: `arg:N`, `instance:N` (the builder's arguments), `ref:N` (Firebase reference), `receiver` (the reference the method is called on), `fn:N` (Convex
+ * `params` sources: `arg:N`, `instance:N` (the builder's arguments), `root:N` (the client's construction), `step:name:N`, `ref:N` (Firebase reference), `receiver` (the reference the method is called on), `fn:N` (Convex
  * function), `record:name` (a property set on the record the method is called on); `.prop` reads a property.
  */
 function paramOf(raw: RawCall, source: string, ctx: EvalCtx): { expr?: Expression; parts?: Part[] } | undefined {
+  // `arg:0.url|arg:0.uri`: the first that gives a value
+  if (source.includes("|")) {
+    const tried = source.split("|").map((s) => paramOf(raw, s, ctx));
+    return tried.find((t) => t?.expr || t?.parts) ?? tried.find((t) => t);
+  }
   const sdk = raw.sdk!;
   const own = /^record:(\w+)$/.exec(source);
   if (own) return { expr: raw.record ? (recordProperty(raw.record.decl, raw.node, own[1]!) ?? getProp(raw.record.found, own[1]!)) : undefined };
@@ -34,9 +39,12 @@ function paramOf(raw: RawCall, source: string, ctx: EvalCtx): { expr?: Expressio
     const callee = Node.isCallExpression(raw.node) ? unwrap(raw.node.getExpression()) : undefined;
     return callee && Node.isPropertyAccessExpression(callee) ? { parts: refParts(callee.getExpression(), ctx) } : {};
   }
-  const m = /^(arg|instance|ref|fn):(\d+)(?:\.(\w+))?$/.exec(source);
+  // argument N of a fluent request builder's last call of that name (`step:version:0`), none when the chain has none
+  const step = /^step:(\w+):(\d+)$/.exec(source);
+  if (step) return { expr: [...(sdk.steps ?? [])].reverse().find((s) => s.name === step[1])?.args[Number(step[2])] };
+  const m = /^(arg|instance|root|ref|fn):(\d+)(?:\.(\w+))?$/.exec(source);
   if (!m) return undefined;
-  const args = m[1] === "instance" ? (sdk.instanceArgs ?? []) : sdk.args;
+  const args = m[1] === "instance" ? (sdk.instanceArgs ?? []) : m[1] === "root" ? (sdk.rootArgs ?? []) : sdk.args;
   const arg = args[Number(m[2])];
   const expr = m[3] ? getProp(arg, m[3], ctx) : arg;
   if (!expr) return {};
@@ -76,6 +84,12 @@ function routeCall(e: Expression): { name: string; args: Expression[] } | undefi
   const callee = unwrap(u.getExpression());
   const name = Node.isPropertyAccessExpression(callee) ? callee.getName() : Node.isIdentifier(callee) ? callee.getText() : undefined;
   return name ? { name, args: u.getArguments() as Expression[] } : undefined;
+}
+
+/** The HTTP method a request object gives (`methodFrom`: `@sendgrid/client`'s `request({ method })`), when it gives one. */
+export function sdkMethodExpr(raw: RawCall, ctx: EvalCtx): Expression | undefined {
+  const from = raw.sdk?.spec.methodFrom;
+  return from ? paramOf(raw, from, ctx)?.expr : undefined;
 }
 
 /** URL and method of an SDK call from its registry entry. */

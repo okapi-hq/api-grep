@@ -1,0 +1,17 @@
+{
+  "issue": "slack-bolt: the app's client, listener arguments (client, say, respond, context) and the async app",
+  "calls": [
+    {"file": "standup_bot.py", "line": 14, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 20, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 21, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 26, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 32, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 38, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 44, "provider": "slack"},
+    {"file": "standup_bot.py", "line": 50, "provider": "slack"},
+    {"file": "async_digest.py", "line": 9, "provider": "slack"},
+    {"file": "async_digest.py", "line": 10, "provider": "slack"},
+    {"file": "async_digest.py", "line": 14, "provider": "slack"},
+    {"file": "listeners.py", "line": 8, "provider": "slack"}
+  ]
+}

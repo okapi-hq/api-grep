@@ -1,0 +1,18 @@
+{
+  "issue": "mercadopago registry (an SDK coverage.sdks listed as unsupported): 2.x classes and the 1.x module",
+  "calls": [
+    {"file": "checkout.ts", "line": 8, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 13, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 15, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 17, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 19, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 21, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 23, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 25, "provider": "mercadopago"},
+    {"file": "checkout.ts", "line": 27, "provider": "mercadopago"},
+    {"file": "legacy.js", "line": 6, "provider": "mercadopago"},
+    {"file": "legacy.js", "line": 10, "provider": "mercadopago"},
+    {"file": "legacy.js", "line": 12, "provider": "mercadopago"},
+    {"file": "legacy.js", "line": 14, "provider": "mercadopago"}
+  ]
+}

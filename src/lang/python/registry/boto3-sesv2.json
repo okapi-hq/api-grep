@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 SES v2: `boto3.client(\"sesv2\")`, `sesv2.send_email(FromEmailAddress=..., Destination=..., Content=...)`, a REST JSON API (`POST /v2/email/outbound-emails`); keyword arguments named in the path fill it, the others are the JSON body.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "email.{region}.amazonaws.com",

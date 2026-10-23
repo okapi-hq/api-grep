@@ -1,0 +1,46 @@
+{
+  "$comment": "google-cloud-aiplatform's Model Garden classes (`vertexai.language_models`, `vertexai.vision_models` and their `preview` twins): `TextEmbeddingModel.from_pretrained(\"text-embedding-005\").get_embeddings([...])`, `ImageGenerationModel.from_pretrained(...).generate_images(prompt=...)`, ... all send the publisher model's `:predict` on v1 (`predict_streaming`: `:serverStreamingPredict`). The SDK builds the instances itself: no body is listed. `from_pretrained` also reads the publisher model (not listed).",
+  "package": "google-cloud-aiplatform",
+  "aliases": [
+    "vertexai"
+  ],
+  "imports": [
+    "vertexai.language_models",
+    "vertexai.preview.language_models",
+    "vertexai.vision_models",
+    "vertexai.preview.vision_models"
+  ],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-aiplatform 2.6.0 vertexai/language_models/_language_models.py, vertexai/vision_models/_vision_models.py, vertexai/_model_garden/_model_garden_models.py)",
+  "instance": {
+    "names": [
+      "TextEmbeddingModel.from_pretrained",
+      "TextGenerationModel.from_pretrained",
+      "ChatModel.from_pretrained",
+      "CodeGenerationModel.from_pretrained",
+      "CodeChatModel.from_pretrained",
+      "ImageGenerationModel.from_pretrained",
+      "ImageCaptioningModel.from_pretrained",
+      "ImageQnAModel.from_pretrained",
+      "ImageTextModel.from_pretrained",
+      "MultiModalEmbeddingModel.from_pretrained"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "get_embeddings": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "get_embeddings_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "predict": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "predict_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "predict_streaming": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:serverStreamingPredict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "generate_images": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "edit_image": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "upscale_image": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "get_captions": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "ask_question": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "start_chat.send_message": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"},
+    "start_chat.send_message_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "from_pretrained:0|from_pretrained:kw:model_name"}
+  }
+}

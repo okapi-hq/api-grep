@@ -1,0 +1,158 @@
+{
+  "$comment": "JDA 5 and 6 (Discord API v10; also used from Kotlin). `JDABuilder.createDefault(token).build()` logs in (`GET /users/@me`). The objects listeners are handed (a `MessageReceivedEvent`, a `SlashCommandInteractionEvent`) and the entities read from them are typed, so a call is read through the declared type: `event.channel.sendMessage(\"hi\")`, `event.message.reply(\"x\")`, `event.reply(\"pong\")` (an interaction callback), `event.hook.editOriginal(\"done\")`, `jda.getTextChannelById(id).sendMessage(...)`, `guild.addRoleToMember(member, role)`, `jda.updateCommands()`. JDA methods return a `RestAction` sent by `queue()`, `complete()` or `submit()`; the action method decides the endpoint, so the call is reported there, whichever terminal sends it. One entry per kind of receiver (channel, message, interaction, interaction hook, guild and member, the JDA instance): each names the types that reach it and the getters on the way (`builders`), so a method name two kinds share (`reply`, `sendMessage`) is read on the right one. Every request carries the bot token (`Authorization: Bot <token>`). A text argument is the `content` field; embeds, components and files are objects the code builds and are not listed.",
+  "package": "net.dv8tion:JDA",
+  "imports": ["net.dv8tion.jda.api","net.dv8tion.jda.api.JDABuilder","net.dv8tion.jda.api.entities","net.dv8tion.jda.api.entities.channel.concrete","net.dv8tion.jda.api.entities.channel.middleman","net.dv8tion.jda.api.entities.channel.unions","net.dv8tion.jda.api.events.message","net.dv8tion.jda.api.events.message.react","net.dv8tion.jda.api.events.guild.member","net.dv8tion.jda.api.events.session","net.dv8tion.jda.api.events.interaction","net.dv8tion.jda.api.events.interaction.command","net.dv8tion.jda.api.events.interaction.component","net.dv8tion.jda.api.interactions","net.dv8tion.jda.api.interactions.callbacks"],
+  "provider": "discord",
+  "host": "discord.com",
+  "auth": "apikey",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against JDA v6.7.0: net.dv8tion.jda.api.requests.Route and the entity implementations)",
+  "variants": [
+    {
+      "instance": {"names":["JDA","createDefault","createLight","create","MessageReceivedEvent","MessageUpdateEvent","MessageReactionAddEvent","MessageReactionRemoveEvent","GuildMemberJoinEvent","GuildMemberRemoveEvent","SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback","MessageChannel","MessageChannelUnion","GuildMessageChannel","GuildMessageChannelUnion","TextChannel","NewsChannel","ThreadChannel","PrivateChannel","VoiceChannel","Message","Guild","ReadyEvent"],"build":"build"},
+      "builders": ["channel","getChannel","guildChannel","getGuildChannel","message","getMessage","guild","getGuild","getGuildById","jda","getJDA","systemChannel","getSystemChannel","getTextChannelById","getNewsChannelById","getThreadChannelById","getVoiceChannelById","getPrivateChannelById","getGuildChannelById","asTextChannel","asNewsChannel","asThreadChannel","asPrivateChannel","asVoiceChannel","asGuildMessageChannel"],
+      "methods": {
+        "sendMessage": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"},"fieldArgs":["content"]},
+        "sendMessageFormat": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "sendMessageEmbeds": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "sendMessageComponents": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "sendMessagePoll": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "sendFiles": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"},"encoding":"multipart"},
+        "sendTyping": {"method":"POST","path":"/api/v10/channels/{channel_id}/typing","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "editMessageById": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"},"fieldArgs":["","content"]},
+        "editMessageEmbedsById": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "editMessageComponentsById": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "editMessageFormatById": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "deleteMessageById": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "retrieveMessageById": {"method":"GET","path":"/api/v10/channels/{channel_id}/messages/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "addReactionById": {"method":"PUT","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "removeReactionById": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "pinMessageById": {"method":"PUT","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "unpinMessageById": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0","message_id":"arg:0"}},
+        "deleteMessages": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages/bulk-delete","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "history.retrievePast": {"method":"GET","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}},
+        "getHistory.retrievePast": {"method":"GET","path":"/api/v10/channels/{channel_id}/messages","params":{"channel_id":"seg:getTextChannelById:0|seg:getNewsChannelById:0|seg:getThreadChannelById:0|seg:getVoiceChannelById:0|seg:getPrivateChannelById:0|seg:getGuildChannelById:0"}}
+      }
+    },
+    {
+      "instance": {"names":["Message","MessageReceivedEvent","MessageUpdateEvent"]},
+      "builders": ["message","getMessage"],
+      "methods": {
+        "reply": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","fieldArgs":["content"]},
+        "replyFormat": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages"},
+        "replyEmbeds": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages"},
+        "replyComponents": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages"},
+        "replyFiles": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages","encoding":"multipart"},
+        "replyPoll": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages"},
+        "replyStickers": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages"},
+        "editMessage": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}","fieldArgs":["content"]},
+        "editMessageFormat": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "editMessageEmbeds": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "editMessageComponents": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "editMessageAttachments": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "suppressEmbeds": {"method":"PATCH","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "delete": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}"},
+        "addReaction": {"method":"PUT","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"},
+        "removeReaction": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"},
+        "clearReactions": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions"},
+        "pin": {"method":"PUT","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}"},
+        "unpin": {"method":"DELETE","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}"},
+        "crosspost": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages/{message_id}/crosspost"},
+        "createThreadChannel": {"method":"POST","path":"/api/v10/channels/{channel_id}/messages/{message_id}/threads","fieldArgs":["name"]}
+      }
+    },
+    {
+      "instance": {"names":["SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback"]},
+      "methods": {
+        "reply": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback","fieldArgs":["content"],"bodyWrap":"data"},
+        "replyFormat": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyEmbeds": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyComponents": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyFiles": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback","encoding":"multipart"},
+        "replyPoll": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyModal": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "deferReply": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "deferEdit": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "editMessage": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback","fieldArgs":["content"],"bodyWrap":"data"},
+        "editMessageFormat": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "editMessageEmbeds": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "editComponents": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "editMessageAttachments": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyChoices": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyChoice": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyChoiceStrings": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"},
+        "replyChoiceLongs": {"method":"POST","path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback"}
+      }
+    },
+    {
+      "instance": {"names":["InteractionHook","SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback"]},
+      "builders": ["hook","getHook"],
+      "methods": {
+        "sendMessage": {"method":"POST","path":"/api/v10/webhooks/{application_id}/{interaction_token}","fieldArgs":["content"]},
+        "sendMessageFormat": {"method":"POST","path":"/api/v10/webhooks/{application_id}/{interaction_token}"},
+        "sendMessageEmbeds": {"method":"POST","path":"/api/v10/webhooks/{application_id}/{interaction_token}"},
+        "sendMessageComponents": {"method":"POST","path":"/api/v10/webhooks/{application_id}/{interaction_token}"},
+        "sendFiles": {"method":"POST","path":"/api/v10/webhooks/{application_id}/{interaction_token}","encoding":"multipart"},
+        "editOriginal": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original","fieldArgs":["content"]},
+        "editOriginalFormat": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "editOriginalEmbeds": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "editOriginalComponents": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "editOriginalAttachments": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "deleteOriginal": {"method":"DELETE","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "retrieveOriginal": {"method":"GET","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/@original"},
+        "editMessageById": {"method":"PATCH","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/{message_id}","params":{"message_id":"arg:0"},"fieldArgs":["","content"]},
+        "deleteMessageById": {"method":"DELETE","path":"/api/v10/webhooks/{application_id}/{interaction_token}/messages/{message_id}","params":{"message_id":"arg:0"}}
+      }
+    },
+    {
+      "instance": {"names":["Guild","Member","getGuildById","MessageReceivedEvent","MessageUpdateEvent","MessageReactionAddEvent","MessageReactionRemoveEvent","GuildMemberJoinEvent","GuildMemberRemoveEvent","SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback","Message"]},
+      "builders": ["guild","getGuild","member","getMember","getMemberById","message","getMessage"],
+      "methods": {
+        "addRoleToMember": {"method":"PUT","path":"/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "removeRoleFromMember": {"method":"DELETE","path":"/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "modifyMemberRoles": {"method":"PATCH","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "modifyNickname": {"method":"PATCH","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "timeoutFor": {"method":"PATCH","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "timeoutUntil": {"method":"PATCH","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "removeTimeout": {"method":"PATCH","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "kick": {"method":"DELETE","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "ban": {"method":"PUT","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"seg:getMemberById:0"}},
+        "unban": {"method":"DELETE","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "retrieveBan": {"method":"GET","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "retrieveMemberById": {"method":"GET","path":"/api/v10/guilds/{guild_id}/members/{user_id}","params":{"guild_id":"seg:getGuildById:0","user_id":"arg:0"}},
+        "createTextChannel": {"method":"POST","path":"/api/v10/guilds/{guild_id}/channels","params":{"guild_id":"seg:getGuildById:0"},"fieldArgs":["name"]},
+        "createVoiceChannel": {"method":"POST","path":"/api/v10/guilds/{guild_id}/channels","params":{"guild_id":"seg:getGuildById:0"},"fieldArgs":["name"]},
+        "createNewsChannel": {"method":"POST","path":"/api/v10/guilds/{guild_id}/channels","params":{"guild_id":"seg:getGuildById:0"},"fieldArgs":["name"]},
+        "createCategory": {"method":"POST","path":"/api/v10/guilds/{guild_id}/channels","params":{"guild_id":"seg:getGuildById:0"},"fieldArgs":["name"]},
+        "createRole": {"method":"POST","path":"/api/v10/guilds/{guild_id}/roles","params":{"guild_id":"seg:getGuildById:0"}},
+        "leave": {"method":"DELETE","path":"/api/v10/users/@me/guilds/{guild_id}","params":{"guild_id":"seg:getGuildById:0"}},
+        "updateCommands": {"method":"PUT","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","params":{"guild_id":"seg:getGuildById:0"}},
+        "upsertCommand": {"method":"POST","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","params":{"guild_id":"seg:getGuildById:0"}},
+        "retrieveCommands": {"method":"GET","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","params":{"guild_id":"seg:getGuildById:0"}},
+        "deleteCommandById": {"method":"DELETE","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}","params":{"guild_id":"seg:getGuildById:0","command_id":"arg:0"}}
+      }
+    },
+    {
+      "instance": {"names":["JDA","createDefault","createLight","create","MessageReceivedEvent","MessageUpdateEvent","MessageReactionAddEvent","MessageReactionRemoveEvent","GuildMemberJoinEvent","GuildMemberRemoveEvent","SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback","ReadyEvent"],"build":"build"},
+      "builders": ["jda","getJDA","set*","add*","enable*","disable*"],
+      "methods": {
+        "build": {"method":"GET","path":"/api/v10/users/@me"},
+        "updateCommands": {"method":"PUT","path":"/api/v10/applications/{application_id}/commands"},
+        "upsertCommand": {"method":"POST","path":"/api/v10/applications/{application_id}/commands"},
+        "retrieveCommands": {"method":"GET","path":"/api/v10/applications/{application_id}/commands"},
+        "deleteCommandById": {"method":"DELETE","path":"/api/v10/applications/{application_id}/commands/{command_id}","params":{"command_id":"arg:0"}},
+        "retrieveUserById": {"method":"GET","path":"/api/v10/users/{user_id}","params":{"user_id":"arg:0"}},
+        "openPrivateChannelById": {"method":"POST","path":"/api/v10/users/@me/channels","fieldArgs":["recipient_id"]},
+        "retrieveApplicationInfo": {"method":"GET","path":"/api/v10/oauth2/applications/@me"},
+        "retrieveWebhookById": {"method":"GET","path":"/api/v10/webhooks/{webhook_id}","params":{"webhook_id":"arg:0"}}
+      }
+    },
+    {
+      "instance": {"names":["User","MessageReceivedEvent","MessageUpdateEvent","MessageReactionAddEvent","MessageReactionRemoveEvent","GuildMemberJoinEvent","GuildMemberRemoveEvent","SlashCommandInteractionEvent","UserContextInteractionEvent","MessageContextInteractionEvent","GenericCommandInteractionEvent","ButtonInteractionEvent","StringSelectInteractionEvent","EntitySelectInteractionEvent","GenericComponentInteractionCreateEvent","ModalInteractionEvent","IReplyCallback","IMessageEditCallback","IModalCallback","IDeferrableCallback","Message"]},
+      "builders": ["author","getAuthor","user","getUser","message","getMessage"],
+      "methods": {
+        "openPrivateChannel": {"method":"POST","path":"/api/v10/users/@me/channels"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$comment": "google-auth-oauthlib: the OAuth 2.0 authorization-code flow of installed and web apps. `Flow` / `InstalledAppFlow.from_client_secrets_file(path, scopes)` or `from_client_config(config, scopes)`, then `run_local_server()`, `run_console()` (before 1.0) or `fetch_token(code=...)` exchange the code for tokens: a form POST to the client configuration's `token_uri` with the client id and secret as HTTP Basic credentials (requests-oauthlib). The library has no default token endpoint: the URL is the configuration's `token_uri` when the scan reads it (a dict in the code, a client secrets JSON file of the repository: `oauthlib.ts`), else unknown. `authorization_url()` only builds the URL a browser opens: no request. `get_user_credentials(scopes, client_id, client_secret)` writes its own configuration, with Google's token endpoint.",
+  "package": "google-auth-oauthlib",
+  "imports": [
+    "google_auth_oauthlib"
+  ],
+  "provider": "google",
+  "host": "{tokenEndpoint}",
+  "auth": "basic",
+  "generatedFrom": "manual (checked against google-auth-oauthlib 1.5.0 flow.py, helpers.py, interactive.py and requests-oauthlib 2.0.0 oauth2_session.py)",
+  "instance": {
+    "names": [
+      "flow.Flow",
+      "flow.Flow.from_client_config",
+      "flow.Flow.from_client_secrets_file",
+      "flow.InstalledAppFlow",
+      "flow.InstalledAppFlow.from_client_config",
+      "flow.InstalledAppFlow.from_client_secrets_file"
+    ]
+  },
+  "methods": {
+    "run_local_server": {"method": "POST", "path": "/", "encoding": "form"},
+    "run_console": {"method": "POST", "path": "/", "encoding": "form"},
+    "fetch_token": {"method": "POST", "path": "/", "encoding": "form"},
+    "get_user_credentials": {"method": "POST", "path": "/token", "host": "oauth2.googleapis.com", "encoding": "form"},
+    "interactive.get_user_credentials": {"method": "POST", "path": "/token", "host": "oauth2.googleapis.com", "encoding": "form"}
+  }
+}

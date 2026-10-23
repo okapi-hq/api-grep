@@ -1,0 +1,14 @@
+{
+  "issue": "@elevenlabs/elevenlabs-js registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "narrator.ts", "line": 5, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 7, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 9, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 11, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 13, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 15, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 17, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 19, "provider": "elevenlabs"},
+    {"file": "narrator.ts", "line": 21, "provider": "elevenlabs"}
+  ]
+}

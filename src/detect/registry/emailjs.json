@@ -1,0 +1,14 @@
+{
+  "$comment": "@emailjs/browser (and the older emailjs-com, the same as its 3.x), @emailjs/nodejs: package functions, `emailjs.init({ publicKey })` (3.x `init(publicKey)`) then `emailjs.send(serviceId, templateId, templateParams, options)` posts `{ lib_version, user_id, service_id, template_id, template_params }` as JSON (@emailjs/nodejs adds `accessToken`, its private key); `sendForm(serviceId, templateId, form, options)` (browser only) posts the form's fields with `service_id`, `template_id` and `user_id` as form data. The keys are in the body, no auth header: `none`. `user_id`, `lib_version` and `accessToken` come from `init` or the options, not reported; the form's fields are not known. `init`'s `origin` (another host) is not read.",
+  "package": "@emailjs/browser",
+  "aliases": ["@emailjs/nodejs", "emailjs-com"],
+  "provider": "emailjs",
+  "host": "api.emailjs.com",
+  "auth": "none",
+  "generatedFrom": "manual (checked against @emailjs/browser 3.12.1, 4.4.1 and 5.0.3, @emailjs/nodejs 5.0.2 and emailjs-com 3.2.0 sources)",
+  "instance": {"names": ["default"]},
+  "methods": {
+    "send": {"method": "POST", "path": "/api/v1.0/email/send", "fieldArgs": ["service_id", "template_id", "template_params"], "encoding": "json"},
+    "sendForm": {"method": "POST", "path": "/api/v1.0/email/send-form", "fieldArgs": ["service_id", "template_id"], "bodyArg": 2, "encoding": "multipart"}
+  }
+}

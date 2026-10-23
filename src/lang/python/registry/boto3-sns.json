@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 SNS: `boto3.client(\"sns\")` (`sns.publish(TopicArn=..., Message=...)`, `sns.publish(PhoneNumber=..., Message=...)`) and `boto3.resource(\"sns\").Topic(arn).publish(...)`. SNS speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`; the keyword arguments are the form fields.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "sns.{region}.amazonaws.com",

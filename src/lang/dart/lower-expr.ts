@@ -125,7 +125,11 @@ function lowerCascade(recv: Expr, s: SyntaxNode, st: DartState): void {
   let i = 1;
   for (; i < kids.length && SELECTORS.has(kids[i]!.type); i++) target = applySelector(target, kids[i]!, head, st);
   const rest = kids.slice(i);
-  if (rest.length > 0) hooks!.memberSet(target, lowerNodes(rest, st), s.endIndex, st);
+  if (rest.length === 0) return;
+  const value = lowerNodes(rest, st);
+  // a member set on what a call builds, read where that value configures an SDK (`ir/setup.ts`)
+  if (recv.k === "call" && target.k === "attr" && target.obj === recv) (recv.sets ??= []).push({ name: target.name, value });
+  hooks!.memberSet(target, value, s.endIndex, st);
 }
 
 /** A primary and its selectors. */

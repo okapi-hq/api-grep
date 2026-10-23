@@ -1,0 +1,14 @@
+{
+  "issue": "replicate registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "render.ts", "line": 5, "provider": "replicate"},
+    {"file": "render.ts", "line": 7, "provider": "replicate"},
+    {"file": "render.ts", "line": 10, "provider": "replicate"},
+    {"file": "render.ts", "line": 13, "provider": "replicate"},
+    {"file": "render.ts", "line": 15, "provider": "replicate"},
+    {"file": "render.ts", "line": 17, "provider": "replicate"},
+    {"file": "render.ts", "line": 19, "provider": "replicate"},
+    {"file": "render.ts", "line": 22, "provider": "replicate"},
+    {"file": "render.ts", "line": 25, "provider": "replicate"}
+  ]
+}

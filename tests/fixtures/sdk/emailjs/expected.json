@@ -1,0 +1,9 @@
+{
+  "issue": "@emailjs/browser, @emailjs/nodejs and emailjs-com registry (SDKs coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "ContactForm.tsx", "line": 8, "provider": "emailjs"},
+    {"file": "ContactForm.tsx", "line": 13, "provider": "emailjs"},
+    {"file": "legacy.js", "line": 4, "provider": "emailjs"},
+    {"file": "server.ts", "line": 4, "provider": "emailjs"}
+  ]
+}

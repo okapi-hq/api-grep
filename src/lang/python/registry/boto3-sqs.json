@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 SQS: `boto3.client(\"sqs\")` (`sqs.send_message(QueueUrl=..., MessageBody=...)`) and `boto3.resource(\"sqs\")` (`sqs.get_queue_by_name(QueueName=q).send_message(...)`, `sqs.Queue(url).receive_messages(...)`). boto3 speaks the AWS JSON 1.0 protocol to SQS (since botocore 1.31.62): every operation is a POST to `/` naming itself in the `X-Amz-Target` header (`AmazonSQS.SendMessage`), reported as `operationId`.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "sqs.{region}.amazonaws.com",

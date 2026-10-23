@@ -8,7 +8,8 @@ import type { Call, Language, Operation } from "../../report/schema.js";
 import type { HeadersResult } from "../../resolve/header-names.js";
 import { staticText } from "../../resolve/parts.js";
 import { sdkTarget, type SdkSource } from "../../resolve/sdk-template.js";
-import { wrapShape } from "../../resolve/shape-utils.js";
+import { omitBodyKeys, wrapShape } from "../../resolve/shape-utils.js";
+import { convertedBody } from "../../resolve/sendgrid-mail.js";
 import { stringShapeOf } from "../../resolve/string-template.js";
 import { resolveReference } from "../../resolve/url-reference.js";
 import { joinParts, partsToUrlShape } from "../../resolve/url-shape.js";
@@ -20,6 +21,8 @@ import { resolvePairs } from "./pairs.js";
 import { withCandidates, type Choice } from "../../resolve/choice.js";
 import { withSelf, withSubst, type IrCtx, type IrRaw, type IrSdkMatch } from "./raw.js";
 import { recordAttribute } from "./record.js";
+import { segmentPath } from "./segments.js";
+import { setupArg } from "./setup.js";
 import { resolveIrBody, resolveIrHeaders, resolveIrQuery } from "./request.js";
 import { shapeOf } from "./shape.js";
 import { irSoapTarget } from "./soap.js";
@@ -81,7 +84,10 @@ function methodOf(method: Scoped, ctx: IrCtx, dynamic: DynamicPart[]): string {
   return "DYNAMIC";
 }
 
-/** `params` sources: `arg:N` (or the keyword named like the placeholder), `kw:name`, `instance:N`, `seg:name:N`, `chain:a,b`; `|` tries each. */
+/**
+ * `params` sources: `arg:N` (or the keyword named like the placeholder), `kw:name`, `instance:N`, `seg:name:N`,
+ * `seg:name:kw:k`, `chain:a,b`, `segs:name[:rule]`, `setup:call:place` (`setup.ts`), `true:<source>`; `|` tries each.
+ */
 function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { expr?: Scoped; parts?: Part[] } | undefined {
   // `kw:request.name|kw:name`: the first that gives a value (Google Cloud clients take a request dict or keywords)
   if (source.includes("|")) {
@@ -99,8 +105,13 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
     if (pieces.length === 0 || pieces.some((p) => !p)) return {};
     return { parts: pieces.flatMap((p, i) => [...(i ? [{ kind: "static", text: "/" } as Part] : []), ...urlParts(p!, ctx)]) };
   }
-  const seg = /^seg:(\w+):(\d+)$/.exec(source);
-  if (seg) return { expr: argOf([...before].reverse().find((s) => s.name === seg[1]), Number(seg[2]), name) };
+  const after = /^segs:(\w+)(?::(\w+))?$/.exec(source);
+  if (after) return segmentPath(before, after[1]!, after[2], ctx);
+  const seg = /^seg:(\w+):(?:(\d+)|kw:(\w+))$/.exec(source);
+  if (seg) return { expr: argOf([...before].reverse().find((s) => s.name === seg[1]), seg[2] !== undefined ? Number(seg[2]) : undefined, seg[3] ?? name) };
+  if (source.startsWith("setup:")) return { expr: setupArg(source, ctx) };
+  // `true:kw:stream`: a value only when the code passes `True` (Vertex AI's `generate_content(stream=True)`)
+  if (source.startsWith("true:")) return isTrue(sdkParam(m, source.slice(5), name, ctx)?.expr, ctx) ? { parts: [{ kind: "static", text: "true" }] } : {};
   const m2 = /^(arg|kw|instance):(\w+)(?:\.(\w+))?$/.exec(source);
   if (!m2) return undefined;
   const target = m2[1] === "instance" ? before[before.length - 1] : m.method;
@@ -110,6 +121,11 @@ function sdkParam(m: IrSdkMatch, source: string, name: string, ctx: IrCtx): { ex
   // a JVM path id given inside the params object (`retrieve(FileRetrieveParams.builder().fileId(id).build())`)
   return { expr: (m.entry.setters && m2[1] === "arg" ? propOf(base, name, ctx) : undefined) ?? base };
 }
+
+const isTrue = (s: Scoped | undefined, ctx: IrCtx): boolean => {
+  const d = s ? deref(s.expr, s.fn, ctx).expr : undefined;
+  return d?.k === "bool" && d.v;
+};
 
 /** The method an SDK request object was given (`methodFrom`), when the code sets one. */
 function sdkMethod(raw: IrRaw, ctx: IrCtx, dynamic: DynamicPart[]): string | undefined {
@@ -128,7 +144,10 @@ function sdkSource(raw: IrRaw, ctx: IrCtx): SdkSource<Scoped> {
     baseUrl: raw.baseUrl?.expr.k === "null" ? undefined : raw.baseUrl,
     envHints: ctx.envHints,
     evaluate: (s) => urlParts(s, ctx),
-    urlParts: (s) => baseUrlParts(s, ctx, m.spec.path.startsWith("/")),
+    urlParts: (s) => {
+      const parts = baseUrlParts(s, ctx, m.spec.path.startsWith("/"));
+      return raw.baseRef && s === raw.baseUrl ? resolveReference(parts, urlParts(raw.baseRef, ctx)) : parts;
+    },
     // `model`: the call's model fills the placeholder (a deployment or model id in the path, Spring AI's Bedrock)
     param: (source, name) => (source === "model" ? (raw.model ? { expr: raw.model } : {}) : sdkParam(m, source, name, ctx)),
     arg: (i, name) => argOf(m.method, i, name),
@@ -197,7 +216,10 @@ function buildOne(raw: IrRaw, base: BuildIrCtx, choice: Choice): Call[] {
   // GraphQL variables: the callers of the function they are written in are not searched (as in TypeScript)
   const body = resolveIrBody(raw.body, raw.bodyRole, defaultEncoding(raw, method), raw.sdk?.entry.endpoint ? { ...ctx, callerLevel: true } : ctx);
   if (raw.encoding && body.shape) body.encoding = raw.encoding;
-  body.shape = wrapShape(body.shape, raw.sdk?.spec.bodyWrap);
+  omitBodyKeys(body, raw.sdk?.spec.bodyOmit);
+  body.shape = wrapShape(convertedBody(body.shape, raw.sdk?.spec.bodyConvert), raw.sdk?.spec.bodyWrap);
+  // a string the library sends under a key of its own (BigQuery's `query(sql)`) is a field of its JSON body
+  if (raw.sdk?.spec.bodyWrap && body.encoding === "raw") body.encoding = raw.sdk.spec.encoding ?? "json";
   dynamic.push(...body.dynamic);
   if (raw.optionsOpaque && !raw.impliedMethod && !raw.method) dynamic.push({ where: "method", name: "options", origin: "unknown" });
   const q = resolveIrQuery(raw.query, ctx);
@@ -226,6 +248,7 @@ function buildOne(raw: IrRaw, base: BuildIrCtx, choice: Choice): Call[] {
     operation: soap?.operation ?? rpcOperation(raw, ctx),
     ...moreA2aOperations(raw.sdk?.spec),
     routeByModel: sdk?.entry.routeByModel,
+    modelRefs: sdk?.entry.modelRefs,
     clientParts: pairs?.clientParts,
     clientFrom: raw.clientFrom,
     transport: raw.mcpTransport === "url" ? urlPathTransport(url) : raw.mcpTransport,

@@ -4,7 +4,7 @@ import type { ClassDef, Expr, FunctionDef, ModuleModel } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { mergeEdit, PY_BRANCHES, removeEdit } from "./lower-edits.js";
 import { lowerExpr, newFunction, type PyState } from "./lower-expr.js";
-import { decoratorNames, lowerParams, lowerType } from "./lower-types.js";
+import { decoratorAnnotations, decoratorNames, lowerParams, lowerType } from "./lower-types.js";
 
 interface ModState extends PyState {
   isPackage: boolean;
@@ -41,8 +41,9 @@ function lowerFunction(n: SyntaxNode, st: ModState, cls: ClassDef | undefined, d
 }
 
 /** A `def` statement: a module function, or a name bound in the enclosing function. */
-function lowerDef(n: SyntaxNode, st: ModState, decorators: string[]): void {
-  const fn = lowerFunction(n, st, undefined, decorators);
+function lowerDef(n: SyntaxNode, st: ModState, decorated?: SyntaxNode): void {
+  const fn = lowerFunction(n, st, undefined, decorated ? decoratorNames(decorated) : []);
+  if (decorated) fn.annotations = decoratorAnnotations(decorated, st);
   if (st.fn === st.mod.top) st.mod.functions.set(fn.name, fn);
   else st.fn.assigns.push({ target: fn.name, value: { k: "fnref", fn }, offset: n.startIndex });
 }
@@ -220,10 +221,10 @@ function lowerStatement(c: SyntaxNode, st: ModState): void {
     for (const e of named(c)) if (e.type === "assignment" || e.type === "augmented_assignment") lowerAssignment(e, st);
     else if (e.type === "yield" && named(e)[0] && !e.text.startsWith("yield from")) (st.fn.yields ??= []).push(lowerExpr(named(e)[0]!, st));
     else lowerExpr(e, st);
-  } else if (c.type === "function_definition") lowerDef(c, st, []);
+  } else if (c.type === "function_definition") lowerDef(c, st);
   else if (c.type === "decorated_definition") {
     const def = field(c, "definition");
-    if (def?.type === "function_definition") lowerDef(def, st, decoratorNames(c));
+    if (def?.type === "function_definition") lowerDef(def, st, c);
     else if (def?.type === "class_definition") lowerClass(def, st);
   } else if (c.type === "class_definition") lowerClass(c, st);
   else if (c.type === "import_statement" || c.type === "import_from_statement") lowerImport(c, st);

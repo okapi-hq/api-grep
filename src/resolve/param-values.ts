@@ -24,8 +24,21 @@ interface Callers {
 
 const callersCache = new WeakMap<Node, Callers>();
 
+/**
+ * Whether an object literal is what a variable with no type of its own holds (`const api = { get(id) {...} }`). A
+ * literal given a type (an argument, `const h: Handlers = ...`) shares its methods with every literal of that type: a
+ * reference search of one (`run` of a framework's `createAction({ ... })`) reaches all of them and types the whole
+ * project (hundreds of MB, seconds), for callers that are the library's, not the project's.
+ */
+function inUntypedVariable(literal: Node): boolean {
+  let parent = literal.getParent();
+  while (Node.isParenthesizedExpression(parent)) parent = parent.getParent();
+  return Node.isVariableDeclaration(parent) && !parent.getTypeNode();
+}
+
 /** The identifier callers name the function by: its name, the variable holding it, or the class it constructs. */
 function nameNodeOf(fn: Node): Node | undefined {
+  if (Node.isMethodDeclaration(fn) && Node.isObjectLiteralExpression(fn.getParent()) && !inUntypedVariable(fn.getParent())) return undefined;
   if (Node.isFunctionDeclaration(fn) || Node.isMethodDeclaration(fn)) return fn.getNameNode();
   if (Node.isConstructorDeclaration(fn)) {
     const cls = fn.getParent();

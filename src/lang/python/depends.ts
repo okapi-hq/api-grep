@@ -2,6 +2,7 @@ import { valueChain } from "../ir/chain.js";
 import type { IrInjection, Scoped } from "../ir/language.js";
 import type { CallExpr, Expr, FunctionDef, Param } from "../ir/model.js";
 import type { IrCtx } from "../ir/raw.js";
+import { boltListenerParam } from "./slack-bolt.js";
 
 /** FastAPI's dependency markers: a parameter defaulting to one gets what the dependency returns. */
 const MARKERS = new Set(["fastapi.Depends", "fastapi.Security", "fastapi.params.Depends", "fastapi.params.Security"]);
@@ -27,9 +28,9 @@ function dependency(p: Param, fn: FunctionDef, ctx: IrCtx): Scoped | undefined {
   return { expr: { k: "call", fn: given, args: [], pos: dep.pos }, fn };
 }
 
-/** What FastAPI injects into a route's or a dependency's parameters. */
+/** What FastAPI injects into a route's or a dependency's parameters, and slack_bolt into a listener's. */
 export const PYTHON_INJECTION: IrInjection = {
-  param: dependency,
+  param: (p, fn, ctx) => dependency(p, fn, ctx) ?? boltListenerParam(p, fn, ctx),
   field: () => undefined,
   call: () => undefined,
 };

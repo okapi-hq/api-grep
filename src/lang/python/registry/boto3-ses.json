@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 SES (the v1 API): `boto3.client(\"ses\")`, `ses.send_email(Source=..., Destination=..., Message=...)`. SES speaks the AWS Query protocol: every operation is a form POST to `/` with its `Action`; the keyword arguments are the form fields.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "email.{region}.amazonaws.com",

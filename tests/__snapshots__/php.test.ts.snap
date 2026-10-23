@@ -1956,7 +1956,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
       "dynamic": [
         {
           "name": "intent",
-          "origin": "sdk",
+          "origin": "param",
           "where": "path",
         },
       ],
@@ -2245,13 +2245,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
       "bodyEncoding": "none",
       "bodySource": "none",
       "client": "sdk",
-      "dynamic": [
-        {
-          "name": "ServiceSid",
-          "origin": "sdk",
-          "where": "path",
-        },
-      ],
+      "dynamic": [],
       "examples": [
         {
           "bodyEncoding": "none",
@@ -2400,11 +2394,6 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
       "bodySource": "literal",
       "client": "sdk",
       "dynamic": [
-        {
-          "name": "domain",
-          "origin": "sdk",
-          "where": "path",
-        },
         {
           "name": "to",
           "origin": "param",
@@ -2732,16 +2721,24 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 3,
-    "filesSeen": 6,
+    "filesSeen": 8,
     "languages": {
       "php": {
         "filesScanned": 3,
-        "filesSeen": 6,
+        "filesSeen": 8,
       },
     },
     "skipped": [
       {
         "file": "firebase/Users.php",
+        "reason": "excluded",
+      },
+      {
+        "file": "mercadopago/Checkout.php",
+        "reason": "excluded",
+      },
+      {
+        "file": "mercadopago/Legacy.php",
         "reason": "excluded",
       },
       {
@@ -2754,7 +2751,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
       },
     ],
     "skippedCounts": {
-      "excluded": 3,
+      "excluded": 5,
     },
     "unfollowed": [],
   },
@@ -2788,7 +2785,7 @@ exports[`php: SDKs > reads instances, factories, facades, static APIs and named 
     "filesScanned": 3,
     "redacted": 0,
     "withBodyShape": 14,
-    "withDynamic": 14,
+    "withDynamic": 13,
   },
   "tool": "api-grep",
   "version": "<version>",
