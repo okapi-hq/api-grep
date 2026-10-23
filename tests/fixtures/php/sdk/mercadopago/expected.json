@@ -1,0 +1,18 @@
+{
+  "issue": "mercadopago/dx-php registry (an SDK coverage.sdks listed as unsupported): 3.x clients and 2.x active records",
+  "calls": [
+    {"file": "Checkout.php", "line": 24, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 37, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 47, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 53, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 54, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 60, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 66, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 67, "provider": "mercadopago"},
+    {"file": "Checkout.php", "line": 73, "provider": "mercadopago"},
+    {"file": "Legacy.php", "line": 15, "provider": "mercadopago"},
+    {"file": "Legacy.php", "line": 21, "provider": "mercadopago"},
+    {"file": "Legacy.php", "line": 23, "provider": "mercadopago"},
+    {"file": "Legacy.php", "line": 24, "provider": "mercadopago"}
+  ]
+}

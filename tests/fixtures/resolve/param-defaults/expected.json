@@ -5,6 +5,8 @@
     {"file": "assistant.ts", "line": 10, "provider": "openai"},
     {"file": "assistant.ts", "line": 14, "provider": "openai"},
     {"file": "assistant.ts", "line": 31, "provider": "openai"},
+    {"file": "handlers.ts", "line": 12, "provider": "openai"},
+    {"file": "handlers.ts", "line": 20, "provider": "openai"},
     {"file": "forecast.ts", "line": 4, "provider": "api.example-weather.com"},
     {"file": "forecast.ts", "line": 8, "provider": "api.example-weather.com"},
     {"file": "forecast.ts", "line": 12, "provider": "api.example-weather.com"}

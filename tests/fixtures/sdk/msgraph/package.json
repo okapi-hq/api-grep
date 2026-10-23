@@ -1,0 +1,7 @@
+{
+  "name": "harbor-desk",
+  "private": true,
+  "dependencies": {
+    "@microsoft/microsoft-graph-client": "^3.0.7"
+  }
+}

@@ -4,6 +4,7 @@ import { argAt } from "./args.js";
 import { calleeChain } from "./chain.js";
 import type { Scoped } from "./language.js";
 import { sameExpr } from "./cache.js";
+import { connectedEndpoint } from "./mcp-connect.js";
 import type { IrCtx, IrSdkMatch, Seg } from "./raw.js";
 import { deref, staticKey } from "./values.js";
 
@@ -20,17 +21,41 @@ export interface IrEndpoint {
   transport?: McpTransport;
   /** The library picks the MCP transport from the URL's path (FastMCP's `Client(url)`). */
   transportFromUrl?: boolean;
+  /** A path the library resolves against the URL by RFC 3986 (the MCP Java SDK's `/sse`, `.endpoint("/x")`). */
+  path?: Scoped;
 }
 
-/** The transport construction an option holds, as a chain segment whose arguments can be read. */
-function transportSeg(s: Scoped, names: string[], ctx: IrCtx): Seg | undefined {
+/** A transport construction: its segment, the key it matched and the builder steps written after it. */
+interface Construction {
+  seg: Seg;
+  key: string;
+  steps: Seg[];
+}
+
+/** The name of `names` the segment at `i` ends (`HttpClientSseClientTransport.builder` also checks the one before). */
+function keyAt(segs: Seg[], i: number, names: string[]): string | undefined {
+  return names.find((n) => {
+    const parts = n.split(".");
+    return parts.every((p, j) => segs[i - parts.length + 1 + j]?.name === p);
+  });
+}
+
+/**
+ * The transport construction an option holds, whose arguments can be read; with `build`, a builder ended by that call
+ * (`X.builder(url).endpoint(p).build()`) is the construction it starts at.
+ */
+function transportSeg(s: Scoped, names: string[], ctx: IrCtx, build?: string): Construction | undefined {
   let d = deref(s.expr, s.fn, ctx);
   // a stream of a transport (MCP `async with sse_client(url) as (read, write)`): the transport
   if (d.expr.k === "index") d = deref(d.expr.obj, d.fn, ctx);
   if (d.expr.k !== "call") return undefined;
   const chain = calleeChain(d.expr, d.fn, ctx);
-  const last = chain.segs.at(-1);
-  return chain.root.kind === "external" && last?.call === d.expr && names.includes(last.name) ? last : undefined;
+  const segs = chain.segs;
+  if (chain.root.kind !== "external" || segs.at(-1)?.call !== d.expr) return undefined;
+  let end = segs.length - 1;
+  if (build && segs[end]!.name === build) while (--end >= 0 && !keyAt(segs, end, names));
+  const key = end >= 0 ? keyAt(segs, end, names) : undefined;
+  return key && segs[end]!.call ? { seg: segs[end]!, key, steps: segs.slice(end + 1) } : undefined;
 }
 
 /**
@@ -40,6 +65,11 @@ function transportSeg(s: Scoped, names: string[], ctx: IrCtx): Seg | undefined {
 export function irEndpoint(m: IrSdkMatch, ctx: IrCtx): IrEndpoint | null {
   const spec = m.entry.endpoint;
   if (!spec || m.spec.subscription) return {};
+  // `client.connect(transport)`: the transport it is given
+  if (m.spec.transportArg !== undefined) {
+    const t = argAt(m.method, m.spec.transportArg, ctx);
+    return t ? transportEndpoint(t, spec, ctx) : {};
+  }
   const before = m.segs.slice(0, -1);
   for (let i = before.length - 1; i >= 0; i--) {
     const seg = before[i]!;
@@ -68,13 +98,21 @@ type Spec = NonNullable<IrSdkMatch["entry"]["endpoint"]>;
 export function clientEndpoint(seg: Seg, client: Spec["clients"][string], spec: Spec, ctx: IrCtx): IrEndpoint | null {
   const own = readEndpoint(seg, client, ctx);
   if (own.url) return own;
-  const transport = client.transport ? argAt(seg, client.transport, ctx) : undefined;
-  if (spec.nonHttp && client.transport && (!transport || transportSeg(transport, spec.nonHttp, ctx))) return null;
+  // a client given its transport later (Kotlin MCP `client.connect(transport)`)
+  if (!client.transport) return spec.connect ? connectedEndpoint(seg, spec.connect, (t) => transportEndpoint(t, spec, ctx), ctx) : {};
+  const transport = argAt(seg, client.transport, ctx);
+  if (spec.nonHttp && !transport) return null;
   const given = client.urlTransport && transport ? givenUrl(transport, ctx) : undefined;
   if (given !== undefined) return given && { url: given, transportFromUrl: true };
+  return transport ? transportEndpoint(transport, spec, ctx) : {};
+}
+
+/** The endpoint of a transport given to a client: null for one that is not HTTP (stdio, a WebSocket), else its URL when known. */
+export function transportEndpoint(transport: Scoped, spec: Spec, ctx: IrCtx): IrEndpoint | null {
+  if (spec.nonHttp && transportSeg(transport, spec.nonHttp, ctx, spec.build)) return null;
   const transports = spec.transports ?? {};
-  const t = transport ? transportSeg(transport, Object.keys(transports), ctx) : undefined;
-  return t ? readEndpoint(t, transports[t.name]!, ctx) : {};
+  const t = transportSeg(transport, Object.keys(transports), ctx, spec.build);
+  return t ? readEndpoint(t.seg, transports[t.key]!, ctx, t) : {};
 }
 
 /**
@@ -98,8 +136,20 @@ function sameUrl(a: IrEndpoint, b: IrEndpoint, ctx: IrCtx): boolean {
   return (x.fn === y.fn || x.expr.k === "str") && sameExpr(x.expr, y.expr);
 }
 
-export function readEndpoint(seg: Seg, source: EndpointSource, ctx: IrCtx): IrEndpoint {
+export function readEndpoint(seg: Seg, source: EndpointSource, ctx: IrCtx, made?: Construction): IrEndpoint {
   const url = source.url ? argAt(seg, source.url, ctx) : undefined;
-  const transport = transportOf(source.mcpTransport, seg.name);
-  return url ? { url, headers: source.headers ? argAt(seg, source.headers, ctx) : undefined, ...(transport ? { transport } : {}) } : {};
+  // `HttpClientSseClientTransport.builder`: the class names the transport
+  const transport = transportOf(source.mcpTransport, made ? made.key.split(".")[0] : seg.name);
+  if (!url) return {};
+  const path = endpointPath(seg, source, made?.steps ?? [], ctx);
+  return { url, headers: source.headers ? argAt(seg, source.headers, ctx) : undefined, ...(transport ? { transport } : {}), ...(path ? { path } : {}) };
+}
+
+/** The path resolved against the URL: the last builder step setting it, the argument giving it, else the library's. */
+function endpointPath(seg: Seg, source: EndpointSource, steps: Seg[], ctx: IrCtx): Scoped | undefined {
+  const p = source.path;
+  if (!p || !seg.fn) return undefined;
+  const step = p.step ? steps.filter((s) => s.call && s.name === p.step).at(-1) : undefined;
+  const given = step ? argAt(step, "0", ctx) : p.arg ? argAt(seg, p.arg, ctx) : undefined;
+  return given ?? { expr: { k: "str", v: p.default }, fn: seg.fn };
 }

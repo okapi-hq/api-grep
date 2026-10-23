@@ -1,0 +1,18 @@
+{
+  "$comment": "msgraph-beta-sdk: the same request builders as msgraph-sdk (`src/lang/python/registry/msgraph-sdk.json`), imported from `msgraph_beta`, under `/beta`.",
+  "package": "msgraph-beta-sdk",
+  "imports": ["msgraph_beta"],
+  "provider": "microsoft",
+  "host": "graph.microsoft.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against msgraph-beta-sdk 1.65.0 source)",
+  "instance": {"names": ["GraphServiceClient"]},
+  "methods": {
+    "**.get": {"method": "GET", "path": "/beta/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "queryArg": 0, "queryKw": "request_configuration"},
+    "**.post": {"method": "POST", "path": "/beta/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.patch": {"method": "PATCH", "path": "/beta/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.put": {"method": "PUT", "path": "/beta/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.delete": {"method": "DELETE", "path": "/beta/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "queryArg": 0, "queryKw": "request_configuration"}
+  }
+}

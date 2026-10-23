@@ -9678,7 +9678,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 8,
-    "filesSeen": 108,
+    "filesSeen": 139,
     "languages": {
       "html": {
         "filesScanned": 0,
@@ -9686,11 +9686,11 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       "javascript": {
         "filesScanned": 0,
-        "filesSeen": 10,
+        "filesSeen": 17,
       },
       "typescript": {
         "filesScanned": 8,
-        "filesSeen": 97,
+        "filesSeen": 121,
       },
     },
     "skipped": [
@@ -9723,6 +9723,30 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "brevo/client.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "brevo/legacy.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "brevo/mailer.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "bugsnag/monitoring.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "bugsnag/onprem.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "bugsnag/server.js",
+        "reason": "excluded",
+      },
+      {
         "file": "caller-model/agent.ts",
         "reason": "excluded",
       },
@@ -9747,6 +9771,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "cloudflare/infra.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "cloudflare/legacy.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "cohere/search.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "convex/app.tsx",
         "reason": "excluded",
       },
@@ -9764,6 +9800,42 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "discord-js/deploy.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "elevenlabs/narrator.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "elevenlabs-legacy/speak.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "emailjs/ContactForm.tsx",
+        "reason": "excluded",
+      },
+      {
+        "file": "emailjs/legacy.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "emailjs/server.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "facebook-business/ads.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "facebook-business/capi.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "fal/canvas.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "fal-serverless/legacy.ts",
         "reason": "excluded",
       },
       {
@@ -9792,6 +9864,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "gemini/legacy.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "genkit/assistant.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "genkit/flows.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "genkit/legacy.ts",
         "reason": "excluded",
       },
       {
@@ -9899,6 +9983,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "mercadopago/checkout.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "mercadopago/legacy.js",
+        "reason": "excluded",
+      },
+      {
         "file": "models/config.ts",
         "reason": "excluded",
       },
@@ -9908,6 +10000,14 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "models/frameworks.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "msgraph/calendar.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "msgraph/mail.ts",
         "reason": "excluded",
       },
       {
@@ -9951,6 +10051,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "replicate/render.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "resend/mail.ts",
         "reason": "excluded",
       },
@@ -9964,6 +10068,18 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "runtime-models/env.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "sendgrid/contacts.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "sendgrid/legacy.js",
+        "reason": "excluded",
+      },
+      {
+        "file": "sendgrid/notify.ts",
         "reason": "excluded",
       },
       {
@@ -10055,6 +10171,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
         "reason": "excluded",
       },
       {
+        "file": "together/assistant.ts",
+        "reason": "excluded",
+      },
+      {
         "file": "unread-base-url/clients.ts",
         "reason": "excluded",
       },
@@ -10064,6 +10184,10 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
       {
         "file": "vertexai/summarize.ts",
+        "reason": "excluded",
+      },
+      {
+        "file": "zai/studio.ts",
         "reason": "excluded",
       },
       {
@@ -10096,7 +10220,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       },
     ],
     "skippedCounts": {
-      "excluded": 100,
+      "excluded": 131,
     },
     "unfollowed": [],
   },

@@ -60,5 +60,9 @@ describe("parameter values: typescript", () => {
     // at a caller, the wrapper expansion already substitutes the argument: one value per call site
     expect(header(at(r, "forecast.ts", 17))).toEqual({ value: "2025-01-15" });
     expect(header(at(r, "forecast.ts", 22))).toEqual({ value: null });
+    // an untyped object's method reads its callers; a typed object's method does not (its member is the type's)
+    expect(at(r, "handlers.ts", 12).model?.values).toEqual(["o3"]);
+    expect(at(r, "handlers.ts", 20).model).toMatchObject({ values: [], dynamic: true });
+    expect(at(r, "handlers.ts", 23).model?.values).toEqual(["o1"]);
   });
 });

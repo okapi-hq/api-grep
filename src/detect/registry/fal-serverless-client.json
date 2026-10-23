@@ -1,0 +1,21 @@
+{
+  "$comment": "@fal-ai/serverless-client (the package @fal-ai/client replaced): `import * as fal from \"@fal-ai/serverless-client\"`, the same requests as @fal-ai/client's `run`, `subscribe`, `stream` and `queue`; `storage.upload` asks `rest.alpha.fal.ai` for an upload URL.",
+  "package": "@fal-ai/serverless-client",
+  "provider": "fal",
+  "host": "fal.run",
+  "auth": "apikey",
+  "callersOnly": true,
+  "generatedFrom": "manual (checked against @fal-ai/serverless-client 0.15.0 source)",
+  "methods": {
+    "run": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input"},
+    "subscribe": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input", "host": "queue.fal.run", "pathWith": {"param": "webhook", "path": "/{app_id}?fal_webhook={webhook}"}, "params": {"webhook": "arg:1.webhookUrl"}},
+    "stream": {"method": "POST", "path": "/{app_id}/stream", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input"},
+    "queue.submit": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input", "host": "queue.fal.run", "pathWith": {"param": "webhook", "path": "/{app_id}?fal_webhook={webhook}"}, "params": {"webhook": "arg:1.webhookUrl"}},
+    "queue.status": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.streamStatus": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status/stream?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.subscribeToStatus": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.result": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.cancel": {"method": "PUT", "path": "/{app_owner}/{app_alias}/requests/{request_id}/cancel", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "storage.upload": {"method": "POST", "path": "/storage/upload/initiate", "host": "rest.alpha.fal.ai"}
+  }
+}

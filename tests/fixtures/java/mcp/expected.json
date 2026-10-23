@@ -1,0 +1,16 @@
+{
+  "issue": "MCP clients over HTTP: the MCP Java SDK's McpSyncClient / McpAsyncClient; stdio clients and servers send none",
+  "calls": [
+    {"file": "ForecastAgent.java", "line": 20, "provider": "mcp", "operation": "initialize"},
+    {"file": "ForecastAgent.java", "line": 21, "provider": "mcp", "operation": "tools/list"},
+    {"file": "ForecastAgent.java", "line": 22, "provider": "mcp", "operation": "tools/call"},
+    {"file": "ForecastAgent.java", "line": 23, "provider": "mcp", "operation": "resources/read"},
+    {"file": "ForecastAgent.java", "line": 24, "provider": "mcp", "operation": "prompts/get"},
+    {"file": "TicketDesk.java", "line": 14, "provider": "mcp", "operation": "initialize"},
+    {"file": "TicketDesk.java", "line": 15, "provider": "mcp", "operation": "tools/call"},
+    {"file": "TicketDesk.java", "line": 16, "provider": "mcp", "operation": "prompts/list"},
+    {"file": "TicketDesk.java", "line": 22, "provider": "mcp", "operation": "ping"},
+    {"file": "TicketDesk.java", "line": 28, "provider": "mcp", "operation": "tools/call"},
+    {"file": "ToolRouter.java", "line": 14, "provider": "mcp", "operation": "tools/list"}
+  ]
+}

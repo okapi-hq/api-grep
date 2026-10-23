@@ -151,7 +151,10 @@ arguments filling the placeholders), and `callersOnly` keeps a registry of commo
    writes itself), `refetchQuery` and `sendsThrough` (Relay's fragment hooks). #102 adds `recordFrom` (class
    methods that read one record, `find`), `sendsThrough.bodyArg` (the body is that argument of the returned function's
    calls), `optionalId` (an optional leading id the library tells from the options by their kind) and keys
-   `<factory>#<method>` for a method of what a factory returns (`createCartServerHandlers#get`). A JSON-RPC client library is the same
+   `<factory>#<method>` for a method of what a factory returns (`createCartServerHandlers#get`). `bodyOmit` drops the
+   keys a library takes out of the request object (path ids) from the body and from a `queryArg` query; `idInParams`
+   reads a method whose later major moved its first positional id into the params object (cloudflare 7.x
+   `values.get(key, { namespace_id })` for 4.x `values.get(namespaceId, key, {...})`: `arg:0|arg:2.namespace_id`). A JSON-RPC client library is the same
    under the `json-rpc` provider (`host: "{rpcEndpoint}"`), each method naming the RPC method it sends in `rpc` (or
    the argument holding it in `rpcArg`, `clientFirst` for functions taking the client first), and its `endpoint`
    listing the wallet and socket constructions in `nonHttp` and the client's declared `types`, as in
@@ -201,7 +204,9 @@ SDK is imported from. Keys are the chain after the client (`client.chat.completi
 the import root for module-level APIs (`stripe.Customer.create` is `Customer.create`). `bodyKwargs`
 makes the keyword arguments the body, `bodyKw` names one keyword argument holding it, `queryKwargs`
 reads the query from keyword arguments. Path parameters also accept `kw:<name>`, `seg:<call>:<N>`
-(argument N of a named call in the chain, `services(sid)`) and `chain:<a>,<b>` (Firestore references);
+(argument N of a named call in the chain, `services(sid)`), `chain:<a>,<b>` (Firestore references) and `segs:<call>`
+(the segments after it as a path, `client.marketing.contacts` -> `marketing/contacts`, with `**` in the key for any
+number of segments);
 `arg:N` matches the keyword argument named like the placeholder too. `builders` are calls that only
 narrow a request (`collection`, `document`). `fieldArgs` names the positional arguments the library sends as fields,
 the keyword arguments adding theirs (`bot.send_message(chat_id, text, parse_mode=...)`; with `queryKwargs` they are the

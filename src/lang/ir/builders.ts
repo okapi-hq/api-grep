@@ -34,8 +34,8 @@ interface Setter {
 /** Bare calls with a lambda that run code rather than fill a nested builder (`run { ... }`, `repeat(3) { ... }`). */
 const SCOPE_FUNCTIONS = new Set(["run", "with", "apply", "also", "let", "repeat", "require", "check", "lazy", "launch", "async", "runBlocking", "runCatching", "buildString", "buildList", "buildMap", "coroutineScope", "supervisorScope", "withContext"]);
 
-/** `X.builder()`: the class `X` it builds, else undefined. */
-const startOf = (e: Expr): Expr | undefined => (e.k === "call" && e.fn.k === "attr" && STARTS.has(e.fn.name) && e.args.length === 0 ? e.fn.obj : undefined);
+/** `X.builder()` (or `X.builder(name)`, see `startSetters`): the class `X` it builds, else undefined. */
+const startOf = (e: Expr): Expr | undefined => (e.k === "call" && e.fn.k === "attr" && STARTS.has(e.fn.name) ? e.fn.obj : undefined);
 
 /** Kotlin `apply { model(m) }` / `also { it.model(m) }` on a builder: the lambda's calls on it, read in the lambda. */
 function appliedSetters(call: CallExpr): Setter[] {
@@ -300,7 +300,8 @@ function builderOf(e: Expr, fn: FunctionDef, ctx: IrCtx, r: Reading): Builder | 
   const cls = startOf(root);
   if (cls) {
     const rules = rulesFor(cls, fn, ctx, r.project);
-    return rules ? { rules, setters } : undefined;
+    const first = rules ? startSetters(root as CallExpr, cls, rules) : undefined;
+    return rules && first ? { rules, setters: [...first, ...setters] } : undefined;
   }
   if (r.depth > MAX_COPIES) return undefined;
   const next = { ...r, depth: r.depth + 1 };
@@ -315,6 +316,14 @@ function builderOf(e: Expr, fn: FunctionDef, ctx: IrCtx, r: Reading): Builder | 
   if (!start) return undefined;
   const filled = [...steps(fn, root.name, b.assign.offset, r.at), ...helperSteps(fn, root.name, b.assign.offset, r.at, ctx)];
   return { rules: start.rules, setters: [...start.setters, ...filled.sort((x, y) => (x.offset ?? 0) - (y.offset ?? 0)), ...setters] };
+}
+
+/** `CallToolRequest.builder(name)`: the fields its arguments set (`setters.positional`); none for `builder()`. */
+function startSetters(start: CallExpr, cls: Expr, rules: SetterRules): Setter[] | undefined {
+  if (start.args.length === 0) return [];
+  const fields = own(rules.positional, cls.k === "attr" || cls.k === "name" ? cls.name : "");
+  if (!fields || start.args.some((a) => a.name || a.spread)) return undefined;
+  return start.args.slice(0, fields.length).map((a, i) => ({ name: fields[i]!, args: [a] }));
 }
 
 /** `base()` returning `X.builder().model(m)`: the builder its first return makes, read in the caller. */

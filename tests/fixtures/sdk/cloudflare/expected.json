@@ -1,0 +1,26 @@
+{
+  "issue": "cloudflare registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "infra.ts", "line": 6, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 8, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 11, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 13, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 15, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 17, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 19, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 21, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 23, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 26, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 28, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 30, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 32, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 34, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 36, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 38, "provider": "cloudflare"},
+    {"file": "infra.ts", "line": 40, "provider": "cloudflare"},
+    {"file": "legacy.js", "line": 4, "provider": "cloudflare"},
+    {"file": "legacy.js", "line": 5, "provider": "cloudflare"},
+    {"file": "legacy.js", "line": 8, "provider": "cloudflare"},
+    {"file": "legacy.js", "line": 10, "provider": "cloudflare"}
+  ]
+}

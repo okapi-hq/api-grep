@@ -1,0 +1,14 @@
+{
+  "issue": "mercadopago registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "payments.py", "line": 15, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 23, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 27, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 31, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 35, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 40, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 41, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 45, "provider": "mercadopago"},
+    {"file": "payments.py", "line": 49, "provider": "mercadopago"}
+  ]
+}

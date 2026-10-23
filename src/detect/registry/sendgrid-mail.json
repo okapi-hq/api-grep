@@ -1,0 +1,15 @@
+{
+  "$comment": "@sendgrid/mail: the default export is a `MailService` (`sgMail.setApiKey(key); sgMail.send(msg)`), also `new MailService()`. `send(data | data[], isMultiple?)` and `sendMultiple(data)` post `Mail.create(data).toJSON()` to `/v3/mail/send`, one request per item of an array: the body is that conversion of `data` (`bodyConvert`, `src/resolve/sendgrid-mail.ts`). `setTwilioEmailAuth` (email.twilio.com) and `setDataResidency('eu')` hosts are not read.",
+  "package": "@sendgrid/mail",
+  "provider": "sendgrid",
+  "host": "api.sendgrid.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against @sendgrid/mail 8.1.6 and @sendgrid/helpers 8.0.0 source)",
+  "instance": {"names": ["default", "MailService"]},
+  "methods": {
+    "send": {"method": "POST", "path": "/v3/mail/send", "bodyArg": 0, "bodyConvert": "sendgrid-mail", "operationId": "mail.send"},
+    "sendMultiple": {"method": "POST", "path": "/v3/mail/send", "bodyArg": 0, "bodyConvert": "sendgrid-mail", "operationId": "mail.send"},
+    "client.request": {"method": "GET", "path": "/{url}", "params": {"url": "arg:0.url|arg:0.uri"}, "methodFrom": "arg:0.method", "bodyArg": 0, "bodyProp": "body", "queryArg": 0, "queryProp": "qs"}
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$comment": "Genkit: `ai = genkit({ plugins, model })`, then `ai.generate(...)` calls the provider of its model, as the AI SDK does (`ai-sdk.json`). A model is a plugin's reference (`googleAI.model(\"gemini-2.5-flash\")`, `.embedder(...)`, the legacy packages' `gemini(...)` and exported constants), a string naming the plugin (`\"googleai/gemini-2.5-flash\"`), else the instance's default `model`. `sites` maps a method of the instance to the request it sends: `generate`, `stream` or `embed`. `definePrompt` is reported where the prompt is defined. Paths checked against @genkit-ai/google-genai 1.43 (googleai/client.ts, vertexai/client.ts), @genkit-ai/googleai 1.28 (through @google/generative-ai, v1beta) and @genkit-ai/vertexai 1.43 (through @google-cloud/vertexai's preview API, embedders through predict.ts). Vertex AI's `{location}` is the plugin's (default us-central1), its embedders use `:predict` except the newer `gemini-embedding-*` ones (`embedContentModels`). `modelPaths`: the models a plugin sends elsewhere than `generateContent` (Veo, Imagen, Lyria, the Interactions API), by name, first match.",
+  "packages": ["genkit", "genkit/beta"],
+  "factories": ["genkit"],
+  "sites": { "generate": "generate", "generateStream": "stream", "definePrompt": "generate", "embed": "embed", "embedMany": "embed" },
+  "plugins": [
+    {
+      "package": "@genkit-ai/google-genai", "export": "googleAI", "prefix": "googleai",
+      "provider": "google-ai", "host": "generativelanguage.googleapis.com", "basePath": "/v1beta", "auth": "apikey",
+      "paths": { "generate": "/v1beta/models/{model}:generateContent", "stream": "/v1beta/models/{model}:streamGenerateContent", "embed": "/v1beta/models/{model}:embedContent" },
+      "modelPaths": [["^veo-", "/v1beta/models/{model}:predictLongRunning"], ["^(lyria|antigravity|deep-research)-", "/v1beta/interactions"]]
+    },
+    {
+      "package": "@genkit-ai/google-genai", "export": "vertexAI", "prefix": "vertexai",
+      "provider": "google-vertex", "host": "{location}-aiplatform.googleapis.com", "basePath": "/v1beta1", "auth": "bearer",
+      "paths": {
+        "generate": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent",
+        "stream": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent",
+        "embed": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict",
+        "embedContent": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:embedContent"
+      },
+      "embedContentModels": "^gemini-embedding-(?!001$)",
+      "modelPaths": [
+        ["^veo-", "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:predictLongRunning"],
+        ["^(lyria-002$|imagen-|virtual-try-on-)", "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict"],
+        ["^lyria-", "/v1beta1/projects/{project}/locations/{location}/interactions"]
+      ]
+    },
+    {
+      "package": "@genkit-ai/googleai", "export": "googleAI", "default": true, "functions": ["gemini"], "prefix": "googleai",
+      "provider": "google-ai", "host": "generativelanguage.googleapis.com", "basePath": "/v1beta", "auth": "apikey",
+      "paths": { "generate": "/v1beta/models/{model}:generateContent", "stream": "/v1beta/models/{model}:streamGenerateContent", "embed": "/v1beta/models/{model}:embedContent" },
+      "modelPaths": [["^imagen", "/v1beta/models/{model}:predict"], ["^veo", "/v1beta/models/{model}:predictLongRunning"]],
+      "constants": {
+        "gemini10Pro": "gemini-1.0-pro", "gemini15Pro": "gemini-1.5-pro", "gemini15Flash": "gemini-1.5-flash", "gemini15Flash8b": "gemini-1.5-flash-8b",
+        "gemini20Flash": "gemini-2.0-flash", "gemini20FlashExp": "gemini-2.0-flash-exp", "gemini20FlashLite": "gemini-2.0-flash-lite", "gemini20ProExp0205": "gemini-2.0-pro-exp-02-05",
+        "gemini25FlashPreview0417": "gemini-2.5-flash-preview-04-17", "gemini25ProExp0325": "gemini-2.5-pro-exp-03-25", "gemini25ProPreview0325": "gemini-2.5-pro-preview-03-25",
+        "gemini25Pro": "gemini-2.5-pro", "gemini25Flash": "gemini-2.5-flash", "gemini25FlashLite": "gemini-2.5-flash-lite",
+        "textEmbeddingGecko001": "embedding-001", "textEmbedding004": "text-embedding-004", "geminiEmbedding001": "gemini-embedding-001"
+      }
+    },
+    {
+      "package": "@genkit-ai/vertexai", "export": "vertexAI", "default": true, "functions": ["gemini"], "prefix": "vertexai",
+      "provider": "google-vertex", "host": "{location}-aiplatform.googleapis.com", "basePath": "/v1beta1", "auth": "bearer",
+      "paths": {
+        "generate": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent",
+        "stream": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent",
+        "embed": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict"
+      },
+      "modelPaths": [["^imagen", "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:predict"]],
+      "constants": {
+        "gemini10Pro": "gemini-1.0-pro", "gemini15Pro": "gemini-1.5-pro", "gemini15Flash": "gemini-1.5-flash", "gemini20Flash001": "gemini-2.0-flash-001",
+        "gemini20Flash": "gemini-2.0-flash", "gemini20FlashLite": "gemini-2.0-flash-lite", "gemini20FlashLitePreview0205": "gemini-2.0-flash-lite-preview-02-05",
+        "gemini20ProExp0205": "gemini-2.0-pro-exp-02-05", "gemini25FlashPreview0417": "gemini-2.5-flash-preview-04-17", "gemini25ProExp0325": "gemini-2.5-pro-exp-03-25",
+        "gemini25ProPreview0325": "gemini-2.5-pro-preview-03-25", "gemini25Pro": "gemini-2.5-pro", "gemini25Flash": "gemini-2.5-flash", "gemini25FlashLite": "gemini-2.5-flash-lite",
+        "textEmbeddingGecko003": "textembedding-gecko@003", "textEmbedding004": "text-embedding-004", "textEmbedding005": "text-embedding-005",
+        "textEmbeddingGeckoMultilingual001": "textembedding-gecko-multilingual@001", "textMultilingualEmbedding002": "text-multilingual-embedding-002",
+        "multimodalEmbedding001": "multimodalembedding@001", "geminiEmbedding001": "gemini-embedding-001"
+      }
+    }
+  ]
+}

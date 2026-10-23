@@ -6,7 +6,7 @@ import type { BodyEncoding, DynamicOrigin, DynamicPart, EvalCtx, Shape } from ".
 import { evaluate, staticText } from "./evaluate.js";
 import { partsOf, stringShapeOf } from "./string-template.js";
 import { xmlBody } from "./xml-shape.js";
-import { withEdits } from "./edited-shape.js";
+import { isFilledModel, withEdits } from "./edited-shape.js";
 import { astDocumentParts } from "./graphql-ast.js";
 import { importedDocument, isDocumentExpression, printedArgument } from "./graphql-source.js";
 import { localReturn } from "./local-return.js";
@@ -126,7 +126,8 @@ function identifierShape(u: Expression, ctx: EvalCtx, depth: number, dynamic: Dy
     // the callers' own dynamic parts belong to them, not to this request
     if (sub.isParam) return sub.expr ? shapeOf(sub.expr, ctx, depth + 1, dynamic) : paramShape(decl, ctx, (e, c) => shapeOf(e, c, depth + 1), fromChecker(u, "param", u.getText()));
     if (Node.isVariableDeclaration(decl) && decl.getInitializer()) {
-      const r = shapeOf(decl.getInitializer()!, ctx, depth + 1, dynamic);
+      const init = decl.getInitializer()!;
+      const r: ShapeResult = isFilledModel(init, decl, u) ? { shape: { type: "object", properties: {}, required: [] }, fromLiteral: true } : shapeOf(init, ctx, depth + 1, dynamic);
       return { ...r, shape: withEdits(r.shape, decl, u, (e) => shapeOf(e, ctx, depth + 1, dynamic), dynamic) };
     }
     const bound = bindingElementValue(decl, ctx);

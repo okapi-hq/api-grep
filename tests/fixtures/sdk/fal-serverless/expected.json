@@ -1,0 +1,9 @@
+{
+  "issue": "fal registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "legacy.ts", "line": 5, "provider": "fal"},
+    {"file": "legacy.ts", "line": 7, "provider": "fal"},
+    {"file": "legacy.ts", "line": 9, "provider": "fal"},
+    {"file": "legacy.ts", "line": 11, "provider": "fal"}
+  ]
+}

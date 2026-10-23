@@ -1,0 +1,1 @@
+{"name": "lanternfish-web", "dependencies": {"@bugsnag/js": "^8.1.0", "@bugsnag/node": "^8.1.0"}}

@@ -2,12 +2,13 @@ import { Node, type CallExpression, type Expression, type NewExpression } from "
 import type { AuthScheme, Callee, RawCall } from "../types.js";
 import { GATEWAY, optionsModels, PROVIDERS, type AiSdkProvider, type Model } from "./ai-sdk-model.js";
 import { exportedChain } from "./callee.js";
+import { GENKIT_PACKAGES } from "./genkit.js";
 import data from "./registry/ai-sdk.json" with { type: "json" };
 
 const FUNCTIONS = new Set(data.functions);
 const AGENTS = new Map<string, string[]>(Object.entries(data.agents));
-/** Packages whose models or agents the AI SDK detector reads (they count as supported in the coverage report). */
-export const AI_SDK_PACKAGES = new Set([...PROVIDERS.keys(), ...AGENTS.keys()]);
+/** Packages whose models or agents the AI SDK and Genkit detectors read (they count as supported in the coverage report). */
+export const AI_SDK_PACKAGES = new Set([...PROVIDERS.keys(), ...AGENTS.keys(), ...GENKIT_PACKAGES]);
 
 /** Agent libraries (`@mastra/core`) -> their agent constructors: a call with that `sdk.chain` in a file importing it is theirs too. */
 export const AI_SDK_AGENTS: ReadonlyMap<string, string[]> = AGENTS;

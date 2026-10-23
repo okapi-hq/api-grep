@@ -1,0 +1,18 @@
+{
+  "issue": "fal registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "canvas.py", "line": 11, "provider": "fal"},
+    {"file": "canvas.py", "line": 15, "provider": "fal"},
+    {"file": "canvas.py", "line": 19, "provider": "fal"},
+    {"file": "canvas.py", "line": 23, "provider": "fal"},
+    {"file": "canvas.py", "line": 27, "provider": "fal"},
+    {"file": "canvas.py", "line": 31, "provider": "fal"},
+    {"file": "canvas.py", "line": 35, "provider": "fal"},
+    {"file": "canvas.py", "line": 36, "provider": "fal"},
+    {"file": "canvas.py", "line": 40, "provider": "fal"},
+    {"file": "canvas.py", "line": 45, "provider": "fal"},
+    {"file": "canvas.py", "line": 49, "provider": "fal"},
+    {"file": "canvas.py", "line": 53, "provider": "fal"},
+    {"file": "canvas.py", "line": 57, "provider": "fal"}
+  ]
+}

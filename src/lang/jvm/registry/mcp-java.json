@@ -1,0 +1,51 @@
+{
+  "$comment": "The MCP Java SDK's client (also used from Kotlin): `McpClient.sync(transport).requestTimeout(d).build()` (or `async`) sends JSON-RPC to the server its transport points at. `HttpClientStreamableHttpTransport.builder(url)` posts to the URL resolved with its endpoint (`/mcp`, `.endpoint(p)`), `HttpClientSseClientTransport.builder(url)` (also the 0.x constructors) to the URL resolved with its SSE endpoint (`/sse`, `.sseEndpoint(p)`), both by RFC 3986 as `java.net.URI.resolve` does. A client over `StdioClientTransport` sends no HTTP request and is not reported; servers (`McpServer.sync(provider)`) receive requests: none of their methods is listed. `operation` is the MCP method, `operation.target` the tool, prompt or resource named in the request record (`new CallToolRequest(name, arguments)`, `CallToolRequest.builder(name)` / `.name(n)`). An injected `McpSyncClient` / `McpAsyncClient` (Spring AI's MCP client starter) is a client whose server the code does not say.",
+  "package": "io.modelcontextprotocol.sdk:mcp",
+  "aliases": ["io.modelcontextprotocol.sdk:mcp-core"],
+  "imports": ["io.modelcontextprotocol.client.McpClient", "io.modelcontextprotocol.client.McpSyncClient", "io.modelcontextprotocol.client.McpAsyncClient"],
+  "provider": "mcp",
+  "host": "{mcpServer}",
+  "auth": "unknown",
+  "generatedFrom": "manual (checked against the sources of io.modelcontextprotocol.sdk:mcp 0.11 and mcp-core 2.1)",
+  "instance": { "names": ["sync", "async", "McpSyncClient", "McpAsyncClient"], "build": "build" },
+  "setters": {
+    "packages": ["io.modelcontextprotocol.spec"],
+    "case": "camel",
+    "fields": { "meta": "", "progressToken": "" },
+    "positional": {
+      "CallToolRequest": ["name", "arguments"],
+      "GetPromptRequest": ["name", "arguments"],
+      "ReadResourceRequest": ["uri"],
+      "SubscribeRequest": ["uri"],
+      "UnsubscribeRequest": ["uri"]
+    }
+  },
+  "endpoint": {
+    "clients": {
+      "sync": { "transport": "0" },
+      "async": { "transport": "0" }
+    },
+    "transports": {
+      "HttpClientStreamableHttpTransport.builder": { "url": "0", "mcpTransport": "streamable-http", "path": { "default": "/mcp", "step": "endpoint" } },
+      "HttpClientSseClientTransport.builder": { "url": "0", "mcpTransport": "sse", "path": { "default": "/sse", "step": "sseEndpoint" } },
+      "HttpClientSseClientTransport": { "url": "0/1|1/3|1/4|2/5", "mcpTransport": "sse", "path": { "default": "/sse", "arg": "2/4|3/5" } }
+    },
+    "build": "build",
+    "nonHttp": ["StdioClientTransport"]
+  },
+  "methods": {
+    "initialize": { "method": "POST", "path": "", "mcp": "initialize" },
+    "ping": { "method": "POST", "path": "", "mcp": "ping" },
+    "callTool": { "method": "POST", "path": "", "mcp": "tools/call", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments" },
+    "listTools": { "method": "POST", "path": "", "mcp": "tools/list" },
+    "listResources": { "method": "POST", "path": "", "mcp": "resources/list" },
+    "readResource": { "method": "POST", "path": "", "mcp": "resources/read", "targetArg": "0.uri" },
+    "listResourceTemplates": { "method": "POST", "path": "", "mcp": "resources/templates/list" },
+    "subscribeResource": { "method": "POST", "path": "", "mcp": "resources/subscribe", "targetArg": "0.uri" },
+    "unsubscribeResource": { "method": "POST", "path": "", "mcp": "resources/unsubscribe", "targetArg": "0.uri" },
+    "listPrompts": { "method": "POST", "path": "", "mcp": "prompts/list" },
+    "getPrompt": { "method": "POST", "path": "", "mcp": "prompts/get", "targetArg": "0.name", "bodyArg": 0, "bodyProp": "arguments" },
+    "completeCompletion": { "method": "POST", "path": "", "mcp": "completion/complete" },
+    "setLoggingLevel": { "method": "POST", "path": "", "mcp": "logging/setLevel" }
+  }
+}

@@ -18,6 +18,7 @@ import discordgo from "./registry/discordgo.json" with { type: "json" };
 import sentryGo from "./registry/sentry-go.json" with { type: "json" };
 import a2aGo from "./registry/a2a-go.json" with { type: "json" };
 import a2aGoV2 from "./registry/a2a-go-v2.json" with { type: "json" };
+import goTelegramBot from "./registry/go-telegram-bot.json" with { type: "json" };
 
 /**
  * Registries and client tables name Go import paths (`github.com/sashabaranov/go-openai`); the engine matches dotted
@@ -36,7 +37,7 @@ function majorVersions(entries: (IrRegistryEntry & { majorVersions?: string[] })
   ]);
 }
 
-export const GO_REGISTRY = rooted(majorVersions([goOpenai, openaiGo, anthropicSdkGo, genai, slackGo, discordgo, sentryGo, a2aGo, a2aGoV2] as unknown as IrRegistryEntry[]));
+export const GO_REGISTRY = rooted(majorVersions([goOpenai, openaiGo, anthropicSdkGo, genai, slackGo, discordgo, sentryGo, a2aGo, a2aGoV2, goTelegramBot] as unknown as IrRegistryEntry[]));
 
 export const GO_EXCLUDES = [...SHARED_EXCLUDES, "**/vendor/**", "**/testdata/**", "**/*_test.go"];
 

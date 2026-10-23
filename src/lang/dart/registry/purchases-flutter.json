@@ -1,0 +1,27 @@
+{
+  "$comment": "purchases_flutter: static `Purchases.*` calls after `Purchases.configure(PurchasesConfiguration(apiKey))`, sent by the native RevenueCat SDK (the one under react-native-purchases: same methods, same requests). Purchases post the store receipt; `getProducts`, `logOut`, `setAttributes` and the listeners send nothing of their own the code names. `{app_user_id}` is the SDK's current user, not in the code.",
+  "package": "purchases_flutter",
+  "imports": ["purchases_flutter.Purchases"],
+  "provider": "revenuecat",
+  "host": "api.revenuecat.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (purchases_flutter 10.x method names, paths of the react-native-purchases registry)",
+  "instance": { "names": ["Purchases"] },
+  "methods": {
+    "getOfferings": {"method": "GET", "path": "/v1/subscribers/{app_user_id}/offerings"},
+    "getCustomerInfo": {"method": "GET", "path": "/v1/subscribers/{app_user_id}"},
+    "purchasePackage": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseStoreProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseSubscriptionOption": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseDiscountedPackage": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseDiscountedProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchasePackageWithWinBackOffer": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseProductWithWinBackOffer": {"method": "POST", "path": "/v1/receipts"},
+    "purchase": {"method": "POST", "path": "/v1/receipts"},
+    "restorePurchases": {"method": "POST", "path": "/v1/receipts"},
+    "syncPurchases": {"method": "POST", "path": "/v1/receipts"},
+    "syncPurchasesForResult": {"method": "POST", "path": "/v1/receipts"},
+    "logIn": {"method": "POST", "path": "/v1/subscribers/identify"}
+  }
+}

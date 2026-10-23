@@ -353,11 +353,6 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       "client": "sdk",
       "dynamic": [
         {
-          "name": "ServiceSid",
-          "origin": "sdk",
-          "where": "path",
-        },
-        {
           "name": "to",
           "origin": "param",
           "where": "body",
@@ -1012,7 +1007,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       "dynamic": [
         {
           "name": "file_id",
-          "origin": "sdk",
+          "origin": "param",
           "where": "path",
         },
       ],
@@ -1825,20 +1820,28 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
     "complete": true,
     "droppedCalls": [],
     "filesScanned": 3,
-    "filesSeen": 29,
+    "filesSeen": 51,
     "languages": {
       "python": {
         "filesScanned": 3,
-        "filesSeen": 29,
+        "filesSeen": 51,
       },
     },
     "skipped": [
+      {
+        "file": "bigquery/warehouse.py",
+        "reason": "excluded",
+      },
       {
         "file": "claude-agent/reviewer.py",
         "reason": "excluded",
       },
       {
         "file": "discord/bot.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "fal/canvas.py",
         "reason": "excluded",
       },
       {
@@ -1859,6 +1862,18 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       },
       {
         "file": "huggingface/infer.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "langchain-hosted/fireworks_models.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "langchain-hosted/hf_models.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "langchain-hosted/together_models.py",
         "reason": "excluded",
       },
       {
@@ -1906,11 +1921,55 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "mercadopago/payments.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "msgraph/beta.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "msgraph/directory.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "oauthlib/desktop.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "oauthlib/web.py",
+        "reason": "excluded",
+      },
+      {
         "file": "pygithub/release_bot.py",
         "reason": "excluded",
       },
       {
+        "file": "replicate/studio.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "sendgrid/mailer.py",
+        "reason": "excluded",
+      },
+      {
         "file": "sentry/errors.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "slack-bolt/async_digest.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "slack-bolt/listeners.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "slack-bolt/standup_bot.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "slack-bolt/unrelated.py",
         "reason": "excluded",
       },
       {
@@ -1930,6 +1989,30 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
         "reason": "excluded",
       },
       {
+        "file": "vertexai/copywriter.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "vertexai/drafts.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "vertexai/media.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "vertexai/scoring.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "zai/assistant.py",
+        "reason": "excluded",
+      },
+      {
+        "file": "zai/tutor.py",
+        "reason": "excluded",
+      },
+      {
         "file": "llm-shapes/agents/__init__.py",
         "reason": "excluded",
       },
@@ -1939,7 +2022,7 @@ exports[`python: SDKs > reads clients, module-level APIs and keyword-argument bo
       },
     ],
     "skippedCounts": {
-      "excluded": 26,
+      "excluded": 48,
     },
     "unfollowed": [],
   },

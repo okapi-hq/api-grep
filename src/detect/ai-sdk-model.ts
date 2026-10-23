@@ -1,4 +1,5 @@
-import { Node, SyntaxKind, VariableDeclarationKind, type CallExpression, type Expression, type VariableDeclaration } from "ts-morph";
+import { Node, SyntaxKind, VariableDeclarationKind, type CallExpression, type Expression, type Identifier, type VariableDeclaration } from "ts-morph";
+import type { Callee } from "../types.js";
 import { guardedValue, isStringLike } from "../ast/expr.js";
 import { isFunctionLike, returnsOf } from "../ast/function.js";
 import { declarationsOf, getProp, importedVariable, propertyValue, toObjectLiteral } from "../ast/object.js";
@@ -21,11 +22,37 @@ export interface Model {
   entry: AiSdkProvider;
   member: string;
   modelId?: Expression;
+  /** A model name the library fixes (Genkit's exported `gemini15Flash`), when no expression of the code holds it. */
+  name?: string;
   baseUrl?: Expression;
 }
 
 /** The models an expression may be, one per distinct reading; undefined when one of the ways it can go is not traced. */
 export type Models = Model[] | undefined;
+
+/**
+ * How a library writes its models, the rest of the tracing (constants, branches, helpers' returns) being shared: the AI
+ * SDK's here, Genkit's in `genkit.ts`.
+ */
+export interface ModelKit {
+  /** A string model (`"openai/gpt-4o"`). */
+  string(u: Expression): Models;
+  /** A call naming a model (`openai("gpt-4o")`), else undefined. */
+  factory(u: CallExpression, c: Callee): Models;
+  /** An imported constant naming a model, else undefined. */
+  imported?(id: Identifier): Models;
+}
+
+/** `openai("gpt-4o")`, `openai.chat("gpt-4o")`, `myOpenAI("x")` with `myOpenAI = createOpenAI({ baseURL })`. */
+function aiSdkFactory(u: CallExpression, c: Callee): Models {
+  const entry = c.package ? PROVIDERS.get(c.package) : undefined;
+  if (!entry) return undefined;
+  const member = c.instance ? c.chain.join(".") : exportedChain(c).slice(1).join(".");
+  const baseUrl = c.instance ? getProp(c.instance.args[0], "baseURL") : undefined;
+  return [{ entry, member, modelId: u.getArguments()[0] as Expression | undefined, baseUrl }];
+}
+
+const AI_SDK: ModelKit = { string: (u) => [{ entry: GATEWAY, member: "", modelId: u }], factory: aiSdkFactory };
 
 const MAX_DEPTH = 6;
 /** Candidates kept per call, as for host tables (`resolve/choice.ts`). */
@@ -41,39 +68,40 @@ const MODEL_METHODS = new Set(["languageModel", "textEmbeddingModel", "imageMode
  * returns (`model: pickModel()`), a `let` given its model in branches, a constant imported from another file. A model
  * picked at run time among several is each of them.
  */
-export function resolveModels(expr: Expression, depth = 0): Models {
+export function resolveModels(expr: Expression, depth = 0, kit: ModelKit = AI_SDK): Models {
   if (depth > MAX_DEPTH) return undefined;
   const u = guardedValue(expr);
-  if (isStringLike(u)) return [{ entry: GATEWAY, member: "", modelId: u }];
-  if (Node.isIdentifier(u)) return identifierModels(u, depth);
-  if (Node.isConditionalExpression(u)) return branchModels([u.getWhenTrue(), u.getWhenFalse()].map((b) => resolveModels(b, depth + 1)));
-  return Node.isCallExpression(u) ? callModels(u, depth) : undefined;
+  if (isStringLike(u)) return kit.string(u);
+  if (Node.isIdentifier(u)) return identifierModels(u, depth, kit);
+  if (Node.isConditionalExpression(u)) return branchModels([u.getWhenTrue(), u.getWhenFalse()].map((b) => resolveModels(b, depth + 1, kit)));
+  return Node.isCallExpression(u) ? callModels(u, depth, kit) : undefined;
 }
 
 /**
- * The model of a call's options: `{ model }`, or the `model` of the object a local helper returns and the options
- * spread (`streamText({ ...modelOptions(id), messages })`).
+ * The model of a call's options: `{ model }` (or the property `key`), or the `model` of the object a local helper
+ * returns and the options spread (`streamText({ ...modelOptions(id), messages })`).
  */
-export function optionsModels(options: Expression | undefined): Models {
-  const own = getProp(options, "model");
-  if (own) return resolveModels(own);
+export function optionsModels(options: Expression | undefined, kit: ModelKit = AI_SDK, key = "model"): Models {
+  const own = getProp(options, key);
+  if (own) return resolveModels(own, 0, kit);
   const spreads = toObjectLiteral(options)?.getProperties().filter((p) => Node.isSpreadAssignment(p)) ?? [];
   for (const spread of spreads.reverse()) {
     const u = guardedValue(spread.getExpression());
     const fn = Node.isCallExpression(u) ? wrapperFunction(describeCallee(u)) : undefined;
-    const models = isFunctionLike(fn) ? returnsOf(fn).map((r) => getProp(r, "model")) : [];
-    if (models.length > 0) return allOf(models.map((m) => (m ? resolveModels(m, 1) : undefined)));
+    const models = isFunctionLike(fn) ? returnsOf(fn).map((r) => getProp(r, key)) : [];
+    if (models.length > 0) return allOf(models.map((m) => (m ? resolveModels(m, 1, kit) : undefined)));
   }
   return undefined;
 }
 
 /** A constant's value (imported ones too), a parameter's default, or what a `let` without one is given later. */
-function identifierModels(id: Expression, depth: number): Models {
+function identifierModels(id: Identifier, depth: number, kit: ModelKit): Models {
   const decl = declarationsOf(id)[0];
   const init = decl && (Node.isVariableDeclaration(decl) || Node.isParameterDeclaration(decl)) ? decl.getInitializer() : importedVariable(id)?.getInitializer();
-  if (init) return resolveModels(init, depth + 1);
+  if (init) return resolveModels(init, depth + 1, kit);
   const values = decl && Node.isVariableDeclaration(decl) ? assignedValues(decl) : [];
-  return values.length > 0 ? allOf(values.map((v) => resolveModels(v, depth + 1))) : undefined;
+  if (values.length > 0) return allOf(values.map((v) => resolveModels(v, depth + 1, kit)));
+  return kit.imported?.(id);
 }
 
 /** `let model; if (a) model = openai(x); else model = anthropic(y)`: every value the file assigns the variable. */
@@ -88,38 +116,34 @@ function assignedValues(decl: VariableDeclaration): Expression[] {
   });
 }
 
-function callModels(u: CallExpression, depth: number): Models {
+function callModels(u: CallExpression, depth: number, kit: ModelKit): Models {
   const fn = u.getExpression();
   if (Node.isPropertyAccessExpression(fn) && MODEL_METHODS.has(fn.getName())) {
-    const custom = customModels(fn.getExpression(), fn.getName(), u.getArguments()[0] as Expression | undefined, depth + 1);
+    const custom = customModels(fn.getExpression(), fn.getName(), u.getArguments()[0] as Expression | undefined, depth + 1, kit);
     if (custom) return custom;
   }
   const c = describeCallee(u);
   const name = exportedChain(c).join(".");
   if (c.package === "ai" && WRAPPERS.has(name)) {
     const inner = getProp(u.getArguments()[0] as Expression | undefined, "model");
-    return inner ? resolveModels(inner, depth + 1) : undefined;
+    return inner ? resolveModels(inner, depth + 1, kit) : undefined;
   }
-  const entry = c.package ? PROVIDERS.get(c.package) : undefined;
-  if (!entry) {
-    const local = wrapperFunction(c);
-    return isFunctionLike(local) && depth < MAX_DEPTH ? allOf(returnsOf(local).map((r) => resolveModels(r, depth + 1))) : undefined;
-  }
-  const member = c.instance ? c.chain.join(".") : exportedChain(c).slice(1).join(".");
-  const baseUrl = c.instance ? getProp(c.instance.args[0], "baseURL") : undefined;
-  return [{ entry, member, modelId: u.getArguments()[0] as Expression | undefined, baseUrl }];
+  const own = kit.factory(u, c);
+  if (own) return own;
+  const local = wrapperFunction(c);
+  return isFunctionLike(local) && depth < MAX_DEPTH ? allOf(returnsOf(local).map((r) => resolveModels(r, depth + 1, kit))) : undefined;
 }
 
 /** `myProvider.languageModel(key)` on `customProvider({ languageModels: { [key]: model } })` from `ai`. */
-function customModels(receiver: Expression, method: string, key: Expression | undefined, depth: number): Models {
+function customModels(receiver: Expression, method: string, key: Expression | undefined, depth: number, kit: ModelKit): Models {
   if (depth > MAX_DEPTH) return undefined;
   const u = guardedValue(receiver);
   if (Node.isIdentifier(u)) {
     const decl = declarationsOf(u)[0];
     const init = decl && Node.isVariableDeclaration(decl) ? decl.getInitializer() : importedVariable(u)?.getInitializer();
-    return init ? customModels(init, method, key, depth + 1) : undefined;
+    return init ? customModels(init, method, key, depth + 1, kit) : undefined;
   }
-  if (Node.isConditionalExpression(u)) return branchModels([u.getWhenTrue(), u.getWhenFalse()].map((b) => customModels(b, method, key, depth + 1)));
+  if (Node.isConditionalExpression(u)) return branchModels([u.getWhenTrue(), u.getWhenFalse()].map((b) => customModels(b, method, key, depth + 1, kit)));
   if (!Node.isCallExpression(u)) return undefined;
   const c = describeCallee(u);
   if (c.package !== "ai" || !CUSTOM_PROVIDERS.has(exportedChain(c).join("."))) return undefined;
@@ -127,11 +151,11 @@ function customModels(receiver: Expression, method: string, key: Expression | un
   const k = key ? guardedValue(key) : undefined;
   if (k && (Node.isStringLiteral(k) || Node.isNoSubstitutionTemplateLiteral(k))) {
     const value = getProp(map, k.getLiteralValue());
-    return value ? resolveModels(value, depth + 1) : undefined;
+    return value ? resolveModels(value, depth + 1, kit) : undefined;
   }
   // a name chosen at run time: any of the entries
   const values = toObjectLiteral(map)?.getProperties().map((p) => propertyValue(p)) ?? [];
-  return values.length > 0 ? allOf(values.map((v) => (v ? resolveModels(v, depth + 1) : undefined))) : undefined;
+  return values.length > 0 ? allOf(values.map((v) => (v ? resolveModels(v, depth + 1, kit) : undefined))) : undefined;
 }
 
 /** Ways that are all taken by some run: every one must be traced. */
@@ -150,7 +174,7 @@ function branchModels(found: Models[]): Models {
 
 /** One reading per provider, endpoint, base URL and model id written; over `MAX_MODELS`, none (the model is unknown). */
 function distinct(models: Model[]): Models {
-  const key = (m: Model): string => [m.entry.package, m.member, m.baseUrl?.getText() ?? "", m.modelId?.getText() ?? ""].join("\u0000");
+  const key = (m: Model): string => [m.entry.package, m.entry.provider, m.member, m.baseUrl?.getText() ?? "", m.modelId?.getText() ?? "", m.name ?? ""].join("\u0000");
   const out = new Map<string, Model>();
   for (const m of models) if (!out.has(key(m))) out.set(key(m), m);
   return out.size <= MAX_MODELS ? [...out.values()] : undefined;

@@ -84,3 +84,43 @@ describe("dart: a package laid out in lib/", () => {
     expect(r.diagnostics?.languages).toEqual({ dart: { filesSeen: 7, filesScanned: 7 } });
   });
 });
+
+describe("dart: SDKs whose requests the native SDKs send", () => {
+  const rows = (r: Awaited<ReturnType<typeof scanFixture>>, provider: string): string[] =>
+    r.calls.filter((c) => c.provider === provider).map((c) => `${c.location.line} ${c.method} ${c.urlTemplate} ${c.authScheme}`);
+
+  it("reads posthog_flutter with the host set on the config, purchases_flutter and flutter_stripe", async () => {
+    const r = await scanFixture("dart/mobile-sdks");
+    // `..host = h` on the config given to `setup`; flag reads and `reset` are local
+    expect(rows(r, "posthog")).toEqual([12, 14, 17, 18, 19].map((l) => `${l} POST https://eu.i.posthog.com/batch none`).concat("23 POST https://eu.i.posthog.com/flags/?v=2 none"));
+    expect(Object.keys(props(at(r, "analytics.dart", 12)))).toEqual(["eventName", "properties"]);
+    // `configure`, `logOut` and `getProducts` send nothing the code names
+    expect(rows(r, "revenuecat")).toEqual([
+      "8 GET https://api.revenuecat.com/v1/subscribers/{app_user_id}/offerings bearer",
+      "10 GET https://api.revenuecat.com/v1/subscribers/{app_user_id} bearer",
+      "13 POST https://api.revenuecat.com/v1/receipts bearer",
+      "17 POST https://api.revenuecat.com/v1/receipts bearer",
+      "20 POST https://api.revenuecat.com/v1/receipts bearer",
+      "22 POST https://api.revenuecat.com/v1/subscribers/identify bearer",
+    ]);
+    // the intent id is inside the client secret: a placeholder; `initPaymentSheet` is configuration
+    expect(rows(r, "stripe")).toEqual([
+      "12 POST https://api.stripe.com/v1/payment_intents/{intent}/confirm bearer",
+      "15 POST https://api.stripe.com/v1/payment_methods bearer",
+      "17 POST https://api.stripe.com/v1/payment_intents/{intent}/confirm bearer",
+      "19 POST https://api.stripe.com/v1/tokens bearer",
+      "21 POST https://api.stripe.com/v1/setup_intents/{intent}/confirm bearer",
+      "23 GET https://api.stripe.com/v1/payment_intents/{intent} bearer",
+      "25 GET https://api.stripe.com/v1/payment_intents/{intent} bearer",
+    ]);
+    expect(r.coverage?.sdks.map((s) => [s.package, s.status])).toEqual([["flutter_stripe", "ok"], ["posthog_flutter", "ok"], ["purchases_flutter", "ok"]]);
+  });
+
+  it("reads a host set on the config variable, and the SetupIntent a payment sheet is given", async () => {
+    const r = await scanFixture("dart/mobile-sdks-setup");
+    expect(r.calls.map((c) => `${c.location.line} ${c.method} ${c.urlTemplate}`)).toEqual([
+      "14 POST https://api.stripe.com/v1/setup_intents/{intent}/confirm",
+      "15 POST https://analytics.kilnclub.example/batch",
+    ]);
+  });
+});

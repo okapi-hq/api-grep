@@ -94,6 +94,8 @@ export interface IrRaw {
   baseUrl?: Scoped;
   /** `reference`: the URL is a reference resolved against the base by RFC 3986 (Retrofit), not appended to it. */
   urlJoin?: "reference";
+  /** A path the SDK resolves against `baseUrl` by RFC 3986 before its requests (the MCP Java SDK's transport endpoint). */
+  baseRef?: Scoped;
   method?: Scoped;
   impliedMethod?: string;
   body?: Scoped;

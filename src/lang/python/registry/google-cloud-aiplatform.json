@@ -1,0 +1,28 @@
+{
+  "$comment": "google-cloud-aiplatform: `aiplatform.init(project=..., location=...)`, then `aiplatform.Endpoint(endpoint_name).predict(instances=[...])` on a deployed model's endpoint. `endpoint_name` is an id or the full `projects/P/locations/L/endpoints/E` name: its pieces fill the path, else `Endpoint(project=, location=)`, else the project's one `init` call. Dedicated and private endpoints (their own hosts) are not listed.",
+  "package": "google-cloud-aiplatform",
+  "aliases": [
+    "vertexai"
+  ],
+  "imports": [
+    "google.cloud.aiplatform"
+  ],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-aiplatform 2.6.0 google/cloud/aiplatform/models.py: Endpoint)",
+  "instance": {
+    "names": [
+      "Endpoint"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "predict": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:predict", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "fieldArgs": ["instances", "parameters"], "bodyKwargs": true},
+    "predict_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:predict", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "fieldArgs": ["instances", "parameters"], "bodyKwargs": true},
+    "raw_predict": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:rawPredict", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "bodyKw": "body", "bodyArg": 0},
+    "stream_raw_predict": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:streamRawPredict", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "bodyKw": "body", "bodyArg": 0},
+    "explain": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:explain", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "fieldArgs": ["instances", "parameters"], "bodyKwargs": true},
+    "explain_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/endpoints/{endpoint}:explain", "params": {"endpoint": "seg:Endpoint:0#/-1|seg:Endpoint:kw:endpoint_name#/-1", "project": "seg:Endpoint:0#/-5|seg:Endpoint:kw:endpoint_name#/-5|seg:Endpoint:kw:project|setup:vertexai.init,aiplatform.init:kw:project", "location": "seg:Endpoint:0#/-3|seg:Endpoint:kw:endpoint_name#/-3|seg:Endpoint:kw:location|setup:vertexai.init,aiplatform.init:kw:location"}, "fieldArgs": ["instances", "parameters"], "bodyKwargs": true}
+  }
+}

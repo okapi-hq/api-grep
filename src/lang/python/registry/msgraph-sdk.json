@@ -1,0 +1,18 @@
+{
+  "$comment": "msgraph-sdk (Kiota): `client = GraphServiceClient(credentials, scopes)`, then a request builder per attribute (`client.users.by_user_id(u).messages.get()`): each attribute between the client and the verb is a path segment under `/v1.0`, named in camelCase on the wire with the exceptions of `src/lang/python/msgraph-segments.json` (`count` is `$count`, `delta` is `delta()`), a `by_*_id(x)` call the value x; `me` is `/me`. The verb takes `body` (a model object, not read) and `request_configuration`, whose `query_parameters` are read by `src/lang/python/msgraph.ts` (`select` is `$select`). `with_url(url)` and the builders' parameterized functions (`delta_with_token(...)`) are not read.",
+  "package": "msgraph-sdk",
+  "imports": ["msgraph"],
+  "provider": "microsoft",
+  "host": "graph.microsoft.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against msgraph-sdk 1.65.0 source)",
+  "instance": {"names": ["GraphServiceClient"]},
+  "methods": {
+    "**.get": {"method": "GET", "path": "/v1.0/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "queryArg": 0, "queryKw": "request_configuration"},
+    "**.post": {"method": "POST", "path": "/v1.0/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.patch": {"method": "PATCH", "path": "/v1.0/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.put": {"method": "PUT", "path": "/v1.0/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "bodyArg": 0, "bodyKw": "body", "queryArg": 1, "queryKw": "request_configuration"},
+    "**.delete": {"method": "DELETE", "path": "/v1.0/{path}", "params": {"path": "segs:GraphServiceClient:msgraph"}, "queryArg": 0, "queryKw": "request_configuration"}
+  }
+}

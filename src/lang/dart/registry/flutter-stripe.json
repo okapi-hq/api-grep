@@ -1,0 +1,29 @@
+{
+  "$comment": "flutter_stripe: `Stripe.instance.*` after `Stripe.publishableKey = 'pk_...'`, sent by the native Stripe SDKs (stripe-android, stripe-ios) with the publishable key. The intent id is the part of the client secret before `_secret_`, which the code does not write apart: `{intent}` stays a placeholder. The payment sheet confirms the intent given to `initPaymentSheet` (a SetupIntent when it is given `setupIntentClientSecret`); `initPaymentSheet` itself, `Stripe.publishableKey` and `applySettings` are configuration.",
+  "package": "flutter_stripe",
+  "imports": ["flutter_stripe.Stripe"],
+  "provider": "stripe",
+  "host": "api.stripe.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (flutter_stripe 14.x Stripe methods, stripe-android StripeApiRepository paths)",
+  "instance": { "names": ["Stripe"] },
+  "builders": ["instance"],
+  "methods": {
+    "createPaymentMethod": {"method": "POST", "path": "/v1/payment_methods"},
+    "createPlatformPayPaymentMethod": {"method": "POST", "path": "/v1/payment_methods"},
+    "createGooglePayPaymentMethod": {"method": "POST", "path": "/v1/payment_methods"},
+    "createToken": {"method": "POST", "path": "/v1/tokens"},
+    "createApplePayToken": {"method": "POST", "path": "/v1/tokens"},
+    "createRadarSession": {"method": "POST", "path": "/v1/radar/session"},
+    "retrievePaymentIntent": {"method": "GET", "path": "/v1/payment_intents/{intent}"},
+    "retrieveSetupIntent": {"method": "GET", "path": "/v1/setup_intents/{intent}"},
+    "confirmPayment": {"method": "POST", "path": "/v1/payment_intents/{intent}/confirm"},
+    "confirmPlatformPayPaymentIntent": {"method": "POST", "path": "/v1/payment_intents/{intent}/confirm"},
+    "confirmSetupIntent": {"method": "POST", "path": "/v1/setup_intents/{intent}/confirm"},
+    "confirmPlatformPaySetupIntent": {"method": "POST", "path": "/v1/setup_intents/{intent}/confirm"},
+    "handleNextAction": {"method": "GET", "path": "/v1/payment_intents/{intent}"},
+    "handleNextActionForSetupIntent": {"method": "GET", "path": "/v1/setup_intents/{intent}"},
+    "presentPaymentSheet": {"method": "POST", "path": "/v1/payment_intents/{intent}/confirm", "params": {"setup_intent": "setup:initPaymentSheet:kw:paymentSheetParameters.setupIntentClientSecret"}, "pathWith": {"param": "setup_intent", "path": "/v1/setup_intents/{intent}/confirm"}},
+    "confirmPaymentSheetPayment": {"method": "POST", "path": "/v1/payment_intents/{intent}/confirm", "params": {"setup_intent": "setup:initPaymentSheet:kw:paymentSheetParameters.setupIntentClientSecret"}, "pathWith": {"param": "setup_intent", "path": "/v1/setup_intents/{intent}/confirm"}}
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$comment": "google-cloud-aiplatform's `vertexai` module: `vertexai.init(project=..., location=...)` once, then `GenerativeModel(\"gemini-2.0-flash\").generate_content(...)` (`stream=True`: `streamGenerateContent`), `count_tokens`, `compute_tokens`, `start_chat().send_message(...)`. The model is the constructor's; `{project}` and `{location}` are the project's one `vertexai.init` / `aiplatform.init` call's, else placeholders (the SDK reads the environment and ADC then). gRPC by default; the REST paths are listed. The bare `vertexai` and `google.cloud.aiplatform` roots (no `GenerativeModel` there) make every import of the package count in coverage, which reads the first registry of a package.",
+  "package": "google-cloud-aiplatform",
+  "aliases": [
+    "vertexai"
+  ],
+  "imports": [
+    "vertexai.generative_models",
+    "vertexai",
+    "google.cloud.aiplatform"
+  ],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-aiplatform 2.6.0 vertexai/generative_models/_generative_models.py: GenerativeModel on aiplatform_v1)",
+  "instance": {
+    "names": [
+      "GenerativeModel"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "generate_content": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "generate_content_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "count_tokens": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "count_tokens_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "compute_tokens": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:computeTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "start_chat.send_message": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "start_chat.send_message_async": {"method": "POST", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}}
+  }
+}

@@ -89,6 +89,8 @@ export interface CallExpr {
   applied?: FunctionDef[];
   /** An attribute read that sends a request (web3.py `w3.eth.block_number`, #78): matches registry `property` entries only. */
   property?: boolean;
+  /** Members a Dart cascade sets on the call's value (`PostHogConfig(k)..host = h`), in order. */
+  sets?: { name: string; value: Expr }[];
 }
 
 export interface Assign {

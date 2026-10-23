@@ -60,7 +60,7 @@ function joinedToFile(call: CallExpr, fn: FunctionDef, ctx: IrCtx): string | und
 }
 
 /** The literal path a value opens or reads (`open("x.yaml")`, `Path("x.json").read_text()`, a name holding one). */
-function pathOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): string | undefined {
+export function pathOf(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): string | undefined {
   if (depth > MAX_DEPTH) return undefined;
   const d = deref(e, fn, ctx);
   const [x, xfn] = [d.expr, d.fn];

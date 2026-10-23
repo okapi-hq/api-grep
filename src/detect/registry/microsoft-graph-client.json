@@ -1,0 +1,23 @@
+{
+  "$comment": "@microsoft/microsoft-graph-client 3.x: `Client.init({ authProvider })` / `Client.initWithMiddleware({ authProvider })`, then a fluent `GraphRequest`: `client.api(path)`, modifiers (`select`, `expand`, `orderby`, `filter`, `search`, `top`, `skip`, `skipToken`, `count`, `query`, `version`, `header(s)`, `option(s)`, `responseType`), and the verb that sends it. The URL is `https://graph.microsoft.com/` + the version (`.version(v)`, else the client's `defaultVersion`, else `v1.0`) + the path given to `api()`; a full URL there keeps its own host and version. `post` / `create`, `put`, `patch` / `update` send their argument as JSON. Headers the request sets (`header`, `headers`) are not read.",
+  "package": "@microsoft/microsoft-graph-client",
+  "provider": "microsoft",
+  "host": "graph.microsoft.com",
+  "auth": "bearer",
+  "inlinePathLiterals": true,
+  "generatedFrom": "manual (checked against @microsoft/microsoft-graph-client 3.0.7 source)",
+  "instance": {"names": ["init", "initWithMiddleware"], "urlArg": {"init": "0.baseUrl", "initWithMiddleware": "0.baseUrl"}},
+  "steps": {"start": "api", "query": {"select": "$select", "expand": "$expand", "orderby": "$orderby", "filter": "$filter", "search": "$search", "top": "$top", "skip": "$skip", "skipToken": "$skipToken", "count": "$count"}, "queryObject": ["query"]},
+  "methods": {
+    "api.**.get": {"method": "GET", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}},
+    "api.**.getStream": {"method": "GET", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}},
+    "api.**.post": {"method": "POST", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}, "bodyArg": 0},
+    "api.**.create": {"method": "POST", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}, "bodyArg": 0},
+    "api.**.put": {"method": "PUT", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}, "bodyArg": 0},
+    "api.**.putStream": {"method": "PUT", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}},
+    "api.**.patch": {"method": "PATCH", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}, "bodyArg": 0},
+    "api.**.update": {"method": "PATCH", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}, "bodyArg": 0},
+    "api.**.delete": {"method": "DELETE", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}},
+    "api.**.del": {"method": "DELETE", "path": "/v1.0/{path}", "params": {"path": "step:api:0", "version": "step:version:0|root:0.defaultVersion"}, "pathWith": {"param": "version", "path": "/{version}/{path}"}}
+  }
+}

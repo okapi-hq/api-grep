@@ -12,8 +12,11 @@ import { dartResolveCall } from "./resolve.js";
 import supabaseFlutter from "./registry/supabase-flutter.json" with { type: "json" };
 import cloudFirestore from "./registry/cloud-firestore.json" with { type: "json" };
 import firebaseAuth from "./registry/firebase-auth.json" with { type: "json" };
+import flutterStripe from "./registry/flutter-stripe.json" with { type: "json" };
+import posthogFlutter from "./registry/posthog-flutter.json" with { type: "json" };
+import purchasesFlutter from "./registry/purchases-flutter.json" with { type: "json" };
 
-export const DART_REGISTRY = [supabaseFlutter, cloudFirestore, firebaseAuth] as unknown as IrRegistryEntry[];
+export const DART_REGISTRY = [supabaseFlutter, cloudFirestore, firebaseAuth, flutterStripe, posthogFlutter, purchasesFlutter] as unknown as IrRegistryEntry[];
 
 /**
  * Tests, tool caches and generated code: `*.g.dart` (json_serializable, retrofit), `*.freezed.dart`, `*.mocks.dart`,
@@ -36,10 +39,12 @@ export const DART_EXCLUDES = [
   "**/generated_plugin_registrant.dart",
 ];
 
-/** Names an import without a prefix gives a file, from the client libraries (`import 'package:dio/dio.dart';` -> `Dio`). */
+/** Names an import without a prefix gives a file, from the libraries (`import 'package:dio/dio.dart';` -> `Dio`). */
 const LIBRARY_NAMES = [
   ...["Dio", "DioForNative", "DioForBrowser", "BaseOptions", "Options", "RequestOptions", "FormData", "MultipartFile", "InterceptorsWrapper"].map((n) => `dio.${n}`),
   ...["Client", "IOClient", "BrowserClient", "RetryClient", "Request", "MultipartRequest", "get", "head", "read", "readBytes", "delete", "post", "put", "patch"].map((n) => `http.${n}`),
+  // the payment sheet's parameters, which pick the intent `presentPaymentSheet` confirms (resolve.ts)
+  "flutter_stripe.SetupPaymentSheetParameters",
 ];
 
 export const dartLanguage: IrLanguage = {

@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "skipped": [],
+  "calls": [
+    { "file": "Quartermaster.java", "line": 17, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 22, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 23, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 24, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 25, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 30, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 34, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 36, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 40, "provider": "discord" },
+    { "file": "Quartermaster.java", "line": 41, "provider": "discord" }
+  ]
+}

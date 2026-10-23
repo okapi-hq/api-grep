@@ -1,0 +1,24 @@
+{
+  "$comment": "@fal-ai/client: `import { fal } from \"@fal-ai/client\"` (a singleton `fal.config({ credentials })` sets up) or `createFalClient(config)`. `run(id, { input })` posts `input` to `https://fal.run/{id}`; `subscribe` and `queue.submit` post it to `https://queue.fal.run/{id}` (`?fal_webhook=` with `webhookUrl`): `subscribe` then polls the status and reads the result, reported as the submit, the request that sends the input. `queue.status` / `result` / `cancel` go to the app's owner and alias (an id's sub-path left out) under `/requests/{requestId}`. The model is the endpoint id. `storage.upload` asks the REST API for an upload URL, then sends the file to that URL (not listed); `realtime.connect` is a WebSocket. Credentials go in `Authorization: Key <FAL_KEY>`.",
+  "package": "@fal-ai/client",
+  "provider": "fal",
+  "host": "fal.run",
+  "auth": "apikey",
+  "callersOnly": true,
+  "generatedFrom": "manual (checked against @fal-ai/client 1.10.1 source)",
+  "instance": {"names": ["createFalClient"]},
+  "keyAliases": {"fal.": ""},
+  "methods": {
+    "run": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input"},
+    "subscribe": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input", "host": "queue.fal.run", "pathWith": {"param": "webhook", "path": "/{app_id}?fal_webhook={webhook}"}, "params": {"webhook": "arg:1.webhookUrl"}},
+    "stream": {"method": "POST", "path": "/{app_id}/stream", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input"},
+    "queue.submit": {"method": "POST", "path": "/{app_id}", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input", "host": "queue.fal.run", "pathWith": {"param": "webhook", "path": "/{app_id}?fal_webhook={webhook}"}, "params": {"webhook": "arg:1.webhookUrl"}},
+    "queue.status": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.streamStatus": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status/stream?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.subscribeToStatus": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}/status?logs={logs}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.result": {"method": "GET", "path": "/{app_owner}/{app_alias}/requests/{request_id}", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "queue.cancel": {"method": "PUT", "path": "/{app_owner}/{app_alias}/requests/{request_id}/cancel", "pathArgs": [0,0], "params": {"request_id": "arg:1.requestId"}, "modelArg": 0, "host": "queue.fal.run"},
+    "storage.upload": {"method": "POST", "path": "/storage/upload/initiate?storage_type=fal-cdn-v3", "host": "rest.fal.ai"},
+    "streaming.stream": {"method": "POST", "path": "/{app_id}/stream", "pathArgs": [0], "modelArg": 0, "bodyArg": 1, "bodyProp": "input"}
+  }
+}

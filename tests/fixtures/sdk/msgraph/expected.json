@@ -1,0 +1,16 @@
+{
+  "issue": "@microsoft/microsoft-graph-client registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "mail.ts", "line": 6, "provider": "microsoft"},
+    {"file": "mail.ts", "line": 10, "provider": "microsoft"},
+    {"file": "mail.ts", "line": 15, "provider": "microsoft"},
+    {"file": "mail.ts", "line": 19, "provider": "microsoft"},
+    {"file": "mail.ts", "line": 23, "provider": "microsoft"},
+    {"file": "mail.ts", "line": 26, "provider": "microsoft"},
+    {"file": "calendar.ts", "line": 12, "provider": "microsoft"},
+    {"file": "calendar.ts", "line": 16, "provider": "microsoft"},
+    {"file": "calendar.ts", "line": 20, "provider": "microsoft"},
+    {"file": "calendar.ts", "line": 24, "provider": "microsoft"},
+    {"file": "calendar.ts", "line": 30, "provider": "microsoft"}
+  ]
+}

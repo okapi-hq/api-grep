@@ -1,0 +1,14 @@
+name: kiln_club
+description: An invented Flutter app for the api-grep fixtures.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_stripe: ^11.4.0
+  posthog_flutter: ^4.10.0
+  purchases_flutter: ^8.6.0

@@ -14,9 +14,10 @@ import { pythonLanguage } from "../../src/lang/python/index.js";
 import { normalizePypi } from "../../src/lang/python/manifests.js";
 import { PROVIDERS, sdkPackages } from "../../src/normalize/provider.js";
 
-const ONE_SOURCE = String.raw`(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:\d+|chain:[\w,]+|model`;
-// one source, or several tried in turn (`kw:request.name|arg:0`)
-const SOURCE_RE = new RegExp(`^(?:${ONE_SOURCE})(?:\\|(?:${ONE_SOURCE}))*$|^(?:arg|kw)(?:\\|\\w+)*$`);
+const ONE_SOURCE = String.raw`(?:true:)?(?:(?:arg|kw|instance):\w+(?:\.\w+)?|seg:\w+:(?:\d+|kw:\w+)|segs:\w+(?::\w+)?|chain:[\w,]+|setup:[\w.,]+:(?:kw:\w+|\d+)(?:\.\w+)?|model)(?:#[./]-[1-9])?`;
+// one source, or several tried in turn (`kw:request.name|arg:0`); `#N` reads a piece of an `owner/name:version` reference,
+// `#.-N` / `#/-N` one of a dotted or slashed id, from its end
+const SOURCE_RE = new RegExp(`^(?:${ONE_SOURCE})(?:\\|(?:${ONE_SOURCE}))*(?:#[012])?$|^(?:arg|kw)(?:\\|\\w+)*$`);
 
 const NORMALIZE = { pypi: normalizePypi, composer: normalizeComposer, maven: normalizeMaven, go: normalizeGoModule, cargo: normalizeCrate, pub: normalizePub };
 
@@ -36,7 +37,8 @@ function checkRegistry(entries: IrRegistryEntry[], ecosystem: keyof typeof NORMA
       for (const source of Object.values(spec.params ?? {})) expect(source, `${e.package} ${key}`).toMatch(SOURCE_RE);
       const withId = spec.record?.withId;
       const paths = [spec.path, spec.argPath?.path, ...(spec.paths ?? []), withId?.path, ...(withId?.paths ?? [])].join(" ");
-      for (const name of Object.keys(spec.params ?? {})) expect(paths, `${e.package} ${key}: param ${name}`).toContain(`{${name}}`);
+      // the param `pathWith` tests picks a path rather than filling one
+      for (const name of Object.keys(spec.params ?? {}).filter((n) => n !== spec.pathWith?.param)) expect(paths, `${e.package} ${key}: param ${name}`).toContain(`{${name}}`);
       for (const p of [...(spec.paths ?? []), ...(withId?.paths ?? [])]) expect(p.startsWith("/"), `${e.package} ${key}: ${p}`).toBe(true);
     }
   }

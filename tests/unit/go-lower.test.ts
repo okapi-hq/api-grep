@@ -119,6 +119,8 @@ describe("go names", () => {
   it("names struct fields as their JSON", () => {
     expect(fieldKey("MaxTokens", "snake")).toBe("max_tokens");
     expect(fieldKey("ToolCallID", "snake")).toBe("tool_call_id");
+    expect(fieldKey("MessageIDs", "snake")).toBe("message_ids");
+    expect(fieldKey("FileIDsList", "snake")).toBe("file_ids_list");
     expect(fieldKey("HTTPClient", "snake")).toBe("http_client");
     expect(fieldKey("MaxOutputTokens", "camel")).toBe("maxOutputTokens");
     expect(fieldKey("HTTPOptions", "camel")).toBe("httpOptions");

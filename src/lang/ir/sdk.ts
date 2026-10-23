@@ -19,6 +19,7 @@ const TRANSPORT_KWARGS = new Set(["extra_headers", "extra_query", "extra_body", 
  */
 const CLIENT_KWARGS = new Set([
   "api_key", "openai_api_key", "anthropic_api_key", "google_api_key", "groq_api_key", "mistral_api_key", "cohere_api_key", "together_api_key", "fireworks_api_key", "deepseek_api_key", "xai_api_key",
+  "together_api_base", "fireworks_api_base",
   "base_url", "api_base", "openai_api_base", "anthropic_api_url", "endpoint", "endpoint_url", "azure_endpoint", "api_version", "openai_api_version", "azure_deployment", "deployment_name", "azure_ad_token", "azure_ad_token_provider",
   "organization", "openai_organization", "project", "location", "region_name", "credentials", "credentials_profile_name", "aws_access_key_id", "aws_secret_access_key", "aws_session_token", "client_options",
   "timeout", "request_timeout", "max_retries", "http_client", "http_async_client", "client", "async_client", "default_headers", "default_query", "transport",
@@ -115,14 +116,26 @@ function matchEntry(entry: IrRegistryEntry, segs: Seg[], ctx: IrCtx): IrSdkMatch
 
 const wildcards = new WeakMap<IrRegistryEntry, [string[], IrMethodSpec][]>();
 
-/** A key with a contract's function in it (`eth.contract.functions.*.call`, #78): `*` stands for one name. */
+/** Key parts against a wildcard key's: `*` is one name (not one of `not`), `**` one or more of any. */
+function fits(p: string[], parts: string[], not: string[]): boolean {
+  const deep = p.indexOf("**");
+  if (deep < 0) return p.length === parts.length && p.every((x, i) => (x === "*" ? !not.includes(parts[i]!) : x === parts[i]));
+  const tail = p.length - deep - 1;
+  if (parts.length <= deep + tail) return false;
+  return fits(p.slice(0, deep), parts.slice(0, deep), not) && fits(p.slice(deep + 1), parts.slice(parts.length - tail), not);
+}
+
+/**
+ * A key with a contract's function in it (`eth.contract.functions.*.call`, #78): `*` stands for one name; `**` for the
+ * path segments of a fluent URL builder (sendgrid-python's `client.marketing.contacts.put`).
+ */
 function wildcardSpec(entry: IrRegistryEntry, key: string): IrMethodSpec | undefined {
   let list = wildcards.get(entry);
   if (!list) wildcards.set(entry, (list = Object.entries(entry.methods).flatMap(([k, s]) => (k.includes("*") ? [[k.split("."), s] as [string[], IrMethodSpec]] : []))));
   if (list.length === 0) return undefined;
   const parts = key.split(".");
   const not = entry.notFunctions ?? [];
-  return list.find(([p]) => p.length === parts.length && p.every((x, i) => (x === "*" ? !not.includes(parts[i]!) : x === parts[i])))?.[1];
+  return list.find(([p]) => fits(p, parts, not))?.[1];
 }
 
 /** The base URL the code gives the client: an argument of a call named in `instance.urlArg`, or of the call itself. */
@@ -149,8 +162,11 @@ function pathKwargs(m: IrSdkMatch): Set<string> {
   const out = new Set(TRANSPORT_KWARGS);
   for (const [name, source] of Object.entries(m.spec.params ?? {})) {
     out.add(name);
-    const kw = /^kw:(\w+)/.exec(source);
-    if (kw) out.add(kw[1]!);
+    // `kw:stream`, `true:kw:stream`, `kw:table#.-1|arg:0#.-1`: each keyword a source reads
+    for (const alt of source.split("|")) {
+      const kw = /^(?:true:)?kw:(\w+)/.exec(alt);
+      if (kw) out.add(kw[1]!);
+    }
   }
   return out;
 }
@@ -327,9 +343,10 @@ function sdkRaw(m: IrSdkMatch, call: CallExpr, fn: FunctionDef, endpoint: IrEndp
     sdk: m,
     url: instanceUrl(m),
     body,
-    query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg) : undefined,
+    query: query ? { expr: query, fn } : m.spec.queryArg !== undefined ? argOf(m.method, m.spec.queryArg, m.spec.queryKw) : undefined,
     // a host set once at startup (`PostHog.setup(...)`) is not an input of the call: it is not a wrapper parameter
     baseUrl: baseUrl ?? setupBaseUrl(m.entry, ctx),
+    baseRef: endpoint?.path,
     headers,
     inputs: [...(readsArgs(m.spec) ? args : []), ...builtBody(m, body, ctx), ...(baseUrl ? [baseUrl] : [])],
     model: modelOf(m, ctx),

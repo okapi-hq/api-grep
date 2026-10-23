@@ -1,0 +1,17 @@
+{
+  "$comment": "@bugsnag/js (its browser build), @bugsnag/browser, @bugsnag/react-native: `notify` POSTs an event to the notify endpoint; `start` / `createClient` start a session (POST to the sessions endpoint) since `autoTrackSessions` is true by default, none when the code sets it to false (`offWhen`); `startSession` sends one too. The API key goes in the `Bugsnag-Api-Key` header. Endpoints the code gives (`endpoints: { notify, sessions }`) replace the hosts: at `start` itself, through a client `createClient` returns, and for the package's own functions (`Bugsnag.notify`) from the project's one `start` call (`createClient` sets no client for them). `leaveBreadcrumb` and the other client methods send nothing.",
+  "package": "@bugsnag/js",
+  "aliases": ["@bugsnag/browser", "@bugsnag/react-native"],
+  "provider": "bugsnag",
+  "host": "notify.bugsnag.com",
+  "auth": "apikey",
+  "generatedFrom": "manual (checked against @bugsnag/browser 9.1.0)",
+  "instance": {"names": ["default", "start", "createClient"]},
+  "setup": ["start"],
+  "methods": {
+    "start": {"method": "POST", "path": "", "host": "sessions.bugsnag.com", "baseUrlProp": ["endpoints.sessions"], "offWhen": "0.autoTrackSessions"},
+    "createClient": {"method": "POST", "path": "", "host": "sessions.bugsnag.com", "baseUrlProp": ["endpoints.sessions"], "offWhen": "0.autoTrackSessions"},
+    "startSession": {"method": "POST", "path": "", "host": "sessions.bugsnag.com", "setupUrl": "0.endpoints.sessions"},
+    "notify": {"method": "POST", "path": "", "setupUrl": "0.endpoints.notify"}
+  }
+}

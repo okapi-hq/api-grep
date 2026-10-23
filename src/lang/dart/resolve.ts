@@ -6,13 +6,14 @@ import type { IrCtx } from "../ir/raw.js";
 import { deref, dictOf, staticKey } from "../ir/values.js";
 
 /**
- * Calls that stand for a value the engine reads: Dio's option objects (`BaseOptions(baseUrl: u, headers: h)`,
- * `Options(headers: h)`) as the dict of their named arguments, and URIs built from parts (`Uri.https(host, path,
- * query)`, `Uri(scheme: 'https', host: h, path: p)`, `uri.replace(queryParameters: q)`) as the URL text they make.
+ * Calls that stand for a value the engine reads: option objects (Dio's `BaseOptions(baseUrl: u, headers: h)`,
+ * `Options(headers: h)`, flutter_stripe's `SetupPaymentSheetParameters(...)`) as the dict of their named arguments,
+ * and URIs built from parts (`Uri.https(host, path, query)`, `Uri(scheme: 'https', host: h, path: p)`,
+ * `uri.replace(queryParameters: q)`) as the URL text they make.
  */
 
-/** Dio's option classes, by the path an import gives them. */
-const OPTIONS = new Set(["dio.Options", "dio.BaseOptions", "dio.RequestOptions"]);
+/** Option classes read as the dict of their named arguments: Dio's, flutter_stripe's payment sheet parameters. */
+const OPTIONS = new Set(["dio.Options", "dio.BaseOptions", "dio.RequestOptions", "flutter_stripe.SetupPaymentSheetParameters"]);
 
 /** The library path a call's callee names (`Options` under `import 'package:dio/dio.dart'` -> `dio.Options`). */
 function libraryPath(call: CallExpr, fn: FunctionDef, ctx: IrCtx): string | undefined {

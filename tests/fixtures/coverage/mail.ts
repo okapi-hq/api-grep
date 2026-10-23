@@ -1,6 +1,5 @@
-import * as brevo from "@getbrevo/brevo";
+import { ServerClient } from "postmark";
 
-const mail = new brevo.TransactionalEmailsApi();
+const mail = new ServerClient(process.env.POSTMARK_TOKEN ?? "");
 
-export const sendWelcome = (to: string) =>
-  mail.sendTransacEmail({ to: [{ email: to }], subject: "Welcome", htmlContent: "<p>Hello</p>", sender: { email: "team@example.com" } });
+export const sendWelcome = (to: string) => mail.sendEmail({ From: "team@example.com", To: to, Subject: "Welcome", HtmlBody: "<p>Hello</p>" });

@@ -1,0 +1,24 @@
+{
+  "issue": "Dart: posthog_flutter, purchases_flutter and flutter_stripe registries (requests sent by the native SDKs; configuration, local flag reads, logOut and getProducts send nothing the code names)",
+  "calls": [
+    {"file": "analytics.dart", "line": 12, "provider": "posthog"},
+    {"file": "analytics.dart", "line": 14, "provider": "posthog"},
+    {"file": "analytics.dart", "line": 17, "provider": "posthog"},
+    {"file": "analytics.dart", "line": 18, "provider": "posthog"},
+    {"file": "analytics.dart", "line": 19, "provider": "posthog"},
+    {"file": "analytics.dart", "line": 23, "provider": "posthog"},
+    {"file": "billing.dart", "line": 8, "provider": "revenuecat"},
+    {"file": "billing.dart", "line": 10, "provider": "revenuecat"},
+    {"file": "billing.dart", "line": 13, "provider": "revenuecat"},
+    {"file": "billing.dart", "line": 17, "provider": "revenuecat"},
+    {"file": "billing.dart", "line": 20, "provider": "revenuecat"},
+    {"file": "billing.dart", "line": 22, "provider": "revenuecat"},
+    {"file": "payments.dart", "line": 12, "provider": "stripe"},
+    {"file": "payments.dart", "line": 15, "provider": "stripe"},
+    {"file": "payments.dart", "line": 17, "provider": "stripe"},
+    {"file": "payments.dart", "line": 19, "provider": "stripe"},
+    {"file": "payments.dart", "line": 21, "provider": "stripe"},
+    {"file": "payments.dart", "line": 23, "provider": "stripe"},
+    {"file": "payments.dart", "line": 25, "provider": "stripe"}
+  ]
+}

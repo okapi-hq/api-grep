@@ -28,7 +28,7 @@ function typescriptColumn(): Column {
       if (e) return Object.keys(e.methods ?? {}).length + Object.keys(e.commands ?? {}).length;
       return AI_SDK_PACKAGES.has(pkg) ? 1 : 0;
     },
-    clients: ["fetch", "axios", "got", "ky", "node http/https", "jQuery", "XMLHttpRequest", "node-soap", "AI SDK", "n8n / activepieces helpers", "HTML forms"],
+    clients: ["fetch", "axios", "got", "ky", "node http/https", "jQuery", "XMLHttpRequest", "node-soap", "AI SDK", "Genkit", "n8n / activepieces helpers", "HTML forms"],
   };
 }
 

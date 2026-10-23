@@ -12,25 +12,29 @@ import { argparseDefault } from "./argparse.js";
 import { detectUrllib } from "./urllib.js";
 import { detectZeep } from "./zeep.js";
 import { notebookPython } from "./notebook.js";
+import { refineLangchainHuggingface } from "./langchain-huggingface.js";
+import { refineOauthlib } from "./oauthlib.js";
 import anthropicBedrock from "./registry/anthropic-bedrock.json" with { type: "json" };
 import anthropicVertex from "./registry/anthropic-vertex.json" with { type: "json" };
 import anthropic from "./registry/anthropic.json" with { type: "json" };
-import boto3Bedrock from "./registry/boto3-bedrock.json" with { type: "json" };
-import boto3DynamoDb from "./registry/boto3-dynamodb.json" with { type: "json" };
-import boto3S3 from "./registry/boto3-s3.json" with { type: "json" };
-import boto3Ses from "./registry/boto3-ses.json" with { type: "json" };
-import boto3SesV2 from "./registry/boto3-sesv2.json" with { type: "json" };
-import boto3Sns from "./registry/boto3-sns.json" with { type: "json" };
-import boto3Sqs from "./registry/boto3-sqs.json" with { type: "json" };
+import { AWS_REGISTRY } from "./aws.js";
 import cohereV2 from "./registry/cohere-v2.json" with { type: "json" };
 import cohere from "./registry/cohere.json" with { type: "json" };
 import convex from "./registry/convex.json" with { type: "json" };
 import elevenlabs from "./registry/elevenlabs.json" with { type: "json" };
+import replicate from "./registry/replicate.json" with { type: "json" };
+import falClient from "./registry/fal-client.json" with { type: "json" };
+import sendgrid from "./registry/sendgrid.json" with { type: "json" };
+import mercadopago from "./registry/mercadopago.json" with { type: "json" };
 import firebaseAdmin from "./registry/firebase-admin.json" with { type: "json" };
 import googleCloudFirestore from "./registry/google-cloud-firestore.json" with { type: "json" };
 import googleGenai from "./registry/google-genai.json" with { type: "json" };
 import googleGenerativeai from "./registry/google-generativeai.json" with { type: "json" };
 import groq from "./registry/groq.json" with { type: "json" };
+import zhipuai from "./registry/zhipuai.json" with { type: "json" };
+import zaiSdk from "./registry/zai-sdk.json" with { type: "json" };
+import zaiSdkZhipu from "./registry/zai-sdk-zhipu.json" with { type: "json" };
+import { sendgridMail } from "./sendgrid-mail.js";
 import { sgqlcDocument } from "./sgqlc.js";
 import gql from "./registry/gql.json" with { type: "json" };
 import mcp from "./registry/mcp.json" with { type: "json" };
@@ -61,6 +65,8 @@ import posthog from "./registry/posthog.json" with { type: "json" };
 import resend from "./registry/resend.json" with { type: "json" };
 import sentrySdk from "./registry/sentry-sdk.json" with { type: "json" };
 import slackSdk from "./registry/slack-sdk.json" with { type: "json" };
+import { SLACK_BOLT } from "./slack-bolt.js";
+import { MSGRAPH_REGISTRY, msgraphRequestConfiguration, msgraphSegment } from "./msgraph.js";
 import stripe from "./registry/stripe.json" with { type: "json" };
 import supabase from "./registry/supabase.json" with { type: "json" };
 import twilio from "./registry/twilio.json" with { type: "json" };
@@ -92,10 +98,21 @@ import huggingfaceHub from "./registry/huggingface-hub.json" with { type: "json"
 import claudeAgentSdk from "./registry/claude-agent-sdk.json" with { type: "json" };
 import langchainDeepseek from "./registry/langchain-deepseek.json" with { type: "json" };
 import langchainGoogleVertexai from "./registry/langchain-google-vertexai.json" with { type: "json" };
+import langchainFireworks from "./registry/langchain-fireworks.json" with { type: "json" };
+import langchainFireworksLlm from "./registry/langchain-fireworks-llm.json" with { type: "json" };
+import langchainTogether from "./registry/langchain-together.json" with { type: "json" };
+import langchainTogetherLlm from "./registry/langchain-together-llm.json" with { type: "json" };
+import langchainHuggingface from "./registry/langchain-huggingface.json" with { type: "json" };
 import googleCloudStorage from "./registry/google-cloud-storage.json" with { type: "json" };
 import googleCloudSecretManager from "./registry/google-cloud-secret-manager.json" with { type: "json" };
+import googleCloudBigquery from "./registry/google-cloud-bigquery.json" with { type: "json" };
+import googleCloudAiplatform from "./registry/google-cloud-aiplatform.json" with { type: "json" };
+import vertexai from "./registry/vertexai.json" with { type: "json" };
+import vertexaiPreview from "./registry/vertexai-preview.json" with { type: "json" };
+import vertexaiModels from "./registry/vertexai-models.json" with { type: "json" };
 import pygithub from "./registry/pygithub.json" with { type: "json" };
 import googleAuth from "./registry/google-auth.json" with { type: "json" };
+import googleAuthOauthlib from "./registry/google-auth-oauthlib.json" with { type: "json" };
 import googleApiPythonClient from "./registry/google-api-python-client.json" with { type: "json" };
 
 /** Registries sharing an import root are told apart by their instance names; module-level calls (`openai.chat...`) go to the first one. */
@@ -112,23 +129,26 @@ export const PYTHON_REGISTRY = [
   firebaseAdmin,
   googleCloudFirestore,
   sentrySdk,
-  boto3S3,
-  boto3Bedrock,
-  boto3DynamoDb,
-  boto3Ses,
-  boto3SesV2,
-  boto3Sqs,
-  boto3Sns,
+  ...AWS_REGISTRY,
   twilio,
   slackSdk,
+  SLACK_BOLT,
   resend,
   posthog,
   mistralai,
   groq,
+  zhipuai,
+  zaiSdk,
+  zaiSdkZhipu,
   convex,
   cohere,
   cohereV2,
   elevenlabs,
+  replicate,
+  falClient,
+  sendgrid,
+  mercadopago,
+  ...MSGRAPH_REGISTRY,
   langchainOpenai,
   langchainAnthropic,
   langchainGoogleGenai,
@@ -171,10 +191,21 @@ export const PYTHON_REGISTRY = [
   claudeAgentSdk,
   langchainDeepseek,
   langchainGoogleVertexai,
+  langchainFireworks,
+  langchainFireworksLlm,
+  langchainTogether,
+  langchainTogetherLlm,
+  langchainHuggingface,
   googleCloudStorage,
   googleCloudSecretManager,
+  googleCloudBigquery,
+  vertexai,
+  vertexaiPreview,
+  vertexaiModels,
+  googleCloudAiplatform,
   pygithub,
   googleAuth,
+  googleAuthOauthlib,
   ...googleApiPythonClient,
   // the MCP servers agent frameworks connect to: after the framework's own registry, which keeps its import roots
   langchainMcpAdapters,
@@ -231,8 +262,10 @@ export const pythonLanguage: IrLanguage = {
   documentOf: sgqlcDocument,
   injection: PYTHON_INJECTION,
   fieldEnv: settingsFieldEnv,
-  resolveCall: pythonConfigLoad,
+  resolveCall: (call, fn, ctx) => pythonConfigLoad(call, fn, ctx) ?? sendgridMail(call, fn, ctx) ?? msgraphRequestConfiguration(call, fn, ctx),
+  pathSegment: msgraphSegment,
   attrDefault: argparseDefault,
+  refineSdk: (raw, _chain, ctx) => refineLangchainHuggingface(refineOauthlib(raw, ctx), ctx),
   passthrough: {
     // `gql("query ...")` (the gql package) parses a document: its value is the text
     functions: new Set(["str", "quote", "quote_plus", "unquote", "escape", "gql"]),

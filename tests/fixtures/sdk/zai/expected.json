@@ -1,0 +1,12 @@
+{
+  "issue": "z-ai-web-dev-sdk registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "studio.ts", "line": 5, "provider": "zai"},
+    {"file": "studio.ts", "line": 7, "provider": "zai"},
+    {"file": "studio.ts", "line": 9, "provider": "zai"},
+    {"file": "studio.ts", "line": 11, "provider": "zai"},
+    {"file": "studio.ts", "line": 13, "provider": "zai"},
+    {"file": "studio.ts", "line": 15, "provider": "zai"},
+    {"file": "studio.ts", "line": 17, "provider": "zai"}
+  ]
+}

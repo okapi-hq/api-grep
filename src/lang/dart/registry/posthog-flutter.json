@@ -1,0 +1,21 @@
+{
+  "$comment": "posthog_flutter: `Posthog()` (a singleton) after `Posthog().setup(config)`. Events are queued and sent in batches to /batch by the native SDK underneath (posthog-android, posthog-ios) and by the package's own Dart client on desktop; named arguments are the event fields. `reloadFeatureFlags` asks /flags/?v=2; flag reads (`isFeatureEnabled`, `getFeatureFlag`) and `reset`, `register`, `optOut` are local. The host is the `host` the project sets on the `PostHogConfig` it gives `setup` (`config.host = h` or `..host = h`), else the SDK's default.",
+  "package": "posthog_flutter",
+  "imports": ["posthog_flutter.Posthog"],
+  "provider": "posthog",
+  "host": "us.i.posthog.com",
+  "auth": "none",
+  "generatedFrom": "manual (posthog_flutter 5.x: Posthog, PostHogConfig and the Dart core's /batch/ and /flags/?v=2 requests; paths of the posthog-android registry)",
+  "instance": { "names": ["Posthog"] },
+  "setupUrl": { "calls": ["Posthog.setup"], "arg": 0, "host": "set:host" },
+  "methods": {
+    "capture": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "screen": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "identify": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "alias": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "group": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "setPersonProperties": {"method": "POST", "path": "/batch", "bodyKwargs": true},
+    "captureException": {"method": "POST", "path": "/batch"},
+    "reloadFeatureFlags": {"method": "POST", "path": "/flags/?v=2"}
+  }
+}

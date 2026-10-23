@@ -78,6 +78,27 @@ describe("go: SDK registries", () => {
   });
 });
 
+describe("go: go-telegram/bot", () => {
+  it("reads the bot's methods, the handlers' *bot.Bot and the params struct as a multipart form", async () => {
+    const r = await scanFixture("go/sdk-telegram");
+    expect(r.calls.map((c) => [c.location.file, c.location.line, c.method, c.urlTemplate, c.authScheme, c.bodyEncoding])).toEqual([
+      ["main.go", 21, "POST", "https://api.telegram.org/bot{token}/getMe", "apikey", "none"],
+      ["main.go", 23, "POST", "https://api.telegram.org/bot{token}/setWebhook", "apikey", "multipart"],
+      ["main.go", 31, "POST", "https://api.telegram.org/bot{token}/sendMessage", "apikey", "multipart"],
+      ["main.go", 39, "POST", "https://api.telegram.org/bot{token}/answerCallbackQuery", "apikey", "multipart"],
+      ["main.go", 40, "POST", "https://api.telegram.org/bot{token}/deleteMessages", "apikey", "multipart"],
+      // `bot.WithServerURL(u)`: a local Bot API server
+      ["notify.go", 27, "POST", "{env:BOT_API_SERVER}/bot{token}/sendDocument", "apikey", "multipart"],
+    ]);
+    expect(r.calls.every((c) => c.provider === "telegram" && c.sdk?.package === "github.com/go-telegram/bot")).toBe(true);
+    // the `json` tags: Go names in snake case, `MessageIDs` -> `message_ids`; `models.ParseModeHTML` is "HTML"
+    expect(props(at(r, "main.go", 31))).toMatchObject({ chat_id: {}, text: { enum: ["<b>Next ferry</b> at 10:40"] }, parse_mode: { enum: ["HTML"] } });
+    expect(Object.keys(props(at(r, "main.go", 40)))).toEqual(["chat_id", "message_ids"]);
+    expect(Object.keys(props(at(r, "notify.go", 27)))).toEqual(["chat_id", "document", "caption"]);
+    expect(r.coverage?.sdks.map((s) => [s.package, s.status])).toEqual([["github.com/go-telegram/bot", "ok"]]);
+  });
+});
+
 describe("go: a module of several packages", () => {
   it("follows imports of the module's packages, methods declared across files and wrappers", async () => {
     const r = await scanFixture("go/project", { exclude: [] });

@@ -1,12 +1,8 @@
 {
   "$comment": "boto3 S3: `s3 = boto3.client(\"s3\")` (or `boto3.Session(...).client(\"s3\")`, `boto3.resource(\"s3\")`). Client methods take keyword arguments named like the API members (`Bucket=`, `Key=`, `Body=`); the path is read from them. Paths are path-style like the TS registry; `endpoint_url=` (MinIO, R2, LocalStack) replaces the host.",
   "package": "boto3",
-  "aliases": [
-    "aioboto3"
-  ],
   "imports": [
-    "boto3",
-    "aioboto3"
+    "boto3"
   ],
   "provider": "aws",
   "host": "s3.{region}.amazonaws.com",

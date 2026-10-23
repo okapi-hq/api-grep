@@ -1,0 +1,46 @@
+{
+  "$comment": "google-cloud-bigquery: `client = bigquery.Client(project=...)`; `client.query(sql)` inserts a query job (`jobs.insert`), `query_and_wait(sql)` runs `jobs.query`, `.result()` on a job reads `getQueryResults`; tables and datasets by id. A `project.dataset.table` (or `dataset.table`) string fills the path; the project is otherwise the call's `project=`, else the client's, else a placeholder. Load jobs from a file, a dataframe or JSON upload under `/upload` (multipart or resumable by size: no `uploadType` is listed).",
+  "package": "google-cloud-bigquery",
+  "imports": [
+    "google.cloud.bigquery"
+  ],
+  "provider": "google",
+  "host": "bigquery.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-bigquery 3.46.2 google/cloud/bigquery/client.py, _job_helpers.py)",
+  "instance": {
+    "names": [
+      "Client",
+      "Client.from_service_account_json",
+      "Client.from_service_account_info"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "query": {"method": "POST", "path": "/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}, "bodyArg": 0, "bodyKw": "query", "bodyWrap": "configuration.query.query"},
+    "query.result": {"method": "GET", "path": "/bigquery/v2/projects/{project}/queries/{job_id}", "params": {"project": "seg:query:kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "query_and_wait": {"method": "POST", "path": "/bigquery/v2/projects/{project}/queries", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}, "bodyArg": 0, "bodyKw": "query", "bodyWrap": "query"},
+    "insert_rows_json": {"method": "POST", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}/insertAll", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "insert_rows": {"method": "POST", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}/insertAll", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "insert_rows_from_dataframe": {"method": "POST", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}/insertAll", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "get_table": {"method": "GET", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "list_rows": {"method": "GET", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}/data", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "update_table": {"method": "PATCH", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "delete_table": {"method": "DELETE", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2", "table": "kw:table#.-1|arg:0#.-1"}},
+    "create_table": {"method": "POST", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables", "params": {"project": "kw:table#.-3|arg:0#.-3|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:table#.-2|arg:0#.-2"}},
+    "get_dataset": {"method": "GET", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}", "params": {"project": "kw:dataset_ref#.-2|arg:0#.-2|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:dataset_ref#.-1|arg:0#.-1"}},
+    "update_dataset": {"method": "PATCH", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}", "params": {"project": "kw:dataset#.-2|arg:0#.-2|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:dataset#.-1|arg:0#.-1"}},
+    "delete_dataset": {"method": "DELETE", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}", "params": {"project": "kw:dataset#.-2|arg:0#.-2|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:dataset#.-1|arg:0#.-1"}},
+    "list_tables": {"method": "GET", "path": "/bigquery/v2/projects/{project}/datasets/{dataset}/tables", "params": {"project": "kw:dataset#.-2|arg:0#.-2|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "dataset": "kw:dataset#.-1|arg:0#.-1"}},
+    "create_dataset": {"method": "POST", "path": "/bigquery/v2/projects/{project}/datasets", "params": {"project": "kw:dataset#.-2|arg:0#.-2|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "list_datasets": {"method": "GET", "path": "/bigquery/v2/projects/{project}/datasets", "params": {"project": "arg:0|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "load_table_from_uri": {"method": "POST", "path": "/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "load_table_from_file": {"method": "POST", "path": "/upload/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}, "encoding": "multipart"},
+    "load_table_from_dataframe": {"method": "POST", "path": "/upload/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}, "encoding": "multipart"},
+    "load_table_from_json": {"method": "POST", "path": "/upload/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}, "encoding": "multipart"},
+    "copy_table": {"method": "POST", "path": "/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "extract_table": {"method": "POST", "path": "/bigquery/v2/projects/{project}/jobs", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project"}},
+    "get_job": {"method": "GET", "path": "/bigquery/v2/projects/{project}/jobs/{job_id}", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "job_id": "arg:0"}},
+    "cancel_job": {"method": "POST", "path": "/bigquery/v2/projects/{project}/jobs/{job_id}/cancel", "params": {"project": "kw:project|seg:Client:0|seg:from_service_account_json:kw:project|seg:from_service_account_info:kw:project", "job_id": "arg:0"}}
+  }
+}

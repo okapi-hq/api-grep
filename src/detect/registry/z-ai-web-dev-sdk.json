@@ -1,0 +1,21 @@
+{
+  "$comment": "z-ai-web-dev-sdk: `const zai = await ZAI.create()` reads `baseUrl` and `apiKey` from a `.z-ai-config` JSON file (the working directory, the home directory or /etc) at run time, with no default: the host is `{zaiBaseUrl}`, and paths are under that base URL. Each method sends its argument as the JSON body (`fetch(`${baseUrl}/chat/completions`)`), the key as `Authorization: Bearer`; chat requests get `thinking: { type: \"disabled\" }` when the code gives none. `functions.invoke(name, args)` sends `{ function_name, arguments }`; `async.result.query(id)` puts the id in the query.",
+  "package": "z-ai-web-dev-sdk",
+  "provider": "zai",
+  "host": "{zaiBaseUrl}",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against z-ai-web-dev-sdk 0.0.18 dist/index.js)",
+  "instance": {"names": ["default", "create"]},
+  "methods": {
+    "chat.completions.create": {"method": "POST", "path": "/chat/completions", "bodyArg": 0},
+    "chat.completions.createVision": {"method": "POST", "path": "/chat/completions/vision", "bodyArg": 0},
+    "audio.tts.create": {"method": "POST", "path": "/audio/tts", "bodyArg": 0},
+    "audio.asr.create": {"method": "POST", "path": "/audio/asr", "bodyArg": 0},
+    "images.generations.create": {"method": "POST", "path": "/images/generations", "bodyArg": 0},
+    "images.generations.edit": {"method": "POST", "path": "/images/generations/edit", "bodyArg": 0},
+    "images.search.create": {"method": "POST", "path": "/images/search", "bodyArg": 0},
+    "video.generations.create": {"method": "POST", "path": "/video/generation", "bodyArg": 0},
+    "async.result.query": {"method": "GET", "path": "/async-result?id={id}", "pathArgs": [0]},
+    "functions.invoke": {"method": "POST", "path": "/functions/invoke", "fieldArgs": ["function_name", "arguments"]}
+  }
+}

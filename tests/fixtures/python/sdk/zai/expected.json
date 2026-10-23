@@ -1,0 +1,22 @@
+{
+  "issue": "zhipuai and zai-sdk registries (SDKs coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "tutor.py", "line": 9, "provider": "zai"},
+    {"file": "tutor.py", "line": 13, "provider": "zai"},
+    {"file": "tutor.py", "line": 17, "provider": "zai"},
+    {"file": "tutor.py", "line": 21, "provider": "zai"},
+    {"file": "tutor.py", "line": 25, "provider": "zai"},
+    {"file": "tutor.py", "line": 29, "provider": "zai"},
+    {"file": "tutor.py", "line": 33, "provider": "zai"},
+    {"file": "tutor.py", "line": 37, "provider": "zai"},
+    {"file": "tutor.py", "line": 41, "provider": "zai"},
+    {"file": "tutor.py", "line": 48, "provider": "zai"},
+    {"file": "assistant.py", "line": 10, "provider": "zai"},
+    {"file": "assistant.py", "line": 14, "provider": "zai"},
+    {"file": "assistant.py", "line": 18, "provider": "zai"},
+    {"file": "assistant.py", "line": 22, "provider": "zai"},
+    {"file": "assistant.py", "line": 26, "provider": "zai"},
+    {"file": "assistant.py", "line": 30, "provider": "zai"},
+    {"file": "assistant.py", "line": 34, "provider": "zai"}
+  ]
+}

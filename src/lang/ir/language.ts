@@ -21,6 +21,8 @@ export interface IrMethodSpec extends MethodSpec {
   bodyKw?: string;
   /** Every keyword argument is a query parameter (`client.files.list(purpose=...)`). */
   queryKwargs?: boolean;
+  /** The keyword argument holding the query, beside the position `queryArg` (sendgrid-python `get(query_params={...})`). */
+  queryKw?: string;
   /** The keyword argument holding the model of a model client or an agent (`ChatOpenAI(model=...)`). */
   modelKw?: string;
   /**
@@ -49,11 +51,6 @@ export interface IrMethodSpec extends MethodSpec {
   argFields?: { seg: string; fields: string[]; setters?: string };
   /** The call builds a model client whose settings are its requests' (LangChain4j `OpenAiChatModel.builder()...build()`): the built value is the body. */
   bodySelf?: boolean;
-  /**
-   * A `params` source holding the HTTP method the code sets (SendGrid's `request.setMethod(Method.GET)`: `arg:0.method`);
-   * the registry's method when it sets none, `DYNAMIC` when it is not known.
-   */
-  methodFrom?: string;
 }
 
 /**
@@ -88,6 +85,11 @@ export interface SetterRules {
   constructors?: boolean;
   /** Classes of those packages that stand for their one argument (`ModelId("gpt-4o")` -> `"gpt-4o"`). */
   wrappers?: string[];
+  /**
+   * Classes of those packages built from positional arguments (Java records: `new CallToolRequest(name, arguments)`), and
+   * the arguments of their `builder(name)`: the fields they set, in order.
+   */
+  positional?: Record<string, string[]>;
   /** Bare calls of a filling lambda that set a key from their two arguments (supabase-kt `update({ set("done", true) })`). */
   putters?: string[];
 }
@@ -95,8 +97,10 @@ export interface SetterRules {
 /**
  * SDK registry of a tree-sitter language: the TypeScript `RegistryEntry` format with the import roots the SDK is reached
  * through, keyword-argument bodies and builder segments. `package` is the name a manifest declares (PyPI distribution).
- * Params sources add `kw:<name>`, `seg:<segment>:<N>` (argument N of a named call in the chain) and
- * `chain:<a>,<b>` (argument 0 of those calls joined with `/`: Firestore references).
+ * Params sources add `kw:<name>`, `seg:<segment>:<N>` / `seg:<segment>:kw:<name>` (an argument of a named call in the
+ * chain), `chain:<a>,<b>` (argument 0 of those calls joined with `/`: Firestore references), `segs:<after>[:<rule>]`
+ * (the segments after a named one, as a path: `segments.ts`), `setup:<call>:<place>`
+ * (the project's one setup call: `vertexai.init(project=...)`) and `true:<source>` (a value only when it is `True`).
  */
 export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "methods" | "commands"> {
   /** Dotted import roots: Python modules (`openai`, `google.genai`), PHP namespaces (`Stripe`, `OpenAI`), JVM classes. */
@@ -126,12 +130,15 @@ export interface IrRegistryEntry extends Omit<RegistryEntry, "instance" | "metho
   /**
    * The host comes from a configuration call made once elsewhere (`PostHog.setup(PostHogConfig(key, host = h))`):
    * the calls by the end of their name, the position of the config argument (`-1`: the last), and where the config's
-   * constructor takes the host (`kw:host|1`); without `arg`, where the setup call itself does (Dart's
+   * constructor takes the host (`kw:host|1`) or the member the code sets on it (`set:host`: Dart's
+   * `PostHogConfig(k)..host = h`); without `arg`, where the setup call itself does (Dart's
    * `Supabase.initialize(url: u, anonKey: k)`). See `setup.ts`.
    */
   setupUrl?: { calls: string[]; arg?: number; host: string };
   /** A model client a framework configures from the build and its properties (Spring AI): see `ConfiguredClient`. */
   configured?: ConfiguredClient;
+  /** Members its values also give by subscript (slack_bolt's context is a dict: `context["client"]` is `context.client`). */
+  itemMembers?: string[];
   methods: Record<string, IrMethodSpec>;
 }
 
@@ -371,6 +378,12 @@ export interface IrLanguage extends IrSource {
    * bound past which its selections were not read (#55).
    */
   documentOf?: (arg: Scoped, ctx: IrCtx) => { text: string; limit?: GraphqlLimit } | undefined;
+  /**
+   * How a `segs:<after>:<rule>` source names a segment in the URL (msgraph-sdk: `send_mail` is `sendMail`), given the
+   * name before it: the text, N for a call standing for its argument N (`by_user_id(u)`), undefined for a segment it
+   * does not know (a value the scan cannot read), null when the path as a whole cannot be read.
+   */
+  pathSegment?: (rule: string, name: string, call: boolean, before: string) => string | number | null | undefined;
   /** Calls whose value, for a URL, is their first argument (`quote(x)`) or their receiver (`x.strip()`). */
   passthrough: { functions: Set<string>; methods: Set<string> };
   /** Calls that serialize a body, by name: `json.dumps` -> json, `urlencode` -> form. */

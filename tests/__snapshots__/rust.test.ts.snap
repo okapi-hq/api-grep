@@ -30,7 +30,7 @@ exports[`rust: SDK registries > reads async-openai builders and configs, openai-
       "dynamic": [
         {
           "name": "token",
-          "origin": "sdk",
+          "origin": "env",
           "where": "path",
         },
         {

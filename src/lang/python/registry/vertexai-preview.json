@@ -1,0 +1,29 @@
+{
+  "$comment": "google-cloud-aiplatform's `vertexai.preview.generative_models`: the same `GenerativeModel` calls as `vertexai.generative_models`, on Vertex AI's v1beta1 API.",
+  "package": "google-cloud-aiplatform",
+  "aliases": [
+    "vertexai"
+  ],
+  "imports": [
+    "vertexai.preview.generative_models"
+  ],
+  "provider": "google-vertex",
+  "host": "{location}-aiplatform.googleapis.com",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against google-cloud-aiplatform 2.6.0 vertexai/generative_models/_generative_models.py: _PreviewGenerativeModel on aiplatform_v1beta1)",
+  "instance": {
+    "names": [
+      "GenerativeModel"
+    ]
+  },
+  "inlinePathLiterals": true,
+  "methods": {
+    "generate_content": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "generate_content_async": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "count_tokens": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "count_tokens_async": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:countTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "compute_tokens": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:computeTokens", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true},
+    "start_chat.send_message": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}},
+    "start_chat.send_message_async": {"method": "POST", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent", "params": {"project": "setup:vertexai.init,aiplatform.init:kw:project", "location": "setup:vertexai.init,aiplatform.init:kw:location", "model": "model", "stream": "true:kw:stream"}, "modelAt": "GenerativeModel:0|GenerativeModel:kw:model_name", "fieldArgs": ["contents"], "bodyKwargs": true, "pathWith": {"param": "stream", "path": "/v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:streamGenerateContent"}}
+  }
+}

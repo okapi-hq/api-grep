@@ -109,6 +109,8 @@ export interface RawCall {
   soap?: { wsdlExpr?: Expression; locationExpr?: Expression; operation: string };
   /** The MCP transport the client sends through, when the code or its configuration says. */
   mcpTransport?: McpTransport;
+  /** Query parameters a fluent request builder's steps set (`top(10)`), by name; without one, an object or `k=v` string of several. */
+  stepQuery?: { name?: string; value?: Expression }[];
 }
 
 export interface MethodSpec {
@@ -131,6 +133,15 @@ export interface MethodSpec {
    */
   sendsThrough?: { index?: number; names?: string[]; bodyArg?: number };
   queryArg?: number;
+  /** The query is this property of the `queryArg` argument (`@sendgrid/client`'s `request({ url, qs })`). */
+  queryProp?: string;
+  /**
+   * A `params` source holding the HTTP method the code sets (SendGrid's `request.setMethod(Method.GET)`: `arg:0.method`);
+   * the registry's method when it sets none, `DYNAMIC` when it is not known.
+   */
+  methodFrom?: string;
+  /** The library turns the body argument into the request body by its own rules: `sendgrid-mail` (`resolve/sendgrid-mail.ts`). */
+  bodyConvert?: "sendgrid-mail";
   /**
    * The positional arguments are these fields of the request, in order (node-telegram-bot-api's `sendMessage(chatId,
    * text, options)`: `chat_id`, `text`; `""` skips one). The object at `bodyArg` (TypeScript, PHP) or the keyword
@@ -149,6 +160,24 @@ export interface MethodSpec {
   bodyProp?: string;
   /** The library sends the body under this key (`shopify.product.create(fields)` sends `{ product: fields }`). */
   bodyWrap?: string;
+  /**
+   * Keys of the body the library takes for itself and does not send, removed before `bodyWrap` (replicate-js
+   * `predictions.create({ model, wait, signal, ...data })`: the model goes in the path, `wait` in a header); also from
+   * the query the `queryArg` object gives (TypeScript: cloudflare's `dns.records.list({ zone_id, ...query })`).
+   */
+  bodyOmit?: string[];
+  /**
+   * TypeScript: the index of the params object when the call names the path's first id positionally (cloudflare 4.x
+   * `kv.namespaces.values.get(namespaceId, key, { account_id })`). A call whose argument before that index is an object
+   * took that id in the object (7.x `values.get(key, { account_id, namespace_id })`): it is read with a hole first, so a
+   * `params` source `arg:0|arg:2.namespace_id` reads either form.
+   */
+  idInParams?: number;
+  /**
+   * Keys of the body argument the library sends as query parameters (`@elevenlabs/elevenlabs-js`'s
+   * `textToSpeech.convert(voiceId, { text, outputFormat })` puts `output_format` in the query).
+   */
+  queryKeys?: string[];
   /** A JSX component's (`components` of a registry): the props read as the method's arguments, in order. */
   props?: string[];
   /**
@@ -156,6 +185,11 @@ export interface MethodSpec {
    * `Product.find()` lists them.
    */
   argPath?: { arg: number; path: string };
+  /**
+   * The path when the `params` source of `param` gives a value, `path` otherwise: Replicate's `run("owner/name:version")`
+   * creates a prediction of that version (`/v1/predictions`), `run("owner/name")` one of the model's.
+   */
+  pathWith?: { param: string; path: string };
   /**
    * Argument N is an optional id the library tells from the options after it by their kind (shopify-api-node's
    * `article.tags(blogId?, params)`, #102): an object given last in its place is the options, `null` no id.
@@ -176,7 +210,9 @@ export interface MethodSpec {
   /**
    * Path placeholder -> where its value comes from: `arg:N` (call argument), `instance:N` (argument of the builder the
    * method is called on, `from(table)`), `ref:N` (a Firebase reference: `doc(db, "users", id)` gives `users/{id}`) or
-   * `fn:N` (a Convex function reference: `api.tasks.get` gives `tasks/get`). `arg:N.model` reads a property of it.
+   * `fn:N` (a Convex function reference: `api.tasks.get` gives `tasks/get`). `arg:N.model` reads a property of it;
+   * `#N` after a source, piece N of the `owner/name:version` reference it holds (0 the owner, 1 the name, 2 the version);
+   * `#.-N` / `#/-N`, piece N from the end of a dotted or slashed id (BigQuery's `project.dataset.table`).
    */
   params?: Record<string, string>;
   /**
@@ -241,6 +277,13 @@ export interface MethodSpec {
   runnerArg?: string;
   /** Where the contract's construction takes its ABI: `1` (ethers). */
   abiArg?: string;
+  /**
+   * Where the client's construction (an `instance.names` call: `createClient(options)`) or, for the package's own
+   * functions, the project's one `setup` call (`Bugsnag.start(options)`) gives this method's base URL: `0.endpoints.notify`.
+   */
+  setupUrl?: string;
+  /** A property of the arguments that, set to `false`, means the call sends nothing (`0.autoTrackSessions`). */
+  offWhen?: string;
 }
 
 /** The MCP transport a client sends through (`Call.transport`): its kind, and the construction the code names it with. */
@@ -255,6 +298,11 @@ export interface EndpointSource {
   headers?: string;
   /** The MCP transport this construction sends through (`SSEClientTransport`: `sse`), reported as `Call.transport`. */
   mcpTransport?: McpTransport["kind"];
+  /**
+   * A path the library resolves against the URL by RFC 3986 (the MCP Java SDK's `/sse`, `/mcp`), unless the code gives
+   * another through a builder step after the construction (`step`: `endpoint("/x")`) or an argument (`arg`).
+   */
+  path?: { default: string; step?: string; arg?: string };
   /**
    * The function at this position sends the requests (Relay's `Network.create(fetchFn)`): the URL and headers of the one
    * `fetch` it makes, also through the functions it calls.
@@ -344,6 +392,11 @@ export interface EndpointSpec {
    */
   nonHttp?: string[];
   /**
+   * Transports are builders (JVM: `X.builder(url).endpoint(p).build()`): a transport is the construction this call
+   * ends, its steps written between them.
+   */
+  build?: string;
+  /**
    * The client method a transport is given to after the client is built (MCP `client.connect(transport)`): a call goes
    * to the transports its receiver is connected with in the file, else to the file's own transports (`mcp-endpoint.ts`).
    */
@@ -404,6 +457,13 @@ export interface RegistryEntry {
   components?: Record<string, MethodSpec>;
   /** The library picks the provider from the model name (LangChain's `initChatModel`): the call goes where it routes. */
   routeByModel?: boolean;
+  /** Model values are `owner/name:version` references (Replicate): the model fact names `owner/name`, the version is no model name. */
+  modelRefs?: boolean;
+  /**
+   * The library sends the body's and the query's keys in snake case whatever the code writes (Fern-generated clients:
+   * `cohere-ai`'s `chatHistory` is `chat_history`); free-form maps keep their keys (`resolve/wire-keys.ts`).
+   */
+  wireCase?: "snake";
   /** A client of any API of a protocol (GraphQL): the endpoint, headers and provider come from the code. */
   endpoint?: EndpointSpec;
   /** Members of a contract object (`connect`, `interface`): a `*` in a method key, a function of its ABI, is never one of them (#78). */
@@ -413,6 +473,8 @@ export interface RegistryEntry {
    * SDK's when its callers pass one of its clients, never because the manifests declare the package.
    */
   callersOnly?: boolean;
+  /** Functions of the package that configure the client its own functions use (`Bugsnag.start`): `setupUrl`'s calls. */
+  setup?: string[];
   /**
    * Clients a framework hands to request handlers in their context, by name (Hydrogen's `context.storefront`): in a
    * project whose manifests declare the package, `<name>.<method>` on a value of that name read from a parameter or
@@ -431,6 +493,14 @@ export interface RegistryEntry {
    * then `p.save()` is the key `rest.Product#save`, the record holding the ids `find` was given.
    */
   recordFrom?: string[];
+  /**
+   * A fluent request builder (`client.api(path).select(f).top(10).get()`): the calls from `start` to the method make
+   * its key (`api.**.get`, where `**` is any calls, none too: `src/detect/fluent-steps.ts`); `params` sources
+   * `step:<name>:<N>` read argument N of the last call so named. `query`: calls setting the query parameter they map
+   * to with their argument (`select` -> `$select`; `true` without one); `queryObject`: calls adding the keys of an
+   * object or a `k=v&...` string.
+   */
+  steps?: { start: string; query?: Record<string, string>; queryObject?: string[] };
 }
 
 export interface FrameworkKeys {
@@ -465,10 +535,22 @@ export interface SdkMatch {
   inlinePath?: boolean;
   basePath?: string;
   routeByModel?: boolean;
+  modelRefs?: boolean;
+  wireCase?: "snake";
   /** The registry's route helpers (`routes`). */
   routes?: Record<string, string>;
   /** A GraphQL client (`endpoint` in the registry): its headers and auth come from the code too. */
   anyHost?: boolean;
+  /** Arguments of the client's first construction (`Client.init(options)`), for `root:N` path params. */
+  rootArgs?: Expression[];
+  /** The calls of a fluent request builder before the method (`steps` in the registry), for `step:<name>:<N>` params. */
+  steps?: Step[];
+}
+
+/** One call of a fluent request builder's chain (`select("subject")` in `client.api(path).select("subject").get()`). */
+export interface Step {
+  name: string;
+  args: Expression[];
 }
 
 /** Where a value the code can send comes from when it is no literal of its own (`model/value-sources.ts`). */

@@ -13,9 +13,15 @@
     "purchasePackage": {"method": "POST", "path": "/v1/receipts"},
     "purchaseStoreProduct": {"method": "POST", "path": "/v1/receipts"},
     "purchaseProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseSubscriptionOption": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseDiscountedPackage": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseDiscountedProduct": {"method": "POST", "path": "/v1/receipts"},
+    "purchasePackageWithWinBackOffer": {"method": "POST", "path": "/v1/receipts"},
+    "purchaseProductWithWinBackOffer": {"method": "POST", "path": "/v1/receipts"},
     "purchase": {"method": "POST", "path": "/v1/receipts"},
     "restorePurchases": {"method": "POST", "path": "/v1/receipts"},
     "syncPurchases": {"method": "POST", "path": "/v1/receipts"},
+    "syncPurchasesForResult": {"method": "POST", "path": "/v1/receipts"},
     "logIn": {"method": "POST", "path": "/v1/subscribers/identify"},
     "changeUser": {"method": "POST", "path": "/v1/subscribers/identify"}
   }

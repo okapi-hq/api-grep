@@ -1,4 +1,4 @@
-import type { Expr, Param } from "../ir/model.js";
+import type { Annotation, Expr, Param } from "../ir/model.js";
 import { field, named, type SyntaxNode } from "../tree-sitter.js";
 import { lowerExpr, posOf, type PyState } from "./lower-expr.js";
 
@@ -53,4 +53,18 @@ export function decoratorNames(n: SyntaxNode): string[] {
   return named(n)
     .filter((c) => c.type === "decorator")
     .map((d) => named(d)[0]?.text ?? "");
+}
+
+/**
+ * Decorators as annotations, written in the enclosing scope: the callee only (`app.event` for `@app.event("x")`), what
+ * a listener's injected parameters are read from (`slack-bolt.ts`).
+ */
+export function decoratorAnnotations(n: SyntaxNode, st: PyState): Annotation[] {
+  return named(n)
+    .filter((c) => c.type === "decorator")
+    .flatMap((d) => {
+      const e = named(d)[0];
+      const callee = e?.type === "call" ? field(e, "function") : e;
+      return callee ? [{ type: lowerExpr(callee, st), args: [], pos: posOf(d) }] : [];
+    });
 }

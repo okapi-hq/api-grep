@@ -1,0 +1,9 @@
+{
+  "issue": "elevenlabs (npm 1.x) through the @elevenlabs/elevenlabs-js registry",
+  "calls": [
+    {"file": "speak.ts", "line": 5, "provider": "elevenlabs"},
+    {"file": "speak.ts", "line": 7, "provider": "elevenlabs"},
+    {"file": "speak.ts", "line": 9, "provider": "elevenlabs"},
+    {"file": "speak.ts", "line": 11, "provider": "elevenlabs"}
+  ]
+}

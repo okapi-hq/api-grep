@@ -1,0 +1,13 @@
+{
+  "issue": "@sendgrid/mail and @sendgrid/client registries (SDKs coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "notify.ts", "line": 6, "provider": "sendgrid"},
+    {"file": "notify.ts", "line": 11, "provider": "sendgrid"},
+    {"file": "notify.ts", "line": 15, "provider": "sendgrid"},
+    {"file": "notify.ts", "line": 22, "provider": "sendgrid"},
+    {"file": "contacts.ts", "line": 6, "provider": "sendgrid"},
+    {"file": "contacts.ts", "line": 10, "provider": "sendgrid"},
+    {"file": "contacts.ts", "line": 14, "provider": "sendgrid"},
+    {"file": "legacy.js", "line": 6, "provider": "sendgrid"}
+  ]
+}

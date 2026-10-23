@@ -1,0 +1,35 @@
+{
+  "$comment": "langchain-huggingface: models over huggingface_hub's `InferenceClient`, reported where they are built. `HuggingFaceEndpoint(repo_id=...)` runs `text_generation`, `HuggingFaceEndpointEmbeddings(model=...)` `feature_extraction`: on the router, under the `hf-inference` provider's path, as `huggingface-hub.json` reports those methods (without `provider=`, huggingface_hub picks the provider at run time from the user's settings). With `endpoint_url=` (or a URL as `model=`) they post to that URL (`langchain-huggingface.ts`). `ChatHuggingFace(llm=HuggingFaceEndpoint(...))` runs `chat_completion`: the router's `/v1/chat/completions` with the endpoint's repo id as the model, or `/v1/chat/completions` under its `endpoint_url`; the endpoint it wraps sends no request of its own, and one over a local `HuggingFacePipeline` is no call. `HuggingFacePipeline` and `HuggingFaceEmbeddings` run locally.",
+  "package": "langchain-huggingface",
+  "imports": [
+    "langchain_huggingface"
+  ],
+  "provider": "huggingface",
+  "host": "router.huggingface.co",
+  "auth": "bearer",
+  "generatedFrom": "manual (langchain-huggingface 1.2 over huggingface_hub 2.2: HuggingFaceEndpoint, HuggingFaceEndpointEmbeddings, ChatHuggingFace)",
+  "methods": {
+    "HuggingFaceEndpoint": {
+      "method": "POST",
+      "path": "/hf-inference/models/{model}",
+      "params": {"model": "kw:repo_id|kw:model"},
+      "modelAt": "kw:repo_id|kw:model"
+    },
+    "HuggingFaceEndpointEmbeddings": {
+      "method": "POST",
+      "path": "/hf-inference/models/{model}/pipeline/feature-extraction",
+      "params": {"model": "kw:model|kw:repo_id"},
+      "modelAt": "kw:model|kw:repo_id"
+    },
+    "ChatHuggingFace": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "modelAt": "kw:model_id|kw:llm.repo_id|kw:llm.model|0.repo_id|0.model"
+    },
+    "ChatHuggingFace.from_model_id": {
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "modelAt": "kw:model_id|0"
+    }
+  }
+}

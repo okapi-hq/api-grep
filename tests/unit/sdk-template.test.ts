@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { sdkTarget, type SdkSource } from "../../src/resolve/sdk-template.js";
 import { wrapShape } from "../../src/resolve/shape-utils.js";
-import type { MethodSpec, Shape } from "../../src/types.js";
+import type { MethodSpec, Part, Shape } from "../../src/types.js";
 
 /** A source whose arguments are the given values, by `params` source (`arg:0.product_id`). */
 function source(spec: MethodSpec, given: Record<string, string>): SdkSource<string> {
@@ -76,5 +76,49 @@ describe("wrapShape", () => {
 
   it("leaves the body as it is for a key a record cannot hold", () => {
     expect(wrapShape(message, "a.__proto__")).toBe(message);
+  });
+});
+
+describe("`owner/name:version` references (Replicate)", () => {
+  const run: MethodSpec = {
+    method: "POST",
+    path: "/v1/models/{model_owner}/{model_name}/predictions",
+    pathWith: { param: "version", path: "/v1/predictions" },
+    params: { model_owner: "arg:0#0", model_name: "arg:0#1", version: "arg:0#2" },
+  };
+
+  it("takes the version's path when the reference names a version, the model's otherwise", () => {
+    expect(sdkTarget(source(run, { "arg:0": "acme/sketchy:abc" })).url.pathTemplate).toBe("/v1/predictions");
+    expect(sdkTarget(source(run, { "arg:0": "acme/sketchy" })).url.pathTemplate).toBe("/v1/models/acme/sketchy/predictions");
+    expect(sdkTarget(source(run, {})).url.pathTemplate).toBe("/v1/models/{model_owner}/{model_name}/predictions");
+  });
+
+  it("splits a reference built from parts at its separators", () => {
+    const parts = (e: string): Part[] => e.split(/(\$\w+)/).filter(Boolean).map((t) => (t.startsWith("$") ? { kind: "dynamic", name: t.slice(1), origin: "param" } : { kind: "static", text: t }));
+    const built = (ref: string): SdkSource<string> => ({ ...source(run, { "arg:0": ref }), evaluate: parts });
+    expect(sdkTarget(built("$owner/sketchy")).url.pathTemplate).toBe("/v1/models/{model_owner}/sketchy/predictions");
+    // one value the scan cannot read holds the owner and the name, and no version it is known to give
+    expect(sdkTarget(built("$ref")).url.pathTemplate).toBe("/v1/models/{model_owner}/{model_name}/predictions");
+    expect(sdkTarget(built("acme/$name:$version")).url.pathTemplate).toBe("/v1/predictions");
+  });
+});
+
+describe("dotted ids (BigQuery's `project.dataset.table`)", () => {
+  const getTable: MethodSpec = {
+    method: "GET",
+    path: "/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}",
+    params: { project: "arg:0#.-3|client:project", dataset: "arg:0#.-2", table: "arg:0#.-1" },
+  };
+  const parts = (e: string): Part[] => e.split(/(\$\w+)/).filter(Boolean).map((t) => (t.startsWith("$") ? { kind: "dynamic", name: t.slice(1), origin: "param" } : { kind: "static", text: t }));
+  const table = (id: string): SdkSource<string> => ({ ...source(getTable, { "arg:0": id, "client:project": "home" }), evaluate: parts });
+
+  it("reads the pieces from the end, the next alternative giving a piece the id leaves out", () => {
+    expect(sdkTarget(table("acme.sales.orders")).url.pathTemplate).toBe("/bigquery/v2/projects/acme/datasets/sales/tables/orders");
+    expect(sdkTarget(table("sales.orders")).url.pathTemplate).toBe("/bigquery/v2/projects/home/datasets/sales/tables/orders");
+    expect(sdkTarget(table("$ds.orders")).url.pathTemplate).toBe("/bigquery/v2/projects/home/datasets/{dataset}/tables/orders");
+  });
+
+  it("knows no piece of a value it cannot read that holds no separator the code writes", () => {
+    expect(sdkTarget(table("$id")).url.pathTemplate).toBe("/bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}");
   });
 });

@@ -1,0 +1,14 @@
+{
+  "issue": "together-ai registry (an SDK coverage.sdks listed as unsupported)",
+  "calls": [
+    {"file": "assistant.ts", "line": 5, "provider": "together"},
+    {"file": "assistant.ts", "line": 7, "provider": "together"},
+    {"file": "assistant.ts", "line": 9, "provider": "together"},
+    {"file": "assistant.ts", "line": 11, "provider": "together"},
+    {"file": "assistant.ts", "line": 13, "provider": "together"},
+    {"file": "assistant.ts", "line": 15, "provider": "together"},
+    {"file": "assistant.ts", "line": 17, "provider": "together"},
+    {"file": "assistant.ts", "line": 19, "provider": "together"},
+    {"file": "assistant.ts", "line": 23, "provider": "together"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "issue": "aiobotocore, botocore and aioboto3 clients: boto3's operations under the package the code uses (aiobotocore's `async with session.create_client(...) as client`)",
+  "calls": [
+    {"file": "archive.py", "line": 9, "provider": "aws"},
+    {"file": "archive.py", "line": 10, "provider": "aws"},
+    {"file": "archive.py", "line": 16, "provider": "aws"},
+    {"file": "archive.py", "line": 22, "provider": "aws"},
+    {"file": "queue.py", "line": 8, "provider": "aws"},
+    {"file": "queue.py", "line": 15, "provider": "aws"},
+    {"file": "thumbs.py", "line": 7, "provider": "aws"}
+  ]
+}

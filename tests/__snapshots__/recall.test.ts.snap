@@ -83,6 +83,30 @@ exports[`regression fixtures > dart/http 1`] = `
 ]
 `;
 
+exports[`regression fixtures > dart/mobile-sdks 1`] = `
+[
+  "analytics.dart:12 posthog POST /batch",
+  "analytics.dart:14 posthog POST /batch",
+  "analytics.dart:17 posthog POST /batch",
+  "analytics.dart:18 posthog POST /batch",
+  "analytics.dart:19 posthog POST /batch",
+  "analytics.dart:23 posthog POST /flags",
+  "billing.dart:8 revenuecat GET /v1/subscribers/{app_user_id}/offerings",
+  "billing.dart:10 revenuecat GET /v1/subscribers/{app_user_id}",
+  "billing.dart:13 revenuecat POST /v1/receipts",
+  "billing.dart:17 revenuecat POST /v1/receipts",
+  "billing.dart:20 revenuecat POST /v1/receipts",
+  "billing.dart:22 revenuecat POST /v1/subscribers/identify",
+  "payments.dart:12 stripe POST /v1/payment_intents/{intent}/confirm",
+  "payments.dart:15 stripe POST /v1/payment_methods",
+  "payments.dart:17 stripe POST /v1/payment_intents/{intent}/confirm",
+  "payments.dart:19 stripe POST /v1/tokens",
+  "payments.dart:21 stripe POST /v1/setup_intents/{intent}/confirm",
+  "payments.dart:23 stripe GET /v1/payment_intents/{intent}",
+  "payments.dart:25 stripe GET /v1/payment_intents/{intent}",
+]
+`;
+
 exports[`regression fixtures > dart/negative 1`] = `[]`;
 
 exports[`regression fixtures > go/a2a 1`] = `
@@ -156,6 +180,17 @@ exports[`regression fixtures > go/sdk-more 1`] = `
   "discord.go:20 discord POST /api/v9/channels/{channelID}/messages",
   "discord.go:25 discord POST /api/v9/channels/{channelID}/messages",
   "discord.go:30 discord PUT /api/v9/guilds/{guildID}/members/{userID}/roles/1200000000000000001",
+]
+`;
+
+exports[`regression fixtures > go/sdk-telegram 1`] = `
+[
+  "main.go:21 telegram POST /bot{token}/getMe",
+  "main.go:23 telegram POST /bot{token}/setWebhook",
+  "main.go:31 telegram POST /bot{token}/sendMessage",
+  "main.go:39 telegram POST /bot{token}/answerCallbackQuery",
+  "main.go:40 telegram POST /bot{token}/deleteMessages",
+  "notify.go:27 telegram POST /bot{token}/sendDocument",
 ]
 `;
 
@@ -557,6 +592,22 @@ exports[`regression fixtures > java/lombok 1`] = `
 ]
 `;
 
+exports[`regression fixtures > java/mcp 1`] = `
+[
+  "ForecastAgent.java:20 mcp POST /mcp initialize",
+  "ForecastAgent.java:21 mcp POST /mcp tools/list",
+  "ForecastAgent.java:22 mcp POST /mcp tools/call",
+  "ForecastAgent.java:23 mcp POST /mcp resources/read",
+  "ForecastAgent.java:24 mcp POST /mcp prompts/get",
+  "TicketDesk.java:14 mcp POST /v2/events initialize",
+  "TicketDesk.java:15 mcp POST /v2/events tools/call",
+  "TicketDesk.java:16 mcp POST /v2/events prompts/list",
+  "TicketDesk.java:22 mcp POST /sse ping",
+  "TicketDesk.java:28 mcp POST /teams/ops/rpc tools/call",
+  "ToolRouter.java:14 mcp POST / tools/list",
+]
+`;
+
 exports[`regression fixtures > java/mixed 1`] = `
 [
   "NotesApi.java:12 api.example-notes.com GET /v1/notes",
@@ -683,6 +734,30 @@ exports[`regression fixtures > java/sdk-forms 1`] = `
   "Notices.java:41 sendgrid DYNAMIC /v3/{endpoint}",
   "Notices.java:45 mailgun POST /v3/notices.example.eu/messages",
   "Notices.java:49 mailgun POST /v3/notices.example.com/messages",
+]
+`;
+
+exports[`regression fixtures > java/sdk-jda 1`] = `
+[
+  "Quartermaster.java:17 discord PUT /api/v10/applications/{application_id}/commands",
+  "Quartermaster.java:22 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "Quartermaster.java:23 discord POST /api/v10/webhooks/{application_id}/{interaction_token}",
+  "Quartermaster.java:24 discord POST /api/v10/channels/{channel_id}/messages",
+  "Quartermaster.java:25 discord PUT /api/v10/guilds/{guild_id}/bans/{user_id}",
+  "Quartermaster.java:30 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "Quartermaster.java:34 discord PUT /api/v10/applications/{application_id}/guilds/1400000000000000003/commands",
+  "Quartermaster.java:36 discord GET /api/v10/guilds/1400000000000000003/members/1500000000000000004",
+  "Quartermaster.java:40 discord DELETE /api/v10/channels/{channel_id}/messages/1600000000000000005",
+  "Quartermaster.java:41 discord POST /api/v10/channels/{channel_id}/typing",
+]
+`;
+
+exports[`regression fixtures > java/sdk-vertexai 1`] = `
+[
+  "Summarizer.java:15 google-vertex POST /v1/projects/atlas-notes-prod/locations/europe-west4/publishers/google/models/gemini-2.0-flash:generateContent",
+  "Summarizer.java:24 google-vertex POST /v1/projects/atlas-notes-prod/locations/europe-west4/publishers/google/models/gemini-2.5-pro:streamGenerateContent",
+  "Summarizer.java:25 google-vertex POST /v1/projects/atlas-notes-prod/locations/europe-west4/publishers/google/models/gemini-2.5-pro:countTokens",
+  "Summarizer.java:32 google-vertex POST /v1/projects/atlas-notes-prod/locations/europe-west4/publishers/google/models/gemini-2.0-flash-lite:generateContent",
 ]
 `;
 
@@ -959,6 +1034,19 @@ exports[`regression fixtures > kotlin/maps 1`] = `
 ]
 `;
 
+exports[`regression fixtures > kotlin/mcp 1`] = `
+[
+  "Concierge.kt:18 mcp POST /mcp initialize",
+  "Concierge.kt:22 mcp POST /mcp tools/list",
+  "Concierge.kt:23 mcp POST /mcp tools/call",
+  "Concierge.kt:24 mcp POST /mcp ping",
+  "Concierge.kt:29 mcp POST /sse tools/call",
+  "Concierge.kt:33 mcp POST /mcp prompts/get",
+  "JavaSdkClient.kt:11 mcp POST /api/mcp initialize",
+  "JavaSdkClient.kt:12 mcp POST /api/mcp tools/call",
+]
+`;
+
 exports[`regression fixtures > kotlin/negatives 1`] = `[]`;
 
 exports[`regression fixtures > kotlin/okhttp 1`] = `
@@ -1110,6 +1198,26 @@ exports[`regression fixtures > kotlin/sdk/cloud 1`] = `
   "Storage.kt:22 aws GET /{Bucket}/{Key}",
   "Storage.kt:27 aws GET /{Bucket}",
   "Storage.kt:30 aws GET /",
+]
+`;
+
+exports[`regression fixtures > kotlin/sdk/discord 1`] = `
+[
+  "HarborBot.kt:19 discord POST /api/v10/channels/{channel_id}/messages",
+  "HarborBot.kt:20 discord POST /api/v10/channels/{channel_id}/messages",
+  "HarborBot.kt:21 discord PUT /api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+  "HarborBot.kt:22 discord DELETE /api/v10/channels/{channel_id}/messages/{message_id}",
+  "HarborBot.kt:27 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "HarborBot.kt:29 discord POST /api/v10/interactions/{interaction_id}/{interaction_token}/callback",
+  "HarborBot.kt:30 discord PATCH /api/v10/webhooks/{application_id}/{interaction_token}/messages/@original",
+  "HarborBot.kt:38 discord POST /api/v10/channels/1200000000000000001/messages",
+  "HarborBot.kt:42 discord PUT /api/v10/applications/{application_id}/commands",
+  "HarborBot.kt:47 discord PUT /api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+  "HarborBot.kt:51 discord DELETE /api/v10/guilds/{guild_id}/members/{user_id}",
+  "HarborBot.kt:55 discord PATCH /api/v10/channels/{channel_id}/messages/{message_id}",
+  "HarborBot.kt:56 discord PATCH /api/v10/channels/{channel_id}/messages/{message_id}",
+  "HarborBot.kt:61 discord GET /api/v10/users/@me",
+  "HarborBot.kt:66 discord POST /api/v10/channels/1200000000000000001/messages (wrapper:HarborOps.announce)",
 ]
 `;
 
@@ -1370,6 +1478,24 @@ exports[`regression fixtures > php/sdk/firebase 1`] = `
   "Users.php:25 firebase PATCH /v1/projects/{projectId}/databases/(default)/documents/users/{uid}",
   "Users.php:30 firebase POST /v1/projects/{projectId}/databases/(default)/documents/users/{uid}/posts",
   "Users.php:36 firebase POST /v1/projects/{projectId}/messages:send",
+]
+`;
+
+exports[`regression fixtures > php/sdk/mercadopago 1`] = `
+[
+  "Checkout.php:24 mercadopago POST /checkout/preferences",
+  "Checkout.php:37 mercadopago POST /v1/payments",
+  "Checkout.php:47 mercadopago GET /v1/payments/{id}",
+  "Checkout.php:53 mercadopago PUT /v1/payments/{id}",
+  "Checkout.php:54 mercadopago GET /v1/payments/search",
+  "Checkout.php:60 mercadopago POST /v1/payments/{payment_id}/refunds",
+  "Checkout.php:66 mercadopago PUT /v1/customers/{id}",
+  "Checkout.php:67 mercadopago POST /v1/customers",
+  "Checkout.php:73 mercadopago POST /v1/orders/{id}/capture",
+  "Legacy.php:15 mercadopago POST /checkout/preferences",
+  "Legacy.php:21 mercadopago GET /v1/payments/{id}",
+  "Legacy.php:23 mercadopago PUT /v1/payments/{id}",
+  "Legacy.php:24 mercadopago GET /v1/payments/search",
 ]
 `;
 
@@ -1883,6 +2009,25 @@ exports[`regression fixtures > python/runtime-models 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/bigquery 1`] = `
+[
+  "warehouse.py:9 google POST /bigquery/v2/projects/orchard-metrics/jobs",
+  "warehouse.py:10 google GET /bigquery/v2/projects/orchard-metrics/queries/{job_id}",
+  "warehouse.py:14 google POST /bigquery/v2/projects/orchard-metrics/queries",
+  "warehouse.py:18 google POST /bigquery/v2/projects/orchard-metrics/datasets/telemetry/tables/events/insertAll",
+  "warehouse.py:22 google POST /bigquery/v2/projects/orchard-metrics/datasets/telemetry/tables/clicks/insertAll",
+  "warehouse.py:26 google POST /bigquery/v2/projects/{project}/datasets/{dataset}/tables/{table}/insertAll",
+  "warehouse.py:30 google GET /bigquery/v2/projects/orchard-metrics/datasets/{dataset}/tables/orders",
+  "warehouse.py:34 google GET /bigquery/v2/projects/orchard-metrics/datasets/sales/tables/orders/data",
+  "warehouse.py:38 google DELETE /bigquery/v2/projects/orchard-metrics/datasets/sales/tables/orders_staging",
+  "warehouse.py:42 google POST /bigquery/v2/projects/{project}/datasets/{dataset}/tables",
+  "warehouse.py:46 google POST /bigquery/v2/projects/orchard-metrics/jobs",
+  "warehouse.py:50 google POST /upload/bigquery/v2/projects/orchard-metrics/jobs",
+  "warehouse.py:54 google GET /bigquery/v2/projects/archive/datasets/sales_2023",
+  "warehouse.py:54 google GET /bigquery/v2/projects/orchard-metrics/datasets",
+]
+`;
+
 exports[`regression fixtures > python/sdk/claude-agent 1`] = `
 [
   "reviewer.py:7 anthropic POST /v1/messages",
@@ -1903,6 +2048,24 @@ exports[`regression fixtures > python/sdk/discord 1`] = `
   "bot.py:42 discord PUT /api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
   "bot.py:43 discord POST /api/v10/channels/{channel_id}/messages",
   "bot.py:46 discord GET /api/v10/users/@me",
+]
+`;
+
+exports[`regression fixtures > python/sdk/fal 1`] = `
+[
+  "canvas.py:11 fal POST /{app_id}",
+  "canvas.py:15 fal POST /{app_id}",
+  "canvas.py:19 fal POST /{app_id}",
+  "canvas.py:23 fal GET /{app_owner}/{app_alias}/requests/{request_id}/status",
+  "canvas.py:27 fal GET /{app_owner}/{app_alias}/requests/{request_id}",
+  "canvas.py:31 fal PUT /{app_owner}/{app_alias}/requests/{request_id}/cancel",
+  "canvas.py:35 fal POST /{app_id}",
+  "canvas.py:36 fal GET /{app_owner}/{app_alias}/requests/{request_id}",
+  "canvas.py:40 fal POST /{app_id}/stream",
+  "canvas.py:45 fal POST /files/upload",
+  "canvas.py:49 fal POST /{app_id}",
+  "canvas.py:53 fal POST /{app_id}",
+  "canvas.py:57 fal GET /{app_owner}/{app_alias}/requests/{request_id}/status",
 ]
 `;
 
@@ -1956,6 +2119,26 @@ exports[`regression fixtures > python/sdk/huggingface 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/langchain-hosted 1`] = `
+[
+  "fireworks_models.py:5 fireworks POST /inference/v1/chat/completions",
+  "fireworks_models.py:7 fireworks POST /fireworks/v1/chat/completions",
+  "fireworks_models.py:9 fireworks POST /inference/v1/completions",
+  "fireworks_models.py:11 fireworks POST /inference/v1/embeddings",
+  "hf_models.py:9 huggingface POST /hf-inference/models/{model}",
+  "hf_models.py:11 huggingface POST /",
+  "hf_models.py:14 huggingface POST /v1/chat/completions",
+  "hf_models.py:16 huggingface POST /v1/chat/completions",
+  "hf_models.py:18 huggingface POST /hf-inference/models/{model}/pipeline/feature-extraction",
+  "hf_models.py:20 huggingface POST /",
+  "hf_models.py:27 huggingface POST /v1/chat/completions",
+  "together_models.py:3 together POST /v1/chat/completions",
+  "together_models.py:5 together POST /v1/chat/completions",
+  "together_models.py:7 together POST /v1/completions",
+  "together_models.py:9 together POST /v1/embeddings",
+]
+`;
+
 exports[`regression fixtures > python/sdk/langchain-more 1`] = `
 [
   "chains.py:6 deepseek POST /v1/chat/completions",
@@ -2004,6 +2187,45 @@ exports[`regression fixtures > python/sdk/llm-shapes 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/mercadopago 1`] = `
+[
+  "payments.py:15 mercadopago POST /checkout/preferences",
+  "payments.py:23 mercadopago POST /v1/payments",
+  "payments.py:27 mercadopago GET /v1/payments/{id}",
+  "payments.py:31 mercadopago GET /v1/payments/search",
+  "payments.py:35 mercadopago POST /v1/payments/{payment_id}/refunds",
+  "payments.py:40 mercadopago POST /v1/customers",
+  "payments.py:41 mercadopago GET /v1/customers/search",
+  "payments.py:45 mercadopago POST /preapproval",
+  "payments.py:49 mercadopago POST /v1/orders/{id}/capture",
+]
+`;
+
+exports[`regression fixtures > python/sdk/msgraph 1`] = `
+[
+  "beta.py:9 microsoft GET /beta/teams/{team_id}/channels",
+  "directory.py:13 microsoft GET /v1.0/users/{user_id}/messages",
+  "directory.py:18 microsoft POST /v1.0/me/sendMail",
+  "directory.py:24 microsoft GET /v1.0/users",
+  "directory.py:28 microsoft GET /v1.0/groups/{group_id}/members/graph.user",
+  "directory.py:32 microsoft GET /v1.0/sites/{site_id}/drive/items/{item_id}/content",
+  "directory.py:36 microsoft GET /v1.0/me/photo/$value",
+  "directory.py:40 microsoft GET /v1.0/users/$count",
+  "directory.py:44 microsoft GET /v1.0/users/delta()",
+  "directory.py:48 microsoft DELETE /v1.0/me/messages/{message_id}",
+  "directory.py:52 microsoft GET /v1.0/{path}",
+]
+`;
+
+exports[`regression fixtures > python/sdk/oauthlib 1`] = `
+[
+  "desktop.py:18 google POST /token",
+  "desktop.py:23 google POST /o/oauth2/token",
+  "desktop.py:27 google POST /token",
+  "web.py:17 google POST /",
+]
+`;
+
 exports[`regression fixtures > python/sdk/pygithub 1`] = `
 [
   "release_bot.py:9 github GET /repos/acme/widgets",
@@ -2019,10 +2241,63 @@ exports[`regression fixtures > python/sdk/pygithub 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/replicate 1`] = `
+[
+  "studio.py:10 replicate POST /v1/predictions",
+  "studio.py:14 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "studio.py:18 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "studio.py:22 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "studio.py:26 replicate POST /v1/predictions",
+  "studio.py:30 replicate GET /v1/predictions/{prediction_id}",
+  "studio.py:34 replicate POST /v1/predictions/{prediction_id}/cancel",
+  "studio.py:38 replicate POST /v1/deployments/{deployment_owner}/{deployment_name}/predictions",
+  "studio.py:42 replicate GET /v1/deployments/{deployment_owner}/{deployment_name}",
+  "studio.py:43 replicate POST /v1/deployments/{deployment_owner}/{deployment_name}/predictions",
+  "studio.py:47 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "studio.py:51 replicate GET /v1/models/{model_owner}/{model_name}",
+  "studio.py:51 replicate GET /v1/models/{model_owner}/{model_name}/versions",
+  "studio.py:55 replicate POST /v1/models/{model_owner}/{model_name}/versions/{version_id}/trainings",
+  "studio.py:65 replicate POST /v1/files",
+  "studio.py:69 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+]
+`;
+
+exports[`regression fixtures > python/sdk/sendgrid 1`] = `
+[
+  "mailer.py:19 sendgrid POST /v3/mail/send",
+  "mailer.py:24 sendgrid POST /v3/mail/send",
+  "mailer.py:29 sendgrid POST /v3/mail/send",
+  "mailer.py:33 sendgrid GET /v3/templates",
+  "mailer.py:37 sendgrid PUT /v3/marketing/contacts",
+  "mailer.py:41 sendgrid POST /v3/contactdb/recipients",
+  "mailer.py:45 sendgrid DELETE /v3/suppression/bounces/{address}",
+  "mailer.py:49 sendgrid GET /v3/templates/{template_id}/versions",
+  "mailer.py:56 sendgrid POST /v3/asm/groups/{group_id}/suppressions",
+]
+`;
+
 exports[`regression fixtures > python/sdk/sentry 1`] = `
 [
   "errors.py:8 sentry POST /api/{projectId}/envelope",
   "errors.py:12 sentry POST /api/{projectId}/envelope",
+]
+`;
+
+exports[`regression fixtures > python/sdk/slack-bolt 1`] = `
+[
+  "async_digest.py:9 slack POST /api/conversations.info",
+  "async_digest.py:10 slack POST /api/chat.postMessage",
+  "async_digest.py:14 slack POST /api/chat.scheduleMessage",
+  "listeners.py:8 slack POST /api/chat.update",
+  "standup_bot.py:14 slack POST /api/chat.postMessage",
+  "standup_bot.py:20 slack POST /api/reactions.add",
+  "standup_bot.py:21 slack POST /api/chat.postMessage",
+  "standup_bot.py:26 slack POST /api/chat.postMessage",
+  "standup_bot.py:32 slack POST /{response_url}",
+  "standup_bot.py:38 slack POST /api/views.open",
+  "standup_bot.py:44 slack POST /api/chat.postEphemeral",
+  "standup_bot.py:50 slack POST /api/users.info",
+  "unrelated.py:26 status.example-uptime.dev GET /api/v1/ping",
 ]
 `;
 
@@ -2063,6 +2338,45 @@ exports[`regression fixtures > python/sdk/telegram 1`] = `
 ]
 `;
 
+exports[`regression fixtures > python/sdk/vertexai 1`] = `
+[
+  "copywriter.py:12 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-2.0-flash:generateContent",
+  "copywriter.py:16 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-2.0-flash:streamGenerateContent",
+  "copywriter.py:20 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-2.0-flash:generateContent",
+  "copywriter.py:24 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-2.0-flash:countTokens",
+  "copywriter.py:29 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-2.0-flash:generateContent",
+  "copywriter.py:33 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/{model}:generateContent",
+  "drafts.py:5 google-vertex POST /v1beta1/projects/lumen-press/locations/europe-west4/publishers/google/models/gemini-1.5-pro:generateContent",
+  "media.py:8 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/text-embedding-005:predict",
+  "media.py:12 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/publishers/google/models/imagen-3.0-generate-002:predict",
+  "scoring.py:9 google-vertex POST /v1/projects/lumen-press/locations/us-east1/endpoints/4417:predict",
+  "scoring.py:13 google-vertex POST /v1/projects/lumen-press/locations/europe-west4/endpoints/9921:predict",
+  "scoring.py:17 google-vertex POST /v1/projects/{project}/locations/{location}/endpoints/{endpoint}:predict",
+]
+`;
+
+exports[`regression fixtures > python/sdk/zai 1`] = `
+[
+  "assistant.py:10 zai POST /api/paas/v4/chat/completions",
+  "assistant.py:14 zai POST /api/paas/v4/chat/completions",
+  "assistant.py:18 zai POST /api/paas/v4/reader",
+  "assistant.py:22 zai POST /api/paas/v4/web_search",
+  "assistant.py:26 zai POST /api/paas/v4/audio/speech",
+  "assistant.py:30 zai GET /api/paas/v4/batches/{batch_id}",
+  "assistant.py:34 zai GET /api/paas/v4/voice/list",
+  "tutor.py:9 zai POST /api/paas/v4/chat/completions",
+  "tutor.py:13 zai POST /api/paas/v4/async/chat/completions",
+  "tutor.py:17 zai GET /api/paas/v4/async-result/{id}",
+  "tutor.py:21 zai POST /api/paas/v4/embeddings",
+  "tutor.py:25 zai POST /api/paas/v4/images/generations",
+  "tutor.py:29 zai POST /api/paas/v4/videos/generations",
+  "tutor.py:33 zai POST /api/paas/v4/files",
+  "tutor.py:37 zai DELETE /api/paas/v4/files/{file_id}",
+  "tutor.py:41 zai POST /api/paas/v4/v1/agents",
+  "tutor.py:48 zai POST /zhipu/api/paas/v4/chat/completions",
+]
+`;
+
 exports[`regression fixtures > python/sdk-aws 1`] = `
 [
   "notify.py:11 aws POST /",
@@ -2075,6 +2389,18 @@ exports[`regression fixtures > python/sdk-aws 1`] = `
   "orders.py:12 aws POST /",
   "orders.py:16 aws POST /",
   "orders.py:30 aws POST /",
+]
+`;
+
+exports[`regression fixtures > python/sdk-aws-botocore 1`] = `
+[
+  "archive.py:9 aws PUT /{Bucket}/{Key}",
+  "archive.py:10 aws GET /{Bucket}/{Key}",
+  "archive.py:16 aws POST /",
+  "archive.py:22 aws PUT /{Bucket}/{Key}",
+  "queue.py:8 aws POST /",
+  "queue.py:15 aws POST /",
+  "thumbs.py:7 aws PUT /{Bucket}/{Key}",
 ]
 `;
 
@@ -2319,6 +2645,10 @@ exports[`regression fixtures > resolve/param-defaults 1`] = `
   "forecast.ts:17 api.example-weather.com GET /v2/forecast (wrapper:forecastPinned)",
   "forecast.ts:21 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
   "forecast.ts:22 api.example-weather.com GET /v2/forecast (wrapper:forecastAny)",
+  "handlers.ts:12 openai POST /v1/chat/completions",
+  "handlers.ts:15 openai POST /v1/chat/completions (wrapper:ask)",
+  "handlers.ts:20 openai POST /v1/chat/completions",
+  "handlers.ts:23 openai POST /v1/chat/completions (wrapper:run)",
 ]
 `;
 
@@ -2724,6 +3054,35 @@ exports[`regression fixtures > sdk/bedrock 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/brevo 1`] = `
+[
+  "client.ts:6 brevo POST /v3/smtp/email",
+  "client.ts:8 brevo GET /v3/contacts/{identifier}",
+  "client.ts:10 brevo PUT /v3/contacts/{identifier}",
+  "client.ts:12 brevo POST /v3/contacts/lists/{listId}/contacts/add",
+  "client.ts:14 brevo GET /v3/contacts",
+  "legacy.js:8 brevo POST /v3/smtp/email",
+  "mailer.ts:12 brevo POST /v3/smtp/email",
+  "mailer.ts:16 brevo POST /v3/smtp/email",
+  "mailer.ts:21 brevo POST /v3/contacts",
+  "mailer.ts:23 brevo PUT /v3/contacts/{identifier}",
+  "mailer.ts:25 brevo POST /v3/contacts/lists/{listId}/contacts/add",
+  "mailer.ts:27 brevo GET /v3/contacts",
+  "mailer.ts:31 brevo POST /v3/transactionalSMS/sms",
+]
+`;
+
+exports[`regression fixtures > sdk/bugsnag 1`] = `
+[
+  "monitoring.ts:3 bugsnag POST /",
+  "monitoring.ts:7 bugsnag POST /",
+  "monitoring.ts:11 bugsnag POST /",
+  "onprem.ts:9 bugsnag POST /notify",
+  "onprem.ts:11 bugsnag POST /sessions",
+  "server.js:6 bugsnag POST /",
+]
+`;
+
 exports[`regression fixtures > sdk/caller-model 1`] = `
 [
   "agent.ts:13 openai POST /v1/chat/completions (wrapper:OpenAIService.generateText)",
@@ -2747,6 +3106,46 @@ exports[`regression fixtures > sdk/claude-agent 1`] = `
 [
   "triage.ts:4 anthropic POST /v1/messages",
   "triage.ts:12 anthropic POST /v1/messages",
+]
+`;
+
+exports[`regression fixtures > sdk/cloudflare 1`] = `
+[
+  "infra.ts:6 cloudflare GET /client/v4/zones",
+  "infra.ts:8 cloudflare GET /client/v4/zones/{zone_id}",
+  "infra.ts:11 cloudflare POST /client/v4/zones/{zone_id}/dns_records",
+  "infra.ts:13 cloudflare GET /client/v4/zones/{zone_id}/dns_records",
+  "infra.ts:15 cloudflare PUT /client/v4/zones/{zone_id}/dns_records/{dns_record_id}",
+  "infra.ts:17 cloudflare DELETE /client/v4/zones/{zone_id}/dns_records/{dns_record_id}",
+  "infra.ts:19 cloudflare POST /client/v4/zones/{zone_id}/purge_cache",
+  "infra.ts:21 cloudflare POST /client/v4/accounts/{account_id}/ai/run/{model_name}",
+  "infra.ts:23 cloudflare POST /client/v4/accounts/{account_id}/ai/run/{model_name}",
+  "infra.ts:26 cloudflare PUT /client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key_name}",
+  "infra.ts:28 cloudflare GET /client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key_name}",
+  "infra.ts:30 cloudflare GET /client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key_name}",
+  "infra.ts:32 cloudflare POST /client/v4/accounts/{account_id}/d1/database/{database_id}/query",
+  "infra.ts:34 cloudflare GET /client/v4/accounts/{account_id}/r2/buckets",
+  "infra.ts:36 cloudflare GET /client/v4/accounts/{account_id}/workers/scripts",
+  "infra.ts:38 cloudflare GET /client/v4/accounts/{account_id}/pages/projects/{project_name}",
+  "infra.ts:40 cloudflare PATCH /client/v4/zones/{zone_id}",
+  "legacy.js:4 cloudflare POST /client/v4/zones/{zone_id}/dns_records",
+  "legacy.js:5 cloudflare GET /client/v4/zones/{zone_id}/dns_records",
+  "legacy.js:8 cloudflare POST /client/v4/zones/{zone_id}/purge_cache",
+  "legacy.js:10 cloudflare PATCH /client/v4/zones/{zone_id}",
+]
+`;
+
+exports[`regression fixtures > sdk/cohere 1`] = `
+[
+  "search.ts:6 cohere POST /v1/chat",
+  "search.ts:8 cohere POST /v1/embed",
+  "search.ts:10 cohere POST /v2/chat",
+  "search.ts:12 cohere POST /v2/chat",
+  "search.ts:14 cohere POST /v2/chat",
+  "search.ts:16 cohere POST /v2/rerank",
+  "search.ts:18 cohere POST /v2/embed",
+  "search.ts:20 cohere POST /v1/tokenize",
+  "search.ts:22 cohere GET /v1/models",
 ]
 `;
 
@@ -2780,6 +3179,76 @@ exports[`regression fixtures > sdk/discord-js 1`] = `
   "deploy.ts:7 discord PUT /api/v10/applications/{application_id}/guilds/{guild_id}/commands",
   "deploy.ts:9 discord POST /api/v10/channels/123/messages",
   "deploy.ts:10 discord GET /api/v10/users/@me",
+]
+`;
+
+exports[`regression fixtures > sdk/elevenlabs 1`] = `
+[
+  "narrator.ts:5 elevenlabs POST /v1/text-to-speech/{voice_id}",
+  "narrator.ts:7 elevenlabs POST /v1/text-to-speech/{voice_id}/stream",
+  "narrator.ts:9 elevenlabs POST /v1/text-to-speech/{voice_id}/with-timestamps",
+  "narrator.ts:11 elevenlabs POST /v1/speech-to-text",
+  "narrator.ts:13 elevenlabs POST /v1/sound-generation",
+  "narrator.ts:15 elevenlabs GET /v2/voices",
+  "narrator.ts:17 elevenlabs GET /v1/voices/{voice_id}",
+  "narrator.ts:19 elevenlabs GET /v1/models",
+  "narrator.ts:21 elevenlabs GET /v1/convai/conversation/get-signed-url",
+]
+`;
+
+exports[`regression fixtures > sdk/elevenlabs-legacy 1`] = `
+[
+  "speak.ts:5 elevenlabs POST /v1/text-to-speech/{voice_id}",
+  "speak.ts:7 elevenlabs POST /v1/text-to-speech/{voice_id}/stream",
+  "speak.ts:9 elevenlabs GET /v1/models",
+  "speak.ts:11 elevenlabs GET /v1/convai/conversation/get-signed-url",
+]
+`;
+
+exports[`regression fixtures > sdk/emailjs 1`] = `
+[
+  "ContactForm.tsx:8 emailjs POST /api/v1.0/email/send-form",
+  "ContactForm.tsx:13 emailjs POST /api/v1.0/email/send",
+  "legacy.js:4 emailjs POST /api/v1.0/email/send",
+  "server.ts:4 emailjs POST /api/v1.0/email/send",
+]
+`;
+
+exports[`regression fixtures > sdk/facebook-business 1`] = `
+[
+  "ads.ts:7 meta-graph GET /{version}/{id}/campaigns",
+  "ads.ts:9 meta-graph POST /{version}/{id}/campaigns",
+  "ads.ts:11 meta-graph GET /{version}/{id}/insights",
+  "ads.ts:15 meta-graph GET /{version}/{id}",
+  "ads.ts:16 meta-graph POST /{version}/{id}",
+  "ads.ts:17 meta-graph DELETE /{version}/{id}",
+  "ads.ts:20 meta-graph GET /{version}/{id}/adaccounts",
+  "capi.js:11 meta-graph POST /{version}/{pixel_id}/events",
+  "capi.js:15 meta-graph POST /{version}/{pixel_id}/events",
+  "capi.js:18 meta-graph GET /{version}/{id}/owned_ad_accounts",
+]
+`;
+
+exports[`regression fixtures > sdk/fal 1`] = `
+[
+  "canvas.ts:5 fal POST /{app_id}",
+  "canvas.ts:7 fal POST /{app_id}",
+  "canvas.ts:9 fal POST /{app_id}",
+  "canvas.ts:11 fal GET /{app_owner}/{app_alias}/requests/{request_id}/status",
+  "canvas.ts:13 fal GET /{app_owner}/{app_alias}/requests/{request_id}",
+  "canvas.ts:15 fal PUT /{app_owner}/{app_alias}/requests/{request_id}/cancel",
+  "canvas.ts:17 fal POST /{app_id}/stream",
+  "canvas.ts:19 fal POST /storage/upload/initiate",
+  "canvas.ts:23 fal POST /{app_id}",
+]
+`;
+
+exports[`regression fixtures > sdk/fal-serverless 1`] = `
+[
+  "legacy.ts:5 fal POST /{app_id}",
+  "legacy.ts:7 fal POST /{app_id}",
+  "legacy.ts:9 fal GET /{app_owner}/{app_alias}/requests/{request_id}/status",
+  "legacy.ts:11 fal POST /storage/upload/initiate",
 ]
 `;
 
@@ -2821,6 +3290,31 @@ exports[`regression fixtures > sdk/gemini 1`] = `
   "genai.ts:6 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
   "genai.ts:12 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
   "legacy.ts:7 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/genkit 1`] = `
+[
+  "assistant.ts:5 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "assistant.ts:6 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+  "assistant.ts:7 google-ai POST /v1beta/models/gemini-2.5-flash-lite:streamGenerateContent",
+  "assistant.ts:8 google-ai POST /v1beta/models/gemini-embedding-001:embedContent",
+  "assistant.ts:10 google-ai POST /v1beta/models/gemini-2.5-flash:generateContent",
+  "assistant.ts:13 google-ai POST /v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "assistant.ts:16 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-pro:generateContent",
+  "assistant.ts:17 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/text-embedding-005:predict",
+  "assistant.ts:18 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/{model}:generateContent",
+  "assistant.ts:21 unknown POST /",
+  "assistant.ts:22 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/gemini-embedding-2:embedContent",
+  "assistant.ts:23 google-ai POST /v1beta/models/veo-3.0-generate-001:predictLongRunning",
+  "assistant.ts:24 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/imagen-4.0-generate-001:predict",
+  "flows.ts:8 google-ai POST /v1beta/models/gemini-2.5-flash-lite:streamGenerateContent",
+  "flows.ts:13 google-ai POST /v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "flows.ts:13 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+  "legacy.ts:6 google-ai POST /v1beta/models/gemini-1.5-flash:generateContent",
+  "legacy.ts:7 google-ai POST /v1beta/models/text-embedding-004:embedContent",
+  "legacy.ts:8 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.0-flash-001:generateContent",
+  "legacy.ts:9 google-vertex POST /v1beta1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-flash:generateContent",
 ]
 `;
 
@@ -2954,6 +3448,24 @@ exports[`regression fixtures > sdk/mcp-agents-local 1`] = `[]`;
 
 exports[`regression fixtures > sdk/mcp-not-http 1`] = `[]`;
 
+exports[`regression fixtures > sdk/mercadopago 1`] = `
+[
+  "checkout.ts:8 mercadopago POST /checkout/preferences",
+  "checkout.ts:13 mercadopago POST /v1/payments",
+  "checkout.ts:15 mercadopago GET /v1/payments/{id}",
+  "checkout.ts:17 mercadopago GET /v1/payments/search",
+  "checkout.ts:19 mercadopago PUT /v1/payments/{id}",
+  "checkout.ts:21 mercadopago POST /v1/payments/{payment_id}/refunds",
+  "checkout.ts:23 mercadopago PUT /v1/customers/{id}",
+  "checkout.ts:25 mercadopago POST /preapproval",
+  "checkout.ts:27 mercadopago POST /v1/orders/{id}/capture",
+  "legacy.js:6 mercadopago POST /checkout/preferences",
+  "legacy.js:10 mercadopago GET /v1/payments/{id}",
+  "legacy.js:12 mercadopago GET /v1/payments/search",
+  "legacy.js:14 mercadopago PUT /checkout/preferences/{id}",
+]
+`;
+
 exports[`regression fixtures > sdk/models 1`] = `
 [
   "direct.ts:11 openai POST /v1/chat/completions",
@@ -2972,6 +3484,22 @@ exports[`regression fixtures > sdk/models 1`] = `
   "frameworks.ts:15 openai POST /v1/responses",
   "frameworks.ts:16 openai POST /v1/responses",
   "frameworks.ts:17 google-ai POST /v1beta/models/gemini-2.5-pro:generateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/msgraph 1`] = `
+[
+  "calendar.ts:12 microsoft GET /beta/users/{userId}/events",
+  "calendar.ts:16 microsoft GET /v1.0/groups",
+  "calendar.ts:20 microsoft GET /beta/me/drive/root/children",
+  "calendar.ts:24 microsoft PUT /v1.0/me/calendars/{id}",
+  "calendar.ts:30 microsoft GET /beta/me",
+  "mail.ts:6 microsoft GET /v1.0/me/messages",
+  "mail.ts:10 microsoft POST /v1.0/users/{userId}/sendMail",
+  "mail.ts:15 microsoft PATCH /v1.0/me/messages/{id}",
+  "mail.ts:19 microsoft DELETE /v1.0/me/messages/{id}",
+  "mail.ts:23 microsoft GET /v1.0/{path}",
+  "mail.ts:26 microsoft GET /v1.0/me (wrapper:graphGet)",
 ]
 `;
 
@@ -3050,6 +3578,20 @@ exports[`regression fixtures > sdk/reexported-clients 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/replicate 1`] = `
+[
+  "render.ts:5 replicate POST /v1/predictions",
+  "render.ts:7 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "render.ts:10 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+  "render.ts:13 replicate POST /v1/predictions",
+  "render.ts:15 replicate GET /v1/predictions/{prediction_id}",
+  "render.ts:17 replicate POST /v1/deployments/{deployment_owner}/{deployment_name}/predictions",
+  "render.ts:19 replicate GET /v1/models/{model_owner}/{model_name}",
+  "render.ts:22 replicate POST /v1/models/{model_owner}/{model_name}/versions/{version_id}/trainings",
+  "render.ts:25 replicate POST /v1/models/{model_owner}/{model_name}/predictions",
+]
+`;
+
 exports[`regression fixtures > sdk/resend 1`] = `
 [
   "mail.ts:5 resend POST /emails",
@@ -3078,6 +3620,19 @@ exports[`regression fixtures > sdk/runtime-models 1`] = `
   "clients.ts:42 openai POST /v1/chat/completions",
   "clients.ts:43 openai POST /v1/chat/completions",
   "clients.ts:44 openai POST /v1/chat/completions",
+]
+`;
+
+exports[`regression fixtures > sdk/sendgrid 1`] = `
+[
+  "contacts.ts:6 sendgrid PUT /v3/marketing/contacts",
+  "contacts.ts:10 sendgrid GET /v3/templates",
+  "contacts.ts:14 sendgrid DELETE /v3/suppression/bounces/{address}",
+  "legacy.js:6 sendgrid POST /v3/mail/send",
+  "notify.ts:6 sendgrid POST /v3/mail/send",
+  "notify.ts:11 sendgrid POST /v3/mail/send",
+  "notify.ts:15 sendgrid POST /v3/mail/send",
+  "notify.ts:22 sendgrid POST /v3/mail/send",
 ]
 `;
 
@@ -3206,6 +3761,20 @@ exports[`regression fixtures > sdk/telegram-node 1`] = `
 ]
 `;
 
+exports[`regression fixtures > sdk/together 1`] = `
+[
+  "assistant.ts:5 together POST /v1/chat/completions",
+  "assistant.ts:7 together POST /v1/chat/completions",
+  "assistant.ts:9 together POST /v1/embeddings",
+  "assistant.ts:11 together POST /v1/images/generations",
+  "assistant.ts:13 together POST /v1/rerank",
+  "assistant.ts:15 together POST /v1/audio/speech",
+  "assistant.ts:17 together GET /v1/models",
+  "assistant.ts:19 together GET /v1/fine-tunes/{id}",
+  "assistant.ts:23 together POST /v1/chat/completions",
+]
+`;
+
 exports[`regression fixtures > sdk/vercel-blob 1`] = `
 [
   "avatars.ts:5 vercel-blob PUT /api/blob",
@@ -3219,6 +3788,18 @@ exports[`regression fixtures > sdk/vertexai 1`] = `
 [
   "summarize.ts:7 google-vertex POST /v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-flash:generateContent",
   "summarize.ts:13 google-vertex POST /v1/projects/{project}/locations/{location}/publishers/google/models/gemini-2.5-pro:streamGenerateContent",
+]
+`;
+
+exports[`regression fixtures > sdk/zai 1`] = `
+[
+  "studio.ts:5 zai POST /chat/completions",
+  "studio.ts:7 zai POST /chat/completions/vision",
+  "studio.ts:9 zai POST /images/generations",
+  "studio.ts:11 zai POST /audio/tts",
+  "studio.ts:13 zai POST /video/generation",
+  "studio.ts:15 zai GET /async-result",
+  "studio.ts:17 zai POST /functions/invoke",
 ]
 `;
 

@@ -1,0 +1,67 @@
+{
+  "$comment": "zhipuai (Zhipu AI's Python SDK 2.x): `client = ZhipuAI(api_key=..., base_url=...)`; the default base URL `https://open.bigmodel.cn/api/paas/v4` (or ZHIPUAI_BASE_URL) carries `/api/paas/v4`, and every path is joined under it (`agents.invoke` posts `v1/agents` there). Keyword arguments are the JSON body; `videos.generations(model, ...)`, `knowledge.create(embedding_id, name)` and `assistant.conversation(assistant_id, messages, model)` also take them by position. The key goes in `Authorization: Bearer` as is, or as a JWT signed from it when `disable_token_cache=False`.",
+  "package": "zhipuai",
+  "imports": [
+    "zhipuai"
+  ],
+  "provider": "zai",
+  "host": "open.bigmodel.cn",
+  "auth": "bearer",
+  "generatedFrom": "manual (checked against zhipuai 2.1.5.20250825 source)",
+  "instance": {
+    "names": [
+      "ZhipuAI"
+    ],
+    "urlArg": {
+      "ZhipuAI": "kw:base_url"
+    }
+  },
+  "basePath": "/api/paas/v4",
+  "methods": {
+    "agents.async_result": {"method": "POST", "path": "/api/paas/v4/v1/agents/async-result", "bodyKwargs": true, "fieldArgs": ["agent_id", "async_id", "conversation_id", "custom_variables"]},
+    "agents.invoke": {"method": "POST", "path": "/api/paas/v4/v1/agents", "bodyKwargs": true, "fieldArgs": ["agent_id", "request_id", "stream", "messages", "user_id", "custom_variables", "sensitive_word_check"]},
+    "assistant.conversation": {"method": "POST", "path": "/api/paas/v4/assistant", "bodyKwargs": true, "fieldArgs": ["assistant_id", "messages", "model"]},
+    "assistant.query_conversation_usage": {"method": "POST", "path": "/api/paas/v4/assistant/conversation/list", "bodyKwargs": true, "fieldArgs": ["assistant_id", "page", "page_size"]},
+    "assistant.query_support": {"method": "POST", "path": "/api/paas/v4/assistant/list", "bodyKwargs": true},
+    "audio.customization": {"method": "POST", "path": "/api/paas/v4/audio/customization", "bodyKwargs": true, "encoding": "multipart"},
+    "audio.speech": {"method": "POST", "path": "/api/paas/v4/audio/speech", "bodyKwargs": true},
+    "audio.transcriptions.create": {"method": "POST", "path": "/api/paas/v4/audio/transcriptions", "bodyKwargs": true, "encoding": "multipart"},
+    "batches.cancel": {"method": "POST", "path": "/api/paas/v4/batches/{batch_id}/cancel", "params": {"batch_id": "arg:0|kw:batch_id"}},
+    "batches.create": {"method": "POST", "path": "/api/paas/v4/batches", "bodyKwargs": true},
+    "batches.list": {"method": "GET", "path": "/api/paas/v4/batches", "queryKwargs": true},
+    "batches.retrieve": {"method": "GET", "path": "/api/paas/v4/batches/{batch_id}", "params": {"batch_id": "arg:0|kw:batch_id"}},
+    "chat.asyncCompletions.create": {"method": "POST", "path": "/api/paas/v4/async/chat/completions", "bodyKwargs": true},
+    "chat.asyncCompletions.retrieve_completion_result": {"method": "GET", "path": "/api/paas/v4/async-result/{id}", "params": {"id": "arg:0|kw:id"}},
+    "chat.completions.create": {"method": "POST", "path": "/api/paas/v4/chat/completions", "bodyKwargs": true},
+    "embeddings.create": {"method": "POST", "path": "/api/paas/v4/embeddings", "bodyKwargs": true},
+    "file_parser.content": {"method": "GET", "path": "/api/paas/v4/files/parser/result/{task_id}/{format_type}", "params": {"task_id": "arg:0|kw:task_id", "format_type": "kw:format_type"}},
+    "file_parser.create": {"method": "POST", "path": "/api/paas/v4/files/parser/create", "bodyKwargs": true, "encoding": "multipart"},
+    "files.content": {"method": "GET", "path": "/api/paas/v4/files/{file_id}/content", "params": {"file_id": "arg:0|kw:file_id"}},
+    "files.create": {"method": "POST", "path": "/api/paas/v4/files", "bodyKwargs": true, "encoding": "multipart"},
+    "files.delete": {"method": "DELETE", "path": "/api/paas/v4/files/{file_id}", "params": {"file_id": "arg:0|kw:file_id"}},
+    "files.list": {"method": "GET", "path": "/api/paas/v4/files", "queryKwargs": true},
+    "fine_tuning.jobs.cancel": {"method": "POST", "path": "/api/paas/v4/fine_tuning/jobs/{fine_tuning_job_id}/cancel", "params": {"fine_tuning_job_id": "arg:0|kw:fine_tuning_job_id"}},
+    "fine_tuning.jobs.create": {"method": "POST", "path": "/api/paas/v4/fine_tuning/jobs", "bodyKwargs": true},
+    "fine_tuning.jobs.delete": {"method": "DELETE", "path": "/api/paas/v4/fine_tuning/jobs/{fine_tuning_job_id}", "params": {"fine_tuning_job_id": "arg:0|kw:fine_tuning_job_id"}},
+    "fine_tuning.jobs.list": {"method": "GET", "path": "/api/paas/v4/fine_tuning/jobs", "queryKwargs": true},
+    "fine_tuning.jobs.list_events": {"method": "GET", "path": "/api/paas/v4/fine_tuning/jobs/{fine_tuning_job_id}/events", "params": {"fine_tuning_job_id": "arg:0|kw:fine_tuning_job_id"}, "queryKwargs": true},
+    "fine_tuning.jobs.retrieve": {"method": "GET", "path": "/api/paas/v4/fine_tuning/jobs/{fine_tuning_job_id}", "params": {"fine_tuning_job_id": "arg:0|kw:fine_tuning_job_id"}},
+    "fine_tuning.models.delete": {"method": "DELETE", "path": "/api/paas/v4/fine_tuning/fine_tuned_models/{fine_tuned_model}", "params": {"fine_tuned_model": "arg:0|kw:fine_tuned_model"}},
+    "images.generations": {"method": "POST", "path": "/api/paas/v4/images/generations", "bodyKwargs": true},
+    "knowledge.create": {"method": "POST", "path": "/api/paas/v4/knowledge", "bodyKwargs": true, "fieldArgs": ["embedding_id", "name"]},
+    "knowledge.delete": {"method": "DELETE", "path": "/api/paas/v4/knowledge/{knowledge_id}", "params": {"knowledge_id": "arg:0|kw:knowledge_id"}},
+    "knowledge.document.create": {"method": "POST", "path": "/api/paas/v4/files", "bodyKwargs": true, "encoding": "multipart"},
+    "knowledge.document.delete": {"method": "DELETE", "path": "/api/paas/v4/document/{document_id}", "params": {"document_id": "arg:0|kw:document_id"}},
+    "knowledge.document.edit": {"method": "PUT", "path": "/api/paas/v4/document/{document_id}", "params": {"document_id": "arg:0|kw:document_id"}, "fieldArgs": ["id", "knowledge_type"], "bodyKwargs": true},
+    "knowledge.document.list": {"method": "GET", "path": "/api/paas/v4/files", "fieldArgs": ["knowledge_id"], "queryKwargs": true},
+    "knowledge.document.retrieve": {"method": "GET", "path": "/api/paas/v4/document/{document_id}", "params": {"document_id": "arg:0|kw:document_id"}},
+    "knowledge.modify": {"method": "PUT", "path": "/api/paas/v4/knowledge/{knowledge_id}", "params": {"knowledge_id": "arg:0|kw:knowledge_id"}, "fieldArgs": ["id", "embedding_id"], "bodyKwargs": true},
+    "knowledge.query": {"method": "GET", "path": "/api/paas/v4/knowledge", "queryKwargs": true},
+    "knowledge.used": {"method": "GET", "path": "/api/paas/v4/knowledge/capacity"},
+    "moderations.create": {"method": "POST", "path": "/api/paas/v4/moderations", "bodyKwargs": true},
+    "tools.web_search": {"method": "POST", "path": "/api/paas/v4/tools", "bodyKwargs": true},
+    "videos.generations": {"method": "POST", "path": "/api/paas/v4/videos/generations", "bodyKwargs": true, "fieldArgs": ["model"]},
+    "videos.retrieve_videos_result": {"method": "GET", "path": "/api/paas/v4/async-result/{id}", "params": {"id": "arg:0|kw:id"}},
+    "web_search.web_search": {"method": "POST", "path": "/api/paas/v4/web_search", "bodyKwargs": true}
+  }
+}

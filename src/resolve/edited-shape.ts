@@ -86,6 +86,20 @@ function apply(acc: ObjectShape, item: Item, reach: Reach, coverage: Coverage, d
   g.seen.add(reach.branch);
 }
 
+/**
+ * `const email = new SendSmtpEmail()` then `email.subject = s`: a library's model built with no arguments and filled by
+ * property sets (openapi-generator SDKs) is the object of those properties. A class the project declares may set fields
+ * of its own: not read so.
+ */
+export function isFilledModel(init: Expression, decl: Node, use: Node): boolean {
+  const u = unwrap(init);
+  if (!Node.isNewExpression(u) || u.getArguments().length > 0) return false;
+  const symbol = u.getExpression().getSymbol();
+  const target = symbol?.isAlias() ? symbol.getAliasedSymbol() : symbol;
+  if ((target?.getDeclarations() ?? []).some((d) => !d.getSourceFile().isDeclarationFile())) return false;
+  return editsBefore(decl, use).some((e) => e.kind === "set");
+}
+
 /** `shape` (the object a variable is initialized with) as seen at `use`, once the edits before it are applied. */
 export function withEdits(shape: Shape, decl: Node, use: Node, shapeOf: (e: Expression) => ValueShape, dynamic: DynamicPart[]): Shape {
   if (shape.type !== "object") return shape;

@@ -1326,7 +1326,7 @@ exports[`java: SDK registries > reads JVM SDK clients, builders as bodies and en
       "dynamic": [
         {
           "name": "customer",
-          "origin": "sdk",
+          "origin": "param",
           "where": "path",
         },
         {

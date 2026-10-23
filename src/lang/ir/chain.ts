@@ -225,6 +225,16 @@ function indexCall(e: Extract<Expr, { k: "index" }>, name: string, fn: FunctionD
   return attach(member(obj, name, ctx, depth), call, fn, ctx.subst);
 }
 
+/** `context["client"]` on an SDK value that gives the member by subscript too (`itemMembers`): `context.client`. */
+function itemMember(e: Extract<Expr, { k: "index" }>, fn: FunctionDef, ctx: IrCtx, depth: number): Chain {
+  const key = staticKey(e.key, fn, ctx);
+  const regs = key === undefined ? [] : ctx.idx.lang.registry.filter((r) => r.itemMembers?.includes(key));
+  if (regs.length === 0) return UNKNOWN;
+  const obj = valueChain(e.obj, fn, ctx, depth);
+  const path = obj.segs.map((s) => s.name).join(".");
+  return obj.root.kind === "external" && regs.some((r) => r.imports.some((i) => path.startsWith(`${i}.`))) ? member(obj, key!, ctx, depth) : UNKNOWN;
+}
+
 /**
  * A client read from a module's dict a helper fills (#98): the one every value written into it is, else the first with
  * the others kept on its construction, for the endpoint to say whether they agree.
@@ -290,7 +300,7 @@ export function valueChain(e: Expr, fn: FunctionDef, ctx: IrCtx, depth = 0): Cha
       if (v) return valueChain(v.expr, v.fn, ctx, depth + 1);
       const cached = cachedEntries(e, fn, ctx);
       if (cached) return cacheChain(cached, staticKey(e.key, fn, ctx) === undefined, ctx, depth);
-      return ctx.idx.lang.indexOperator ? indexCall(e, ctx.idx.lang.indexOperator, fn, ctx, depth) : UNKNOWN;
+      return ctx.idx.lang.indexOperator ? indexCall(e, ctx.idx.lang.indexOperator, fn, ctx, depth) : itemMember(e, fn, ctx, depth);
     }
     case "or":
     case "cond": {

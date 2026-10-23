@@ -4342,6 +4342,323 @@ exports[`parameter values: typescript > reads initializers through the checker a
       "urlTemplate": "https://api.example-weather.com/v2/forecast?city={city}",
       "via": "wrapper:forecastAny",
     },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "o3",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "River linen opal cedar zephyr atlas.",
+            ],
+            "model": "o3",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "c9c2b68d4f7d",
+      "location": {
+        "col": 12,
+        "file": "handlers.ts",
+        "language": "typescript",
+        "line": 12,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "o3",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "o3",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "Timber ember island quiet quartz ember.",
+            ],
+            "model": "o3",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "46eaf89b7af1",
+      "location": {
+        "col": 22,
+        "file": "handlers.ts",
+        "language": "typescript",
+        "line": 15,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "o3",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+      "via": "wrapper:ask",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "hint": "model",
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [
+        {
+          "name": "model",
+          "origin": "param",
+          "where": "body",
+        },
+      ],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "Nimbus ultra saffron jetty mosaic haven.",
+            ],
+            "model": "gpt-4o",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "6d4d4b6963d5",
+      "location": {
+        "col": 12,
+        "file": "handlers.ts",
+        "language": "typescript",
+        "line": 20,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": true,
+        "from": "body",
+        "hint": "model",
+        "values": [],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+    },
+    {
+      "authScheme": "bearer",
+      "body": {
+        "properties": {
+          "messages": {
+            "items": {
+              "type": "unknown",
+            },
+            "type": "array",
+          },
+          "model": {
+            "enum": [
+              "o1",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "model",
+          "messages",
+        ],
+        "type": "object",
+      },
+      "bodyEncoding": "json",
+      "bodySource": "literal",
+      "client": "sdk",
+      "dynamic": [],
+      "examples": [
+        {
+          "body": {
+            "messages": [
+              "Yarrow copper verdant cedar ember raven.",
+            ],
+            "model": "o1",
+          },
+          "bodyEncoding": "json",
+          "headers": {
+            "authorization": "Bearer <token>",
+            "content-type": "application/json",
+          },
+          "method": "POST",
+          "query": {},
+          "url": "https://api.openai.com/v1/chat/completions",
+          "variant": "minimal",
+        },
+      ],
+      "headerValues": {},
+      "headers": [],
+      "host": "api.openai.com",
+      "hostKind": "literal",
+      "id": "237fd7035749",
+      "location": {
+        "col": 20,
+        "file": "handlers.ts",
+        "language": "typescript",
+        "line": 23,
+      },
+      "method": "POST",
+      "model": {
+        "dynamic": false,
+        "from": "body",
+        "values": [
+          "o1",
+        ],
+      },
+      "operationId": "createChatCompletion",
+      "optionsOpaque": false,
+      "pathTemplate": "/v1/chat/completions",
+      "provider": "openai",
+      "query": [],
+      "scheme": "https",
+      "sdk": {
+        "chain": "chat.completions.create",
+        "package": "openai",
+        "version": "5.11.0",
+      },
+      "urlTemplate": "https://api.openai.com/v1/chat/completions",
+      "via": "wrapper:run",
+    },
   ],
   "coverage": {
     "a2aServers": {
@@ -4362,10 +4679,10 @@ exports[`parameter values: typescript > reads initializers through the checker a
     },
     "sdks": [
       {
-        "calls": 9,
+        "calls": 13,
         "declared": true,
         "ecosystem": "npm",
-        "importSites": 1,
+        "importSites": 2,
         "imported": true,
         "package": "openai",
         "provider": "openai",
@@ -4377,12 +4694,12 @@ exports[`parameter values: typescript > reads initializers through the checker a
   "diagnostics": {
     "complete": true,
     "droppedCalls": [],
-    "filesScanned": 2,
-    "filesSeen": 2,
+    "filesScanned": 3,
+    "filesSeen": 3,
     "languages": {
       "typescript": {
-        "filesScanned": 2,
-        "filesSeen": 2,
+        "filesScanned": 3,
+        "filesSeen": 3,
       },
     },
     "skipped": [],
@@ -4393,25 +4710,25 @@ exports[`parameter values: typescript > reads initializers through the checker a
   "stats": {
     "byClient": {
       "fetch": 7,
-      "sdk": 9,
+      "sdk": 13,
     },
     "byHostKind": {
       "const": 7,
-      "literal": 9,
+      "literal": 13,
     },
     "byLanguage": {
-      "typescript": 16,
+      "typescript": 20,
     },
     "byProvider": {
       "api.example-weather.com": 7,
-      "openai": 9,
+      "openai": 13,
     },
-    "callsFound": 16,
+    "callsFound": 20,
     "durationMs": 0,
-    "filesScanned": 2,
+    "filesScanned": 3,
     "redacted": 0,
-    "withBodyShape": 9,
-    "withDynamic": 11,
+    "withBodyShape": 13,
+    "withDynamic": 12,
   },
   "tool": "api-grep",
   "version": "<version>",

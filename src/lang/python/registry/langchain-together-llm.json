@@ -1,0 +1,23 @@
+{
+  "$comment": "langchain-together: the completions LLM `Together(model=...)` posts to its `base_url`, the whole endpoint URL (`https://api.together.xyz/v1/completions` by default): an entry of its own, whose `basePath` is that whole path.",
+  "package": "langchain-together",
+  "imports": [
+    "langchain_together"
+  ],
+  "provider": "together",
+  "host": "api.together.xyz",
+  "auth": "bearer",
+  "basePath": "/v1/completions",
+  "generatedFrom": "manual (langchain-together 0.4: Together)",
+  "methods": {
+    "Together": {
+      "method": "POST",
+      "path": "/v1/completions",
+      "bodyKwargs": true,
+      "clientKwargs": true,
+      "baseUrlKw": [
+        "base_url"
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/okapi-hq/api-grep/issues/6",
+  "skipped": [],
+  "calls": [
+    { "file": "Summarizer.java", "line": 15, "provider": "google-vertex" },
+    { "file": "Summarizer.java", "line": 24, "provider": "google-vertex" },
+    { "file": "Summarizer.java", "line": 25, "provider": "google-vertex" },
+    { "file": "Summarizer.java", "line": 32, "provider": "google-vertex" }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "$comment": "Library constants with a known string value, by the package name they are used under and their name (`IrLanguage.constants`, matched on the end of a dotted name): `net/http`'s method constants, and the model, role and option constants of go-openai (`openai.GPT4o`), openai-go (`openai.ChatModelGPT4o`) and anthropic-sdk-go (`anthropic.ModelClaudeSonnet4_5`), extracted from their sources (October 2026). An import under another name does not match.",
+  "$comment": "Library constants with a known string value, by the package name they are used under and their name (`IrLanguage.constants`, matched on the end of a dotted name): `net/http`'s method constants, and the model, role and option constants of go-openai (`openai.GPT4o`), openai-go (`openai.ChatModelGPT4o`), anthropic-sdk-go (`anthropic.ModelClaudeSonnet4_5`) and go-telegram/bot (`models.ParseModeHTML`), extracted from their sources (October 2026). An import under another name does not match.",
   "constants": {
     "http.MethodGet": "GET",
     "http.MethodHead": "HEAD",
@@ -10,6 +10,9 @@
     "http.MethodConnect": "CONNECT",
     "http.MethodOptions": "OPTIONS",
     "http.MethodTrace": "TRACE",
+    "models.ParseModeMarkdownV1": "Markdown",
+    "models.ParseModeMarkdown": "MarkdownV2",
+    "models.ParseModeHTML": "HTML",
     "anthropic.ModelClaudeFable5": "claude-fable-5",
     "anthropic.ModelClaudeFable5_1": "claude-fable-5-1",
     "anthropic.ModelClaudeHaiku4_5": "claude-haiku-4-5",

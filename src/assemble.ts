@@ -34,6 +34,8 @@ export interface ResolvedCall {
   model?: Shape;
   /** The library picks the provider from the model name (LiteLLM, PydanticAI, DSPy): host and path follow it. */
   routeByModel?: boolean;
+  /** Model values are `owner/name:version` references (Replicate): the fact keeps `owner/name`. */
+  modelRefs?: boolean;
   /** A GraphQL document an SDK method takes apart from its body (Octokit `graphql(query, variables)`). */
   document?: Shape;
   /** The operation when the URL does not name it (JSON-RPC `method`, GraphQL document, SOAP action, `Action=`). */
@@ -92,8 +94,12 @@ export function callId(loc: Call["location"], n = 0, operation?: string | null):
   return createHash("sha1").update(key).digest("hex").slice(0, 12);
 }
 
+/** `owner/name:version`: the model, not the version (a hash, which redaction would also take for a secret). */
+const VERSIONED_REF = /^([^/:]+\/[^/:]+):.+$/;
+
 function modelFact(r: ResolvedCall): ModelFact | undefined {
-  return modelOf({ model: r.model, body: r.body.shape, pathTemplate: r.url.pathTemplate, dynamic: r.dynamic });
+  const model = modelOf({ model: r.model, body: r.body.shape, pathTemplate: r.url.pathTemplate, dynamic: r.dynamic });
+  return model && r.modelRefs ? mapModelValues(model, (v) => v.replace(VERSIONED_REF, "$1")) : model;
 }
 
 /** A routed call's model names as the provider receives them: `anthropic/claude-sonnet-4` is `claude-sonnet-4`. */
