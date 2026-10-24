@@ -629,6 +629,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -669,7 +670,7 @@ exports[`firebase modular sdk > reads document paths from references and skips s
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 10,
@@ -841,6 +842,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -892,7 +894,7 @@ exports[`sentry > reports capture calls from any @sentry package, inside a local
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 3,
@@ -1810,6 +1812,13 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "typescript",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -1861,7 +1870,7 @@ exports[`supabase-js > reports one call per operation, with the table in the pat
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 16,

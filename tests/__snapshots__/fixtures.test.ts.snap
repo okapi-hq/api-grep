@@ -799,6 +799,13 @@ exports[`axios > matches snapshot and key expectations 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 5,
+          "language": "typescript",
+          "named": 5,
+        },
+      ],
       "explained": 5,
       "named": 5,
       "unexplained": [],
@@ -827,7 +834,7 @@ exports[`axios > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "axios": 14,
@@ -1246,6 +1253,13 @@ exports[`constants > matches snapshot and key expectations 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 3,
+          "language": "typescript",
+          "named": 3,
+        },
+      ],
       "explained": 3,
       "named": 3,
       "unexplained": [],
@@ -1274,7 +1288,7 @@ exports[`constants > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 8,
@@ -2083,6 +2097,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -2111,7 +2126,7 @@ exports[`examples > synthesizes concrete requests from typed parameters, query a
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "axios": 1,
@@ -3079,6 +3094,13 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 7,
+          "language": "typescript",
+          "named": 7,
+        },
+      ],
       "explained": 7,
       "named": 7,
       "unexplained": [],
@@ -3107,7 +3129,7 @@ exports[`fetch > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 13,
@@ -3716,6 +3738,13 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "typescript",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -3744,7 +3773,7 @@ exports[`frameworks > detects options-object helpers from the frameworks registr
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "framework": 7,
@@ -4156,6 +4185,13 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 4,
+          "language": "typescript",
+          "named": 4,
+        },
+      ],
       "explained": 4,
       "named": 4,
       "unexplained": [],
@@ -4184,7 +4220,7 @@ exports[`got and ky > matches snapshot and key expectations 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "got": 3,
@@ -4317,6 +4353,13 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 0,
+          "language": "typescript",
+          "named": 1,
+        },
+      ],
       "explained": 0,
       "named": 1,
       "unexplained": [
@@ -4383,7 +4426,7 @@ exports[`negatives > ignores shadowed fetch, mocks and plain strings; reports re
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -4498,6 +4541,13 @@ exports[`node http > reads options objects and url-first calls 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "typescript",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -4526,7 +4576,7 @@ exports[`node http > reads options objects and url-first calls 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "node-http": 2,
@@ -9594,6 +9644,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -10224,7 +10275,7 @@ exports[`sdk > matches snapshot and key expectations 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 16,
@@ -11160,6 +11211,13 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 3,
+          "language": "typescript",
+          "named": 3,
+        },
+      ],
       "explained": 3,
       "named": 3,
       "unexplained": [],
@@ -11223,7 +11281,7 @@ exports[`wrappers > expands one-hop wrappers at the call site 1`] = `
     },
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "axios": 2,

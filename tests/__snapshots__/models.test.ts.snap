@@ -2091,6 +2091,7 @@ exports[`models: python > reads model names through env defaults, settings, func
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -2296,7 +2297,7 @@ exports[`models: python > reads model names through env defaults, settings, func
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 26,
@@ -3596,6 +3597,7 @@ exports[`models: typescript > reads model names through imported constants, defa
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -3746,7 +3748,7 @@ exports[`models: typescript > reads model names through imported constants, defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 16,

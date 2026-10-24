@@ -182,6 +182,13 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "kotlin",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -210,7 +217,7 @@ exports[`JVM: clients a DI container provides (#46) > attaches nothing when seve
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "ktor": 2,
@@ -363,6 +370,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "java",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -391,7 +405,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Dagger modules in 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 1,
@@ -721,6 +735,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 4,
+          "language": "kotlin",
+          "named": 4,
+        },
+      ],
       "explained": 4,
       "named": 4,
       "unexplained": [],
@@ -749,7 +770,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Hilt / Dagger prov
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -989,6 +1010,13 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "kotlin",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -1017,7 +1045,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Koin definitions, 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "ktor": 3,
@@ -1235,6 +1263,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -1263,7 +1292,7 @@ exports[`JVM: clients a DI container provides (#46) > follows Spring beans: @Pri
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,

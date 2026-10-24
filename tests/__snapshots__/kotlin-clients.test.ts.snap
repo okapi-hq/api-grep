@@ -856,6 +856,13 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "kotlin",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -884,7 +891,7 @@ exports[`kotlin: Ktor client > reads verbs with their builder lambdas and the cl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "ktor": 13,
@@ -2138,6 +2145,13 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 4,
+          "language": "kotlin",
+          "named": 4,
+        },
+      ],
       "explained": 4,
       "named": 4,
       "unexplained": [],
@@ -2166,7 +2180,7 @@ exports[`kotlin: OkHttp > reads request builders, URL builders, JSON, form and m
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 20,
@@ -2610,6 +2624,13 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "kotlin",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -2638,7 +2659,7 @@ exports[`kotlin: OpenFeign > reports each mapped method of a Feign interface at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "feign": 6,
@@ -3302,6 +3323,13 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "kotlin",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -3330,7 +3358,7 @@ exports[`kotlin: Spring RestTemplate, RestClient and WebClient > reads RestTempl
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "spring-rest": 7,
@@ -3655,6 +3683,13 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "kotlin",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -3683,7 +3718,7 @@ exports[`kotlin: java.net.http and HttpURLConnection > reads HttpRequest builder
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "java-http": 6,

@@ -888,6 +888,7 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -916,7 +917,7 @@ exports[`kotlin: Retrofit service interfaces > reports each annotated method at 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "retrofit": 15,

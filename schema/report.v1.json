@@ -1255,6 +1255,13 @@
           "type": "number",
           "description": "Of `named`, the hosts that are the host of at least one call in `calls` (case and port aside; a host template such as `{project}.supabase.co` explains the hosts it matches)."
         },
+        "byLanguage": {
+          "description": "`named` and `explained` per language, most named first, then by language. Present on every full scan since 1.31.0.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HostLanguageCount"
+          }
+        },
         "unexplained": {
           "type": "array",
           "items": {
@@ -1269,6 +1276,28 @@
         "unexplained"
       ],
       "description": "API-looking hosts the scanned code names, compared with the hosts of the calls found: a recall proxy per scan. SDK calls to a default host leave no literal, and files of languages api-grep does not read are not counted."
+    },
+    "HostLanguageCount": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "$ref": "#/definitions/Language"
+        },
+        "named": {
+          "type": "number",
+          "description": "Named hosts whose first naming file is of this language."
+        },
+        "explained": {
+          "type": "number",
+          "description": "Of `named`, the hosts a call explains."
+        }
+      },
+      "required": [
+        "language",
+        "named",
+        "explained"
+      ],
+      "description": "The API-looking hosts named in one language, and how many a call explains. A host counts once, under the language of the first file naming it."
     },
     "UnexplainedHost": {
       "type": "object",
