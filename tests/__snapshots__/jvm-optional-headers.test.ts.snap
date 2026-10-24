@@ -215,6 +215,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -243,7 +244,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 1,
@@ -611,6 +612,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -639,7 +641,7 @@ exports[`jvm: headers an interceptor adds on some requests only (#69) > marks th
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 4,

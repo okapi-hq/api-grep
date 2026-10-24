@@ -2575,6 +2575,13 @@ exports[`runtime models: python > reads settings classes, dataclass configuratio
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "python",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -2637,7 +2644,7 @@ exports[`runtime models: python > reads settings classes, dataclass configuratio
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "requests": 1,
@@ -4165,6 +4172,13 @@ exports[`runtime models: typescript and javascript > never gives a default every
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "typescript",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -4205,7 +4219,7 @@ exports[`runtime models: typescript and javascript > never gives a default every
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -5418,6 +5432,7 @@ exports[`runtime models: typescript and javascript > reads env schemas, config f
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -5480,7 +5495,7 @@ exports[`runtime models: typescript and javascript > reads env schemas, config f
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "sdk": 11,

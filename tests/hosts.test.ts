@@ -10,6 +10,10 @@ describe("host coverage", () => {
     expect(r.coverage?.hosts).toEqual({
       named: 5,
       explained: 3,
+      byLanguage: [
+        { language: "python", named: 3, explained: 2 },
+        { language: "typescript", named: 2, explained: 1 },
+      ],
       unexplained: [
         { host: "api.mailgun.net", files: 1, literals: 1, language: "python", first: { file: "notify.py", line: 24 } },
         { host: "api.telegram.org", files: 1, literals: 1, language: "typescript", first: { file: "relay.ts", line: 1 } },

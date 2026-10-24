@@ -1,4 +1,4 @@
-import type { Call, HostCoverage } from "../report/schema.js";
+import type { Call, HostCoverage, Language } from "../report/schema.js";
 import { normalizeHost, type HostLiterals } from "./literals.js";
 
 /** Unexplained hosts listed in a report; `named` and `explained` still count them all. */
@@ -25,19 +25,35 @@ function callHosts(calls: Call[]): { exact: Set<string>; patterns: RegExp[] } {
   return { exact, patterns };
 }
 
+type ByLanguage = NonNullable<HostCoverage["byLanguage"]>;
+
+/** Counts a host under its language (the first file naming it), most named first, then by language. */
+function tally(counts: Map<Language, ByLanguage[number]>, language: Language, explained: boolean): void {
+  const c = counts.get(language) ?? { language, named: 0, explained: 0 };
+  c.named++;
+  if (explained) c.explained++;
+  counts.set(language, c);
+}
+
+const sorted = (counts: Map<Language, ByLanguage[number]>): ByLanguage =>
+  [...counts.values()].sort((a, b) => b.named - a.named || (a.language < b.language ? -1 : 1));
+
 /**
  * `coverage.hosts`: the API-looking hosts the scanned files name, how many a call explains (its host, case and port
- * aside), and the others, most widespread first.
+ * aside), the same per language, and the others, most widespread first.
  */
 export function hostCoverage(literals: HostLiterals, calls: Call[]): HostCoverage {
   const { exact, patterns } = callHosts(calls);
   const explains = (host: string): boolean => exact.has(host) || patterns.some((p) => p.test(host));
   let explained = 0;
   const unexplained: HostCoverage["unexplained"] = [];
+  const counts = new Map<Language, ByLanguage[number]>();
   for (const [host, s] of literals.seen) {
-    if (explains(host)) explained++;
+    const isExplained = explains(host);
+    tally(counts, s.language, isExplained);
+    if (isExplained) explained++;
     else unexplained.push({ host, files: s.files.size, literals: s.literals, language: s.language, first: s.first });
   }
   unexplained.sort((a, b) => b.files - a.files || (a.host < b.host ? -1 : a.host > b.host ? 1 : 0));
-  return { named: literals.seen.size, explained, unexplained: unexplained.slice(0, MAX_UNEXPLAINED) };
+  return { named: literals.seen.size, explained, byLanguage: sorted(counts), unexplained: unexplained.slice(0, MAX_UNEXPLAINED) };
 }

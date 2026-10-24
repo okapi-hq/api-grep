@@ -9,7 +9,7 @@ import { McpTransportSchema } from "./schema-transport.js";
  * `describe` / `meta` here is documentation other tools read. Additive changes bump the minor version, anything
  * that can break a reader bumps the major and moves the JSON Schema to `report.v<major>.json`.
  */
-export const SCHEMA_VERSION = "1.30.0";
+export const SCHEMA_VERSION = "1.31.0";
 export const SCHEMA_URL = "https://raw.githubusercontent.com/okapi-hq/api-grep/main/schema/report.v1.json";
 
 /** HTTP clients per language; `sdk` and `framework` are shared. */

@@ -358,6 +358,7 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -386,7 +387,7 @@ exports[`java: code Lombok generates (#65) > reads @Builder chains as bodies und
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "spring-rest": 5,
@@ -1105,6 +1106,7 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -1133,7 +1135,7 @@ exports[`java: fluent request clients (#65) > reads AsyncHttpClient, Unirest and
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "async-http-client": 5,
@@ -1567,6 +1569,7 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -1595,7 +1598,7 @@ exports[`java: fluent request clients (#65) > reads the JAX-RS client and leaves
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "jaxrs-client": 7,
@@ -2264,6 +2267,7 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -2292,7 +2296,7 @@ exports[`java: request objects sent by a client (#65) > reads Apache HttpClient 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "apache-httpclient": 11,

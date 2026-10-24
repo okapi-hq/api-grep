@@ -123,6 +123,13 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "typescript",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -151,7 +158,7 @@ exports[`provider resolution > follows local helpers that build the URL 1`] = `
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -393,6 +400,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -421,7 +429,7 @@ exports[`provider resolution > never names a provider after a host template 1`] 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 5,
@@ -612,6 +620,13 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "typescript",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -640,7 +655,7 @@ exports[`provider resolution > reads class base URLs from the constructor and pa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 3,
@@ -805,6 +820,13 @@ exports[`provider resolution > takes the provider from an env var's literal defa
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 2,
+          "language": "typescript",
+          "named": 2,
+        },
+      ],
       "explained": 2,
       "named": 2,
       "unexplained": [],
@@ -833,7 +855,7 @@ exports[`provider resolution > takes the provider from an env var's literal defa
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 2,
@@ -1091,6 +1113,7 @@ exports[`provider resolution > takes the provider from the env var's name 1`] = 
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [],
       "explained": 0,
       "named": 0,
       "unexplained": [],
@@ -1119,7 +1142,7 @@ exports[`provider resolution > takes the provider from the env var's name 1`] = 
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "fetch": 5,

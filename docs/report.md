@@ -656,6 +656,10 @@ pattern):
 "hosts": {
   "named": 23,
   "explained": 21,
+  "byLanguage": [
+    { "language": "typescript", "named": 15, "explained": 15 },
+    { "language": "python", "named": 8, "explained": 6 }
+  ],
   "unexplained": [
     { "host": "api.telegram.org", "files": 2, "literals": 3, "language": "python", "first": { "file": "bot/client.py", "line": 14 } }
   ]
@@ -709,6 +713,9 @@ pattern):
 - `explained`: named hosts that are the host of at least one call in `calls`, case and port aside; a call's host
   template (`{project}.supabase.co`) explains the hosts it matches, one with no literal domain (`{baseUrl}`) none.
   Each copy of a call picked from a host table explains its own host.
+- `byLanguage` (since 1.31.0): `named` and `explained` per language, most named first, then by language. A host
+  counts once, under the language of the first file naming it (by file path, then line), so the counts add up to
+  `named` and `explained`.
 - `unexplained`: the others, most files first, then by host, at most 200 (`named - explained` counts them all).
   `first` is the first place the host is named by file path, then line, and `language` that file's.
 

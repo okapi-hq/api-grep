@@ -110,6 +110,14 @@ export const UnexplainedHostSchema = z
   })
   .meta({ id: "UnexplainedHost", description: "An API-looking host the code names that no reported call has: where api-grep likely misses calls." });
 
+export const HostLanguageCountSchema = z
+  .object({
+    language: LanguageSchema,
+    named: z.number().describe("Named hosts whose first naming file is of this language."),
+    explained: z.number().describe("Of `named`, the hosts a call explains."),
+  })
+  .meta({ id: "HostLanguageCount", description: "The API-looking hosts named in one language, and how many a call explains. A host counts once, under the language of the first file naming it." });
+
 export const HostCoverageSchema = z
   .object({
     named: z
@@ -118,6 +126,10 @@ export const HostCoverageSchema = z
         "Distinct API-looking hosts named by the string literals (template strings and f-strings included, comments and docstrings aside) of the scanned files: a known provider host, a first label `api`, `api-*` or `*-api`, an LLM gateway, or a URL whose path looks like an API (`/v1/`, `/v2beta/`, `/api/`, `/graphql`, `/rest/`, `/bot{token}/`). Internal, loopback, placeholder, documentation, package registry, schema, asset and repository-link hosts are not counted.",
       ),
     explained: z.number().describe("Of `named`, the hosts that are the host of at least one call in `calls` (case and port aside; a host template such as `{project}.supabase.co` explains the hosts it matches)."),
+    byLanguage: z
+      .array(HostLanguageCountSchema)
+      .optional()
+      .describe("`named` and `explained` per language, most named first, then by language. Present on every full scan since 1.31.0."),
     unexplained: z
       .array(UnexplainedHostSchema)
       .describe("The named hosts no call explains, by `files` (most first), then host; at most 200 (`named - explained` counts them all)."),
@@ -146,6 +158,7 @@ export type Coverage = z.infer<typeof CoverageSchema>;
 export type SdkCoverage = z.infer<typeof SdkCoverageSchema>;
 export type HostCoverage = z.infer<typeof HostCoverageSchema>;
 export type UnexplainedHost = z.infer<typeof UnexplainedHostSchema>;
+export type HostLanguageCount = z.infer<typeof HostLanguageCountSchema>;
 export type SkippedFile = z.infer<typeof SkippedFileSchema>;
 export type DroppedCall = z.infer<typeof DroppedCallSchema>;
 export type UnfollowedCall = z.infer<typeof UnfollowedCallSchema>;

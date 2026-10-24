@@ -103,6 +103,11 @@ describe("hostCoverage", () => {
     const r = hostCoverage(lit, [call("api.openai.com:443"), call("{project}.supabase.co"), call("{baseUrl}"), call(undefined)]);
     expect(r.named).toBe(4);
     expect(r.explained).toBe(2);
+    expect(r.byLanguage).toEqual([
+      { language: "typescript", named: 2, explained: 1 },
+      { language: "go", named: 1, explained: 0 },
+      { language: "python", named: 1, explained: 1 },
+    ]);
     expect(r.unexplained).toEqual([
       { host: "api.telegram.org", files: 2, literals: 2, language: "typescript", first: { file: "a.ts", line: 7 } },
       { host: "api.mailgun.net", files: 1, literals: 1, language: "go", first: { file: "c.go", line: 2 } },

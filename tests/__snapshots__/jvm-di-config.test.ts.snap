@@ -176,6 +176,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 3,
+          "language": "kotlin",
+          "named": 3,
+        },
+      ],
       "explained": 3,
       "named": 3,
       "unexplained": [],
@@ -204,7 +211,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 3,
@@ -446,6 +453,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 4,
+          "language": "java",
+          "named": 4,
+        },
+      ],
       "explained": 4,
       "named": 4,
       "unexplained": [],
@@ -474,7 +488,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > follo
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "okhttp": 4,
@@ -659,6 +673,13 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
       "servers": [],
     },
     "hosts": {
+      "byLanguage": [
+        {
+          "explained": 1,
+          "language": "kotlin",
+          "named": 1,
+        },
+      ],
       "explained": 1,
       "named": 1,
       "unexplained": [],
@@ -687,7 +708,7 @@ exports[`JVM DI: configuration properties and more injection forms (#94) > reads
     "skippedCounts": {},
     "unfollowed": [],
   },
-  "schemaVersion": "1.30.0",
+  "schemaVersion": "1.31.0",
   "stats": {
     "byClient": {
       "spring-rest": 2,
